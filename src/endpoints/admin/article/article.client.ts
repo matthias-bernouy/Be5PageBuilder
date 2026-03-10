@@ -29,3 +29,11 @@ document.menuItems.push({
     shortcut: "H1",
     title: "Titre 1"
 })
+
+document.menuItems.push({
+    htmlTag: "li",
+    description: "li",
+    icon: "",
+    shortcut: "li",
+    title: "li"
+})

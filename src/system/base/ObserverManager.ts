@@ -40,7 +40,7 @@ export class ObserverManager {
     make_it_editor(node: HTMLElement) {
         const tag = node.tagName.toLowerCase();
 
-        const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]);
+        const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "li"]);
         const isManaged = node.parentElement?.closest('w13c-quote');
 
         if (textTags.has(tag)) {

@@ -28,6 +28,7 @@ export type TextEditorOptions = {
 export class TextEditor extends Editor {
     private onKeyDown = (e: KeyboardEvent) => this.handleKeyDown(e);
     private onInput = (e: Event) => this.handleInput(e);
+    private onPaste = (e: ClipboardEvent) => this.handlePaste(e);
     private isBlocAvailable: boolean = false;
     private isTextEditable: boolean = false;
 
@@ -63,14 +64,55 @@ export class TextEditor extends Editor {
     }
 
 
+    private handlePaste(e: ClipboardEvent) {
+        e.preventDefault();
+        const text = e.clipboardData?.getData("text/plain") || "";
+
+        const selection = window.getSelection();
+        if (!selection || !selection.rangeCount) return;
+
+        selection.deleteFromDocument();
+        const textNode = document.createTextNode(text);
+
+        const range = selection.getRangeAt(0);
+        range.insertNode(textNode);
+
+        range.setStartAfter(textNode);
+        range.setEndAfter(textNode);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
 
     private handleKeyDown(e: KeyboardEvent) {
-        console.log("KEY DOWN");
         if (e.key === "Enter") {
             if (e.shiftKey) return;
             e.preventDefault();
+
+            const selection = window.getSelection();
+            if (!selection || !selection.rangeCount) return;
+
+            const range = selection.getRangeAt(0);
+            
+            const splitRange = document.createRange();
+            splitRange.setStart(range.startContainer, range.startOffset);
+            splitRange.setEndAfter(this.target.lastChild || this.target);
+
+            const extractedContent = splitRange.extractContents();
+
             const nextEl = document.createElement("p");
+            nextEl.appendChild(extractedContent);
+
             this.target.after(nextEl);
+
+            requestAnimationFrame(() => {
+                nextEl.focus();
+                const newSelection = window.getSelection();
+                const newRange = document.createRange();
+                newRange.setStart(nextEl, 0);
+                newRange.collapse(true);
+                newSelection?.removeAllRanges();
+                newSelection?.addRange(newRange);
+            });
         }
 
         if (e.key === "Backspace" && this.target.innerHTML === "" && this.isBlocAvailable){
@@ -105,9 +147,11 @@ export class TextEditor extends Editor {
 
         this.target.removeEventListener("keydown", this.onKeyDown);
         this.target.removeEventListener("input", this.onInput);
+        this.target.removeEventListener("paste", this.onPaste);
 
         this.target.addEventListener("keydown", this.onKeyDown);
         this.target.addEventListener("input", this.onInput);
+        this.target.addEventListener("paste", this.onPaste);
 
         if ( this.isTextEditable ){
             this.target.tabIndex = 0;
@@ -135,5 +179,6 @@ export class TextEditor extends Editor {
 
         this.target.removeEventListener("keydown", this.onKeyDown);
         this.target.removeEventListener("input", this.onInput);
+        this.target.removeEventListener("paste", this.onPaste);
     }
 }

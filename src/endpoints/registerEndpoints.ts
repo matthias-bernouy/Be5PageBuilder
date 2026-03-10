@@ -1,6 +1,6 @@
-import { type Be5System } from "be5-system";
 import { registerUIFolder, registerCSSFolder, registerJSFolder, registerAPIFolder } from "src/Be5System/utilities";
 import { join, resolve } from "node:path"
+import type { Be5PageBuilder } from "src/Be5PageBuilder";
 
 const root = process.cwd();
 function res(str: string){
@@ -8,7 +8,7 @@ function res(str: string){
     return join(root, "src/endpoints", str);
 }
 
-export function registerEndpoints(system: Be5System){
+export function registerEndpoints(system: Be5PageBuilder){
 
     system.registerEndpoint("/health", "GET", () => new Response("") )
     
