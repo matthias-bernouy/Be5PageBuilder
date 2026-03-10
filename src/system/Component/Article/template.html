@@ -1,0 +1,40 @@
+<article class="article-container">
+  <header class="article-header">
+    <div class="meta-top">
+      <slot name="category"><span class="badge">Événement</span></slot>
+      <span class="read-time">5 min de lecture</span>
+    </div>
+    
+    <h1><slot name="title">Le titre de votre histoire</slot></h1>
+    
+    <p class="lead">
+      <slot name="lead">Un chapô captivant qui résume l'article et incite à la lecture.</slot>
+    </p>
+
+    <div class="author-box">
+      <slot name="author-image"><div class="avatar-placeholder"></div></slot>
+      <div class="author-info">
+        <slot name="author-name"><strong>Bertrand Vittecoq</strong></slot>
+        <slot name="publish-date">Publié le 10 Mars 2026</slot>
+      </div>
+    </div>
+  </header>
+
+  <figure class="main-image">
+    <slot name="cover-image">
+      <img src="placeholder-hd.jpg" alt="Couverture">
+    </slot>
+    <figcaption><slot name="image-caption">Crédit photo : Association des anciens élèves</slot></figcaption>
+  </figure>
+
+  <section class="article-body">
+    <slot name="content">
+    </slot>
+  </section>
+
+  <footer class="article-footer">
+    <div class="tags">
+      <slot name="tags"></slot>
+    </div>
+  </section>
+</article>

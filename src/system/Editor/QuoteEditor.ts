@@ -1,19 +1,18 @@
-import { ActionBar } from "../Component/Actionbar/Actionbar";
 import { Editor } from "../base/Editor";
 
-const cssStyle = `
-    p {
-        color: #000;
-        outline: none;
-    }
+const cssStyle = ``
 
-    p:empty::before{
-        content: attr(data-placeholder);
-        color: #aaa;
-        pointer-events: none;
-        display: block;
-    }
-`
+if ( !document.menuItems ){
+    document.menuItems = [];
+}
+
+document.menuItems.push({
+    htmlTag: "w13c-quote",
+    description: "Quote",
+    icon: "",
+    shortcut: "Q",
+    title: "Quote"
+})
 
 export class QuoteEditor extends Editor {
 
@@ -48,13 +47,9 @@ export class QuoteEditor extends Editor {
     }
 
     init() {
-        this.author.setAttribute("data-editor-bloc-managment", "true");
-
-
         this.text.focus();
     }
 
     restore() {
-        this.author.removeAttribute("data-editor-bloc-managment");
     }
 }

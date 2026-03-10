@@ -7,7 +7,7 @@ const cssStyle = `
     content: attr(data-placeholder);
     color: #aaa;
     pointer-events: none;
-    display: inline-block;
+    display: block;
     font-style: italic;
     font-weight: 300;
     /* On s'assure que le placeholder ne prend pas toute la largeur */
@@ -17,6 +17,26 @@ const cssStyle = `
     white-space: nowrap;
 }
 `
+
+if ( !document.menuItems ){
+    document.menuItems = [];
+}
+
+document.menuItems.push({
+    htmlTag: "h1",
+    description: "Titre 1",
+    icon: "",
+    shortcut: "H1",
+    title: "Titre 1"
+})
+
+document.menuItems.push({
+    htmlTag: "li",
+    description: "li",
+    icon: "",
+    shortcut: "li",
+    title: "li"
+})
 
 export type TextEditorOptions = {
     createBloc: boolean;
@@ -83,35 +103,30 @@ export class TextEditor extends Editor {
         selection.addRange(range);
     }
 
+    private createElement(tag: string){
+        const element = document.createElement(tag) as HTMLElement;
+        Array.from(this.target.attributes).forEach(attr => {
+            console.log("SET ATTR ", attr.name)
+            element.setAttribute(attr.name, attr.value);
+        });
+        delete element.dataset.isEditor;
+        delete element.dataset.editorTextEditable;
+        delete element.dataset.editorBlocManagment;
+        element.removeAttribute("tabindex");
+        element.removeAttribute("contenteditable");
+        return element;
+    }
+
     private handleKeyDown(e: KeyboardEvent) {
         if (e.key === "Enter") {
             if (e.shiftKey) return;
             e.preventDefault();
 
-            const selection = window.getSelection();
-            if (!selection || !selection.rangeCount) return;
-
-            const range = selection.getRangeAt(0);
-            
-            const splitRange = document.createRange();
-            splitRange.setStart(range.startContainer, range.startOffset);
-            splitRange.setEndAfter(this.target.lastChild || this.target);
-
-            const extractedContent = splitRange.extractContents();
-
-            const nextEl = document.createElement("p");
-            nextEl.appendChild(extractedContent);
-
-            this.target.after(nextEl);
+            const nextEl = this.createElement("p")
+            this.target.after(nextEl)
 
             requestAnimationFrame(() => {
                 nextEl.focus();
-                const newSelection = window.getSelection();
-                const newRange = document.createRange();
-                newRange.setStart(nextEl, 0);
-                newRange.collapse(true);
-                newSelection?.removeAllRanges();
-                newSelection?.addRange(newRange);
             });
         }
 
@@ -133,16 +148,16 @@ export class TextEditor extends Editor {
         if (this.target.innerText === "/" && this.isBlocAvailable) {
             const actionbar = ActionBar.open(document.menuItems);
             actionbar.addEventListener("select", (e: any) => {
-                const new_node = document.createElement(e.detail.htmlTag);
+                const new_node = this.createElement(e.detail.htmlTag);
                 this.target.replaceWith(new_node);
             }, { once: true });
         }
     }
 
     init() {
-        const editable = this.target.dataset.editorTextEditable = "true";
+        const editable = this.target.dataset.editorTextEditable;
         this.isTextEditable = editable != null && editable === "true";
-        const blocManageur = this.target.dataset.editorBlocManagment = "true";
+        const blocManageur = this.target.dataset.editorBlocManagment;
         this.isBlocAvailable = blocManageur != null && blocManageur === "true";
 
         this.target.removeEventListener("keydown", this.onKeyDown);
