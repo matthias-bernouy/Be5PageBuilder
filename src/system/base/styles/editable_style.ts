@@ -8,7 +8,6 @@ const css = `
         
 `
 
-
 export function editable_style(){
     const style = document.createElement("style");
     style.innerHTML = css;

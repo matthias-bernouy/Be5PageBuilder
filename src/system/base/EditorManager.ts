@@ -36,7 +36,23 @@ export class EditorManager{
 
     export(){
         this.switchMode("view-mode");
-        console.log(this.workingElement.innerHTML)
+        const article = this.workingElement.innerHTML;
+        const currentURL = new URL(window.location.href);
+
+        const target = new URL("/api/page", window.location.origin);
+        target.searchParams.set("path", "/article");
+        target.searchParams.set("identifier", currentURL.searchParams.get("identifier") || "");
+        const res = fetch(target, {
+            method: "POST",
+            body: article
+        })
+        res.then((a) => {
+            console.log(a)
+        })
+    }
+
+    getMode(){
+        return this.mode;
     }
 
 }

@@ -26,6 +26,7 @@
 }
 
 .content {
+    display: flex;
     font-size: 1.25rem;
     line-height: 1.6;
     color: #2c3e50;
