@@ -18,6 +18,8 @@ const cssStyle = `
 }
 `
 
+export const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "li"]);
+
 if ( !document.menuItems ){
     document.menuItems = [];
 }
@@ -103,17 +105,23 @@ export class TextEditor extends Editor {
         selection.addRange(range);
     }
 
+    private isManaged(){
+       return this.target.parentElement?.closest('w13c-quote, w13c-article');
+    }
+
     private createElement(tag: string){
         const element = document.createElement(tag) as HTMLElement;
         Array.from(this.target.attributes).forEach(attr => {
-            console.log("SET ATTR ", attr.name)
             element.setAttribute(attr.name, attr.value);
         });
         delete element.dataset.isEditor;
-        delete element.dataset.editorTextEditable;
-        delete element.dataset.editorBlocManagment;
-        element.removeAttribute("tabindex");
-        element.removeAttribute("contenteditable");
+        if ( !textTags.has(tag) ) {
+            delete element.dataset.editorTextEditable;
+            delete element.dataset.editorBlocManagment;
+            delete element.dataset.placeholder;
+            element.removeAttribute("tabindex");
+            element.removeAttribute("contenteditable");
+        }
         return element;
     }
 
@@ -155,6 +163,9 @@ export class TextEditor extends Editor {
     }
 
     init() {
+        this.target.dataset.editorTextEditable  = "true";
+        if (!this.isManaged()) this.target.dataset.editorBlocManagment = "true";
+
         const editable = this.target.dataset.editorTextEditable;
         this.isTextEditable = editable != null && editable === "true";
         const blocManageur = this.target.dataset.editorBlocManagment;

@@ -24,6 +24,11 @@ export class ArticleEditor extends Editor {
     }
 
     init() {
+        const content = this.target.querySelectorAll("[slot=content]");
+        content.forEach((v) => {
+            const ele = v as HTMLElement;
+            ele.dataset.editorBlocManagment = "true"
+        })
     }
 
     restore() {
