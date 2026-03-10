@@ -98,7 +98,6 @@ export async function registerAPIFolder(url: string, absoluteFolderPath: string,
         const handler = module.default;
 
         if (typeof handler === 'function') {
-            console.log(`[API] Registering ${method} ${endpointUrl}`);
             system.registerEndpoint(endpointUrl, method as any, handler);
         } else {
             console.warn(`[API] No default export found in ${file}`);

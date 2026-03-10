@@ -25,7 +25,6 @@ export class ImageEditor extends Editor {
     }
 
     private handleClick() {
-        console.log("CLICK")
     }
 
     restore() {

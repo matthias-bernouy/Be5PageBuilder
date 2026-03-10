@@ -2,8 +2,8 @@
 
 export function createDefaultElement(
     element: HTMLElement, 
-    targetSlot: string, tag: 
-    keyof HTMLElementTagNameMap = "p", 
+    targetSlot: string, 
+    tag: keyof HTMLElementTagNameMap = "p",
     text?: string
 )
 {
@@ -12,6 +12,7 @@ export function createDefaultElement(
 
     const defaultElement = document.createElement(tag);
     defaultElement.setAttribute("slot", targetSlot);
+    if (text) defaultElement.innerText = text;
 
     element.append(defaultElement);
     return defaultElement;

@@ -10,8 +10,6 @@ export abstract class Editor {
         this.rawStyles = styles;
         this.target = target;
 
-        this.target.shadowRoot?.append(editable_style())
-
         document.addEventListener("switch-mode", (e: CustomEventInit) => {
             if (e.detail === "editor-mode") {
                 this.viewEditor();

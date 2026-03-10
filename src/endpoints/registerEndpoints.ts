@@ -4,7 +4,6 @@ import type { Be5PageBuilder } from "src/Be5PageBuilder";
 
 const root = process.cwd();
 function res(str: string){
-    console.log(join(root, "src/endpoints", str))
     return join(root, "src/endpoints", str);
 }
 

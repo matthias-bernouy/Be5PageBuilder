@@ -47,7 +47,6 @@ export class ActionBar extends Component {
 
     disconnectedCallback() {
         window.removeEventListener('keydown', this.boundHandleKeyDown);
-        console.log("Menu détruit, écouteur supprimé.");
     }
 
     private renderItems() {
@@ -98,7 +97,6 @@ export class ActionBar extends Component {
     }
 
     static open(items: MenuItem[]) {
-        console.log(items);
         ActionBar.close();
         const menu = new ActionBar();
         menu.items = items;

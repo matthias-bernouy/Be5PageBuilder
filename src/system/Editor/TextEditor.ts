@@ -3,22 +3,24 @@ import { Editor } from "../base/Editor";
 import type { PageMode } from "../base/EditorManager";
 
 const cssStyle = `
-:is(h1, h2, h3, h4, h5, h6, p, span, li, blockquote):empty::before {
+:is(h1, h2, h3, h4, h5, h6, p, span, blockquote):empty::before {
     content: attr(data-placeholder);
-    color: #aaa;
+    //color: #aaa;
     pointer-events: none;
     display: block;
     font-style: italic;
     font-weight: 300;
-    /* On s'assure que le placeholder ne prend pas toute la largeur */
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+    :is(h1, h2, h3, h4, h5, h6, p, span, blockquote):empty {
+        display: flex
+    }
 `
 
-export const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "li"]);
+export const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]);
 
 if ( !document.menuItems ){
     document.menuItems = [];
@@ -30,14 +32,6 @@ document.menuItems.push({
     icon: "",
     shortcut: "H1",
     title: "Titre 1"
-})
-
-document.menuItems.push({
-    htmlTag: "li",
-    description: "li",
-    icon: "",
-    shortcut: "li",
-    title: "li"
 })
 
 export type TextEditorOptions = {
@@ -164,7 +158,11 @@ export class TextEditor extends Editor {
 
     init() {
         this.target.dataset.editorTextEditable  = "true";
-        if (!this.isManaged()) this.target.dataset.editorBlocManagment = "true";
+        if (!this.isManaged()) {
+            this.target.dataset.editorBlocManagment = "true";
+        } else {
+            this.target.draggable = false;
+        }
 
         const editable = this.target.dataset.editorTextEditable;
         this.isTextEditable = editable != null && editable === "true";

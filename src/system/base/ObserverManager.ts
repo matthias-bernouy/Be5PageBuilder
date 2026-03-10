@@ -2,6 +2,7 @@ import { ImageEditor } from "../Editor/ImageEditor";
 import { TextEditor, textTags } from "../Editor/TextEditor";
 import { QuoteEditor } from "../Editor/QuoteEditor";
 import { ArticleEditor } from "../Component/Article/ArticleEditor";
+import { ListEditor } from "../Editor/ListEditor";
 
 export class ObserverManager {
 
@@ -15,7 +16,6 @@ export class ObserverManager {
                     mutation.addedNodes.forEach((node: Node) => {
                         if (node instanceof HTMLElement) {
 
-                            console.log("NEW NODE ", node.tagName,  node);
                             if (!node.dataset.isEditor) {
                                 this.make_it_editor(node);
                             }
@@ -50,6 +50,14 @@ export class ObserverManager {
         switch (tag) {
             case "img":
                 new ImageEditor(node);
+                break;
+
+            case "ul":
+                new ListEditor(node);
+                break;
+
+            case "ol":
+                new ListEditor(node);
                 break;
 
             case "w13c-quote":

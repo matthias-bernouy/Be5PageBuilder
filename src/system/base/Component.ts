@@ -6,8 +6,6 @@ if (typeof globalThis.HTMLElement === "undefined") {
 if (typeof globalThis.customElements === "undefined" ){
     (globalThis as any).customElements = {
         define: (tag: string, constructor: any) => {
-            // Optionnel : on peut loguer pour voir ce qui se passe dans Bun
-            // console.log(`[SSR] Element défini : ${tag}`);
         },
         get: (tag: string) => undefined,
     };

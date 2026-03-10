@@ -15,7 +15,6 @@ export class EditorManager{
     private workingElement: HTMLElement;
 
     constructor(workingElement: HTMLElement){
-        document.body.append(editable_style())
         this.workingElement = workingElement;
         document.EditorManager = this;
         new DragManager(workingElement)

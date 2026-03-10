@@ -19,6 +19,12 @@ export class ArticleEditor extends Editor {
         super(target, "");
 
         createDefaultElement(this.target, "content");
+        createDefaultElement(this.target, "badge", "span", "Évènement");
+        createDefaultElement(this.target, "time", "span", "5 min de lecture");
+        createDefaultElement(this.target, "author-name", "span", "Bertrand Vittecoq");
+        createDefaultElement(this.target, "publish-date", "span", "10 Janvier 1970");
+        createDefaultElement(this.target, "title", "span", "Le titre de votre histoire");
+        createDefaultElement(this.target, "lead", "span", "Un chapô captivant qui résume l'article et incite à la lecture.");
 
         this.viewEditor();
     }
