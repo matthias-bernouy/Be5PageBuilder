@@ -48,18 +48,13 @@ export class QuoteEditor extends Editor {
     }
 
     init() {
-        this.text.setAttribute("contentEditable", "true");
-        this.author.setAttribute("contentEditable", "true");
-        this.text.setAttribute("tabIndex", "0");
-        this.author.setAttribute("tabIndex", "0");
+        this.author.setAttribute("data-editor-bloc-managment", "true");
+
 
         this.text.focus();
     }
 
     restore() {
-        this.text.removeAttribute("contentEditable");
-        this.author.removeAttribute("contentEditable");
-        this.text.removeAttribute("tabIndex");
-        this.author.removeAttribute("tabIndex");
+        this.author.removeAttribute("data-editor-bloc-managment");
     }
 }

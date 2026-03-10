@@ -23,9 +23,9 @@ document.addEventListener("switch-mode", (e: any) => {
 })
 
 document.menuItems.push({
-    htmlTag: "img",
-    description: "Image",
+    htmlTag: "h1",
+    description: "Titre 1",
     icon: "",
-    shortcut: "I",
-    title: "Image"
+    shortcut: "H1",
+    title: "Titre 1"
 })

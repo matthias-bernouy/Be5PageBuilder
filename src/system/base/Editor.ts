@@ -44,7 +44,6 @@ export abstract class Editor {
 
     public viewEditor() {
         Editor.styleElement.forEach((v, k) => {
-            console.log("HEY")
             document.body.append(v)
         })
         this.target.draggable = true;

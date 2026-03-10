@@ -1,5 +1,6 @@
 import { ActionBar } from "../Component/Actionbar/Actionbar";
 import { Editor } from "../base/Editor";
+import type { PageMode } from "../base/EditorManager";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, li, blockquote):empty::before {
@@ -32,40 +33,39 @@ export class TextEditor extends Editor {
 
     constructor(target: HTMLElement) {
         super(target, cssStyle);
-        const blocAvailable = this.target.dataset.editorBlocManagment;
-        const textEditable = this.target.dataset.editorTextEditable;
-        this.isBlocAvailable = blocAvailable != null && blocAvailable === "true";
-        this.isTextEditable = textEditable != null && textEditable === "true";
         this.viewEditor();
+        this.observeAttributes();
     }
 
-    init() {
-        if (this.isBlocAvailable) {
-            this.target.dataset.editorBlocManagment = "true"
-        }
-        if (this.isTextEditable) {
-            this.target.dataset.editorTextEditable = "true"
-        }
-
-        this.target.removeEventListener("keydown", this.onKeyDown);
-        this.target.removeEventListener("input", this.onInput);
-
-        this.target.addEventListener("keydown", this.onKeyDown);
-        this.target.addEventListener("input", this.onInput);
-
-        if ( this.isTextEditable ){
-            this.target.tabIndex = 0;
-            this.target.contentEditable = "true";
-            if (this.isBlocAvailable){
-                this.target.dataset.placeholder = "Tapez / ou écrivez du texte";
-            } else {
-                this.target.dataset.placeholder = "Tapez du texte";
+    observeAttributes(){
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('data-')) {
+                    if ( document.EditorManager.getMode() === "editor-mode" ){
+                        this.init();
+                    }
+                }
             }
-            this.target.focus();
-        }
+        });
+
+        document.addEventListener("switch-mode", (e: any) => {
+            const mode: PageMode = e.detail;
+            if ( mode === "editor-mode" ) {
+                observer.observe(this.target, {
+                    attributes: true,
+                    attributeFilter: ["data-editor-bloc-managment", "data-editor-text-editable"]
+                })
+            } else {
+                observer.disconnect();
+            }
+        })
+
     }
+
+
 
     private handleKeyDown(e: KeyboardEvent) {
+        console.log("KEY DOWN");
         if (e.key === "Enter") {
             if (e.shiftKey) return;
             e.preventDefault();
@@ -94,6 +94,34 @@ export class TextEditor extends Editor {
                 const new_node = document.createElement(e.detail.htmlTag);
                 this.target.replaceWith(new_node);
             }, { once: true });
+        }
+    }
+
+    init() {
+        const editable = this.target.dataset.editorTextEditable = "true";
+        this.isTextEditable = editable != null && editable === "true";
+        const blocManageur = this.target.dataset.editorBlocManagment = "true";
+        this.isBlocAvailable = blocManageur != null && blocManageur === "true";
+
+        this.target.removeEventListener("keydown", this.onKeyDown);
+        this.target.removeEventListener("input", this.onInput);
+
+        this.target.addEventListener("keydown", this.onKeyDown);
+        this.target.addEventListener("input", this.onInput);
+
+        if ( this.isTextEditable ){
+            this.target.tabIndex = 0;
+            this.target.contentEditable = "true";
+            if (this.isBlocAvailable){
+                this.target.dataset.placeholder = "Tapez / ou écrivez du texte";
+            } else {
+                this.target.dataset.placeholder = "Tapez du texte";
+            }
+            requestAnimationFrame(() => {
+                if (this.target.isConnected) {
+                    this.target.focus();
+                }
+            });
         }
     }
 
