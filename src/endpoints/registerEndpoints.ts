@@ -1,6 +1,6 @@
 import { registerUIFolder, registerCSSFolder, registerJSFolder, registerAPIFolder } from "src/Be5System/utilities";
 import { join, resolve } from "node:path"
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { Be5PageBuilder } from "src/plugin/Be5PageBuilder";
 
 const root = process.cwd();
 function res(str: string){

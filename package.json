@@ -8,10 +8,13 @@
     "devDependencies": {
         "@types/bun": "latest",
         "bun-types": "^1.3.10",
-        "be5-system": "link:be5-system"
+        "be5-system": "link:be5-system",
+        "be5-database-interface": "link:be5-database-interface"
     },
+    "trustedDependencies": ["@mikro-orm/core", "@mikro-orm/mongodb"],
     "peerDependencies": {
-        "typescript": "^5.9.3"
+        "typescript": "^5.9.3",
+        "@mikro-orm/core": "^6.6.9"
     },
     "dependencies": {
         "linkedom": "^0.18.12"

@@ -1,7 +1,8 @@
 import { send_html, send_js, type Be5System } from "be5-system";
 import { basename, dirname, join } from "node:path";
+import type { Be5PageBuilder } from "src/plugin/Be5PageBuilder";
 
-export async function registerUIFolder(baseUrl: string, absolutePath: string, system: Be5System) {
+export async function registerUIFolder(baseUrl: string, absolutePath: string, system: Be5PageBuilder) {
     const glob = new Bun.Glob("**/*.html");
 
     for await (const htmlFile of glob.scan(absolutePath)) {
@@ -34,9 +35,9 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 
         if (serverFile){
             const module = await import(serverFile);
-            const serverHandler = module.default as (req: Request) => string;
+            const serverHandler = module.default as (req: Request, system: Be5PageBuilder) => string;
             system.registerEndpoint(urlPath, "GET", async (req: Request) => {
-                return await serverHandler(req);
+                return await serverHandler(req, system);
             });
         } else {
             system.registerEndpoint(urlPath, "GET", () => {
@@ -98,7 +99,9 @@ export async function registerAPIFolder(url: string, absoluteFolderPath: string,
         const handler = module.default;
 
         if (typeof handler === 'function') {
-            system.registerEndpoint(endpointUrl, method as any, handler);
+            system.registerEndpoint(endpointUrl, method as any, (req) => {
+                return handler(req, system)
+            });
         } else {
             console.warn(`[API] No default export found in ${file}`);
         }

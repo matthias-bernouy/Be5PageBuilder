@@ -3,6 +3,7 @@ import { TextEditor, textTags } from "../Editor/TextEditor";
 import { QuoteEditor } from "../Editor/QuoteEditor";
 import { ArticleEditor } from "../Component/Article/ArticleEditor";
 import { ListEditor } from "../Editor/ListEditor";
+import "src/system/base/snippets/MediaCenter/MediaCenter"
 
 export class ObserverManager {
 
@@ -41,6 +42,7 @@ export class ObserverManager {
 
     make_it_editor(node: HTMLElement) {
         const tag = node.tagName.toLowerCase();
+        console.log(tag);
 
         if (textTags.has(tag)) {
             new TextEditor(node);

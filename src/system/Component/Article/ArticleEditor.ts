@@ -25,6 +25,7 @@ export class ArticleEditor extends Editor {
         createDefaultElement(this.target, "publish-date", "span", "10 Janvier 1970");
         createDefaultElement(this.target, "title", "span", "Le titre de votre histoire");
         createDefaultElement(this.target, "lead", "span", "Un chapô captivant qui résume l'article et incite à la lecture.");
+        createDefaultElement(this.target, "cover-image", "img");
 
         this.viewEditor();
     }

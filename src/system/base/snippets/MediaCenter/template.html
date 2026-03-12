@@ -1,0 +1,18 @@
+<dialog>
+  <div class="modal-container">
+    <header class="modal-header">
+      <h2>Media Center</h2>
+      <button class="btn-close" onclick="this.closest('dialog').close()">×</button>
+    </header>
+    <div class="search-bar">
+      <input type="search" placeholder="Rechercher une image...">
+    </div>
+    <div id="imgContainer" class="media-grid">
+
+    </div>
+    <footer class="modal-footer">
+      <button class="btn btn-secondary" onclick="this.closest('dialog').close()">Annuler</button>
+      <button class="btn btn-primary" id="confirm-selection">Sélectionner</button>
+    </footer>
+  </div>
+</dialog>

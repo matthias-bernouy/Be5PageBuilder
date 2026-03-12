@@ -2,12 +2,15 @@ import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path"
 import { pages } from 'src/data/Pages';
+import { PageModel } from 'src/model/PageModel';
+import type { Be5PageBuilder } from 'src/plugin/Be5PageBuilder';
 
-export default async function Server(req: Request){
+export default async function Server(req: Request, system: Be5PageBuilder){
     const html = await Bun.file(join(__dirname, "./index.html")).text();
     const { document } = parseHTML(html);
 
-    const pageList = Array.from(pages.values());
+    const repo = system.getDatabase().getRepository(PageModel);
+    const pageList = await repo.findAll();
 
     const tableBody = document.querySelector("tbody")!;
 

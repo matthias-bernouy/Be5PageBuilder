@@ -1,6 +1,9 @@
+import { LateralDialog } from "../Component/LateralDialog/LateralDialog";
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
-import { editable_style } from "./styles/editable_style";
+import { MediaCenter } from "./snippets/MediaCenter/MediaCenter";
+import { Configuration } from "./snippets/Configuration/Configuration";
+import { FloatingToolbar } from "./snippets/FloatingToolbar/FloatingToolbar";
 
 export type PageModeEnum = [
     "editor-mode",
@@ -12,13 +15,51 @@ export type PageMode = PageModeEnum[number];
 export class EditorManager{
 
     private mode: PageMode = "editor-mode";
+
     private workingElement: HTMLElement;
+    private editorSystem: HTMLElement;
+
+    private mediaCenter: MediaCenter;
+    private configuration: Configuration;
+    private toolbar: FloatingToolbar;
 
     constructor(workingElement: HTMLElement){
         this.workingElement = workingElement;
+        this.editorSystem   = document.getElementById("editor-system")!;
+
+        this.mediaCenter     = new MediaCenter();
+        this.configuration = new Configuration();
+        this.toolbar         = new FloatingToolbar();
+
+        this.editorSystem.append(this.mediaCenter)
+        this.editorSystem.append(this.configuration)
+        this.editorSystem.append(this.toolbar)
+
+        new DragManager(workingElement);
+        new ObserverManager(workingElement);
+
         document.EditorManager = this;
-        new DragManager(workingElement)
-        new ObserverManager(workingElement)
+    }
+
+    dashboard(){
+        window.location.href = "/admin/dashboard"
+    }
+
+    getConfiguration(){
+        return this.configuration;
+    }
+
+    getMediaCenter(){
+        this.mediaCenter.addImage("https://picsum.photos/201", "qsdfqsddsf")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        this.mediaCenter.addImage("https://picsum.photos/200", "")
+        return this.mediaCenter;
     }
 
     switchMode(mode?: PageMode){

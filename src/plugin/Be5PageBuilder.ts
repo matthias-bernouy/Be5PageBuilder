@@ -1,7 +1,9 @@
 import { Be5System, type RunnerConstructor } from "be5-system";
-import { registerEndpoints } from "./endpoints/registerEndpoints";
-import type { Component } from "./system/base/Component";
-import type { Editor } from "./system/base/Editor";
+import { registerEndpoints } from "../endpoints/registerEndpoints";
+import type { Component } from "../system/base/Component";
+import type { Editor } from "../system/base/Editor";
+import { Database } from "be5-database-interface";
+import { PageModel } from "src/model/PageModel";
 
 type BlocDefinition = {
     metadata: MenuItem;
@@ -33,13 +35,22 @@ type MediaDefinition = {
 export class Be5PageBuilder extends Be5System{
 
     private configuration: Configuration;
+    private database = new Database([
+        PageModel,
+    ])
+
     private mediaProviders: MediaProvider[];
     private blocs: BlocDefinition[] = [];
 
-    constructor(runner: RunnerConstructor){
+    constructor(runner: RunnerConstructor, configuration: Configuration){
         super(runner);
         this.mediaProviders = [];
+        this.configuration = configuration;
         registerEndpoints(this);
+    }
+
+    getDatabase(){
+        return this.database;
     }
 
     getBlocs(){
