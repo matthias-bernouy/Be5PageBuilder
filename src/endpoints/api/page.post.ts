@@ -1,5 +1,4 @@
-import { pages, type PageDefinition } from "src/data/Pages";
-import { PageModel } from "src/model/PageModel";
+import { PageModel, type IPage } from "src/data/model/PageModel";
 import type { Be5PageBuilder } from "src/plugin/Be5PageBuilder";
 
 export default async function updatePage(req: Request, system: Be5PageBuilder) {
@@ -11,7 +10,7 @@ export default async function updatePage(req: Request, system: Be5PageBuilder) {
 
     const repo = system.getDatabase().getRepository(PageModel);
 
-    const newPage: PageDefinition = {
+    const newPage: IPage = {
         path: path,
         identifier: identifier,
         title: title,

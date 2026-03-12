@@ -1,4 +1,3 @@
-import { ActionBar } from "../Component/Actionbar/Actionbar";
 import { Editor } from "../base/Editor";
 
 const cssStyle = `
@@ -6,17 +5,6 @@ const cssStyle = `
         opacity: 0.5;
     }
 `
-if ( !document.menuItems ){
-    document.menuItems = [];
-}
-
-document.menuItems.push({
-    htmlTag: "img",
-    description: "Image",
-    icon: "",
-    shortcut: "i",
-    title: "Image"
-})
 
 export class ImageEditor extends Editor {
     

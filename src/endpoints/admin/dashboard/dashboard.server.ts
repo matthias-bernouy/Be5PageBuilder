@@ -1,8 +1,7 @@
 import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path"
-import { pages } from 'src/data/Pages';
-import { PageModel } from 'src/model/PageModel';
+import { PageModel } from 'src/data/model/PageModel';
 import type { Be5PageBuilder } from 'src/plugin/Be5PageBuilder';
 
 export default async function Server(req: Request, system: Be5PageBuilder){

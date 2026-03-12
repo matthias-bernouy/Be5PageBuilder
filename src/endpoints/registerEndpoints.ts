@@ -1,6 +1,7 @@
 import { registerUIFolder, registerCSSFolder, registerJSFolder, registerAPIFolder } from "src/Be5System/utilities";
 import { join, resolve } from "node:path"
 import type { Be5PageBuilder } from "src/plugin/Be5PageBuilder";
+import { initBlocs } from "src/plugin/initBlocs";
 
 const root = process.cwd();
 function res(str: string){
@@ -8,6 +9,7 @@ function res(str: string){
 }
 
 export function registerEndpoints(system: Be5PageBuilder){
+
 
     system.registerEndpoint("/health", "GET", () => new Response("") )
     

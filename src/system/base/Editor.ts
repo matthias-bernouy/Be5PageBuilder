@@ -1,5 +1,3 @@
-import { editable_style } from "./styles/editable_style";
-
 export abstract class Editor {
 
     private static styleElement: Map<string, HTMLStyleElement>;

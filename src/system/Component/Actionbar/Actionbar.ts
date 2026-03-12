@@ -10,11 +10,8 @@ export const QuoteViewMetadata: ComponentMetadata = {
 }
 
 export interface MenuItem {
-    htmlTag: string;
+    id: string;
     title: string;
-    description: string;
-    icon: string;
-    shortcut: string;
 }
 
 export class ActionBar extends Component {
@@ -54,13 +51,13 @@ export class ActionBar extends Component {
         if (!list) return;
 
         list.innerHTML = this.items.map((item, index) => `
-            <div class="item ${index === this.selectedIndex ? 'selected' : ''}" data-id="${item.htmlTag}">
-                <div class="icon">${item.icon}</div>
+            <div class="item ${index === this.selectedIndex ? 'selected' : ''}" data-id="${item.id}">
+                <div class="icon"></div>
                 <div class="info">
                     <span class="title">${item.title}</span>
-                    <span class="desc">${item.description}</span>
+                    <span class="desc"></span>
                 </div>
-                <kbd>${item.shortcut}</kbd>
+                <kbd></kbd>
             </div>
         `).join('');
     }

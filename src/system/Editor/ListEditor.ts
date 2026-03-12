@@ -15,18 +15,6 @@ const cssStyle = `
     }
 `
 
-if ( !document.menuItems ){
-    document.menuItems = [];
-}
-
-document.menuItems.push({
-    htmlTag: "ul",
-    description: "List",
-    icon: "",
-    shortcut: "li",
-    title: "List"
-})
-
 export class ListEditor extends Editor {
 
     private onKeyDown = (e: KeyboardEvent) => this.handleKeyDown(e);

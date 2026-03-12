@@ -1,13 +1,30 @@
 import { ImageEditor } from "../Editor/ImageEditor";
 import { TextEditor, textTags } from "../Editor/TextEditor";
-import { QuoteEditor } from "../Editor/QuoteEditor";
-import { ArticleEditor } from "../Component/Article/ArticleEditor";
 import { ListEditor } from "../Editor/ListEditor";
 import "src/system/base/snippets/MediaCenter/MediaCenter"
+import type { Editor } from "./Editor";
 
 export class ObserverManager {
 
+    private editors: Map<string, {
+        cl: new (node: HTMLElement) => Editor,
+        visible: boolean,
+        tag: string
+    }> = new Map();
+
     constructor(workingElement: HTMLElement) {
+
+        textTags.forEach((tag) => {
+            if (["p", "span"].includes(tag)){
+                this.register_editor(tag, TextEditor, false);
+            } else {
+                this.register_editor(tag, TextEditor);
+            }
+        })
+        this.register_editor("img", ImageEditor);
+        this.register_editor("ul", ListEditor);
+        this.register_editor("ol", ListEditor);
+
         const existingElements = workingElement.querySelectorAll('*');
         existingElements.forEach((el: any) => this.make_it_editor(el));
 
@@ -40,39 +57,21 @@ export class ObserverManager {
         });
     }
 
-    make_it_editor(node: HTMLElement) {
-        const tag = node.tagName.toLowerCase();
-        console.log(tag);
-
-        if (textTags.has(tag)) {
-            new TextEditor(node);
-            return;
-        }
-
-        switch (tag) {
-            case "img":
-                new ImageEditor(node);
-                break;
-
-            case "ul":
-                new ListEditor(node);
-                break;
-
-            case "ol":
-                new ListEditor(node);
-                break;
-
-            case "w13c-quote":
-                new QuoteEditor(node);
-                break;
-            
-            case "w13c-article":
-                new ArticleEditor(node);
-                break;
-
-            default:
-                break;
-        }
+    getItems(){
+        return this.editors.values().filter(v => v.visible).map(v => v.tag);
     }
 
+    register_editor<T extends Editor>(htmlTag: string, cl: new (node: HTMLElement) => T, visible = true): void {
+        this.editors.set(htmlTag, {
+            cl: cl,
+            visible: visible,
+            tag: htmlTag
+        });
+    }
+
+    make_it_editor(node: HTMLElement) {
+        const tag = node.tagName.toLowerCase();
+        const cl = this.editors.get(tag)?.cl;
+        if (cl) new cl(node);
+    }
 }

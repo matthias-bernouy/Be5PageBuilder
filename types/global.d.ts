@@ -13,17 +13,8 @@ declare module "*.html" {
 
 declare global {
 
-  interface MenuItem {
-    htmlTag: string;
-    title: string;
-    description: string;
-    icon: string;
-    shortcut: string;
-  }
-
   interface Document {
-      EditorManager: EditorManager,
-      menuItems: MenuItem[]
+      EditorManager: EditorManager
   }
 
 }

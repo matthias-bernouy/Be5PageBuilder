@@ -3,7 +3,7 @@ import { Component } from "src/system/base/Component";
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
-export class Quote extends Component {
+export class Button extends Component {
     constructor(){
         super({
             css,
@@ -11,3 +11,5 @@ export class Quote extends Component {
         })
     }
 }
+
+customElements.define("w13c-button", Button);

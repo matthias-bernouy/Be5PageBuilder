@@ -1,0 +1,80 @@
+:host {
+  display: inline-block;
+  --btn-bg: #ffffff;
+  --btn-color: #374151;
+  --btn-border: #d1d5db;
+  --btn-hover-bg: #f9fafb;
+  --btn-active-scale: 0.97;
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Variante Primaire */
+:host([variant="primary"]) {
+  --btn-bg: #000000;
+  --btn-color: #ffffff;
+  --btn-border: #000000;
+  --btn-hover-bg: #1f2937;
+}
+
+/* Variante Danger */
+:host([variant="danger"]) {
+  --btn-bg: #fee2e2;
+  --btn-color: #dc2626;
+  --btn-border: #fca5a5;
+  --btn-hover-bg: #fecaca;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.625rem 1.25rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid var(--btn-border);
+  background-color: var(--btn-bg);
+  color: var(--btn-color);
+  transition: 
+    background-color var(--transition), 
+    transform var(--transition), 
+    box-shadow var(--transition);
+  outline: none;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* Hover & Focus */
+.button:hover {
+  background-color: var(--btn-hover-bg);
+}
+
+.button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  border-color: var(--btn-color);
+}
+
+/* État Pressé */
+.button:active {
+  transform: scale(var(--btn-active-scale));
+}
+
+/* État Désactivé */
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+}
+
+/* Slot pour les icônes (ajustement auto) */
+::slotted(svg) {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}

@@ -1,4 +1,4 @@
-import { ActionBar } from "../Component/Actionbar/Actionbar";
+import { ActionBar, type MenuItem } from "../Component/Actionbar/Actionbar";
 import { Editor } from "../base/Editor";
 import type { PageMode } from "../base/EditorManager";
 
@@ -21,18 +21,6 @@ const cssStyle = `
 `
 
 export const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote"]);
-
-if ( !document.menuItems ){
-    document.menuItems = [];
-}
-
-document.menuItems.push({
-    htmlTag: "h1",
-    description: "Titre 1",
-    icon: "",
-    shortcut: "H1",
-    title: "Titre 1"
-})
 
 export type TextEditorOptions = {
     createBloc: boolean;
@@ -148,9 +136,11 @@ export class TextEditor extends Editor {
         }
 
         if (this.target.innerText === "/" && this.isBlocAvailable) {
-            const actionbar = ActionBar.open(document.menuItems);
+            const items = document.EditorManager.getObserver().getItems();
+            const itemsMap: MenuItem[] = Array.from(items.map((v) => ({id: v, title: v})));
+            const actionbar = ActionBar.open(itemsMap);
             actionbar.addEventListener("select", (e: any) => {
-                const new_node = this.createElement(e.detail.htmlTag);
+                const new_node = this.createElement(e.detail.id);
                 this.target.replaceWith(new_node);
             }, { once: true });
         }

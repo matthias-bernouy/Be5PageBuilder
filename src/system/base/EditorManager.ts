@@ -1,4 +1,3 @@
-import { LateralDialog } from "../Component/LateralDialog/LateralDialog";
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "./snippets/MediaCenter/MediaCenter";
@@ -23,6 +22,8 @@ export class EditorManager{
     private configuration: Configuration;
     private toolbar: FloatingToolbar;
 
+    private observer: ObserverManager;
+
     constructor(workingElement: HTMLElement){
         this.workingElement = workingElement;
         this.editorSystem   = document.getElementById("editor-system")!;
@@ -36,13 +37,17 @@ export class EditorManager{
         this.editorSystem.append(this.toolbar)
 
         new DragManager(workingElement);
-        new ObserverManager(workingElement);
+        this.observer = new ObserverManager(workingElement);
 
         document.EditorManager = this;
     }
 
     dashboard(){
         window.location.href = "/admin/dashboard"
+    }
+
+    getObserver(){
+        return this.observer;
     }
 
     getConfiguration(){
@@ -74,7 +79,7 @@ export class EditorManager{
         }))
     }
 
-    export(){
+    save(){
         this.switchMode("view-mode");
         const article = this.workingElement.innerHTML;
         const currentURL = new URL(window.location.href);
@@ -89,6 +94,7 @@ export class EditorManager{
         res.then((a) => {
             console.log(a)
         })
+        this.switchMode("editor-mode");
     }
 
     getMode(){
