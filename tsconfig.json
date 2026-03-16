@@ -27,7 +27,7 @@
 		"baseUrl": ".",
 
 		"paths": {
-			"@blocs/*": [ "src/system/blocs/*" ]
+			"@blocs/*": [ "src/core/blocs/*" ]
 		}
 
 		

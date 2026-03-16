@@ -1,6 +1,6 @@
 import { send_html, send_js, type Be5System } from "be5-system";
 import { basename, dirname, join } from "node:path";
-import type { Be5PageBuilder } from "src/plugin/Be5PageBuilder";
+import type { Be5PageBuilder } from "src/Be5PageBuilder";
 
 export async function registerUIFolder(baseUrl: string, absolutePath: string, system: Be5PageBuilder) {
     const glob = new Bun.Glob("**/*.html");
