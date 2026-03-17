@@ -15,16 +15,29 @@ export class Configuration extends Component {
         });
     }
 
-    handleSave(){
-        
+    connectedCallback() {
+        const form = this.shadowRoot?.querySelector("form");  
+        form?.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            document.EditorManager.save({
+                title: data.title || "",
+                description: data.description || "",
+                visible: formData.has("visible"),
+                identifier: data.identifier || "",
+                path: data.path || "",
+            })
+            const url = new URL(window.location.href);
+            url.searchParams.set('identifier', data.identifier || "");
+            window.history.pushState({}, '', url);
+        });
+
     }
 
-    show(){
-        const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog")! as LateralDialog
-        dialog.show()
+    show() {
+        const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog") as LateralDialog;
+        dialog?.show();
     }
-
-
 }
-
 customElements.define("w13c-page-information", Configuration)

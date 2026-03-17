@@ -10,6 +10,7 @@
       "devDependencies": {
         "@types/bun": "latest",
         "be5-database-interface": "link:be5-database-interface",
+        "be5-interfaces": "link:be5-interfaces",
         "be5-system": "link:be5-system",
         "bun-types": "^1.3.10",
       },
@@ -38,6 +39,8 @@
     "array-union": ["array-union@2.1.0", "", {}, "sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw=="],
 
     "be5-database-interface": ["be5-database-interface@link:be5-database-interface", {}],
+
+    "be5-interfaces": ["be5-interfaces@link:be5-interfaces", {}],
 
     "be5-system": ["be5-system@link:be5-system", {}],
 

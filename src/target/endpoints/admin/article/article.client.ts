@@ -12,16 +12,5 @@ document.addEventListener('click', (e: any) => {
     }
 });
 
-const btnSwitchMode = document.getElementById("switch-button")!;
 const workingElement = document.getElementById("editor")!;
 new EditorManager(workingElement);
-
-document.addEventListener("switch-mode", (e: any) => {
-    const mode: PageMode = e.detail;
-    if ( mode === "editor-mode"){
-        btnSwitchMode.innerText = "Vue client";
-    } else {
-        btnSwitchMode.innerText = "Vue editeur";
-    }
-})
-

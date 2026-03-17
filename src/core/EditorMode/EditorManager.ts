@@ -80,24 +80,26 @@ export class EditorManager{
     }
 
     save(props: {
-        basePath: string,
+        path: string,
         title: string;
         description: string;
+        visible: boolean;
+        identifier: string;
     }){
         this.switchMode("view-mode");
         const article = this.workingElement.innerHTML;
-        const currentURL = new URL(window.location.href);
 
         const target = new URL("/api/page", window.location.origin);
 
         const body = {
-            article: article,
-            basePath: props.basePath,
+            content: article,
+            path: props.path,
             title: props.title,
             description: props.description,
+            visible: props.description,
         }
 
-        target.searchParams.set("identifier", currentURL.searchParams.get("identifier") || "");
+        target.searchParams.set("identifier", props.identifier);
         const res = fetch(target, {
             method: "POST",
             body: JSON.stringify(body)

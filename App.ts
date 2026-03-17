@@ -1,22 +1,30 @@
-import { MongoConnector } from "be5-database-interface";
-import { BunRunner } from "be5-system"
-import { Be5PageBuilder } from "src/Be5PageBuilder";
+import { Be5_Authentication, Be5_MongoDB, Be5_Runner } from "be5-interfaces"
 
-console.log("Starting app...")
+const MongoDatabaseCore = new Be5_MongoDB();
+const BunRunnerCore = new Be5_Runner();
+const AuthenticationCore = new Be5_Authentication(MongoDatabaseCore, BunRunnerCore);
 
-const database = new MongoConnector({
+await MongoDatabaseCore.init({
     dbName: 'be5_database',
     clientUrl: 'mongodb://localhost:27017',
 })
 
+BunRunnerCore.start();
 
-const plugin = new Be5PageBuilder(BunRunner, {
-    adminRootPath: ""
-});
+// console.log("Starting app...")
+
+// const database = new MongoConnector({
+//     dbName: 'be5_database',
+//     clientUrl: 'mongodb://localhost:27017',
+// })
+
+// const plugin = new Be5PageBuilder(BunRunner, {
+//     adminRootPath: ""
+// });
 
 
-await database.init([
-    plugin.getDatabase()
-]);
+// await database.init([
+//     plugin.getDatabase()
+// ]);
 
-plugin.start();
+// plugin.start();

@@ -3,6 +3,7 @@ import { registerEndpoints } from "./target/endpoints/registerEndpoints";
 import { Database } from "be5-database-interface";
 import { PageModel } from "src/target/data/model/PageModel";
 import { BlocModel } from "src/target/data/model/BlocModel";
+import { SystemModel } from "./target/data/model/SystemModel";
 
 type Configuration = {
     adminRootPath: string;
@@ -31,7 +32,8 @@ export class Be5PageBuilder extends Be5System{
 
     private database = new Database([
         PageModel,
-        BlocModel
+        BlocModel,
+        SystemModel
     ])
 
     private mediaProviders: MediaProvider[];

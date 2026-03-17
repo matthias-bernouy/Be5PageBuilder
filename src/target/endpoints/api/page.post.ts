@@ -1,28 +1,38 @@
 import { PageModel, type IPage } from "src/target/data/model/PageModel";
 import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import contains from "src/Be5System/contains";
 
 export default async function updatePage(req: Request, system: Be5PageBuilder) {
 
     const url = new URL(req.url);
     const identifier = url.searchParams.get("identifier") || "";
-    const title = url.searchParams.get("title") || "Titre par défaut";
-    const path = url.searchParams.get("path") || "/article";
+    
+    const body = await req.json() as IPage;
+    console.log(body)
+
+    try {
+        contains(body, ["content", "description", 'path', "visible", "title"]);
+    } catch (e: any) {
+        return new Response(e, {
+            status: 400
+        })
+    }
 
     const repo = system.getDatabase().getRepository(PageModel);
 
     const newPage: IPage = {
-        path: path,
+        path: body.path,
         identifier: identifier,
-        title: title,
-        content: await req.text()
+        title: body.title,
+        content: body.content,
+        visible: body.visible,
+        description: body.description
     };
-
 
     await repo.upsert(newPage, {
         onConflictFields: ['identifier'],
         onConflictAction: 'merge'
     });
 
-
-    return new Response("");
+    return new Response("Page updated");
 }

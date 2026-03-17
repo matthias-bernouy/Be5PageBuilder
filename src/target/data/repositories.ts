@@ -10,3 +10,4 @@ export function getPageRepository(system: Be5PageBuilder){
 export function getBlocRepository(system: Be5PageBuilder){
     return system.getDatabase().getRepository(BlocModel)
 }
+
