@@ -3,6 +3,8 @@ import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "./Component/MediaCenter/MediaCenter";
 import { Configuration } from "./Component/Configuration/Configuration";
 import { FloatingToolbar } from "./Component/FloatingToolbar/FloatingToolbar";
+import { EditorToolbar } from "./Component/EditorToolbar/EditorToolbar";
+import { ElementPanelConfig } from "./Component/ConfigPanel/ConfigPanel";
 
 export type PageModeEnum = [
     "editor-mode",
@@ -21,6 +23,7 @@ export class EditorManager{
     private mediaCenter: MediaCenter;
     private configuration: Configuration;
     private toolbar: FloatingToolbar;
+    private elementPanelConfig: ElementPanelConfig;
 
     private observer: ObserverManager;
 
@@ -29,12 +32,16 @@ export class EditorManager{
         this.editorSystem   = document.getElementById("editor-system")!;
 
         this.mediaCenter     = new MediaCenter();
-        this.configuration = new Configuration();
+        this.configuration   = new Configuration();
         this.toolbar         = new FloatingToolbar();
+        this.elementPanelConfig = new ElementPanelConfig();
+
 
         this.editorSystem.append(this.mediaCenter)
         this.editorSystem.append(this.configuration)
         this.editorSystem.append(this.toolbar)
+        this.editorSystem.append(new EditorToolbar())
+        this.editorSystem.append(this.elementPanelConfig)
 
         new DragManager(workingElement);
         this.observer = new ObserverManager(workingElement);
@@ -43,7 +50,7 @@ export class EditorManager{
     }
 
     dashboard(){
-        window.location.href = "/admin/dashboard"
+        window.location.href = "./dashboard"
     }
 
     getObserver(){

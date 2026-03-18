@@ -8,7 +8,7 @@ export default async function Server(req: Request, system: Be5PageBuilder){
     const html = await Bun.file(join(__dirname, "./index.html")).text();
     const { document } = parseHTML(html);
 
-    const repo = system.getDatabase().getRepository(PageModel);
+    const repo = system.db.getRepository(PageModel);
     const pageList = await repo.findAll();
 
     const tableBody = document.querySelector("tbody")!;

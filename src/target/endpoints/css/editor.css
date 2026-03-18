@@ -1,3 +1,8 @@
 .dragging {
     opacity: 0.5;
 }
+
+.editor-block:hover {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}

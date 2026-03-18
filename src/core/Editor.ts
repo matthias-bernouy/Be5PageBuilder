@@ -45,7 +45,12 @@ export abstract class Editor {
         this.target.draggable = true;
         this.target.classList.add("editor-block")
         this.target.setAttribute("data-is-editor", "true")
+
         this.init();
+    }
+
+    public openConfigPanel(){
+
     }
 
     abstract init(): void;

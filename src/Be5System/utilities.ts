@@ -35,18 +35,18 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 
         if (serverFile){
             const module = await import(serverFile);
-            const serverHandler = module.default as (req: Request, system: Be5PageBuilder) => string;
-            system.registerEndpoint(urlPath, "GET", async (req: Request) => {
+            const serverHandler = module.default as (req: Request, system: Be5PageBuilder) => Promise<Response>;
+            system.runner.addEndpoint("GET", urlPath, async (req: Request) => {
                 return await serverHandler(req, system);
             });
         } else {
-            system.registerEndpoint(urlPath, "GET", () => {
+            system.runner.addEndpoint("GET", urlPath, () => {
                 return new Response(Bun.file(htmlPath));
             });
         }
 
         if (clientFile) {
-            system.registerEndpoint(urlPath + ".js", "GET", async () => {
+            system.runner.addEndpoint("GET", urlPath + ".js", async () => {
                 const result = await Bun.build({ entrypoints: [clientFile] });
                 return send_js(await result.outputs[0]!.text());
             });
@@ -55,13 +55,13 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 }
 
 
-export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: Be5System) {
+export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: Be5PageBuilder) {
     const glob = new Bun.Glob("**/*.css");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        system.registerEndpoint(endpointUrl, "GET", () => {
+        system.runner.addEndpoint("GET", endpointUrl, () => {
             return new Response(Bun.file(fullPath), {
                 headers: { "Content-Type": "text/css" }
             });
@@ -69,13 +69,13 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     }
 }
 
-export async function registerJSFolder(url: string, absoluteFolderPath: string, system: Be5System) {
+export async function registerJSFolder(url: string, absoluteFolderPath: string, system: Be5PageBuilder) {
     const glob = new Bun.Glob("**/*.js");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        system.registerEndpoint(endpointUrl, "GET", () => {
+        system.runner.addEndpoint("GET", endpointUrl, () => {
             return new Response(Bun.file(fullPath), {
                 headers: { "Content-Type": "text/javascript" }
             });
@@ -83,7 +83,7 @@ export async function registerJSFolder(url: string, absoluteFolderPath: string, 
     }
 }
 
-export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: Be5System) {
+export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: Be5PageBuilder) {
     const glob = new Bun.Glob("**/*.ts");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -99,7 +99,7 @@ export async function registerAPIFolder(url: string, absoluteFolderPath: string,
         const handler = module.default;
 
         if (typeof handler === 'function') {
-            system.registerEndpoint(endpointUrl, method as any, (req) => {
+            system.runner.addEndpoint(method as any, endpointUrl, (req) => {
                 return handler(req, system)
             });
         } else {

@@ -4,6 +4,7 @@ import { Database } from "be5-database-interface";
 import { PageModel } from "src/target/data/model/PageModel";
 import { BlocModel } from "src/target/data/model/BlocModel";
 import { SystemModel } from "./target/data/model/SystemModel";
+import type { IBe5_Authentication, IBe5_Database, IBe5_DatabaseBuilder, IBe5_Runner } from "be5-interfaces";
 
 type Configuration = {
     adminRootPath: string;
@@ -26,35 +27,29 @@ type MediaDefinition = {
     src: string;
 }
 
-export class Be5PageBuilder extends Be5System{
+export class Be5PageBuilder{
 
     private configuration: Configuration;
+    private database?: IBe5_Database;
+    public runner: IBe5_Runner;
+    public auth: IBe5_Authentication;
 
-    private database = new Database([
-        PageModel,
-        BlocModel,
-        SystemModel
-    ])
-
-    private mediaProviders: MediaProvider[];
-
-    constructor(runner: RunnerConstructor, configuration: Configuration){
-        super(runner);
-        this.mediaProviders = [];
+    constructor(runner: IBe5_Runner, database: IBe5_DatabaseBuilder, auth: IBe5_Authentication, configuration: Configuration){
         this.configuration = configuration;
-        registerEndpoints(this);
+        this.auth = auth;
+        this.runner = runner;
+        database.addSchema(PageModel);
+        database.addSchema(BlocModel);
+        database.addSchema(SystemModel);
+        database.afterInit((db) => {
+            this.database = db;
+            registerEndpoints(this);
+        })
     }
 
-    getDatabase(){
+    get db(){
+        if ( !this.database ) throw new Error("Database isn't Initialized");
         return this.database;
-    }
-
-    getMediaProviders(){
-        return this.mediaProviders;
-    }
-
-    addMediaProvider(props: MediaProvider){
-        this.mediaProviders.push(props);
     }
 
 }

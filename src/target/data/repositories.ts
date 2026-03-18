@@ -4,10 +4,10 @@ import { BlocModel } from "./model/BlocModel";
 
 
 export function getPageRepository(system: Be5PageBuilder){
-    return system.getDatabase().getRepository(PageModel)
+    return system.db.getRepository(PageModel)
 }
 
 export function getBlocRepository(system: Be5PageBuilder){
-    return system.getDatabase().getRepository(BlocModel)
+    return system.db.getRepository(BlocModel)
 }
 

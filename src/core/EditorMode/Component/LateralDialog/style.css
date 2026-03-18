@@ -3,6 +3,11 @@
     --drawer-bg: #ffffff;
     --transition-speed: 0.4s;
     --transition-curve: cubic-bezier(0.4, 0, 0.2, 1);
+
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 dialog {

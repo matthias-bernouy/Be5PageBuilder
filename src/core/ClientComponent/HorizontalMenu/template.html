@@ -1,0 +1,23 @@
+<header class="navbar">
+  <div class="navbar-brand">
+    <slot name="logo">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+      </svg>
+    </slot>
+    
+    <slot name="title">
+      <h1 class="title">Titre par défaut</h1>
+    </slot>
+  </div>
+
+  <nav class="navbar-nav">
+    <ul class="nav-list">
+      <slot></slot>
+    </ul>
+  </nav>
+
+  <div class="navbar-extra">
+    <slot name="extra"></slot>
+  </div>
+</header>

@@ -18,7 +18,7 @@ export default async function updatePage(req: Request, system: Be5PageBuilder) {
         })
     }
 
-    const repo = system.getDatabase().getRepository(PageModel);
+    const repo = system.db.getRepository(PageModel);
 
     const newPage: IPage = {
         path: body.path,

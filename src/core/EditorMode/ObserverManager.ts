@@ -6,6 +6,8 @@ import type { Editor } from "../Editor";
 
 export class ObserverManager {
 
+    private workingElement: HTMLElement;
+
     private editors: Map<string, {
         cl: new (node: HTMLElement) => Editor,
         visible: boolean,
@@ -14,6 +16,7 @@ export class ObserverManager {
 
     constructor(workingElement: HTMLElement) {
 
+        this.workingElement = workingElement;
         textTags.forEach((tag) => {
             if (["p", "span"].includes(tag)){
                 this.register_editor(tag, TextEditor, false);
@@ -67,6 +70,8 @@ export class ObserverManager {
             visible: visible,
             tag: htmlTag
         });
+        const existingElements = this.workingElement.querySelectorAll(htmlTag);
+        existingElements.forEach((el: any) => this.make_it_editor(el));
     }
 
     make_it_editor(node: HTMLElement) {

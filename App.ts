@@ -1,11 +1,21 @@
 import { Be5_Authentication, Be5_MongoDB, Be5_Runner } from "be5-interfaces"
+import { Be5PageBuilder } from "src/Be5PageBuilder";
 
 const MongoDatabaseCore = new Be5_MongoDB();
 const BunRunnerCore = new Be5_Runner();
-const AuthenticationCore = new Be5_Authentication(MongoDatabaseCore, BunRunnerCore);
+const AuthenticationCore = new Be5_Authentication(MongoDatabaseCore, BunRunnerCore, {
+    defaultRedirection: "/admin/dashboard",
+    basePath: "/pppp"
+});
+
+AuthenticationCore.registerDisabled = true;
+
+const PageBuilderCore = new Be5PageBuilder(BunRunnerCore, MongoDatabaseCore, AuthenticationCore, {
+    "adminRootPath": ""
+})
 
 await MongoDatabaseCore.init({
-    dbName: 'be5_database',
+    dbName: 'new_db',
     clientUrl: 'mongodb://localhost:27017',
 })
 

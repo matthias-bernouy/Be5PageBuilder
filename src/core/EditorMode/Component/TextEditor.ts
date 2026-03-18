@@ -35,6 +35,7 @@ export class TextEditor extends Editor {
     private onPaste = (e: ClipboardEvent) => this.handlePaste(e);
     private isBlocAvailable: boolean = false;
     private isTextEditable: boolean = false;
+    private isInitializing = false; // Verrou pour éviter l'auto-déclenchement
 
     constructor(target: HTMLElement) {
         super(target, cssStyle);
@@ -47,7 +48,10 @@ export class TextEditor extends Editor {
             for (const mutation of mutations) {
                 if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('data-')) {
                     if ( document.EditorManager.getMode() === "editor-mode" ){
-                        this.init();
+                        if ( !this.isInitializing ){
+                            this.isInitializing = true;
+                            this.init();
+                        }
                     }
                 }
             }
@@ -61,6 +65,7 @@ export class TextEditor extends Editor {
                     attributeFilter: ["data-editor-bloc-managment", "data-editor-text-editable"]
                 })
             } else {
+                this.isInitializing = false;
                 observer.disconnect();
             }
         })
@@ -111,6 +116,7 @@ export class TextEditor extends Editor {
         if (e.key === "Enter") {
             if (e.shiftKey) return;
             e.preventDefault();
+            e.stopImmediatePropagation()
 
             const nextEl = this.createElement("p")
             this.target.after(nextEl)
@@ -147,6 +153,7 @@ export class TextEditor extends Editor {
     }
 
     init() {
+        console.log("init")
         this.target.dataset.editorTextEditable  = "true";
         if (!this.isManaged()) {
             this.target.dataset.editorBlocManagment = "true";
