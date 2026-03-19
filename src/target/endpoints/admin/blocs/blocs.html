@@ -24,7 +24,6 @@
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
-            padding: 40px;
             display: flex;
             justify-content: center;
         }
@@ -126,9 +125,33 @@
         }
     </style>
 
+    <script src="./script.js"></script>
+
 </head>
 
 <body>
+
+    <w13c-fixed-admin-layout>
+        <w13c-action-group data-align="right">
+            <button data-modal="modal-new-page" class="btn-primary">+ Créer une page</button>
+            <button data-modal="modal-new-page" class="btn-primary">+ Créer une page</button>
+            <button data-modal="modal-new-page" class="btn-primary">+ Créer une page</button>
+        </w13c-action-group>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 40px;"><input type="checkbox"></th>
+                        <th>Nom de l'article</th>
+                        <th>Identifier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </w13c-fixed-admin-layout>
 
     <dialog id="modal-new-page">
         <div class="modal-content">
@@ -153,38 +176,6 @@
         </div>
     </dialog>
 
-    <div class="container">
-        <div class="header-actions">
-            <button data-modal="modal-new-page" class="btn-primary">+ Créer une page</button>
-        </div>
-
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 40px;"><input type="checkbox"></th>
-                        <th>Nom de l'article</th>
-                        <th>Identifier</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('click', (e) => {
-            const btn = e.target.closest('[data-modal]');
-            if (btn) {
-                const modalId = btn.getAttribute('data-modal');
-                const modal = document.getElementById(modalId);
-                if (modal) {
-                    modal.showModal();
-                }
-            }
-        });
-    </script>
 </body>
 
 </html>

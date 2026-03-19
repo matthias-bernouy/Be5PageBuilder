@@ -16,7 +16,6 @@ export class ElementPanelConfig extends Component {
     }
 
     connectedCallback() {
-        console.log("Connected")
         //this.show();
     }
 

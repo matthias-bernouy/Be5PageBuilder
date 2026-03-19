@@ -1,13 +1,19 @@
-<div class="action-bar-overlay">
-    <div class="action-bar-container">
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" placeholder="Rechercher une action..." id="search-input" autofocus>
-        </div>
-        <div id="menu-list" class="menu-list">
-        </div>
-        <div class="footer">
-            <span>Utilisez <kbd>↑</kbd> <kbd>↓</kbd> pour naviguer et <kbd>Entrée</kbd> pour sélectionner</span>
+<dialog id="action-bar-dialog" class="action-bar-modal">
+    <div class="container">
+        <header class="header">
+            <h2>Bibliothèque de composants</h2>
+            <form method="dialog">
+                <slot name="close-button">
+                    <button class="default-close">×</button>
+                </slot>
+            </form>
+        </header>
+        <div class="content">
+            <nav class="groups-sidebar">
+                <slot name="group"></slot>
+            </nav>
+            <main class="blocs-grid">
+            </main>
         </div>
     </div>
-</div>
+</dialog>

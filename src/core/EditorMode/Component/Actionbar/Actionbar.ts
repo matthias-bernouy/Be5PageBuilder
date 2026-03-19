@@ -1,109 +1,106 @@
-
-
 import { Component, type ComponentMetadata } from 'src/core/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
-export const QuoteViewMetadata: ComponentMetadata = {
+const DEFAULT_COMPONENT_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    <rect x="6" y="6" width="12" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/>
+    <rect x="6" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="13" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+</svg>
+`;
+
+export const ActionBarMetadata: ComponentMetadata = {
     css: css,
     template: html as unknown as string
 }
 
-export interface MenuItem {
-    id: string;
-    title: string;
-}
-
 export class ActionBar extends Component {
-
-    private static menu: ActionBar | null;
-    private selectedIndex: number = 0;
-    private _items: MenuItem[] = [];
-    private boundHandleKeyDown = this.handleKeyDown.bind(this);
+    private static instance: ActionBar | null = null;
+    private activeGroup: string | null = null;
+    private dialog: HTMLDialogElement | null = null;
 
     constructor() {
-        super(QuoteViewMetadata);
-    }
-
-    set items(value: MenuItem[]) {
-        this._items = value;
-        this.selectedIndex = 0; // On reset la sélection quand la liste change
-        this.renderItems();
-    }
-
-    get items(): MenuItem[] {
-        return this._items;
+        super(ActionBarMetadata);
     }
 
     connectedCallback() {
-        window.addEventListener('keydown', this.boundHandleKeyDown);
-        requestAnimationFrame(() => {
-            this.shadowRoot?.querySelector('input')?.focus();
+        this.dialog = this.shadowRoot?.querySelector('#action-bar-dialog') as HTMLDialogElement;
+        
+        // Gestion de la fermeture native (touche Escape ou bouton close)
+        this.dialog.addEventListener('close', () => this.remove());
+        
+        // Fermeture si on clique sur le backdrop (le fond gris)
+        this.dialog.addEventListener('click', (e) => {
+            if (e.target === this.dialog) this.close();
         });
+
+
+        const observer = document.EditorManager.getObserver();
+        const groups = Array.from(observer.getGroups());
+        if (groups.length > 0) this.activeGroup = groups[0]!;
+
+        this.renderExternalElements();
+        this.dialog.showModal(); // Ouvre en mode modal natif
     }
 
-    disconnectedCallback() {
-        window.removeEventListener('keydown', this.boundHandleKeyDown);
-    }
+    private renderExternalElements() {
+        const observer = document.EditorManager.getObserver();
+        const groups: string[] = Array.from(observer.getGroups());
+        const gridBlocs = this.shadowRoot!.querySelector("main")!;
 
-    private renderItems() {
-        const list = this.shadowRoot?.getElementById('menu-list');
-        if (!list) return;
+        gridBlocs.innerHTML = '';
+        this.innerHTML = '';
 
-        list.innerHTML = this.items.map((item, index) => `
-            <div class="item ${index === this.selectedIndex ? 'selected' : ''}" data-id="${item.id}">
-                <div class="icon"></div>
-                <div class="info">
-                    <span class="title">${item.title}</span>
-                    <span class="desc"></span>
-                </div>
-                <kbd></kbd>
-            </div>
-        `).join('');
-    }
+        groups.forEach(groupName => {
+            const btn = document.createElement('button');
+            btn.slot = 'group';
+            btn.className = `group-item ${groupName === this.activeGroup ? 'active' : ''}`;
+            btn.textContent = groupName;
+            btn.onclick = () => {
+                this.activeGroup = groupName;
+                this.renderExternalElements();
+            };
+            this.appendChild(btn);
+        });
 
-    private handleKeyDown(e: KeyboardEvent) {
-        switch (e.key) {
-            case 'ArrowDown':
-                e.preventDefault();
-                this.selectedIndex = (this.selectedIndex + 1) % this.items.length;
-                this.renderItems();
-                break;
-            case 'ArrowUp':
-                e.preventDefault();
-                this.selectedIndex = (this.selectedIndex - 1 + this.items.length) % this.items.length;
-                this.renderItems();
-                break;
-            case 'Enter':
-                this.selectItem();
-                break;
-            case 'Escape':
-                this.remove();
-                break;
+        // Rendu des blocs
+        if (this.activeGroup) {
+            const items = observer.getItemsByGroup(this.activeGroup);
+            items.forEach((item: any) => {
+                const card = document.createElement('button');
+                card.slot = 'bloc';
+                card.className = 'card';
+                card.innerHTML = `
+                    <span class="icon">${item.icon || DEFAULT_COMPONENT_SVG}</span>
+                    <span class="title">${item.tag}</span>
+                `;
+                card.onclick = () => {
+                    this.dispatchEvent(new CustomEvent('insert', {
+                        detail: { id: item.tag }, 
+                        bubbles: true, 
+                        composed: true 
+                    }));
+                    this.close();
+                };
+                gridBlocs.appendChild(card);
+            });
         }
     }
 
-    private selectItem() {
-        const item = this.items[this.selectedIndex];
-        this.dispatchEvent(new CustomEvent('select', {
-            detail: item,
-            bubbles: true,
-            composed: true
-        }));
-        this.remove();
+    public close() {
+        this.dialog?.close();
+        ActionBar.instance = null;
     }
 
-    static open(items: MenuItem[]) {
-        ActionBar.close();
+    static open() {
+        if (ActionBar.instance) return ActionBar.instance;
         const menu = new ActionBar();
-        menu.items = items;
         document.body.appendChild(menu);
+        ActionBar.instance = menu;
         return menu;
-    }
-
-    static close() {
-        ActionBar.menu?.remove();
     }
 }
 
-customElements.define("w13c-action-bar", ActionBar)
+customElements.define("w13c-action-bar", ActionBar);

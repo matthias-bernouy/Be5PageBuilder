@@ -8,7 +8,6 @@ export default async function updatePage(req: Request, system: Be5PageBuilder) {
     const identifier = url.searchParams.get("identifier") || "";
     
     const body = await req.json() as IPage;
-    console.log(body)
 
     try {
         contains(body, ["content", "description", 'path', "visible", "title"]);

@@ -14,11 +14,7 @@ export default async function ArticleServerAdmin(req: Request, system: Be5PageBu
 
     const blocs = await getEditorBlocsJavascript(system);
 
-    let scripts = [];
-
-    let script = document.createElement("script");
-    script.src = "/admin/editor"
-    scripts.push(script);
+    let scripts: HTMLElement[] = [];
 
     blocs.forEach((bloc) => {
         let script = document.createElement("script");

@@ -1,0 +1,17 @@
+:host {
+    display: block;
+    margin: 1rem 0;
+}
+
+.action-group-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Espacement entre les boutons */
+    align-items: center;
+    justify-content: flex-start; /* Aligné à gauche par défaut */
+}
+
+/* Optionnel : si tu veux une variante pour aligner à droite */
+:host([data-align="right"]) .action-group-container {
+    justify-content: flex-end;
+}

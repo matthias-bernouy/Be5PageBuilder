@@ -14,7 +14,6 @@ export const createAuthGuard = (system: Be5PageBuilder): Middleware => {
         if ( !url.pathname.startsWith("/admin") ) return await next();
         try {
             const subject = await system.auth.guardAuthenticated(req);
-            console.log(subject)
             if (subject.role !== "admin") throw new Error("Not connected")
             return await next();
         } catch (error) {

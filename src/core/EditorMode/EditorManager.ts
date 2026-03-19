@@ -6,6 +6,8 @@ import { FloatingToolbar } from "./Component/FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "./Component/EditorToolbar/EditorToolbar";
 import { ElementPanelConfig } from "./Component/ConfigPanel/ConfigPanel";
 
+
+
 export type PageModeEnum = [
     "editor-mode",
     "view-mode"

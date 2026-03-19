@@ -67,7 +67,6 @@ export class ListEditor extends Editor {
 
     handleInput(e: Event) {
         const item = e.target as HTMLElement;
-        console.log(item.innerHTML);
         if (item.innerHTML === "<br>") {
             item.innerHTML = "";
         }

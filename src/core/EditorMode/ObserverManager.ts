@@ -11,8 +11,11 @@ export class ObserverManager {
     private editors: Map<string, {
         cl: new (node: HTMLElement) => Editor,
         visible: boolean,
-        tag: string
+        tag: string,
+        group?: string
     }> = new Map();
+
+    private groups: Set<string> = new Set(["default"])
 
     constructor(workingElement: HTMLElement) {
 
@@ -26,7 +29,7 @@ export class ObserverManager {
         })
         this.register_editor("img", ImageEditor);
         this.register_editor("ul", ListEditor);
-        this.register_editor("ol", ListEditor);
+        this.register_editor("ol", ListEditor, true, "test");
 
         const existingElements = workingElement.querySelectorAll('*');
         existingElements.forEach((el: any) => this.make_it_editor(el));
@@ -60,16 +63,26 @@ export class ObserverManager {
         });
     }
 
+    getGroups(){
+        return this.groups;
+    }
+
+    getItemsByGroup(group: string){
+        return this.editors.values().filter(v => v.visible && v.group === group);
+    }
+
     getItems(){
         return this.editors.values().filter(v => v.visible).map(v => v.tag);
     }
 
-    register_editor<T extends Editor>(htmlTag: string, cl: new (node: HTMLElement) => T, visible = true): void {
+    register_editor<T extends Editor>(htmlTag: string, cl: new (node: HTMLElement) => T, visible = true, group?: string): void {
         this.editors.set(htmlTag, {
             cl: cl,
             visible: visible,
-            tag: htmlTag
+            tag: htmlTag,
+            group: group || "default"
         });
+        this.groups.add(group || "default")
         const existingElements = this.workingElement.querySelectorAll(htmlTag);
         existingElements.forEach((el: any) => this.make_it_editor(el));
     }

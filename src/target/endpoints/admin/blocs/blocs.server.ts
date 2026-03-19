@@ -3,10 +3,10 @@ import { parseHTML } from 'linkedom';
 import { join } from "node:path"
 import { PageModel } from 'src/target/data/model/PageModel';
 import type { Be5PageBuilder } from 'src/Be5PageBuilder';
+import template from "./blocs.html";
 
 export default async function Server(req: Request, system: Be5PageBuilder){
-    const html = await Bun.file(join(__dirname, "./index.html")).text();
-    const { document } = parseHTML(html);
+    const { document } = parseHTML(await Bun.file(template.index).text());
 
     const repo = system.db.getRepository(PageModel);
     const pageList = await repo.findAll();

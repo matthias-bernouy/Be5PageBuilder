@@ -140,12 +140,9 @@ export class TextEditor extends Editor {
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
-
         if (this.target.innerText === "/" && this.isBlocAvailable) {
-            const items = document.EditorManager.getObserver().getItems();
-            const itemsMap: MenuItem[] = Array.from(items.map((v) => ({id: v, title: v})));
-            const actionbar = ActionBar.open(itemsMap);
-            actionbar.addEventListener("select", (e: any) => {
+            const actionbar = ActionBar.open();
+            actionbar.addEventListener("insert", (e: any) => {
                 const new_node = this.createElement(e.detail.id);
                 this.target.replaceWith(new_node);
             }, { once: true });
@@ -153,7 +150,6 @@ export class TextEditor extends Editor {
     }
 
     init() {
-        console.log("init")
         this.target.dataset.editorTextEditable  = "true";
         if (!this.isManaged()) {
             this.target.dataset.editorBlocManagment = "true";
