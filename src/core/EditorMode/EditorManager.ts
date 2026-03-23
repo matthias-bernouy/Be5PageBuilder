@@ -52,7 +52,7 @@ export class EditorManager{
     }
 
     dashboard(){
-        window.location.href = "./dashboard"
+        window.location.href = "./pages"
     }
 
     getObserver(){
@@ -98,7 +98,9 @@ export class EditorManager{
         this.switchMode("view-mode");
         const article = this.workingElement.innerHTML;
 
-        const target = new URL("/api/page", window.location.origin);
+        
+        const target = new URL("../api/page", window.location.href);
+
 
         const body = {
             content: article,

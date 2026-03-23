@@ -1,51 +1,67 @@
 :host {
-    --sidebar-width: 250px;
-    --sidebar-bg: #f8f9fa;
-    --sidebar-border: #e0e0e0;
-    --link-hover: #e9ecef;
-
-    display: block;
-    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 260px;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid var(--secondary-muted);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .sidebar {
-    width: var(--sidebar-width);
-    height: 100vh;
-    background-color: var(--sidebar-bg);
-    border-right: 1px solid var(--sidebar-border);
     display: flex;
     flex-direction: column;
-    padding: 1rem;
-    box-sizing: border-box;
-    transition: width 0.3s ease;
+    height: 100%;
 }
 
 .sidebar-header {
-    margin-bottom: 2rem;
-    font-weight: bold;
+    padding: 2.5rem 1.5rem 1.5rem 1.5rem;
+}
+
+::slotted([slot="header"]) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--secondary-contrasted);
+    letter-spacing: -0.04em;
+}
+
+::slotted([slot="header"]) span {
+    color: var(--primary-base);
+}
+
+::slotted([slot="header"])::after {
+    content: "";
+    width: 4px;
+    height: 4px;
+    margin-top: 8px;
+    background-color: var(--primary-base);
+    border-radius: 50%;
 }
 
 .sidebar-nav {
-    flex: 1; /* Prend tout l'espace restant */
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 4px;
+    padding: 0 0.75rem;
 }
 
-/* Style pour les éléments passés dans le slot par défaut */
-::slotted(a), ::slotted(button) {
-    display: block;
-    padding: 0.75rem 1rem;
-    text-decoration: none;
-    color: #333;
-    border-radius: 4px;
-    transition: background 0.2s;
+.sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0.75rem;
+    margin-top: auto;
+    border-top: 1px solid var(--secondary-muted);
 }
 
-::slotted(a:hover) {
-    background-color: var(--link-hover);
-}
-
-.sidebar.collapsed {
-    width: 60px;
+/* Styles pour les items à l'intérieur du nav ou footer */
+::slotted(w13c-lateral-menu-item) {
+    --item-color: var(--secondary-base);
+    --item-color-active: var(--primary-base);
+    --item-bg-hover: var(--primary-muted);
 }

@@ -11,11 +11,12 @@ const AuthenticationCore = new Be5_Authentication(MongoDatabaseCore, BunRunnerCo
 AuthenticationCore.registerDisabled = true;
 
 const PageBuilderCore = new Be5PageBuilder(BunRunnerCore, MongoDatabaseCore, AuthenticationCore, {
-    "adminRootPath": ""
+    "adminPathPrefix": "",
+    "clientPathPrefix": ""
 })
 
 await MongoDatabaseCore.init({
-    dbName: 'new_db',
+    dbName: 'azerzaerazer',
     clientUrl: 'mongodb://localhost:27017',
 })
 

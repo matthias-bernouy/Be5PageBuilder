@@ -1,4 +1,5 @@
 import { Component } from "src/core/Component";
+import "./LateralMenuItem/LateralMenuItem"
 
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };

@@ -30,14 +30,16 @@ export const createAuthGuard = (system: Be5PageBuilder): Middleware => {
 
 export function registerEndpoints(system: Be5PageBuilder){
 
-    system.runner.use(createAuthGuard(system))
+    system.runner.group(system.config.adminPathPrefix || "/page-builder", (r) => {
 
-    registerUIFolder("/admin", res("admin"), system);
+        registerUIFolder ("/admin", res("admin-ui"), system, r);
+        registerAPIFolder("/api", res("admin-api"), system, r);
+        registerCSSFolder("/css", res("admin-css"), system, r);
 
-    registerUIFolder("/", res("client"), system);
+    }, [createAuthGuard(system)]);
 
-    registerCSSFolder("/assets", res("css"), system);
-    registerAPIFolder("/api", res("api"), system);
-    
+
+    registerUIFolder(system.config.clientPathPrefix || "/", res("public"), system, system.runner);
+
 }
 

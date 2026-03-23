@@ -9,49 +9,58 @@ export class Button extends Component {
     private _btn: HTMLButtonElement | null = null;
 
     constructor() {
-        super({
-            css,
-            template: template as unknown as string
-        });
+        super({ css, template: template as unknown as string });
         this._internals = this.attachInternals();
+    }
+
+    // On observe les changements pour mettre à jour le bouton interne
+    static get observedAttributes() {
+        return ['type', 'disabled', 'variant', 'color'];
     }
 
     connectedCallback() {
         this._btn = this.shadowRoot?.querySelector('button') || null;
+        this._upgradeProperty('disabled');
+        
+        // Valeurs par défaut si non définies
+        if (!this.hasAttribute('type')) this.setAttribute('type', 'button');
+        if (!this.hasAttribute('variant')) this.setAttribute('variant', 'filled');
 
-        if ( !this.getAttribute('type') ){
-            this.setAttribute("type", "submit")
+        this.addEventListener('click', this._handleClick);
+    }
+
+    private _handleClick = (e: Event) => {
+        if (this.hasAttribute('disabled')) {
+            e.stopImmediatePropagation();
+            return;
         }
 
-        if (this._btn) {
-            this._btn.type = (this.getAttribute('type') as any) || 'submit';
-            if (this.hasAttribute('disabled')) this._btn.disabled = false;
+        const form = this._internals.form;
+        if (!form) return;
+
+        const type = this.getAttribute('type');
+        if (type === 'submit') form.requestSubmit();
+        if (type === 'reset') form.reset();
+    };
+
+    // Helper pour synchroniser les propriétés JS et les attributs HTML
+    private _upgradeProperty(prop: string) {
+        if (this.hasOwnProperty(prop)) {
+            let value = (this as any)[prop];
+            delete (this as any)[prop];
+            (this as any)[prop] = value;
         }
+    }
 
-        this.addEventListener('click', (e) => {
-            if (this.hasAttribute('disabled')) {
-                e.stopImmediatePropagation();
-                return;
-            }
-
-            const type = this.getAttribute('type');
-            const form = this._internals.form;
-
-            if (!form) return;
-
-            if (type === 'submit') {
-                form.requestSubmit();
-            } else if (type === 'reset') {
-                form.reset();
-            }
-        });
+    attributeChangedCallback(name: string, oldVal: string, newVal: string) {
+        if (this._btn && name === 'type') this._btn.type = newVal as any;
+        if (this._btn && name === 'disabled') this._btn.disabled = this.hasAttribute('disabled');
     }
 
     set disabled(val: boolean) {
         if (val) this.setAttribute('disabled', '');
         else this.removeAttribute('disabled');
-        if (this._btn) this._btn.disabled = val;
     }
 }
 
-customElements.define("w13c-editor-button", Button);
+customElements.define("p9r-button", Button);

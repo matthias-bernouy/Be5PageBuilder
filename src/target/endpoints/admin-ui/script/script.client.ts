@@ -1,6 +1,9 @@
 import "src/core/EditorMode/Component/ActionGroup/ActionGroup"
 import "src/core/EditorMode/FixedComponent/AdminLayout/AdminLayout"
 
+import "src/core/EditorMode/Component/Form/Button/Button"
+import "src/core/EditorMode/Component/Grid/Grid"
+
 document.addEventListener('click', (e: any) => {
     const btn = e.target.closest('[data-modal]');
     if (btn) {

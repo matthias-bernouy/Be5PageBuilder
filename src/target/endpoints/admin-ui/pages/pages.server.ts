@@ -1,9 +1,8 @@
 import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
-import { join } from "node:path"
 import { PageModel } from 'src/target/data/model/PageModel';
 import type { Be5PageBuilder } from 'src/Be5PageBuilder';
-import template from "./blocs.html";
+import template from "./pages.html";
 
 export default async function Server(req: Request, system: Be5PageBuilder){
     const { document } = parseHTML(await Bun.file(template.index).text());
@@ -13,15 +12,16 @@ export default async function Server(req: Request, system: Be5PageBuilder){
 
     const tableBody = document.querySelector("tbody")!;
 
-    for ( const page of pageList ) {
-        tableBody.innerHTML += `
-            <tr onclick="window.location.href='/admin/article?identifier=${page.identifier}'">
-                <td><input type="checkbox"></td>
-                <td><strong>${page.title}</strong></td>
-                <td><span class="url-text">${page.identifier}</span></td>
-            </tr>
-        `
-    }
+    // for ( const page of pageList ) {
+    //     tableBody.innerHTML += `
+    //         <tr onclick="window.location.href='./article?identifier=${page.identifier}'">
+    //             <td><strong>${page.title}</strong></td>
+    //             <td><span class="url-text">${page.path}</span></td>
+    //             <td><span class="url-text">${page.identifier}</span></td>
+    //             <td><span class="url-text">${page.visible}</span></td>
+    //         </tr>
+    //     `
+    // }
 
 
     return send_html(document.toString());
