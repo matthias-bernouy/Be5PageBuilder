@@ -1,10 +1,9 @@
 :host {
   display: inline-block;
 
-  --_btn-radius: 8px;           /* Un peu plus sec pour faire "Pro" */
-  --_btn-padding-y: 10px;       /* Équilibre vertical */
-  --_btn-padding-x: 20px;       /* Équilibre horizontal */
-  --_btn-font-size: 14px;       /* Taille standard interface */
+  --_btn-padding-y: 8px;       /* Équilibre vertical */
+  --_btn-padding-x: 16px;       /* Équilibre horizontal */
+  --_btn-font-size: 13px;       /* Taille standard interface */
   --_btn-line-height: 1;        /* Évite les décalages de slots */
 
   /* 1. Squelette de variables internes (Tokens locaux) */
@@ -19,7 +18,7 @@
   --_accent-contrast: oklch(100% 0 0); /* Toujours blanc sur fond sombre neutre */
 
   /* 3. Structure */
-  --_btn-radius: 10px;
+  --_btn-radius: 8px;
   --_btn-padding: 0.6rem 1.2rem;
   --_btn-font: inherit;
 }

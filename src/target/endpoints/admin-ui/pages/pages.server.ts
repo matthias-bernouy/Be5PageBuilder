@@ -10,18 +10,32 @@ export default async function Server(req: Request, system: Be5PageBuilder){
     const repo = system.db.getRepository(PageModel);
     const pageList = await repo.findAll();
 
-    const tableBody = document.querySelector("tbody")!;
+    const tableBody = document.querySelector("p9r-table")!;
 
-    // for ( const page of pageList ) {
-    //     tableBody.innerHTML += `
-    //         <tr onclick="window.location.href='./article?identifier=${page.identifier}'">
-    //             <td><strong>${page.title}</strong></td>
-    //             <td><span class="url-text">${page.path}</span></td>
-    //             <td><span class="url-text">${page.identifier}</span></td>
-    //             <td><span class="url-text">${page.visible}</span></td>
-    //         </tr>
-    //     `
-    // }
+for (const page of pageList) {
+    const statusVariant = page.visible ? 'success' : 'danger';
+    const statusLabel = page.visible ? 'Published' : 'Draft';
+
+    tableBody.innerHTML += `
+        <p9r-row href="./article?identifier=${page.identifier}">
+            <p9r-cell><strong>${page.title || 'Untitled'}</strong></p9r-cell>
+            
+            <p9r-cell>
+                <p9r-tag>${page.path}</p9r-tag>
+            </p9r-cell>
+            
+            <p9r-cell>
+                <p9r-tag style="background: var(--primary-muted); border:none; color: var(--primary-contrasted);">
+                    ${page.identifier}
+                </p9r-tag>
+            </p9r-cell>
+            
+            <p9r-cell>
+                <p9r-badge variant="${statusVariant}">${statusLabel}</p9r-badge>
+            </p9r-cell>
+        </p9r-row>
+    `;
+}
 
 
     return send_html(document.toString());

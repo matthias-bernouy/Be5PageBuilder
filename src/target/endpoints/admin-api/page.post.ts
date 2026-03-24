@@ -10,7 +10,7 @@ export default async function updatePage(req: Request, system: Be5PageBuilder) {
     const body = await req.json() as IPage;
 
     try {
-        contains(body, ["content", "description", 'path', "visible", "title"]);
+        contains(body, ["content", "description", 'path', "visible", "title", "tags"]);
     } catch (e: any) {
         return new Response(e, {
             status: 400
@@ -25,7 +25,8 @@ export default async function updatePage(req: Request, system: Be5PageBuilder) {
         title: body.title,
         content: body.content,
         visible: body.visible,
-        description: body.description
+        description: body.description,
+        tags: body.tags
     };
 
     await repo.upsert(newPage, {

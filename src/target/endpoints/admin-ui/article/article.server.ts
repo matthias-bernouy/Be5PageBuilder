@@ -18,7 +18,7 @@ export default async function ArticleServerAdmin(req: Request, system: Be5PageBu
 
     blocs.forEach((bloc) => {
         let script = document.createElement("script");
-        script.src = `/bloc?tag=${bloc.htmlTag}`;
+        script.src = `/bloc?tag=${bloc.name}`;
         scripts.push(script);
     })
 
@@ -26,7 +26,18 @@ export default async function ArticleServerAdmin(req: Request, system: Be5PageBu
 
     if ( identifier ){
         const page = await getPage(system, identifier);
+        const editorSystem = document.getElementById("editor-system")!;
         const editor = document.getElementById("editor")!;
+
+        const config = document.createElement("w13c-page-information");
+
+        config.setAttribute("default-title",       page?.title || url.searchParams.get("title") || "Default Title")
+        config.setAttribute("default-description", page?.description || "Default Description")
+        config.setAttribute("default-identifier",  page?.identifier || identifier)
+        config.setAttribute("default-path",        page?.path || url.searchParams.get("path") || "/article")
+        config.setAttribute("default-visible",     page?.visible ? "on" : "off")
+
+        editorSystem.append(config);
         editor.innerHTML = page?.content || "<p></p>";
     } else {
         return Response.redirect("/admin/dashboard");

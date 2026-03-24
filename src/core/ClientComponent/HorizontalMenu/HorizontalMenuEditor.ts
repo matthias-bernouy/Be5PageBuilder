@@ -90,8 +90,6 @@ export class HorizontalMenuEditor extends Editor {
     private openSettingsPanel() {
         if (!this.currentHoveredItem) return;
 
-        console.log("Ouverture du panneau pour :", this.currentHoveredItem);
-
         // ICI : Appeler ton système global de panneau latéral
         // SettingsPanel.open(new HorizontalMenuConfigView(this.target, this.currentHoveredItem));
         

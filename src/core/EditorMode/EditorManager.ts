@@ -23,7 +23,6 @@ export class EditorManager{
     private editorSystem: HTMLElement;
 
     private mediaCenter: MediaCenter;
-    private configuration: Configuration;
     private toolbar: FloatingToolbar;
     private elementPanelConfig: ElementPanelConfig;
 
@@ -33,14 +32,11 @@ export class EditorManager{
         this.workingElement = workingElement;
         this.editorSystem   = document.getElementById("editor-system")!;
 
-        this.mediaCenter     = new MediaCenter();
-        this.configuration   = new Configuration();
-        this.toolbar         = new FloatingToolbar();
+        this.mediaCenter        = new MediaCenter();
+        this.toolbar            = new FloatingToolbar();
         this.elementPanelConfig = new ElementPanelConfig();
 
-
         this.editorSystem.append(this.mediaCenter)
-        this.editorSystem.append(this.configuration)
         this.editorSystem.append(this.toolbar)
         this.editorSystem.append(new EditorToolbar())
         this.editorSystem.append(this.elementPanelConfig)
@@ -60,7 +56,7 @@ export class EditorManager{
     }
 
     getConfiguration(){
-        return this.configuration;
+        return this.editorSystem.querySelector("w13c-page-information");
     }
 
     getMediaCenter(){
@@ -116,7 +112,7 @@ export class EditorManager{
             body: JSON.stringify(body)
         })
         res.then((a) => {
-            console.log(a)
+            //console.log(a)
         })
         this.switchMode("editor-mode");
     }

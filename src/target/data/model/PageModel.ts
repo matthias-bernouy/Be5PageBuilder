@@ -1,13 +1,14 @@
 import { EntitySchema } from '@mikro-orm/core';
 
 export type IPage = {
-  id: string;
+  id?: string;
   identifier: string;
   path: string;
   content: string;
   title: string;
   description: string;
   visible: boolean;
+  tags: string[];
 }
 
 export const PageModel = new EntitySchema<IPage>({
@@ -16,9 +17,10 @@ export const PageModel = new EntitySchema<IPage>({
     id: { primary: true, type: 'string' },
     identifier: { unique: true, type: 'string' }, // Is for ?identifier=test-page or anything
     path: { type: 'string' }, // Is for /article or /page or anything
-    content: { type: 'string' },
+    content: { type: 'text' },
     title: { type: 'string' }, // Meta-title, title
     description: { type: 'string' }, // Meta-description
-    visible: { type: 'boolean' }
+    visible: { type: 'boolean', default: false },
+    tags: { type: 'json' }
   },
 });

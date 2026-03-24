@@ -16,71 +16,52 @@
 <body>
 
     <w13c-fixed-admin-layout>
-        <w13c-action-group data-align="right">
-            <p9r-button data-modal="modal-new-page">+ New page</p9r-button>
-            <p9r-button variant="filled" color="primary">Publier</p9r-button>
+        <span slot="title">Pages</span>
 
-            <p9r-button variant="filled" color="danger">Supprimer</p9r-button>
+        <p9r-button slot="action" data-modal="create-page-dialog" color="primary">+ New page</p9r-button>
+        <p9r-button slot="action" data-modal="import-block-dialog" variant="outlined" color="info">Import Block</p9r-button>
 
-            <p9r-button variant="outlined" color="primary">En savoir plus</p9r-button>
+        <p9r-table>
+            <p9r-row slot="header">
 
-            <p9r-button variant="ghost" color="primary">Annuler</p9r-button>
+                <p9r-header-cell sort="name" filter-name="username" sortable active
+                    direction="asc">Nom</p9r-header-cell>
+                <p9r-header-cell key="age" sortable">Âge</p9r-header-cell>
+                <p9r-header-cell>Actions</p9r-header-cell>
 
-        </w13c-action-group>
-
-
-        <div class="table-container">
-            <p9r-table>
-                <tr slot="header">
-                    <th>Article name</th>
-                    <th>Path</th>
-                    <th>Identifier</th>
-                    <th>Visible</th>
-                </tr>
-
-                <tr slot="body">
-                    <td style="font-weight: 600; color: var(--text-main);">Introduction à Aelf1er</td>
-                    <td><code style="color: var(--primary-base);">/docs/intro</code></td>
-                    <td><span style="opacity: 0.6;">#art_01</span></td>
-                    <td>
-                        <span style="color: var(--success-base);">● Oui</span>
-                    </td>
-                </tr>
-                <tr slot="body">
-                    <td style="font-weight: 600; color: var(--text-main);">Introduction à Aelf1er</td>
-                    <td><code style="color: var(--primary-base);">/docs/intro</code></td>
-                    <td><span style="opacity: 0.6;">#art_01</span></td>
-                    <td>
-                        <span style="color: var(--success-base);">● Oui</span>
-                    </td>
-                </tr>
-            </p9r-table>
-        </div>
+                <p9r-cell><strong>Page title</strong></p9r-cell>
+                <p9r-cell><strong>Path</strong></p9r-cell>
+                <p9r-cell><strong>Identifier</strong></p9r-cell>
+                <p9r-cell><strong>Visibility</strong></p9r-cell>
+            </p9r-row>
+        </p9r-table>
     </w13c-fixed-admin-layout>
 
-    <dialog id="modal-new-page">
-        <div class="modal-content">
-            <header>
-                <h3>New page</h3>
-                <p>Fill the following informations.</p>
-            </header>
+    <p9r-form-dialog id="create-page-dialog" action="./article">
+        <span slot="title">Create a new page</span>
+        <w13c-input name="title">
+            <span slot="label">Name (e. g. My Beautiful Article)</span>
+        </w13c-input>
+        <w13c-input name="identifier">
+            <span slot="label">Identifier (e. g. my-beautiful-article)</span>
+        </w13c-input>
+        <w13c-input name="path">
+            <span slot="label">Path (e. g. /article)</span>
+        </w13c-input>
+    </p9r-form-dialog>
 
-            <form method="get" action="./article">
-                <div class="form-body">
-                    <label for="identifier">Identifier (letters, numbers and dashes)</label>
-                    <input type="text" id="identifier" name="identifier" class="url-text-input"
-                        placeholder="a-beautiful-page">
-                </div>
-
-                <footer>
-
-                    <button type="button" class="btn-secondary" onclick="this.closest('dialog').close()">Cancel</button>
-                    <button type="submit" class="btn-primary">Confirm</button>
-                </footer>
-            </form>
-        </div>
-    </dialog>
-
+    <p9r-form-dialog id="import-block-dialog" action="../api/bloc" method="post" enctype="multipart/form-data">
+        <span slot="title">Import a block</span>
+        <w13c-input name="name">
+            <span slot="label">Name (e. g. My favorite block)</span>
+        </w13c-input>
+        <w13c-input-file name="viewJS">
+            <span slot="label">View Code JS</span>
+        </w13c-input-file>
+        <w13c-input-file name="editorJS">
+            <span slot="label">Editor Code JS</span>
+        </w13c-input-file>
+    </p9r-form-dialog>
 
 </body>
 

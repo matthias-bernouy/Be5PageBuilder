@@ -70,8 +70,17 @@
         </w13c-lateral-menu-item>
     </w13c-lateral-menu>
 
-    <div class="container">
+    <div>
+
+<div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+    <h1 style="margin: 0; line-height: 1;"><slot name="title"></slot></h1>
+    
+    <w13c-action-group style="display: flex; align-items: center; gap: 0.75rem;padding-top: 4px">
+        <slot name="action"></slot>
+    </w13c-action-group>
+</div>
         <slot></slot>
+
     </div>
 
 </w13c-left-menu-layout>

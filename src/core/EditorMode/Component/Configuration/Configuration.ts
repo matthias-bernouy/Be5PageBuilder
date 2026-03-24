@@ -1,10 +1,12 @@
 import { Component } from "../../../Component";
-import "src/core/EditorMode/Component/LateralDialog/LateralDialog"
+import "src/core/EditorMode/Component/Dialog/LateralDialog/LateralDialog"
 import "src/core/EditorMode/Component/Form/Input/Input"
 import "src/core/EditorMode/Component/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "src/core/EditorMode/Component/LateralDialog/LateralDialog";
+import type { LateralDialog } from "src/core/EditorMode/Component/Dialog/LateralDialog/LateralDialog";
+import type { Input } from "src/core/EditorMode/Component/Form/Input/Input";
+import { Checkbox } from "src/core/EditorMode/Component/Form/Checkbox/Checkbox";
 
 export class Configuration extends Component {
 
@@ -13,6 +15,10 @@ export class Configuration extends Component {
             css: css as unknown as string,
             template: html as unknown as string
         });
+    }
+
+    static get observedAttributes() {
+        return ['type', 'disabled', 'variant', 'color'];
     }
 
     connectedCallback() {
@@ -33,6 +39,24 @@ export class Configuration extends Component {
             window.history.pushState({}, '', url);
         });
 
+        Array.from(this.attributes)
+            .filter(attr => attr.name.startsWith('default-'))
+            .map(attr => attr.name)
+            .forEach(ele => {
+                console.log(ele)
+                this.setDefaultValue(ele)
+            })
+
+    }
+
+    private setDefaultValue(name: string){
+        const defVal = this.getAttribute(name);
+        const ele = this.shadowRoot!.querySelector(`[name=${name.split("default-")[1]}]`) as Input | Checkbox;
+        if ( ele instanceof Checkbox ) {
+            ele.checked = defVal === "on" ? true : false;
+        } else {
+            if (defVal) ele.value = defVal;
+        }
     }
 
     show() {

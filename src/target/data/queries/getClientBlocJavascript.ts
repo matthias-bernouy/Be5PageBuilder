@@ -4,7 +4,7 @@ import { getBlocRepository } from "../repositories";
 export async function getClientBlocJavascript(system: Be5PageBuilder, htmlTag: string){
     const repo = getBlocRepository(system);
     const res = await repo.findOne({
-        htmlTag: htmlTag
+        id: htmlTag
     })
-    return res?.clientJavascript;
+    return res?.viewJS;
 }

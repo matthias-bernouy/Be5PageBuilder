@@ -8,7 +8,7 @@ export default async function EditorServerJavascript(req: Request, system: Be5Pa
 
     const script = blocs.map(bloc => {
         return `
-            ${bloc.editorJavascript}
+            ${bloc.editorJS}
         `
     }).join("\n")
 

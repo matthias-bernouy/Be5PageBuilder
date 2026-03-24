@@ -1,5 +1,5 @@
 import { Component } from "../../../Component";
-import "src/core/EditorMode/Component/LateralDialog/LateralDialog"
+import "src/core/EditorMode/Component/Dialog/LateralDialog/LateralDialog"
 import "src/core/EditorMode/Component/Form/Input/Input"
 import "src/core/EditorMode/Component/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };

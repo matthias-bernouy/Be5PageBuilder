@@ -5,9 +5,13 @@ import css from './style.css' with { type: 'text' };
 
 export class Input extends Component {
 
-    static formAssociated = true; // Indispensable pour être vu par un <form>
+    static formAssociated = true;
     private _internals: ElementInternals;
     private _input: HTMLInputElement | null = null;
+
+    static get observedAttributes() {
+        return ['value'];
+    }
 
     constructor() {
         super({
@@ -34,6 +38,10 @@ export class Input extends Component {
         this._internals.setFormValue(v);
     }
 
+    get name() { 
+        return this.getAttribute('name') || ""; 
+    }
+
     private _syncAttributes() {
         const observedAttrs = ['type', 'placeholder', 'required', 'disabled'];
         observedAttrs.forEach(attr => {
@@ -41,6 +49,11 @@ export class Input extends Component {
                 this._input?.setAttribute(attr, this.getAttribute(attr)!);
             }
         });
+    }
+
+    attributeChangedCallback(name: string, oldVal: string, newVal: string) {
+        if (!this) return;
+        if (name === 'value' && this._input) this._input.value = newVal as any;
     }
 
     override focus() { this._input?.focus(); }
