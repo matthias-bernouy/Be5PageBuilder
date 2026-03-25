@@ -1,7 +1,7 @@
-import { registerEndpoints } from "./target/endpoints/registerEndpoints";
-import { PageModel } from "src/target/data/model/PageModel";
-import { BlocModel } from "src/target/data/model/BlocModel";
-import { SystemModel } from "./target/data/model/SystemModel";
+import { registerEndpoints } from "./endpoints/registerEndpoints";
+import { PageModel } from "src/data/model/PageModel";
+import { BlocModel } from "src/data/model/BlocModel";
+import { SystemModel } from "./data/model/SystemModel";
 import type { IBe5_Authentication, IBe5_Database, IBe5_DatabaseBuilder, IBe5_Runner } from "be5-interfaces";
 
 type Configuration = {
