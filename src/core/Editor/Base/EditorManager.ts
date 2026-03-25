@@ -1,8 +1,8 @@
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
-import { MediaCenter } from "../Component/MediaCenter/MediaCenter";
-import { FloatingToolbar } from "../Component/FloatingToolbar/FloatingToolbar";
-import { EditorToolbar } from "../Component/EditorToolbar/EditorToolbar";
+import { MediaCenter } from "../MediaCenter/MediaCenter";
+import { FloatingToolbar } from "../FloatingToolbar/FloatingToolbar";
+import { EditorToolbar } from "../RichTextBar/RichTextBar";
 import { BlocConfigurationPanel } from "../BlocConfiguration/BlocConfigurationPanel/BlocConfigurationPanel";
 
 export type PageModeEnum = [

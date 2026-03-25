@@ -1,10 +1,10 @@
 import { Component } from "../../../Utilities/Component";
-import "src/core/Editor/Component/Dialog/LateralDialog/LateralDialog"
-import "src/core/Editor/Component/Form/Input/Input"
-import "src/core/Editor/Component/Form/Checkbox/Checkbox"
+import "w13c/LateralDialog/LateralDialog"
+import "w13c/Form/Input/Input"
+import "w13c/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "src/core/Editor/Component/Dialog/LateralDialog/LateralDialog";
+import type { LateralDialog } from "w13c/LateralDialog/LateralDialog";
 import type { BlocConfiguration } from "../BlocConfiguration";
 
 export class BlocConfigurationPanel extends Component {

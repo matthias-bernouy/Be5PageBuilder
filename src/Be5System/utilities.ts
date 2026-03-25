@@ -48,8 +48,16 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 
         if (clientFile) {
             runner.addEndpoint("GET", urlPath + ".js", async () => {
-                const result = await Bun.build({ entrypoints: [clientFile] });
-                return send_js(await result.outputs[0]!.text());
+                try{
+                    const result = await Bun.build({ entrypoints: [clientFile] });
+                    return send_js(await result.outputs[0]!.text());
+                } catch (e){
+                    console.error("Error building client script for", urlPath, e);
+                    return new Response("// Error building client script", {
+                        headers: { "Content-Type": "text/javascript" }
+                    });
+                }
+
             });
         }
     }

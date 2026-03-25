@@ -1,7 +1,7 @@
 import { Component } from "src/core/Utilities/Component";
 
-import "src/core/Editor/Component/LateralMenu/LateralMenu"
-import "src/core/Editor/Component/Layout/LeftMenuLayout/LeftMenuLayout"
+import "w13c/LateralMenu/LateralMenu"
+import "w13c/LeftMenuLayout/LeftMenuLayout"
 
 import template from './template.html' with { type: 'text' };
 

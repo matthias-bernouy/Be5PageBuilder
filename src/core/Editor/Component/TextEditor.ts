@@ -1,4 +1,4 @@
-import { ActionBar, type MenuItem } from "./Actionbar/Actionbar";
+import { BlocLibrary, type MenuItem } from "../BlocLibrary/BlocLibrary";
 import { Editor } from "../Base/Editor";
 import type { PageMode } from "../Base/EditorManager";
 
@@ -141,7 +141,7 @@ export class TextEditor extends Editor {
             this.target.innerHTML = "";
         }
         if (this.target.innerText === "/" && this.isBlocAvailable) {
-            const actionbar = ActionBar.open();
+            const actionbar = BlocLibrary.open();
             actionbar.addEventListener("insert", (e: any) => {
                 const new_node = this.createElement(e.detail.id);
                 this.target.replaceWith(new_node);

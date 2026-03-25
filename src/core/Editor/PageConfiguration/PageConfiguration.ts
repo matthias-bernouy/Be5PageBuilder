@@ -1,17 +1,17 @@
 import { Component } from "../../Utilities/Component";
 
-import "src/core/Editor/Component/Dialog/LateralDialog/LateralDialog"
-import "src/core/Editor/Component/Form/Input/Input"
-import "src/core/Editor/Component/Form/Checkbox/Checkbox"
-import "src/core/Editor/Component/Form/Button/Button"
-import "src/core/Editor/Component/Form/InputTags/InputTags";
+import "w13c/LateralDialog/LateralDialog"
+import "w13c/Form/Input/Input"
+import "w13c/Form/Checkbox/Checkbox"
+import "w13c/Form/Button/Button"
+import "w13c/Form/InputTags/InputTags";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "src/core/Editor/Component/Dialog/LateralDialog/LateralDialog";
-import type { Input } from "src/core/Editor/Component/Form/Input/Input";
+import type { LateralDialog } from "w13c/LateralDialog/LateralDialog";
+import type { Input } from "w13c/Form/Input/Input";
 
-import { Checkbox } from "src/core/Editor/Component/Form/Checkbox/Checkbox";
+import { Checkbox } from "w13c/Form/Checkbox/Checkbox";
 
 export class PageConfiguration extends Component {
 

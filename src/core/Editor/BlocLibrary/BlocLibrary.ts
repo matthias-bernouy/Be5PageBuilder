@@ -1,7 +1,7 @@
 import { Component, type ComponentMetadata } from 'src/core/Utilities/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { TagElement } from '../../Base/ObserverManager';
+import type { TagElement } from '../Base/ObserverManager';
 
 const DEFAULT_COMPONENT_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
@@ -17,8 +17,8 @@ export const ActionBarMetadata: ComponentMetadata = {
     template: html as unknown as string
 }
 
-export class ActionBar extends Component {
-    private static instance: ActionBar | null = null;
+export class BlocLibrary extends Component {
+    private static instance: BlocLibrary | null = null;
     private activeGroup: string | null = null;
     private dialog: HTMLDialogElement | null = null;
 
@@ -93,16 +93,16 @@ export class ActionBar extends Component {
 
     public close() {
         this.dialog?.close();
-        ActionBar.instance = null;
+        BlocLibrary.instance = null;
     }
 
     static open() {
-        if (ActionBar.instance) return ActionBar.instance;
-        const menu = new ActionBar();
+        if (BlocLibrary.instance) return BlocLibrary.instance;
+        const menu = new BlocLibrary();
         document.body.appendChild(menu);
-        ActionBar.instance = menu;
+        BlocLibrary.instance = menu;
         return menu;
     }
 }
 
-customElements.define("w13c-action-bar", ActionBar);
+customElements.define("w13c-action-bar", BlocLibrary);
