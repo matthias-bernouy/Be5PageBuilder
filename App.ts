@@ -1,5 +1,7 @@
 import { Be5_Authentication, Be5_MongoDB, Be5_Runner } from "be5-interfaces"
 import { Be5PageBuilder } from "src/Be5PageBuilder";
+import { dev_import_bloc } from "src/core/ClientComponent/creator";
+import { BlocModel } from "src/target/data/model/BlocModel";
 
 const MongoDatabaseCore = new Be5_MongoDB();
 const BunRunnerCore = new Be5_Runner();
@@ -21,6 +23,12 @@ await MongoDatabaseCore.init({
 })
 
 BunRunnerCore.start();
+
+
+await MongoDatabaseCore.getRepository(BlocModel).nativeDelete({});
+
+await dev_import_bloc("Navbar", PageBuilderCore);
+
 
 // console.log("Starting app...")
 

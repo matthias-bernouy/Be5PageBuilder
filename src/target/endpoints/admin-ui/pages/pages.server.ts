@@ -15,6 +15,7 @@ export default async function Server(req: Request, system: Be5PageBuilder){
 for (const page of pageList) {
     const statusVariant = page.visible ? 'success' : 'danger';
     const statusLabel = page.visible ? 'Published' : 'Draft';
+    page.tags = JSON.parse(page.tags as unknown as string || "[]")
 
     tableBody.innerHTML += `
         <p9r-row href="./article?identifier=${page.identifier}">
@@ -29,7 +30,15 @@ for (const page of pageList) {
                     ${page.identifier}
                 </p9r-tag>
             </p9r-cell>
-            
+
+            <p9r-cell>
+                ${page.tags.map((tag) => `
+                    <p9r-tag style="background: var(--primary-muted); border:none; color: var(--primary-contrasted);">
+                        ${tag}
+                    </p9r-tag>
+                `).join('')}
+            </p9r-cell>
+
             <p9r-cell>
                 <p9r-badge variant="${statusVariant}">${statusLabel}</p9r-badge>
             </p9r-cell>

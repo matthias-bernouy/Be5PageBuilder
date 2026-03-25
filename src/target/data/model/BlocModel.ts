@@ -1,7 +1,7 @@
 import { EntitySchema } from '@mikro-orm/core';
 
 export type IBloc = {
-    id?: string;
+    id: string;
     name: string;
     viewJS: string;
     editorJS: string;

@@ -2,20 +2,22 @@ import { PageModel, type IPage } from "src/target/data/model/PageModel";
 import type { Be5PageBuilder } from "src/Be5PageBuilder";
 import contains from "src/Be5System/contains";
 import { BlocModel, type IBloc } from "src/target/data/model/BlocModel";
+import { randomUUIDv7 } from "bun";
 
 export default async function importBloc(req: Request, system: Be5PageBuilder) {
 
     const formData = await req.formData();
 
-    const data = {
-        name: formData.get("name") as string,
-        viewJS: formData.get("viewJS") as File,
-        editorJS: formData.get("editorJS") as File
-    };
+    const name = formData.get("name") as string;
+    const viewFile = formData.get("viewJS") as File;
+    const editorFile = formData.get("editorJS") as File;
 
-    if ( !data.name || !data.viewJS || !data.editorJS ) return new Response("Missing argument", {
-        status: 400
-    })
+    if (!name || !viewFile || !editorFile) {
+        return new Response("Missing argument", { status: 400 });
+    }
+
+    const repo = system.db.getRepository(BlocModel);
+    const em = repo.getEntityManager(); // Plus propre que repo.getEntityManager()
     
     // const body = await req.json() as IPage;
 
@@ -27,16 +29,14 @@ export default async function importBloc(req: Request, system: Be5PageBuilder) {
     //     })
     // }
 
-    const repo = system.db.getRepository(BlocModel);
+    const blocEntity = repo.create({
+        id: randomUUIDv7(),
+        name: name,
+        viewJS: await viewFile.text(),
+        editorJS: await editorFile.text()
+    });
 
-    const newBloc: IBloc = {
-        name: data.name,
-        viewJS: await data.viewJS.text(),
-        editorJS: await data.editorJS.text()
-    };
-
-    repo.create(newBloc);
-    await repo.getEntityManager().persist(newBloc).flush()
+    await em.persist(blocEntity).flush()
 
     return new Response("Bloc imported");
 }

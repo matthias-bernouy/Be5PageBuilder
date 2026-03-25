@@ -1,4 +1,3 @@
-/* Primary */
 @property --primary-base {
     syntax: '<color>';
     inherits: true;
@@ -17,8 +16,6 @@
     initial-value: oklch(25% 0.08 265);
 }
 
-
-/* Secondary */
 @property --secondary-base {
     syntax: '<color>';
     inherits: true;
@@ -37,118 +34,116 @@
     initial-value: oklch(20% 0.02 260);
 }
 
-/* Success (Vert) - Teinte ~145 */
 @property --success-base {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(65% 0.15 145);
 }
+
 @property --success-muted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(96% 0.02 145);
 }
+
 @property --success-contrasted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(25% 0.08 145);
 }
 
-/* Danger (Rouge) - Teinte ~25 */
 @property --danger-base {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(60% 0.18 25);
 }
+
 @property --danger-muted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(95% 0.02 25);
 }
+
 @property --danger-contrasted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(25% 0.08 25);
 }
 
-/* Warning (Orange/Ambre) - Teinte ~80 */
 @property --warning-base {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(75% 0.15 80);
 }
+
 @property --warning-muted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(96% 0.02 80);
 }
+
 @property --warning-contrasted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(30% 0.08 80);
 }
 
-/* Info (Bleu ciel) - Teinte ~230 */
 @property --info-base {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(65% 0.12 230);
 }
+
 @property --info-muted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(95% 0.02 230);
 }
+
 @property --info-contrasted {
     syntax: '<color>';
     inherits: true;
     initial-value: oklch(25% 0.08 230);
 }
 
-/* Fond de l'application (le plus bas) */
 @property --bg-base {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(98% 0.005 265); /* Gris ultra léger, presque blanc */
+    initial-value: oklch(98% 0.005 265);
 }
 
-/* Surface (Sidebar, Cartes, etc.) */
 @property --bg-surface {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(100% 0 0); /* Blanc pur */
+    initial-value: oklch(100% 0 0);
 }
 
-/* Overlay (Modales, Tooltips, Menus flottants) */
 @property --bg-overlay {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(100% 0 0); /* Blanc pur (se distinguera par l'ombre) */
+    initial-value: oklch(100% 0 0);
 }
 
-/* Texte Principal (Titres, noms importants) */
 @property --text-main {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(25% 0.02 265); /* Très sombre, proche du noir */
+    initial-value: oklch(25% 0.02 265);
 }
 
-/* Texte de corps (Lecture, descriptions) */
 @property --text-body {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(45% 0.02 265); /* Gris foncé équilibré */
+    initial-value: oklch(45% 0.02 265);
 }
 
-/* Texte Muted (Infos secondaires, icônes, légendes) */
 @property --text-muted {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(65% 0.02 265); /* Gris doux */
+    initial-value: oklch(65% 0.02 265);
 }
 
 @property --border-default {
     syntax: '<color>';
     inherits: true;
-    initial-value: oklch(92% 0.01 265); /* Très subtil */
+    initial-value: oklch(92% 0.01 265);
 }

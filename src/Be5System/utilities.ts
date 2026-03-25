@@ -62,7 +62,6 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        console.log(endpointUrl)
         runner.addEndpoint("GET", endpointUrl, () => {
             return new Response(Bun.file(fullPath), {
                 headers: { "Content-Type": "text/css" }

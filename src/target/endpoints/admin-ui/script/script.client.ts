@@ -3,6 +3,7 @@ import "src/core/EditorMode/FixedComponent/AdminLayout/AdminLayout"
 
 import "src/core/EditorMode/Component/Form/Button/Button"
 import "src/core/EditorMode/Component/Form/Input/Input"
+import "src/core/EditorMode/Component/Form/InputTags/InputTags"
 import "src/core/EditorMode/Component/Form/InputFile/InputFile"
 
 import "src/core/EditorMode/Component/Table/Table"

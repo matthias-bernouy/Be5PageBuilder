@@ -4,16 +4,19 @@ import { ListEditor } from "./Component/ListEditor";
 import "src/core/EditorMode/Component/MediaCenter/MediaCenter"
 import type { Editor } from "../Editor";
 
+type Element = {
+    cl: new (node: HTMLElement) => Editor,
+    visible: boolean,
+    tag: string,
+    group?: string,
+    label: string
+}
+
 export class ObserverManager {
 
     private workingElement: HTMLElement;
 
-    private editors: Map<string, {
-        cl: new (node: HTMLElement) => Editor,
-        visible: boolean,
-        tag: string,
-        group?: string
-    }> = new Map();
+    private editors: Map<string, Element> = new Map();
 
     private groups: Set<string> = new Set(["default"])
 
@@ -71,16 +74,13 @@ export class ObserverManager {
         return this.editors.values().filter(v => v.visible && v.group === group);
     }
 
-    getItems(){
-        return this.editors.values().filter(v => v.visible).map(v => v.tag);
-    }
-
-    register_editor<T extends Editor>(htmlTag: string, cl: new (node: HTMLElement) => T, visible = true, group?: string): void {
+    register_editor<T extends Editor>(htmlTag: string, cl: new (node: HTMLElement) => T, visible = true, group?: string, label?: string): void {
         this.editors.set(htmlTag, {
             cl: cl,
             visible: visible,
             tag: htmlTag,
-            group: group || "default"
+            group: group || "default",
+            label: label || "label"
         });
         this.groups.add(group || "default")
         const existingElements = this.workingElement.querySelectorAll(htmlTag);

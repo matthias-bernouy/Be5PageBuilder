@@ -90,6 +90,7 @@ export class EditorManager{
         description: string;
         visible: boolean;
         identifier: string;
+        tags: string;
     }){
         this.switchMode("view-mode");
         const article = this.workingElement.innerHTML;
@@ -103,7 +104,8 @@ export class EditorManager{
             path: props.path,
             title: props.title,
             description: props.description,
-            visible: props.description,
+            visible: props.visible,
+            tags: props.tags
         }
 
         target.searchParams.set("identifier", props.identifier);

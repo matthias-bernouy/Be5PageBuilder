@@ -1,0 +1,34 @@
+<header class="nav-container">
+  <div class="nav-wrapper">
+    <div class="logo-section">
+      <slot name="logo"></slot>
+    </div>
+
+    <nav class="desktop-nav">
+      <div class="links-wrapper">
+        <slot name="links"></slot>
+        <div class="nav-indicator"></div>
+      </div>
+    </nav>
+
+    <div class="actions-section">
+      <slot name="actions"></slot>
+      <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <button class="close-btn">&times;</button>
+    </div>
+    <div class="drawer-content">
+      <slot name="links"></slot>
+    </div>
+    <div class="drawer-footer">
+      <slot name="drawer-footer"></slot>
+    </div>
+  </div>
+  <div class="drawer-overlay"></div>
+</header>

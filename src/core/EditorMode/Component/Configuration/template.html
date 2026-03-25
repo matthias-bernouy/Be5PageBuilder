@@ -1,24 +1,27 @@
 <w13c-lateral-dialog>
   <form action="">
-    <w13c-input name="title">
+    <w13c-input placeholder="A beautiful title" name="title">
       <span slot="label">Title (max 50 characters)</span>
     </w13c-input>
-    <w13c-input name="description">
+    <w13c-input placeholder="A beautiful description" name="description">
       <span slot="label">Description (max 120 characters)</span>
     </w13c-input>
-    <w13c-input name="identifier">
+    <w13c-input placeholder="my-beautiful-page" name="identifier">
       <span slot="label">Identifier (a-zA-Z0-9-)</span>
     </w13c-input>
-    <w13c-input name="path">
+    <w13c-input placeholder="/article" name="path">
       <span slot="label">Path (a-zA-Z0-9-)</span>
     </w13c-input>
+    <w13c-tag-input name="tags"></w13c-tag-input>
+
     <w13c-checkbox name="visible">
       Rendre visible
     </w13c-checkbox>
+
     <div></div>
-    <w13c-editor-button>
+    <p9r-button fullwidth type="submit" variant="filled" color="primary">
       Sauvegarder
-    </w13c-editor-button>
+    </p9r-button>
   </form>
   <span slot="title">Page configuration</span>
 

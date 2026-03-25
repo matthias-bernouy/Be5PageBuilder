@@ -1,6 +1,6 @@
 :host {
   display: block;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
   --input-border: #d1d5db;
   --input-focus: #000000;
   --input-error: #ef4444;
@@ -58,7 +58,6 @@ input:focus {
 .error-message {
   font-size: 0.75rem;
   color: var(--input-error);
-  min-height: 1em;
   opacity: 0;
   transition: opacity var(--transition);
 }

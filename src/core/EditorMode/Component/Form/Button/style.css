@@ -101,6 +101,10 @@
   white-space: nowrap;
 }
 
+:host([fullwidth]), :host([fullwidth]) button {
+  width: 100%;
+}
+
 .button:hover {
   background-color: var(--_btn-hover-bg);
   opacity: var(--_btn-hover-opacity, 1);

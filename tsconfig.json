@@ -36,6 +36,7 @@
 	"include": [
 		"src/**/*.ts",
         "App.ts",
+        "Script.ts",
 		"types/**/*.d.ts"
 	]
 

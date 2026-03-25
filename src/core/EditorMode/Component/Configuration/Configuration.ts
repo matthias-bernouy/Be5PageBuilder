@@ -6,7 +6,10 @@ import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import type { LateralDialog } from "src/core/EditorMode/Component/Dialog/LateralDialog/LateralDialog";
 import type { Input } from "src/core/EditorMode/Component/Form/Input/Input";
+
 import { Checkbox } from "src/core/EditorMode/Component/Form/Checkbox/Checkbox";
+
+import "src/core/EditorMode/Component/Form/InputTags/InputTags";
 
 export class Configuration extends Component {
 
@@ -33,6 +36,7 @@ export class Configuration extends Component {
                 visible: formData.has("visible"),
                 identifier: data.identifier || "",
                 path: data.path || "",
+                tags: JSON.stringify(data.tags?.split(",") || [])
             })
             const url = new URL(window.location.href);
             url.searchParams.set('identifier', data.identifier || "");
@@ -43,7 +47,6 @@ export class Configuration extends Component {
             .filter(attr => attr.name.startsWith('default-'))
             .map(attr => attr.name)
             .forEach(ele => {
-                console.log(ele)
                 this.setDefaultValue(ele)
             })
 
