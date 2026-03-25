@@ -30,6 +30,7 @@ export class MediaCenter extends Component {
     }
 
     show(){
+        this.clearImages();
         this.dialog?.showModal();
     }
 

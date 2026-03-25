@@ -1,5 +1,5 @@
-import { createDefaultElement } from "../../createDefaultElement";
-import { Editor } from "../../Editor";
+import { createDefaultElement } from "../../src/core/createDefaultElement";
+import { Editor } from "../../src/core/Editor";
 
 export class QuoteEditor extends Editor {
     constructor(target: HTMLElement) {
@@ -16,4 +16,9 @@ export class QuoteEditor extends Editor {
     }
 }
 
-document.EditorManager.getObserver().register_editor("w13c-quote", QuoteEditor)
+document.EditorManager.getObserver().register_editor({
+    tag: "BE5_TAG_TO_BE_REPLACED",
+    cl: QuoteEditor,
+    label: "BE5_LABEL_TO_BE_REPLACED",
+    group: "BE5_GROUP_TO_BE_REPLACED"
+});

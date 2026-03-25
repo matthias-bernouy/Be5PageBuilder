@@ -1,6 +1,7 @@
 import { Component, type ComponentMetadata } from 'src/core/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
+import type { TagElement } from '../../ObserverManager';
 
 const DEFAULT_COMPONENT_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
@@ -68,13 +69,14 @@ export class ActionBar extends Component {
         // Rendu des blocs
         if (this.activeGroup) {
             const items = observer.getItemsByGroup(this.activeGroup);
-            items.forEach((item: any) => {
+            console.log(items)
+            items.forEach((item: TagElement) => {
                 const card = document.createElement('button');
                 card.slot = 'bloc';
                 card.className = 'card';
                 card.innerHTML = `
-                    <span class="icon">${item.icon || DEFAULT_COMPONENT_SVG}</span>
-                    <span class="title">${item.tag}</span>
+                    <span class="icon">${DEFAULT_COMPONENT_SVG}</span>
+                    <span class="title">${item.label}</span>
                 `;
                 card.onclick = () => {
                     this.dispatchEvent(new CustomEvent('insert', {

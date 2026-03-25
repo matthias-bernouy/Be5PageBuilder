@@ -27,10 +27,10 @@
       });
   };
 
-  // src/core/ClientComponent/Navbar/NavbarEditor.ts
-  var exports_NavbarEditor = {};
-  __export(exports_NavbarEditor, {
-    NavbarEditor: () => NavbarEditor
+  // src/core/ClientComponent/HeroSection/HeroSectionEditor.ts
+  var exports_HeroSectionEditor = {};
+  __export(exports_HeroSectionEditor, {
+    HeroSectionEditor: () => HeroSectionEditor
   });
 
   // src/core/createDefaultElement.ts
@@ -93,30 +93,25 @@
     openConfigPanel() {}
   }
 
-  // src/core/ClientComponent/Navbar/NavbarEditor.ts
-  class NavbarEditor extends Editor {
+  // src/core/ClientComponent/HeroSection/HeroSectionEditor.ts
+  class HeroSectionEditor extends Editor {
     constructor(target) {
       super(target, "");
-      createDefaultElement(this.target, "logo", "span", "MY_LOGO");
-      createDefaultElement(this.target, "links", "a", "Accueil");
-      createDefaultElement(this.target, "links", "a", "Services");
-      createDefaultElement(this.target, "links", "a", "Contact");
-      createDefaultElement(this.target, "actions", "button", "S'inscrire");
       this.viewEditor();
+      createDefaultElement(this.target, "title", "span", "Title");
+      createDefaultElement(this.target, "content", "span", "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ");
+      createDefaultElement(this.target, "footer", "span", "footer");
+      const img = document.createElement("img");
+      img.setAttribute("slot", "image");
+      img.src = "https://picsum.photos/200";
+      this.target.append(img);
     }
-    init() {
-      const currentBP = this.target.getAttribute("breakpoint") || "768px";
-    }
-    setBreakpoint(value) {
-      this.target.setAttribute("breakpoint", value);
-    }
-    restore() {
-      this.target.removeAttribute("open");
-    }
+    init() {}
+    restore() {}
   }
   document.EditorManager.getObserver().register_editor({
     tag: "BE5_TAG_TO_BE_REPLACED",
-    cl: NavbarEditor,
+    cl: HeroSectionEditor,
     label: "BE5_LABEL_TO_BE_REPLACED",
     group: "BE5_GROUP_TO_BE_REPLACED"
   });

@@ -35,8 +35,9 @@
 
 	"include": [
 		"src/**/*.ts",
+		"Blocks/**/*.ts",
         "App.ts",
-        "Script.ts",
+        "src/scripts/import_bloc_cli.ts",
 		"types/**/*.d.ts"
 	]
 

@@ -1,12 +1,13 @@
+import "src/core/EditorMode/Component/MediaCenter/MediaCenter"
+
 import { ImageEditor } from "./Component/ImageEditor";
 import { TextEditor, textTags } from "./Component/TextEditor";
 import { ListEditor } from "./Component/ListEditor";
-import "src/core/EditorMode/Component/MediaCenter/MediaCenter"
 import type { Editor } from "../Editor";
 
-type Element = {
+export type TagElement = {
     cl: new (node: HTMLElement) => Editor,
-    visible: boolean,
+    visible?: boolean,
     tag: string,
     group?: string,
     label: string
@@ -16,7 +17,7 @@ export class ObserverManager {
 
     private workingElement: HTMLElement;
 
-    private editors: Map<string, Element> = new Map();
+    private editors: Map<string, TagElement> = new Map();
 
     private groups: Set<string> = new Set(["default"])
 
@@ -25,14 +26,38 @@ export class ObserverManager {
         this.workingElement = workingElement;
         textTags.forEach((tag) => {
             if (["p", "span"].includes(tag)){
-                this.register_editor(tag, TextEditor, false);
+                this.register_editor({
+                    tag, 
+                    cl: TextEditor,
+                    visible: false,
+                    label: tag
+                });
             } else {
-                this.register_editor(tag, TextEditor);
+                this.register_editor({
+                    tag,
+                    label: tag,
+                    cl: TextEditor
+                });
             }
         })
-        this.register_editor("img", ImageEditor);
-        this.register_editor("ul", ListEditor);
-        this.register_editor("ol", ListEditor, true, "test");
+
+        this.register_editor({
+            tag: "img",
+            label: "image",
+            cl: ImageEditor
+        });
+
+        this.register_editor({
+            tag: "ul",
+            cl: ListEditor,
+            label: "ul"
+        });
+
+        this.register_editor({
+            tag: "ol",
+            cl: ListEditor,
+            label: "ol"
+        });
 
         const existingElements = workingElement.querySelectorAll('*');
         existingElements.forEach((el: any) => this.make_it_editor(el));
@@ -71,24 +96,24 @@ export class ObserverManager {
     }
 
     getItemsByGroup(group: string){
+        console.log(this.editors.values())
         return this.editors.values().filter(v => v.visible && v.group === group);
     }
 
-    register_editor<T extends Editor>(htmlTag: string, cl: new (node: HTMLElement) => T, visible = true, group?: string, label?: string): void {
-        this.editors.set(htmlTag, {
-            cl: cl,
-            visible: visible,
-            tag: htmlTag,
-            group: group || "default",
-            label: label || "label"
+    register_editor(element: TagElement): void {
+        this.editors.set(element.tag, {
+            ...element,
+            group: element.group || "default",
+            visible: element.visible || true
         });
-        this.groups.add(group || "default")
-        const existingElements = this.workingElement.querySelectorAll(htmlTag);
+        this.groups.add(element.group || "default")
+        const existingElements = this.workingElement.querySelectorAll(element.tag);
         existingElements.forEach((el: any) => this.make_it_editor(el));
     }
 
     make_it_editor(node: HTMLElement) {
         const tag = node.tagName.toLowerCase();
+        console.log(tag)
         const cl = this.editors.get(tag)?.cl;
         if (cl) new cl(node);
     }

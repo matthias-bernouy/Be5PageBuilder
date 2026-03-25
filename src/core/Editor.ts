@@ -49,7 +49,11 @@ export abstract class Editor {
         this.init();
     }
 
-    public openConfigPanel(){
+    private openConfigPanel() {
+
+    }
+
+    public setConfigPanel(){
 
     }
 

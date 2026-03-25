@@ -3,7 +3,7 @@ import { Component } from "src/core/Component";
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
-export class HorizontalMenu extends Component {
+export class Quote extends Component {
     constructor(){
         super({
             css,
@@ -12,4 +12,4 @@ export class HorizontalMenu extends Component {
     }
 }
 
-customElements.define("w13c-horizontalmenu", HorizontalMenu);
+customElements.define("BE5_TAG_TO_BE_REPLACED", Quote);

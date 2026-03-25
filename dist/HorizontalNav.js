@@ -277,5 +277,5 @@
       });
     }
   }
-  customElements.define("be5-019d2487-06f5-7000-a56b-df8466062763", Navbar);
+  customElements.define("BE5_TAG_TO_BE_REPLACED", Navbar);
 })();

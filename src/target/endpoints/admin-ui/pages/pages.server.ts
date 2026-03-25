@@ -22,13 +22,7 @@ for (const page of pageList) {
             <p9r-cell><strong>${page.title || 'Untitled'}</strong></p9r-cell>
             
             <p9r-cell>
-                <p9r-tag>${page.path}</p9r-tag>
-            </p9r-cell>
-            
-            <p9r-cell>
-                <p9r-tag style="background: var(--primary-muted); border:none; color: var(--primary-contrasted);">
-                    ${page.identifier}
-                </p9r-tag>
+                <p9r-tag>${page.path}?identifier=${page.identifier}</p9r-tag>
             </p9r-cell>
 
             <p9r-cell>
