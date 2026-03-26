@@ -97,7 +97,6 @@ export class BlocLibrary extends Component {
     }
 
     static open() {
-        if (BlocLibrary.instance) return BlocLibrary.instance;
         const menu = new BlocLibrary();
         document.body.appendChild(menu);
         BlocLibrary.instance = menu;

@@ -112,6 +112,10 @@ export class TextEditor extends Editor {
         return element;
     }
 
+    static createPElement(){
+        const p = document.createElement("p");
+    }
+
     private handleKeyDown(e: KeyboardEvent) {
         if (e.key === "Enter") {
             if (e.shiftKey) return;
@@ -137,11 +141,14 @@ export class TextEditor extends Editor {
     }
 
     private handleInput(e: Event) {
+        console.log(this.target.innerHTML)
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
         if (this.target.innerText === "/" && this.isBlocAvailable) {
+            console.log("hey")
             const actionbar = BlocLibrary.open();
+            console.log(BlocLibrary)
             actionbar.addEventListener("insert", (e: any) => {
                 const new_node = this.createElement(e.detail.id);
                 this.target.replaceWith(new_node);

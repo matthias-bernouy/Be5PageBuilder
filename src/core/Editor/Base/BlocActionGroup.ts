@@ -54,9 +54,28 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private handleBlocActionClick = (e: CustomEvent) => {
         const action = e.detail.action;
         const target = e.detail.target;
+        const p = document.createElement("p");
         console.log("Action clicked:", action, target);
-        if (action === "edit") {
-            document.EditorManager.getBlocConfigPanel().show(this._editor.configurations);
+
+        switch (action) {
+            case "delete":
+                this._target.remove();
+                break;
+
+            case "edit":
+                document.EditorManager.getBlocConfigPanel().show(this._editor.configurations);
+                break;
+
+            case "add-before":
+                this._target.parentElement?.insertBefore(p, this._target);
+                break;
+
+            case "add-after":
+                this._target.parentElement?.insertBefore(p, this._target.nextSibling);
+                break;
+        
+            default:
+                break;
         }
     }
 
