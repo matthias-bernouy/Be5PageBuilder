@@ -1,9 +1,9 @@
-import { Component } from "../../Utilities/Component";
-import "w13c/LateralDialog/LateralDialog"
-import "w13c/Form/Input/Input"
-import "w13c/Form/Checkbox/Checkbox"
+import "w13c/Dialog/LateralDialog/LateralDialog"
+import "w13c/Base/Form/Input/Input"
+import "w13c/Base/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
+import { Component } from "src/core/Utilities/Component";
 
 export class FloatingToolbar extends Component {
 

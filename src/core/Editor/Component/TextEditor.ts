@@ -1,4 +1,4 @@
-import { BlocLibrary, type MenuItem } from "../BlocLibrary/BlocLibrary";
+import { BlocLibrary } from "../BlocLibrary/BlocLibrary";
 import { Editor } from "../Base/Editor";
 import type { PageMode } from "../Base/EditorManager";
 

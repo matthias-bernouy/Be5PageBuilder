@@ -1,5 +1,5 @@
-import { createDefaultElement } from "../../src/core/Utilities/createDefaultElement";
-import { Editor } from "../../src/core/Editor/Base/Editor";
+import { Editor } from "src/core/Editor/Base/Editor";
+import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
 
 export class HeroSectionEditor extends Editor {
 

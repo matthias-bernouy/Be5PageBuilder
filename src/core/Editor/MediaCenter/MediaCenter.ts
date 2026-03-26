@@ -1,6 +1,6 @@
-import { Component } from "../../Utilities/Component";
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
+import { Component } from 'src/core/Utilities/Component';
 
 export class MediaCenter extends Component {
 

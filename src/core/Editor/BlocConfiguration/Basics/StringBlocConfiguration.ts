@@ -1,16 +1,22 @@
-import { BlocConfiguration } from "../BlocConfiguration";
+import type { Input } from "w13c/Base/Form/Input/Input";
+import { BlocConfiguration, type TBlocConfiguration } from "../BlocConfiguration";
 
 
 export class StringBlocConfiguration extends BlocConfiguration {
 
     private _value: string;
-    private _input: HTMLInputElement;
+    private _input: Input;
 
-    constructor(config: BlocConfiguration) {
-        super(config);
+    constructor(config: Omit<TBlocConfiguration, "type">) {
+        super({ ...config, type: "string" });
         this._value = config.defaultValue || "";
-        this._input = document.createElement('input');
-        this._input.type = 'text';
+        this._input = document.createElement('w13c-input') as Input;
+        
+        const label = document.createElement('span');
+        label.textContent = this.label;
+        label.setAttribute('slot', 'label');
+        this._input.append(label);
+
         this._input.value = this._value;
 
         this._input.addEventListener('input', () => {

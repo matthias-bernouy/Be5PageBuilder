@@ -1,17 +1,18 @@
+import { StringBlocConfiguration } from "../BlocConfiguration/Basics/StringBlocConfiguration";
 import type { BlocConfiguration } from "../BlocConfiguration/BlocConfiguration";
+import { BlocActionGroup } from "./BlocActionGroup";
 
 export abstract class Editor {
 
     private static styleElement: Map<string, HTMLStyleElement>;
     private rawStyles: string;
-    protected target: HTMLElement;
+    public target: HTMLElement;
+    protected _actionGroup: BlocActionGroup;
 
-    protected config: BlocConfiguration[];
-
-    constructor(target: HTMLElement, styles: string, config: BlocConfiguration[] = []) {
+    constructor(target: HTMLElement, styles: string) {
         this.rawStyles = styles;
         this.target = target;
-        this.config = config;
+        this._actionGroup = new BlocActionGroup(this);
 
         document.addEventListener("switch-mode", (e: CustomEventInit) => {
             if (e.detail === "editor-mode") {
@@ -21,13 +22,16 @@ export abstract class Editor {
             }
         })
 
-        if ( Editor.styleElement == null ) Editor.styleElement = new Map()
-        if ( !Editor.styleElement.has(this.target.tagName) ){
+        if (Editor.styleElement == null) Editor.styleElement = new Map()
+        if (!Editor.styleElement.has(this.target.tagName)) {
             const styleElem = document.createElement("style")
             styleElem.innerHTML = styles;
             Editor.styleElement.set(this.target.tagName, styleElem);
         }
+    }
 
+    public onConfigChange(key: string, value: any) {
+        console.log("Config change", key, value)
     }
 
     public viewClient() {
@@ -37,9 +41,11 @@ export abstract class Editor {
         this.target.removeAttribute("data-is-editor")
         this.target.classList.remove("editor-block")
         this.target.removeAttribute("draggable")
-        if (this.target.getAttribute("class") === ""){
+        if (this.target.getAttribute("class") === "") {
             this.target.removeAttribute("class");
         }
+
+        this._actionGroup.stop();
         this.restore();
     }
 
@@ -51,12 +57,21 @@ export abstract class Editor {
         this.target.classList.add("editor-block")
         this.target.setAttribute("data-is-editor", "true")
 
+        this._actionGroup.start();
+
+
         this.init();
     }
 
-    private configPanel() {
-        //document.
-    }
+    get configurations(): BlocConfiguration[] {
+        return [
+            new StringBlocConfiguration({
+                label: "Title",
+                defaultValue: "Default Title",
+                key: "title"
+            })
+        ];
+    };
 
     abstract init(): void;
     abstract restore(): void;

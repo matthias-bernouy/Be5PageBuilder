@@ -1,16 +1,3 @@
-if (typeof globalThis.HTMLElement === "undefined") {
-    class HTMLElement { }
-    (globalThis as any).HTMLElement = HTMLElement;
-}
-
-if (typeof globalThis.customElements === "undefined" ){
-    (globalThis as any).customElements = {
-        define: (tag: string, constructor: any) => {
-        },
-        get: (tag: string) => undefined,
-    };
-}
-
 export type ComponentMetadata = {
     css: string;
     template: string;

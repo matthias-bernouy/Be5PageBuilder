@@ -1,11 +1,11 @@
-import { Component } from "../../../Utilities/Component";
-import "w13c/LateralDialog/LateralDialog"
-import "w13c/Form/Input/Input"
-import "w13c/Form/Checkbox/Checkbox"
+import "w13c/Dialog/LateralDialog/LateralDialog"
+import "w13c/Base/Form/Input/Input"
+import "w13c/Base/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "w13c/LateralDialog/LateralDialog";
+import type { LateralDialog } from "w13c/Dialog/LateralDialog/LateralDialog";
 import type { BlocConfiguration } from "../BlocConfiguration";
+import { Component } from "src/core/Utilities/Component";
 
 export class BlocConfigurationPanel extends Component {
 
@@ -23,6 +23,7 @@ export class BlocConfigurationPanel extends Component {
     }
 
     show(blocksConfig: BlocConfiguration[]) {
+        console.log(blocksConfig)
         this.replaceChildren();
         blocksConfig.forEach(ele => {
             this.append(ele.htmlElement);
@@ -32,4 +33,4 @@ export class BlocConfigurationPanel extends Component {
 
 }
 
-customElements.define("w13c-element-panel-configuration", BlocConfigurationPanel)
+customElements.define("p9r-bloc-configuration", BlocConfigurationPanel)

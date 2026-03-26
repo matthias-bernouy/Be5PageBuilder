@@ -1,15 +1,15 @@
 import "src/core/Editor/AdminLayout/AdminLayout"
 
-import "w13c/Form/Button/Button"
-import "w13c/Form/Input/Input"
-import "w13c/Form/InputTags/InputTags"
-import "w13c/Form/InputFile/InputFile"
+import "w13c/Base/Form/Button/Button"
+import "w13c/Base/Form/Input/Input"
+import "w13c/Base/Form/InputTags/InputTags"
+import "w13c/Base/Form/InputFile/InputFile"
 
-import "w13c/Table/Table"
+import "w13c/Base/Table/Table"
 
-import "w13c/Tag/Tag"
+import "w13c/Base/Tag/Tag"
 
-import "w13c/FormDialog/FormDialog"
+import "w13c/Dialog/FormDialog/FormDialog"
 
 
 document.addEventListener('click', (e: any) => {

@@ -39,20 +39,26 @@ export class EditorManager{
         this.editorSystem.append(this.elementPanelConfig)
 
         new DragManager(workingElement);
+        
+        document.EditorManager = this;
+
         this.observer = new ObserverManager(workingElement);
 
-        document.EditorManager = this;
     }
 
     dashboard(){
         window.location.href = "./pages"
     }
 
+    getEditorSystemHTMLElement(){
+        return this.editorSystem;
+    }
+
     getObserver(){
         return this.observer;
     }
 
-    getPanelBlockConfig(){
+    getBlocConfigPanel(){
         return this.elementPanelConfig;
     }
 

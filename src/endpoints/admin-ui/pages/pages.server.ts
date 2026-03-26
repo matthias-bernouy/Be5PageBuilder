@@ -34,7 +34,7 @@ for (const page of pageList) {
             </p9r-cell>
 
             <p9r-cell>
-                <p9r-tag style="background: var(--${statusVariant === 'success' ? 'success' : 'danger'}-muted)">${statusLabel}</p9r-tag>
+                <p9r-tag color="${statusVariant === 'success' ? 'success' : 'danger'}"">${statusLabel}</p9r-tag>
             </p9r-cell>
         </p9r-row>
     `;

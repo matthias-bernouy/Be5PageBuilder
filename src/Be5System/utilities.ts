@@ -7,6 +7,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
     const glob = new Bun.Glob("**/*.html");
 
     for await (const htmlFile of glob.scan(absolutePath)) {
+        console.log(htmlFile);
         const relativeDir = dirname(htmlFile);
         const fileName = basename(htmlFile, ".html");
         
