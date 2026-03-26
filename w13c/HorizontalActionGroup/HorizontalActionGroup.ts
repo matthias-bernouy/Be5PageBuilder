@@ -13,14 +13,18 @@ export class HorizontalActionGroup extends Component {
         });
     }
 
-    connectedCallback() {
-        const elements = this.querySelectorAll("[data-action]")!;
-        elements.forEach(actionItem => {
-            actionItem.addEventListener('click', (e: Event) => {
+connectedCallback() {
+        // On écoute tout ce qui se passe DANS le composant
+        this.addEventListener('click', (e: Event) => {
+            // On cherche si l'élément cliqué (ou l'un de ses parents) est un bouton data-action
+            const target = e.target as HTMLElement;
+            const actionItem = target.closest("[data-action]");
+            
+            if (actionItem) {
                 e.stopPropagation();
                 const actionName = actionItem.getAttribute('data-action');
                 this.dispatchAction(actionName, actionItem);
-            });
+            }
         });
     }
 
@@ -37,4 +41,6 @@ export class HorizontalActionGroup extends Component {
     }
 }
 
-customElements.define("p9r-horizontal-action-group", HorizontalActionGroup);
+if (!customElements.get("p9r-horizontal-action-group")) {
+    customElements.define("p9r-horizontal-action-group", HorizontalActionGroup);
+}

@@ -7,13 +7,13 @@ export abstract class Component extends HTMLElement {
 
     constructor(metadata: ComponentMetadata) {
         super();
-        this.attachShadow({ mode: 'open' });
-        if (this.shadowRoot) {
-            this.shadowRoot.innerHTML = `
-                <style>${metadata.css}</style>
-                ${metadata.template}
-            `;
-        }
+        const shadow = this.attachShadow({ mode: "open" });
+        const template = document.createElement('template');
+        template.innerHTML = `
+            <style>${metadata.css}</style>
+            ${metadata.template}
+        `;
+        shadow.appendChild(template.content.cloneNode(true));
     }
 
 }

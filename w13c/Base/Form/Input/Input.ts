@@ -59,4 +59,6 @@ export class Input extends Component {
     override focus() { this._input?.focus(); }
 }
 
-customElements.define("w13c-input", Input);
+if (!customElements.get("w13c-input")) {
+    customElements.define("w13c-input", Input);
+}

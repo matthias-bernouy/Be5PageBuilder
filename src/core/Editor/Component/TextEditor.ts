@@ -39,7 +39,6 @@ export class TextEditor extends Editor {
 
     constructor(target: HTMLElement) {
         super(target, cssStyle);
-        this.viewEditor();
         this.observeAttributes();
     }
 
@@ -141,14 +140,11 @@ export class TextEditor extends Editor {
     }
 
     private handleInput(e: Event) {
-        console.log(this.target.innerHTML)
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
         if (this.target.innerText === "/" && this.isBlocAvailable) {
-            console.log("hey")
             const actionbar = BlocLibrary.open();
-            console.log(BlocLibrary)
             actionbar.addEventListener("insert", (e: any) => {
                 const new_node = this.createElement(e.detail.id);
                 this.target.replaceWith(new_node);

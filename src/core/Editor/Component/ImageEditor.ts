@@ -19,15 +19,11 @@ export class ImageEditor extends Editor {
         super(target, cssStyle);
         this.target.setAttribute("src", "https://picsum.photos/200");
         this.resizeInstance = new ResizeInstance(this.target, (w, h, top, left) => {
-            // Application des dimensions
             this.target.style.width = `${w}px`;
             this.target.style.height = `${h}px`;
-            
-            // Application des positions (nécessaire si resize par le haut ou la gauche)
             if (top !== undefined) this.target.style.top = `${top}px`;
             if (left !== undefined) this.target.style.left = `${left}px`;
         });
-        this.viewEditor();
     }
 
     init() {

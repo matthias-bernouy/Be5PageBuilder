@@ -1,18 +1,20 @@
-import { StringBlocConfiguration } from "../BlocConfiguration/Basics/StringBlocConfiguration";
 import type { BlocConfiguration } from "../BlocConfiguration/BlocConfiguration";
-import { BlocActionGroup } from "./BlocActionGroup";
 
 export abstract class Editor {
 
     private static styleElement: Map<string, HTMLStyleElement>;
-    private rawStyles: string;
-    public target: HTMLElement;
-    protected _actionGroup: BlocActionGroup;
+    public         target:       HTMLElement;
+    private        _actionBarFeatures: Map<string, boolean> = new Map([
+        ["delete", true],
+        ["edit", true],
+        ["duplicate", true],
+        ["addBefore", true],
+        ["addAfter", true],
+        ["saveAsTemplate", false]
+    ]);
 
     constructor(target: HTMLElement, styles: string) {
-        this.rawStyles = styles;
         this.target = target;
-        this._actionGroup = new BlocActionGroup(this);
 
         document.addEventListener("switch-mode", (e: CustomEventInit) => {
             if (e.detail === "editor-mode") {
@@ -28,6 +30,18 @@ export abstract class Editor {
             styleElem.innerHTML = styles;
             Editor.styleElement.set(this.target.tagName, styleElem);
         }
+
+        if (document.EditorManager?.getBlocActionGroup()){
+            document.EditorManager.getBlocActionGroup().close();
+        }
+
+
+    }
+
+    private handleHover = () => {
+        console.log(this._actionBarFeatures)
+        document.EditorManager.getBlocActionGroup().setEditor(this);
+        document.EditorManager.getBlocActionGroup().open();
     }
 
     public onConfigChange(key: string, value: any) {
@@ -35,6 +49,9 @@ export abstract class Editor {
     }
 
     public viewClient() {
+        this.restore();
+        this.target.removeEventListener("mouseenter", this.handleHover);
+
         Editor.styleElement.forEach((v, k) => {
             v.remove();
         })
@@ -45,32 +62,54 @@ export abstract class Editor {
             this.target.removeAttribute("class");
         }
 
-        this._actionGroup.stop();
-        this.restore();
+        this.target.removeAttribute("data-disable-delete");
+        this.target.removeAttribute("data-disable-edit");
+        this.target.removeAttribute("data-disable-duplicate");
+        this.target.removeAttribute("data-disable-add-before");
+        this.target.removeAttribute("data-disable-add-after");
+        this.target.removeAttribute("data-enable-save-as-template");
+
     }
 
     public viewEditor() {
+        this.init();
+        this.target.addEventListener("mouseenter", this.handleHover);
+
         Editor.styleElement.forEach((v, k) => {
             document.body.append(v)
         })
+
         this.target.draggable = true;
         this.target.classList.add("editor-block")
         this.target.setAttribute("data-is-editor", "true")
 
-        this._actionGroup.start();
+        if (this.target.getAttribute("data-disable-delete") === "true") {
+            this._actionBarFeatures.set("delete", false);
+        }
+        if (this.target.getAttribute("data-disable-edit") === "true") {
+            this._actionBarFeatures.set("edit", false);
+        }
+        if (this.target.getAttribute("data-disable-duplicate") === "true") {
+            this._actionBarFeatures.set("duplicate", false);
+        }
+        if (this.target.getAttribute("data-disable-add-before") === "true") {
+            this._actionBarFeatures.set("addBefore", false);
+        }
+        if (this.target.getAttribute("data-disable-add-after") === "true") {
+            this._actionBarFeatures.set("addAfter", false);
+        }
+        if (this.target.getAttribute("data-enable-save-as-template") === "true") {
+            this._actionBarFeatures.set("saveAsTemplate", true);
+        }
 
+    }
 
-        this.init();
+    get actionBarConfiguration(){
+        return this._actionBarFeatures;
     }
 
     get configurations(): BlocConfiguration[] {
-        return [
-            new StringBlocConfiguration({
-                label: "Title",
-                defaultValue: "Default Title",
-                key: "title"
-            })
-        ];
+        return [];
     };
 
     abstract init(): void;

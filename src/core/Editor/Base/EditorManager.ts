@@ -4,6 +4,7 @@ import { MediaCenter } from "../MediaCenter/MediaCenter";
 import { FloatingToolbar } from "../FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../RichTextBar/RichTextBar";
 import { BlocConfigurationPanel } from "../BlocConfiguration/BlocConfigurationPanel/BlocConfigurationPanel";
+import { BlocActionGroup } from "./BlocActionGroup";
 
 export type PageModeEnum = [
     "editor-mode",
@@ -22,6 +23,7 @@ export class EditorManager{
     private mediaCenter: MediaCenter;
     private toolbar: FloatingToolbar;
     private elementPanelConfig: BlocConfigurationPanel;
+    private blocActionGroup: BlocActionGroup;
 
     private observer: ObserverManager;
 
@@ -32,14 +34,16 @@ export class EditorManager{
         this.mediaCenter        = new MediaCenter();
         this.toolbar            = new FloatingToolbar();
         this.elementPanelConfig = new BlocConfigurationPanel();
+        this.blocActionGroup    = new BlocActionGroup();
 
         this.editorSystem.append(this.mediaCenter)
         this.editorSystem.append(this.toolbar)
         this.editorSystem.append(new EditorToolbar())
         this.editorSystem.append(this.elementPanelConfig)
+        this.editorSystem.append(this.blocActionGroup)
 
         new DragManager(workingElement);
-        
+
         document.EditorManager = this;
 
         this.observer = new ObserverManager(workingElement);
@@ -48,6 +52,10 @@ export class EditorManager{
 
     dashboard(){
         window.location.href = "./pages"
+    }
+
+    getBlocActionGroup(){
+        return this.blocActionGroup;
     }
 
     getEditorSystemHTMLElement(){
@@ -89,6 +97,14 @@ export class EditorManager{
         document.dispatchEvent(new CustomEvent("switch-mode", {
             detail: this.mode
         }))
+    }
+
+    viewClient(){
+        
+    }
+
+    viewEditor(){
+
     }
 
     save(props: {

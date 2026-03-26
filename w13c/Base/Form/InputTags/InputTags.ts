@@ -88,4 +88,6 @@ export class InputTags extends Component {
     get name() { return this.getAttribute('name') || ""; }
 }
 
-customElements.define("w13c-tag-input", InputTags);
+if (!customElements.get("w13c-tag-input")) {
+    customElements.define("w13c-tag-input", InputTags);
+}

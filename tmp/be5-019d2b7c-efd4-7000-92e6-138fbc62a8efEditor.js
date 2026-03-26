@@ -33,31 +33,18 @@
     HeroSectionEditor: () => HeroSectionEditor
   });
 
-  // src/Be5System/disableBlocActions.ts
-  function disableBlocActions(target) {
-    const targets = Array.isArray(target) ? target : [target];
-    targets.forEach((t) => {
-      t.setAttribute("data-disable-delete", "true");
-      t.setAttribute("data-disable-edit", "true");
-      t.setAttribute("data-disable-duplicate", "true");
-      t.setAttribute("data-disable-add-before", "true");
-      t.setAttribute("data-disable-add-after", "true");
-      t.setAttribute("data-disable-save-as-template", "true");
-    });
-  }
-
   // src/core/Editor/Base/Editor.ts
   class Editor {
     static styleElement;
     target;
-    _actionBarFeatures = new Map([
-      ["delete", true],
-      ["edit", true],
-      ["duplicate", true],
-      ["addBefore", true],
-      ["addAfter", true],
-      ["saveAsTemplate", false]
-    ]);
+    _actionBarFeatures = {
+      delete: true,
+      edit: true,
+      duplicate: true,
+      addBefore: true,
+      addAfter: true,
+      saveAsTemplate: false
+    };
     constructor(target, styles) {
       this.target = target;
       document.addEventListener("switch-mode", (e) => {
@@ -76,7 +63,6 @@
       }
     }
     handleHover = () => {
-      console.log("hover", this.target);
       document.EditorManager.getBlocActionGroup().setEditor(this);
       document.EditorManager.getBlocActionGroup().open();
     };
@@ -112,22 +98,22 @@
       this.target.classList.add("editor-block");
       this.target.setAttribute("data-is-editor", "true");
       if (this.target.getAttribute("data-disable-delete") === "true") {
-        this._actionBarFeatures.set("delete", false);
+        this._actionBarFeatures.delete = false;
       }
       if (this.target.getAttribute("data-disable-edit") === "true") {
-        this._actionBarFeatures.set("edit", false);
+        this._actionBarFeatures.edit = false;
       }
       if (this.target.getAttribute("data-disable-duplicate") === "true") {
-        this._actionBarFeatures.set("duplicate", false);
+        this._actionBarFeatures.duplicate = false;
       }
       if (this.target.getAttribute("data-disable-add-before") === "true") {
-        this._actionBarFeatures.set("addBefore", false);
+        this._actionBarFeatures.addBefore = false;
       }
       if (this.target.getAttribute("data-disable-add-after") === "true") {
-        this._actionBarFeatures.set("addAfter", false);
+        this._actionBarFeatures.addAfter = false;
       }
       if (this.target.getAttribute("data-enable-save-as-template") === "true") {
-        this._actionBarFeatures.set("saveAsTemplate", true);
+        this._actionBarFeatures.saveAsTemplate = true;
       }
     }
     get actionBarConfiguration() {
@@ -153,15 +139,12 @@
 
   // w13c/Base/HeroSection/HeroSectionEditor.ts
   class HeroSectionEditor extends Editor {
-    _imageSlot;
-    _titleSlot;
-    _contentSlot;
-    _footerSlot;
+    _imageSlot = null;
     constructor(target) {
       super(target, "");
-      this._titleSlot = createDefaultElement(this.target, "title", "span", "Title");
-      this._contentSlot = createDefaultElement(this.target, "content", "span", "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ");
-      this._footerSlot = createDefaultElement(this.target, "footer", "span", "footer");
+      createDefaultElement(this.target, "title", "span", "Title");
+      createDefaultElement(this.target, "content", "span", "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ");
+      createDefaultElement(this.target, "footer", "span", "footer");
       if (!this.target.querySelector("img")) {
         const img = document.createElement("img");
         img.setAttribute("slot", "image");
@@ -171,14 +154,12 @@
       } else {
         this._imageSlot = this.target.querySelector("img");
       }
+      this.viewEditor();
     }
     init() {
-      disableBlocActions([
-        this._imageSlot,
-        this._titleSlot,
-        this._contentSlot,
-        this._footerSlot
-      ]);
+      if (this._imageSlot) {
+        this._imageSlot.setAttribute("data-disable-delete", "true");
+      }
     }
     restore() {}
   }

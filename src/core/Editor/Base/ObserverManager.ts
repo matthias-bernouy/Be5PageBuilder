@@ -96,7 +96,6 @@ export class ObserverManager {
     }
 
     getItemsByGroup(group: string){
-        console.log(this.editors.values())
         return this.editors.values().filter(v => v.visible && v.group === group);
     }
 
@@ -114,6 +113,9 @@ export class ObserverManager {
     make_it_editor(node: HTMLElement) {
         const tag = node.tagName.toLowerCase();
         const cl = this.editors.get(tag)?.cl;
-        if (cl) new cl(node);
+        if (cl) { 
+            const editor = new cl(node);
+            editor.viewEditor();
+        }
     }
 }

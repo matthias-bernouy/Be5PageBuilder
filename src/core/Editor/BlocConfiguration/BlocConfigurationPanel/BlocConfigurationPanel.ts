@@ -23,7 +23,6 @@ export class BlocConfigurationPanel extends Component {
     }
 
     show(blocksConfig: BlocConfiguration[]) {
-        console.log(blocksConfig)
         this.replaceChildren();
         blocksConfig.forEach(ele => {
             this.append(ele.htmlElement);

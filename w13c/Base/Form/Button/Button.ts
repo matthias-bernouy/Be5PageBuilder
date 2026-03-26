@@ -63,4 +63,6 @@ export class Button extends Component {
     }
 }
 
-customElements.define("p9r-button", Button);
+if (!customElements.get("p9r-button")) {
+    customElements.define("p9r-button", Button);
+}

@@ -42,7 +42,7 @@
       t.setAttribute("data-disable-duplicate", "true");
       t.setAttribute("data-disable-add-before", "true");
       t.setAttribute("data-disable-add-after", "true");
-      t.setAttribute("data-disable-save-as-template", "true");
+      t.setAttribute("data-enable-save-as-template", "true");
     });
   }
 
@@ -50,14 +50,14 @@
   class Editor {
     static styleElement;
     target;
-    _actionBarFeatures = new Map([
-      ["delete", true],
-      ["edit", true],
-      ["duplicate", true],
-      ["addBefore", true],
-      ["addAfter", true],
-      ["saveAsTemplate", false]
-    ]);
+    _actionBarFeatures = {
+      delete: true,
+      edit: true,
+      duplicate: true,
+      addBefore: true,
+      addAfter: true,
+      saveAsTemplate: false
+    };
     constructor(target, styles) {
       this.target = target;
       document.addEventListener("switch-mode", (e) => {
@@ -76,7 +76,6 @@
       }
     }
     handleHover = () => {
-      console.log("hover", this.target);
       document.EditorManager.getBlocActionGroup().setEditor(this);
       document.EditorManager.getBlocActionGroup().open();
     };
@@ -112,22 +111,22 @@
       this.target.classList.add("editor-block");
       this.target.setAttribute("data-is-editor", "true");
       if (this.target.getAttribute("data-disable-delete") === "true") {
-        this._actionBarFeatures.set("delete", false);
+        this._actionBarFeatures.delete = false;
       }
       if (this.target.getAttribute("data-disable-edit") === "true") {
-        this._actionBarFeatures.set("edit", false);
+        this._actionBarFeatures.edit = false;
       }
       if (this.target.getAttribute("data-disable-duplicate") === "true") {
-        this._actionBarFeatures.set("duplicate", false);
+        this._actionBarFeatures.duplicate = false;
       }
       if (this.target.getAttribute("data-disable-add-before") === "true") {
-        this._actionBarFeatures.set("addBefore", false);
+        this._actionBarFeatures.addBefore = false;
       }
       if (this.target.getAttribute("data-disable-add-after") === "true") {
-        this._actionBarFeatures.set("addAfter", false);
+        this._actionBarFeatures.addAfter = false;
       }
       if (this.target.getAttribute("data-enable-save-as-template") === "true") {
-        this._actionBarFeatures.set("saveAsTemplate", true);
+        this._actionBarFeatures.saveAsTemplate = true;
       }
     }
     get actionBarConfiguration() {

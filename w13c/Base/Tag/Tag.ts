@@ -18,4 +18,6 @@ export class Tag extends Component {
 
 }
 
-customElements.define("p9r-tag", Tag);
+if (!customElements.get("p9r-tag")) {
+    customElements.define("p9r-tag", Tag);
+}

@@ -7,7 +7,6 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
     const glob = new Bun.Glob("**/*.html");
 
     for await (const htmlFile of glob.scan(absolutePath)) {
-        console.log(htmlFile);
         const relativeDir = dirname(htmlFile);
         const fileName = basename(htmlFile, ".html");
         
@@ -50,7 +49,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
         if (clientFile) {
             runner.addEndpoint("GET", urlPath + ".js", async () => {
                 try{
-                    const result = await Bun.build({ entrypoints: [clientFile] });
+                    const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
                     return send_js(await result.outputs[0]!.text());
                 } catch (e){
                     console.error("Error building client script for", urlPath, e);

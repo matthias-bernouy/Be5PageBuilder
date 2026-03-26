@@ -21,6 +21,7 @@ export default async function CLI_importBloc(args: string[]) {
         clientUrl: 'mongodb://localhost:27017/',
     })
 
+
     const repo = MongoDatabaseCore.getRepository(BlocModel);
 
     await generate_bloc_files(
@@ -42,5 +43,11 @@ export default async function CLI_importBloc(args: string[]) {
     MongoDatabaseCore.close();
 
 }
- 
-await CLI_importBloc(process.argv.slice(2));
+
+try{
+    await CLI_importBloc(process.argv.slice(2));
+
+} catch(e){
+    console.error("Error importing bloc:", e);
+    process.exit(1);
+}

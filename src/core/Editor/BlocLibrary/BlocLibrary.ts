@@ -69,7 +69,6 @@ export class BlocLibrary extends Component {
         // Rendu des blocs
         if (this.activeGroup) {
             const items = observer.getItemsByGroup(this.activeGroup);
-            console.log(items)
             items.forEach((item: TagElement) => {
                 const card = document.createElement('button');
                 card.slot = 'bloc';

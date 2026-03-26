@@ -28,7 +28,6 @@ export class ListEditor extends Editor {
             li = document.createElement("li");
             this.target.append(li);
         }
-        this.viewEditor();
         requestAnimationFrame(() => {
             li.focus();
         });
