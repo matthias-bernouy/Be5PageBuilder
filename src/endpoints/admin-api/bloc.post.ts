@@ -1,8 +1,8 @@
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 import { prepare_bloc } from "src/Be5System/blocs/prepare_bloc";
 import { BlocModel } from "src/data/model/BlocModel";
 
-export default async function importBloc(req: Request, system: Be5PageBuilder) {
+export default async function importBloc(req: Request, system: PageBuilder) {
 
     const formData = await req.formData();
 

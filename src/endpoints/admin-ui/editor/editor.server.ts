@@ -3,9 +3,9 @@ import { parseHTML } from 'linkedom';
 import { join } from "node:path"
 import { getEditorBlocsJavascript } from 'src/data/queries/bloc/getEditorBlocsJavascript';
 import { getPage } from 'src/data/queries/page/getPage';
-import type { Be5PageBuilder } from 'src/Be5PageBuilder';
+import type { PageBuilder } from 'src/PageBuilder';
 
-export default async function ArticleServerAdmin(req: Request, system: Be5PageBuilder) {
+export default async function ArticleServerAdmin(req: Request, system: PageBuilder) {
 
     const html = await Bun.file(join(__dirname, "./editor.html")).text();
     const { document } = parseHTML(html);

@@ -1,5 +1,7 @@
 import { disableBlocActions } from "src/Be5System/disableBlocActions";
 import { Editor } from "src/core/Editor/Base/Editor";
+import { StringBlocConfiguration } from "src/core/Editor/BlocConfiguration/Basics/StringBlocConfiguration";
+import type { BlocConfiguration } from "src/core/Editor/BlocConfiguration/BlocConfiguration";
 import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
 
 export class HeroSectionEditor extends Editor {
@@ -8,6 +10,13 @@ export class HeroSectionEditor extends Editor {
     private _titleSlot: HTMLElement;
     private _contentSlot: HTMLElement;
     private _footerSlot: HTMLElement;
+
+    private _configurations: BlocConfiguration[] = [
+        new StringBlocConfiguration({ key: "title", label: "Title", defaultValue: "_titleValue" }),
+        new StringBlocConfiguration({ key: "content", label: "Content", defaultValue: "_contentValue" }),
+        new StringBlocConfiguration({ key: "footer", label: "Footer", defaultValue: "_footerValue" }),
+        new StringBlocConfiguration({ key: "image", label: "Image", defaultValue: "this._imageSlot.src" }),
+    ];
 
     constructor(target: HTMLElement) {
         super(target, "");
@@ -34,6 +43,10 @@ export class HeroSectionEditor extends Editor {
             this._contentSlot,
             this._footerSlot
         ])
+    }
+
+    override get configurations(): BlocConfiguration[] {
+        return this._configurations;
     }
 
     restore() {

@@ -17,7 +17,7 @@ export class ImageEditor extends Editor {
 
     constructor(target: HTMLElement) {
         super(target, cssStyle);
-        this.target.setAttribute("src", "https://picsum.photos/200");
+        if (!this.target.getAttribute("src")) this.target.setAttribute("src", "https://picsum.photos/200");
         this.resizeInstance = new ResizeInstance(this.target, (w, h, top, left) => {
             this.target.style.width = `${w}px`;
             this.target.style.height = `${h}px`;

@@ -50,14 +50,14 @@
   class Editor {
     static styleElement;
     target;
-    _actionBarFeatures = {
-      delete: true,
-      edit: true,
-      duplicate: true,
-      addBefore: true,
-      addAfter: true,
-      saveAsTemplate: false
-    };
+    _actionBarFeatures = new Map([
+      ["delete", true],
+      ["edit", true],
+      ["duplicate", true],
+      ["addBefore", true],
+      ["addAfter", true],
+      ["saveAsTemplate", false]
+    ]);
     constructor(target, styles) {
       this.target = target;
       document.addEventListener("switch-mode", (e) => {
@@ -73,6 +73,9 @@
         const styleElem = document.createElement("style");
         styleElem.innerHTML = styles;
         Editor.styleElement.set(this.target.tagName, styleElem);
+      }
+      if (document.EditorManager?.getBlocActionGroup()) {
+        document.EditorManager.getBlocActionGroup().close();
       }
     }
     handleHover = () => {
@@ -99,7 +102,7 @@
       this.target.removeAttribute("data-disable-duplicate");
       this.target.removeAttribute("data-disable-add-before");
       this.target.removeAttribute("data-disable-add-after");
-      this.target.removeAttribute("data-enable-save-as-template");
+      this.target.removeAttribute("data-disable-save-as-template");
     }
     viewEditor() {
       this.init();
@@ -111,22 +114,22 @@
       this.target.classList.add("editor-block");
       this.target.setAttribute("data-is-editor", "true");
       if (this.target.getAttribute("data-disable-delete") === "true") {
-        this._actionBarFeatures.delete = false;
+        this._actionBarFeatures.set("delete", false);
       }
       if (this.target.getAttribute("data-disable-edit") === "true") {
-        this._actionBarFeatures.edit = false;
+        this._actionBarFeatures.set("edit", false);
       }
       if (this.target.getAttribute("data-disable-duplicate") === "true") {
-        this._actionBarFeatures.duplicate = false;
+        this._actionBarFeatures.set("duplicate", false);
       }
       if (this.target.getAttribute("data-disable-add-before") === "true") {
-        this._actionBarFeatures.addBefore = false;
+        this._actionBarFeatures.set("addBefore", false);
       }
       if (this.target.getAttribute("data-disable-add-after") === "true") {
-        this._actionBarFeatures.addAfter = false;
+        this._actionBarFeatures.set("addAfter", false);
       }
-      if (this.target.getAttribute("data-enable-save-as-template") === "true") {
-        this._actionBarFeatures.saveAsTemplate = true;
+      if (this.target.getAttribute("data-disable-save-as-template") === "true") {
+        this._actionBarFeatures.set("saveAsTemplate", false);
       }
     }
     get actionBarConfiguration() {
@@ -134,6 +137,74 @@
     }
     get configurations() {
       return [];
+    }
+  }
+
+  // src/core/Editor/BlocConfiguration/BlocConfiguration.ts
+  class BlocConfiguration {
+    static eventName = "bloc-config-change";
+    _type;
+    _key;
+    _label;
+    _defaultValue;
+    _options;
+    constructor(config) {
+      this._type = config.type;
+      this._key = config.key;
+      this._label = config.label;
+      this._defaultValue = config.defaultValue;
+      this._options = config.options;
+    }
+    get label() {
+      return this._label;
+    }
+    get type() {
+      return this._type;
+    }
+    get key() {
+      return this._key;
+    }
+    get defaultValue() {
+      return this._defaultValue;
+    }
+    get options() {
+      return this._options;
+    }
+    set value(val) {
+      const event = new CustomEvent(BlocConfiguration.eventName, {
+        detail: {
+          key: this.key,
+          value: val
+        }
+      });
+      document.dispatchEvent(event);
+    }
+  }
+
+  // src/core/Editor/BlocConfiguration/Basics/StringBlocConfiguration.ts
+  class StringBlocConfiguration extends BlocConfiguration {
+    _value;
+    _input;
+    constructor(config) {
+      console.log("Creating StringBlocConfiguration with config", config);
+      super({ ...config, type: "string" });
+      this._value = config.defaultValue || "";
+      this._input = document.createElement("w13c-input");
+      const label = document.createElement("span");
+      label.textContent = this.label;
+      label.setAttribute("slot", "label");
+      this._input.append(label);
+      this._input.setAttribute("value", this._value);
+      this._input.setAttribute("placeholder", this.label);
+      this._input.addEventListener("input", () => {
+        this._value = this._input.value;
+      });
+    }
+    get value() {
+      return this._value;
+    }
+    get htmlElement() {
+      return this._input;
     }
   }
 
@@ -156,6 +227,12 @@
     _titleSlot;
     _contentSlot;
     _footerSlot;
+    _configurations = [
+      new StringBlocConfiguration({ key: "title", label: "Title", defaultValue: "_titleValue" }),
+      new StringBlocConfiguration({ key: "content", label: "Content", defaultValue: "_contentValue" }),
+      new StringBlocConfiguration({ key: "footer", label: "Footer", defaultValue: "_footerValue" }),
+      new StringBlocConfiguration({ key: "image", label: "Image", defaultValue: "this._imageSlot.src" })
+    ];
     constructor(target) {
       super(target, "");
       this._titleSlot = createDefaultElement(this.target, "title", "span", "Title");
@@ -178,6 +255,9 @@
         this._contentSlot,
         this._footerSlot
       ]);
+    }
+    get configurations() {
+      return this._configurations;
     }
     restore() {}
   }

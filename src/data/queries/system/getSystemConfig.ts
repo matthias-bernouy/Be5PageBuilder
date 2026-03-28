@@ -1,7 +1,7 @@
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 import { SystemModel, type ISystem } from "../../model/SystemModel";
 
-export async function getSystemConfig(system: Be5PageBuilder){
+export async function getSystemConfig(system: PageBuilder){
     const repo = system.db.getRepository(SystemModel);
     const sys = await repo.findOne({
         id: {

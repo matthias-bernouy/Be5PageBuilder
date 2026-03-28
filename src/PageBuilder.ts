@@ -9,7 +9,7 @@ type Configuration = {
     clientPathPrefix?: string;
 }
 
-export class Be5PageBuilder{
+export class PageBuilder{
 
     private configuration: Configuration;
     private database?: IBe5_Database;

@@ -4,6 +4,8 @@ import "w13c/Base/Form/Button/Button"
 import "w13c/Base/Form/Input/Input"
 import "w13c/Base/Form/InputTags/InputTags"
 import "w13c/Base/Form/InputFile/InputFile"
+import "w13c/Base/Form/Select/Select"
+import "w13c/Base/Form/SegmentedSwitch/SegmentedSwitch"
 
 import "w13c/Base/Table/Table"
 

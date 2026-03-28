@@ -1,8 +1,8 @@
 import { PageModel, type IPage } from "src/data/model/PageModel";
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 import contains from "src/Be5System/contains";
 
-export default async function updatePage(req: Request, system: Be5PageBuilder) {
+export default async function updatePage(req: Request, system: PageBuilder) {
 
     const url = new URL(req.url);
     const identifier = url.searchParams.get("identifier") || "";

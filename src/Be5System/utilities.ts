@@ -1,9 +1,9 @@
 import type { Be5_Runner, IBe5_Runner } from "be5-interfaces";
 import { send_html, send_js, type Be5System } from "be5-system";
 import { basename, dirname, join } from "node:path";
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 
-export async function registerUIFolder(baseUrl: string, absolutePath: string, system: Be5PageBuilder, runner: IBe5_Runner) {
+export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: IBe5_Runner) {
     const glob = new Bun.Glob("**/*.html");
 
     for await (const htmlFile of glob.scan(absolutePath)) {
@@ -36,7 +36,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 
         if (serverFile){
             const module = await import(serverFile);
-            const serverHandler = module.default as (req: Request, system: Be5PageBuilder) => Promise<Response>;
+            const serverHandler = module.default as (req: Request, system: PageBuilder) => Promise<Response>;
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
                 return await serverHandler(req, system);
             });
@@ -64,7 +64,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 }
 
 
-export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: Be5PageBuilder, runner: IBe5_Runner) {
+export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
     const glob = new Bun.Glob("**/*.css");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -78,7 +78,7 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     }
 }
 
-export async function registerJSFolder(url: string, absoluteFolderPath: string, system: Be5PageBuilder, runner: IBe5_Runner) {
+export async function registerJSFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
     const glob = new Bun.Glob("**/*.js");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -92,7 +92,7 @@ export async function registerJSFolder(url: string, absoluteFolderPath: string, 
     }
 }
 
-export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: Be5PageBuilder, runner: IBe5_Runner) {
+export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
     const glob = new Bun.Glob("**/*.ts");
 
     for await (const file of glob.scan(absoluteFolderPath)) {

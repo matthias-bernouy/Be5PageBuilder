@@ -1,7 +1,7 @@
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 import { getBlocRepository } from "../../repositories";
 
-export async function getClientBlocJavascript(system: Be5PageBuilder, htmlTag: string){
+export async function getClientBlocJavascript(system: PageBuilder, htmlTag: string){
     const repo = getBlocRepository(system);
     const res = await repo.findOne({
         id: htmlTag

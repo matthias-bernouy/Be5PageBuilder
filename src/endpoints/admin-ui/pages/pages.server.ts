@@ -1,10 +1,10 @@
 import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { PageModel } from 'src/data/model/PageModel';
-import type { Be5PageBuilder } from 'src/Be5PageBuilder';
+import type { PageBuilder } from 'src/PageBuilder';
 import template from "./pages.html";
 
-export default async function Server(req: Request, system: Be5PageBuilder){
+export default async function Server(req: Request, system: PageBuilder){
     const { document } = parseHTML(await Bun.file(template.index).text());
 
     const repo = system.db.getRepository(PageModel);

@@ -1,11 +1,11 @@
 import { parseHTML } from "linkedom";
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 import { join } from "node:path"
 import { getPage } from "src/data/queries/page/getPage";
 import { send_html } from "be5-system";
 import { getBlocsNamesAndTags } from "src/data/queries/bloc/getBlocsNamesAndTags";
 
-export default async function ViewPageServer(req: Request, system: Be5PageBuilder){
+export default async function ViewPageServer(req: Request, system: PageBuilder){
     const html = await Bun.file(join(__dirname, "./index.html")).text();
     const { document } = parseHTML(html);
 

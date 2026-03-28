@@ -26,6 +26,12 @@
 
     <main id="editor" spellcheck="false"></main>
 
+    <script>
+        let a = document.querySelector("p9r-segmented-switch");
+        a.addEventListener("change", (e) => {
+            console.log("Selected value:", e.target.value);
+        });
+    </script>
 </body>
 
 </html>

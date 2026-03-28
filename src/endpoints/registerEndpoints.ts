@@ -1,6 +1,6 @@
 import { registerUIFolder, registerCSSFolder, registerJSFolder, registerAPIFolder } from "src/Be5System/utilities";
 import { join } from "node:path"
-import type { Be5PageBuilder } from "src/Be5PageBuilder";
+import type { PageBuilder } from "src/PageBuilder";
 import type { Be5_Authentication, IBe5_Authentication, Middleware } from "be5-interfaces";
 
 const root = process.cwd();
@@ -8,7 +8,7 @@ function res(str: string){
     return join(root, "src/endpoints", str);
 }
 
-export const createAuthGuard = (system: Be5PageBuilder): Middleware => {
+export const createAuthGuard = (system: PageBuilder): Middleware => {
     return async (req, next) => {
         const url = new URL(req.url);
         if ( !url.pathname.startsWith(system.config.adminPathPrefix || "/page-builder") ) return await next();
@@ -29,7 +29,7 @@ export const createAuthGuard = (system: Be5PageBuilder): Middleware => {
     };
 };
 
-export function registerEndpoints(system: Be5PageBuilder){
+export function registerEndpoints(system: PageBuilder){
 
     system.runner.group(system.config.adminPathPrefix || "/page-builder", (r) => {
 

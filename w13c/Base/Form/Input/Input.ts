@@ -22,6 +22,7 @@ export class Input extends Component {
     }
 
     connectedCallback() {
+        console.log("Creating Input");
         this._input = this.shadowRoot?.querySelector('input') || null;
 
         if (this._input) {
@@ -52,6 +53,7 @@ export class Input extends Component {
     }
 
     attributeChangedCallback(name: string, oldVal: string, newVal: string) {
+        console.log("Attribute changed", name, oldVal, newVal)
         if (!this) return;
         if (name === 'value' && this._input) this._input.value = newVal as any;
     }

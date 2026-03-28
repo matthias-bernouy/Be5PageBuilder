@@ -1,5 +1,5 @@
 import { Be5_Authentication, Be5_MongoDB, Be5_Runner } from "be5-interfaces"
-import { Be5PageBuilder } from "src/Be5PageBuilder";
+import { PageBuilder } from "src/PageBuilder";
 import { BlocModel } from "src/data/model/BlocModel";
 
 const MongoDatabaseCore = new Be5_MongoDB();
@@ -11,18 +11,27 @@ const AuthenticationCore = new Be5_Authentication(MongoDatabaseCore, BunRunnerCo
 
 AuthenticationCore.registerDisabled = true;
 
-new Be5PageBuilder(BunRunnerCore, MongoDatabaseCore, AuthenticationCore, {
+new PageBuilder(BunRunnerCore, MongoDatabaseCore, AuthenticationCore, {
     "adminPathPrefix": "",
     "clientPathPrefix": ""
 })
 
 await MongoDatabaseCore.init({
-    dbName: 'new_db_papa',
+    dbName: 'testttt',
     clientUrl: 'mongodb://localhost:27017',
 })
 
 BunRunnerCore.start();
 
 await MongoDatabaseCore.getRepository(BlocModel).nativeDelete({});
+
+const result = Bun.spawnSync(["bun", "run", "src/cli/CLI_importBloc.ts", "w13c/Base", "HeroSection", "base"], {
+  stdout: "inherit",
+  stderr: "inherit",
+});
+
+if (!result.success) {
+  console.error("The import failed!");
+}
 
 console.log("Starting app...")

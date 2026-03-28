@@ -1,8 +1,8 @@
 import { send_js } from 'be5-system';
-import type { Be5PageBuilder } from 'src/Be5PageBuilder';
+import type { PageBuilder } from 'src/PageBuilder';
 import { getClientBlocJavascript } from 'src/data/queries/bloc/getClientBlocJavascript';
 
-export default async function BlocServerClient(req: Request, system: Be5PageBuilder){
+export default async function BlocServerClient(req: Request, system: PageBuilder){
 
     const url = new URL(req.url);
     const tag = url.searchParams.get("tag");

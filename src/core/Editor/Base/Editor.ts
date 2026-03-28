@@ -39,7 +39,6 @@ export abstract class Editor {
     }
 
     private handleHover = () => {
-        console.log(this._actionBarFeatures)
         document.EditorManager.getBlocActionGroup().setEditor(this);
         document.EditorManager.getBlocActionGroup().open();
     }
@@ -67,7 +66,7 @@ export abstract class Editor {
         this.target.removeAttribute("data-disable-duplicate");
         this.target.removeAttribute("data-disable-add-before");
         this.target.removeAttribute("data-disable-add-after");
-        this.target.removeAttribute("data-enable-save-as-template");
+        this.target.removeAttribute("data-disable-save-as-template");
 
     }
 
@@ -98,8 +97,8 @@ export abstract class Editor {
         if (this.target.getAttribute("data-disable-add-after") === "true") {
             this._actionBarFeatures.set("addAfter", false);
         }
-        if (this.target.getAttribute("data-enable-save-as-template") === "true") {
-            this._actionBarFeatures.set("saveAsTemplate", true);
+        if (this.target.getAttribute("data-disable-save-as-template") === "true") {
+            this._actionBarFeatures.set("saveAsTemplate", false);
         }
 
     }

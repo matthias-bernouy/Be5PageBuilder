@@ -17,7 +17,7 @@ export default async function CLI_importBloc(args: string[]) {
     const MongoDatabaseCore = new Be5_MongoDB();
     MongoDatabaseCore.addSchema(BlocModel);
     await MongoDatabaseCore.init({
-        dbName: 'new_db_papa',
+        dbName: 'testttt',
         clientUrl: 'mongodb://localhost:27017/',
     })
 
