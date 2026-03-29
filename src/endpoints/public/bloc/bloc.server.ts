@@ -8,7 +8,7 @@ export default async function BlocServerClient(req: Request, system: PageBuilder
 
     if (!tag) return Response.error()
 
-    const js = await system.datastore.getBlocViewJS(tag);
+    const js = await system.repository.getBlocViewJS(tag);
 
     if (!js) return Response.error();
 

@@ -16,7 +16,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
 
     const bloc = await prepare_bloc(viewFile, editorFile, name, group);
 
-    await system.datastore.createBloc(bloc);
+    await system.repository.createBloc(bloc);
 
     return new Response("Bloc imported");
 }

@@ -27,6 +27,8 @@ export class EditorManager{
 
     private observer: ObserverManager;
 
+    publicRoot: string = "/";
+
     constructor(workingElement: HTMLElement){
         this.workingElement = workingElement;
         this.editorSystem   = document.getElementById("editor-system")!;
@@ -75,15 +77,6 @@ export class EditorManager{
     }
 
     getMediaCenter(){
-        this.mediaCenter.addImage("https://picsum.photos/201", "qsdfqsddsf")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
-        this.mediaCenter.addImage("https://picsum.photos/200", "")
         return this.mediaCenter;
     }
 
@@ -97,14 +90,6 @@ export class EditorManager{
         document.dispatchEvent(new CustomEvent("switch-mode", {
             detail: this.mode
         }))
-    }
-
-    viewClient(){
-        
-    }
-
-    viewEditor(){
-
     }
 
     save(props: {

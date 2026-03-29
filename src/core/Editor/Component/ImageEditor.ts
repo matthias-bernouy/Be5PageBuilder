@@ -11,18 +11,16 @@ const cssStyle = `
 export class ImageEditor extends Editor {
 
     private resizeInstance: ResizeInstance;
-    
-    private onClick = () => this.handleClick();
+
+    private onClick = (e) => this.handleClick(e);
     private onSelectMedia = (e: any) => this.handleSelectMedia(e);
 
     constructor(target: HTMLElement) {
         super(target, cssStyle);
         if (!this.target.getAttribute("src")) this.target.setAttribute("src", "https://picsum.photos/200");
-        this.resizeInstance = new ResizeInstance(this.target, (w, h, top, left) => {
+        this.resizeInstance = new ResizeInstance(this.target, (w, h) => {
             this.target.style.width = `${w}px`;
             this.target.style.height = `${h}px`;
-            if (top !== undefined) this.target.style.top = `${top}px`;
-            if (left !== undefined) this.target.style.left = `${left}px`;
         });
     }
 
@@ -32,20 +30,27 @@ export class ImageEditor extends Editor {
         this.resizeInstance.start();
     }
 
-    private handleSelectMedia(e: any){
+    private handleSelectMedia(e: any) {
         this.target.setAttribute("src", e.detail.src);
         this.target.setAttribute("alt", e.detail.alt);
-        document.EditorManager.getMediaCenter().removeEventListener("select-image", this.onSelectMedia)
+        document.EditorManager.getMediaCenter().removeEventListener("select-item", this.onSelectMedia)
     }
 
-    private handleClick() {
-        document.EditorManager.getMediaCenter().show();
-        document.EditorManager.getMediaCenter().addEventListener("select-image", this.onSelectMedia)
+    private handleClick(e: MouseEvent) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        const mediaCenter = document.EditorManager.getMediaCenter();
+
+        mediaCenter.removeEventListener("select-item", this.onSelectMedia);
+        mediaCenter.addEventListener("select-item", this.onSelectMedia);
+
+        mediaCenter.show(["folder", "image"]);
     }
 
     restore() {
         this.target.removeEventListener("click", this.onClick);
-        document.EditorManager.getMediaCenter().removeEventListener("select-image", this.onSelectMedia)
+        document.EditorManager.getMediaCenter().removeEventListener("select-item", this.onSelectMedia)
         this.resizeInstance.stop();
     }
 }

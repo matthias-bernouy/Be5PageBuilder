@@ -81,7 +81,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;                    /* Espace entre icône et texte */
+  gap: 12px;                    /* Espace entre icône et texte */
   
   /* On utilise padding-y et padding-x séparément */
   padding: var(--_btn-padding-y) var(--_btn-padding-x);
@@ -120,4 +120,8 @@
 :host([disabled]) {
   opacity: 0.4;
   pointer-events: none;
+}
+
+::slotted(svg){
+  width: 1.2rem;
 }

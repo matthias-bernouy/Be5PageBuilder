@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "linkedom": "^0.18.12",
-        "mongodb": "7.1"
+        "mongodb": "7.1",
+        "sharp": "^0.34.5"
     }
 }

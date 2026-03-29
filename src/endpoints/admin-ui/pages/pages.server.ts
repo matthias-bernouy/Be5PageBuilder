@@ -6,7 +6,7 @@ import template from "./pages.html";
 export default async function Server(req: Request, system: PageBuilder){
     const { document } = parseHTML(await Bun.file(template.index).text());
 
-    const pageList = await system.datastore.getAllPages();
+    const pageList = await system.repository.getAllPages();
 
     const tableBody = document.querySelector("p9r-table")!;
 

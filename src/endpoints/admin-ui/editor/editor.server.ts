@@ -11,7 +11,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     const url = new URL(req.url);
     const identifier = url.searchParams.get("identifier");
 
-    const blocs = await system.datastore.getBlocsEditorJS();
+    const blocs = await system.repository.getBlocsEditorJS();
 
     let scripts: HTMLElement[] = [];
 
@@ -50,7 +50,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     document.body.append(...scripts);
 
     if (identifier) {
-        const page = await system.datastore.getPageByIdentifier(identifier);
+        const page = await system.repository.getPageByIdentifier(identifier);
         const editorSystem = document.getElementById("editor-system")!;
         const editor = document.getElementById("editor")!;
 

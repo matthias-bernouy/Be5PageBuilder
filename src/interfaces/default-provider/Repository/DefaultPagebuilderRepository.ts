@@ -1,5 +1,5 @@
 import { Collection, Db, MongoClient } from "mongodb";
-import type { IDatastore } from "src/interfaces/contract/Repository/PageBuilderRepository";
+import type { PageBuilderRepository } from "src/interfaces/contract/Repository/PageBuilderRepository";
 import type { TBloc, TPage, TSystem } from "src/interfaces/contract/Repository/TModels";
 import type { TBlocMetadata } from "src/interfaces/contract/Repository/TQueries";
 
@@ -15,14 +15,14 @@ type DefaultDatastoreConfig = {
  * @description This default implementation use mongodb as database.
  * 
  **/
-export class DefaultPageBuilderRepository implements IDatastore {
+export class DefaultPageBuilderRepository implements PageBuilderRepository {
 
     private _database: Db;
     private _blocsCollection: Collection<TBloc>;
     private _pagesCollection: Collection<TPage>;
     private _systemCollection: Collection<TSystem>;
 
-    private constructor(client: MongoClient, databaseName: string) {
+    constructor(client: MongoClient, databaseName: string) {
         this._database = client.db(databaseName);
         this._blocsCollection = this._database.collection<TBloc>("blocs");
         this._pagesCollection = this._database.collection<TPage>("pages");

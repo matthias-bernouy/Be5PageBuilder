@@ -16,9 +16,56 @@ export type TPage = {
   tags: string[];
 }
 
+
+
+export type ColorShades = {
+    contrasted: string;
+    base: string;
+    muted: string;
+}
+
+export type TTheme = {
+
+    colors: {
+        primary: ColorShades;
+        secondary: ColorShades;
+
+        danger: ColorShades;
+        success: ColorShades;
+        warning: ColorShades;
+        info: ColorShades;
+
+        text: {
+            title: string;
+            body: string;
+            muted: string;
+        }
+
+        background: {
+            base: string;
+            surface: string;
+            overlay: string;
+        }
+
+        border: ColorShades
+    },
+
+    sizes: {
+        border: {
+            radius: {
+                sm: string,
+                m: string
+            },
+
+        }
+    }
+
+}
+
 export type TSystem = {
     id: number,
     css: string;
     icon: string;
     visible: boolean;
+    initializationStep: number;
 }

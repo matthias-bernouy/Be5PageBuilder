@@ -2,7 +2,7 @@ import type { TBloc, TPage } from "./TModels";
 import type { TBlocMetadata } from "./TQueries";
 
 
-export interface IDatastore {
+export interface PageBuilderRepository {
 
     // BLOC
     createBloc(bloc: TBloc): Promise<TBloc>;

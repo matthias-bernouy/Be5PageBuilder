@@ -24,7 +24,7 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     }
 
 
-    await system.datastore.createPage({
+    await system.repository.createPage({
         ...body,
         identifier: identifier
     }, body.identifier ?? undefined);
