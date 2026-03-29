@@ -1,8 +1,6 @@
 import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path"
-import { getEditorBlocsJavascript } from 'src/data/queries/bloc/getEditorBlocsJavascript';
-import { getPage } from 'src/data/queries/page/getPage';
 import type { PageBuilder } from 'src/PageBuilder';
 
 export default async function ArticleServerAdmin(req: Request, system: PageBuilder) {
@@ -13,7 +11,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     const url = new URL(req.url);
     const identifier = url.searchParams.get("identifier");
 
-    const blocs = await getEditorBlocsJavascript(system);
+    const blocs = await system.datastore.getBlocsEditorJS();
 
     let scripts: HTMLElement[] = [];
 
@@ -26,7 +24,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
                         try {
                             ${bloc.editorJS}
                         } catch (e) {
-                            console.error("Erreur lors de l'exécution du bloc ${bloc.name}:", e);
+                            console.error("Erreur lors de l'exécution du bloc ${bloc.id}:", e);
                         }
                     } else {
                         // Si pas encore là, on attend 10ms et on réessaie
@@ -52,7 +50,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     document.body.append(...scripts);
 
     if (identifier) {
-        const page = await getPage(system, identifier);
+        const page = await system.datastore.getPageByIdentifier(identifier);
         const editorSystem = document.getElementById("editor-system")!;
         const editor = document.getElementById("editor")!;
 

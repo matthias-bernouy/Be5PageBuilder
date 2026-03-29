@@ -1,6 +1,5 @@
 import { send_js } from 'be5-system';
 import type { PageBuilder } from 'src/PageBuilder';
-import { getClientBlocJavascript } from 'src/data/queries/bloc/getClientBlocJavascript';
 
 export default async function BlocServerClient(req: Request, system: PageBuilder){
 
@@ -9,7 +8,7 @@ export default async function BlocServerClient(req: Request, system: PageBuilder
 
     if (!tag) return Response.error()
 
-    const js = await getClientBlocJavascript(system, tag);
+    const js = await system.datastore.getBlocViewJS(tag);
 
     if (!js) return Response.error();
 

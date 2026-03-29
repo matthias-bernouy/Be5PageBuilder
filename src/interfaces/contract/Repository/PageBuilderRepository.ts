@@ -8,12 +8,12 @@ export interface IDatastore {
     createBloc(bloc: TBloc): Promise<TBloc>;
 
     getBlocsMetadata(): Promise<TBlocMetadata[]>;
-    getBlocEditorJS(htmlTag: string): Promise<string | null>;
+    getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
     getBlocViewJS(htmlTag: string): Promise<string | null>;
 
 
     // PAGE
-    createPage(page: TPage): Promise<TPage>;
+    createPage(page: TPage, oldIdentifier?: string): Promise<TPage>;
     getPageByIdentifier(identifier: string): Promise<TPage | null>;
     getAllPages(): Promise<TPage[]>;
 

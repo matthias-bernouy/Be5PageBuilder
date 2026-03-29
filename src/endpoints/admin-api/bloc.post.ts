@@ -1,11 +1,9 @@
 import type { PageBuilder } from "src/PageBuilder";
 import { prepare_bloc } from "src/Be5System/blocs/prepare_bloc";
-import { BlocModel } from "src/data/model/BlocModel";
 
 export default async function importBloc(req: Request, system: PageBuilder) {
 
     const formData = await req.formData();
-
 
     const name = formData.get("name") as string;
     const group = formData.get("group") as string;
@@ -18,11 +16,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
 
     const bloc = await prepare_bloc(viewFile, editorFile, name, group);
 
-    const repo = system.db.getRepository(BlocModel);
-
-    const item = repo.create(bloc);
-
-    await repo.getEntityManager().persist(item).flush();
+    await system.datastore.createBloc(bloc);
 
     return new Response("Bloc imported");
 }

@@ -1,7 +1,7 @@
-import { registerUIFolder, registerCSSFolder, registerJSFolder, registerAPIFolder } from "src/Be5System/utilities";
+import { registerUIFolder, registerCSSFolder, registerAPIFolder } from "src/Be5System/utilities";
 import { join } from "node:path"
 import type { PageBuilder } from "src/PageBuilder";
-import type { Be5_Authentication, IBe5_Authentication, Middleware } from "be5-interfaces";
+import type { Middleware } from "be5-interfaces";
 
 const root = process.cwd();
 function res(str: string){

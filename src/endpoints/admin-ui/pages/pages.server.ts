@@ -1,14 +1,12 @@
 import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
-import { PageModel } from 'src/data/model/PageModel';
 import type { PageBuilder } from 'src/PageBuilder';
 import template from "./pages.html";
 
 export default async function Server(req: Request, system: PageBuilder){
     const { document } = parseHTML(await Bun.file(template.index).text());
 
-    const repo = system.db.getRepository(PageModel);
-    const pageList = await repo.findAll();
+    const pageList = await system.datastore.getAllPages();
 
     const tableBody = document.querySelector("p9r-table")!;
 

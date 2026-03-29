@@ -118,9 +118,11 @@ export class EditorManager{
         this.switchMode("view-mode");
         const article = this.workingElement.innerHTML;
 
-        
         const target = new URL("../api/page", window.location.href);
 
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        const currentIdentifier = urlParams.get('identifier');
 
         const body = {
             content: article,
@@ -128,7 +130,8 @@ export class EditorManager{
             title: props.title,
             description: props.description,
             visible: props.visible,
-            tags: props.tags
+            tags: props.tags,
+            identifier: currentIdentifier
         }
 
         target.searchParams.set("identifier", props.identifier);
