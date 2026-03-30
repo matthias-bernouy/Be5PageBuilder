@@ -1,0 +1,30 @@
+<nav class="nav" role="navigation" aria-label="Navigation principale">
+
+  <!-- Logo -->
+  <div class="nav__logo">
+    <slot name="logo"></slot>
+  </div>
+
+  <!-- Burger (mobile) -->
+  <button class="nav__burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="nav-menu">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <line x1="3" y1="6"  x2="21" y2="6"/>
+      <line x1="3" y1="12" x2="21" y2="12"/>
+      <line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <!-- Nav items + Actions -->
+  <div class="nav__menu" id="nav-menu">
+
+    <!-- Links with optional submenus -->
+    <slot name="nav-items"></slot>
+
+    <!-- Right-side action buttons -->
+    <div class="nav__actions">
+      <slot name="actions"></slot>
+    </div>
+
+  </div>
+
+</nav>

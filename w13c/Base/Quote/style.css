@@ -1,35 +1,56 @@
 :host {
+    /* Variables locales surchargeables */
+    --quote-max-width: 600px;
+    --quote-margin: 2rem auto;
+    --quote-padding: 2rem;
+    --quote-bg: var(--bg-surface, #f9f9f9);
+    --quote-border-color: var(--primary-base, #333);
+    --quote-border-width: 5px;
+    --quote-border-radius: 4px;
+    --quote-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+    --quote-mark-color: var(--border-default, rgba(0, 0, 0, 0.1));
+    --quote-mark-size: 5rem;
+
+    --quote-text-color: var(--text-main, #2c3e50);
+    --quote-text-size: 1.25rem;
+    --quote-text-line-height: 1.6;
+
+    --quote-author-color: var(--text-muted, #7f8c8d);
+    --quote-author-size: 0.9rem;
+    --quote-author-line-color: var(--border-default, #bdc3c7);
+    --quote-author-line-width: 30px;
+
     display: block;
-    max-width: 600px;
-    margin: 2rem auto;
+    max-width: var(--quote-max-width);
+    margin: var(--quote-margin);
     font-family: 'Georgia', serif;
 }
 
 .quote-container {
     position: relative;
-    padding: 2rem;
-    background: #f9f9f9;
-    border-left: 5px solid #333;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    padding: var(--quote-padding);
+    background: var(--quote-bg);
+    border-left: var(--quote-border-width) solid var(--quote-border-color);
+    border-radius: var(--quote-border-radius);
+    box-shadow: var(--quote-shadow);
 }
 
-/* Petit clin d'œil visuel avec un guillemet géant */
 .quote-container::before {
-    content: "“";
+    content: "\201C";
     position: absolute;
     top: -10px;
     left: 10px;
-    font-size: 5rem;
-    color: rgba(0, 0, 0, 0.1);
+    font-size: var(--quote-mark-size);
+    color: var(--quote-mark-color);
     line-height: 1;
 }
 
 .content {
     display: flex;
-    font-size: 1.25rem;
-    line-height: 1.6;
-    color: #2c3e50;
+    font-size: var(--quote-text-size);
+    line-height: var(--quote-text-line-height);
+    color: var(--quote-text-color);
     margin-bottom: 1rem;
     font-style: italic;
 }
@@ -40,16 +61,16 @@
     justify-content: flex-end;
     font-family: 'Helvetica Neue', sans-serif;
     font-weight: bold;
-    color: #7f8c8d;
+    color: var(--quote-author-color);
     text-transform: uppercase;
     letter-spacing: 1px;
-    font-size: 0.9rem;
+    font-size: var(--quote-author-size);
 }
 
 .author::before {
     content: "";
-    width: 30px;
+    width: var(--quote-author-line-width);
     height: 1px;
-    background: #bdc3c7;
+    background: var(--quote-author-line-color);
     margin-right: 10px;
 }

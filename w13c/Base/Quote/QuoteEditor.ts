@@ -1,15 +1,24 @@
-import { createDefaultElement } from "../../src/core/Utilities/createDefaultElement";
-import { Editor } from "../../src/core/Editor/Base/Editor";
+import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { Editor } from "src/core/Editor/Base/Editor";
+import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
 
 export class QuoteEditor extends Editor {
+
+    private _textSlot: HTMLElement;
+    private _authorSlot: HTMLElement;
+
     constructor(target: HTMLElement) {
         super(target, "");
-        createDefaultElement(this.target, "text", "span", "Je ne suis pas athée. Je ne sais pas si je peux me définir comme panthéiste. Le problème est trop vaste pour nos esprits limités.");
-        createDefaultElement(this.target, "author", "span", "Albert Einstein");
+        this._textSlot = createDefaultElement(this.target, "text", "span", "Je ne suis pas athée. Je ne sais pas si je peux me définir comme panthéiste. Le problème est trop vaste pour nos esprits limités.");
+        this._authorSlot = createDefaultElement(this.target, "author", "span", "Albert Einstein");
         this.viewEditor();
     }
 
     init() {
+        disableBlocActions([
+            this._textSlot,
+            this._authorSlot
+        ]);
     }
 
     restore() {

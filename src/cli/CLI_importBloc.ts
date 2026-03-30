@@ -1,28 +1,21 @@
-import { Be5_MongoDB } from "be5-interfaces"
 import { generate_bloc_files } from "src/Be5System/blocs/generate_bloc_files";
 import { prepare_bloc } from "src/Be5System/blocs/prepare_bloc";
-import { BlocModel } from "src/data/model/BlocModel";
 import { join } from "path";
+import { DefaultPageBuilderRepository } from "src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
+import { MongoClient } from "mongodb";
 
 export default async function CLI_importBloc(args: string[]) {
 
-    const [path, name, group] = args;
+    const [db, path, name, group] = args;
     const cwd = process.cwd();
 
-    if (!path || !name || !group) {
+    if (!db || !path || !name || !group) {
         console.error("Usage: import_bloc_cli <path> <name> <group>");
         process.exit(1);
     }
 
-    const MongoDatabaseCore = new Be5_MongoDB();
-    MongoDatabaseCore.addSchema(BlocModel);
-    await MongoDatabaseCore.init({
-        dbName: 'testttt',
-        clientUrl: 'mongodb://localhost:27017/',
-    })
-
-
-    const repo = MongoDatabaseCore.getRepository(BlocModel);
+    const mongoClient =  await new MongoClient("mongodb://localhost:27017").connect();
+    const MongoClientDefault = new DefaultPageBuilderRepository(mongoClient, db)
 
     await generate_bloc_files(
         join(cwd, path, name, name + ".ts"),
@@ -37,10 +30,9 @@ export default async function CLI_importBloc(args: string[]) {
         group
     );
 
-    const blocInstance = repo.create(bloc);
-    await repo.getEntityManager().persist(blocInstance).flush();
+    await MongoClientDefault.createBloc(bloc);
 
-    MongoDatabaseCore.close();
+    mongoClient.close()
 
 }
 

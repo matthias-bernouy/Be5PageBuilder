@@ -56,16 +56,23 @@ export type TTheme = {
                 sm: string,
                 m: string
             },
-
         }
     }
-
+    
 }
 
 export type TSystem = {
-    id: number,
-    css: string;
-    icon: string;
-    visible: boolean;
+
     initializationStep: number;
+
+    site: {
+        theme: Uint8Array;
+        favicon: Uint8Array;
+        visible: boolean;
+    },
+
+    editor: {
+        groupAtPageCreation: string;
+    }
+
 }

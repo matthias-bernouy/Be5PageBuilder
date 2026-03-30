@@ -107,8 +107,8 @@ export abstract class Editor {
         return this._actionBarFeatures;
     }
 
-    get configurations(): BlocConfiguration[] {
-        return [];
+    get panelConfig(): HTMLElement | null {
+        return null;
     };
 
     abstract init(): void;

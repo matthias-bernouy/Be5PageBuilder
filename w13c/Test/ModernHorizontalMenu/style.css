@@ -1,0 +1,236 @@
+:host {
+  /* Layout */
+  --nav-height: 64px;
+  --nav-padding-x: 2rem;
+  --nav-gap: 2rem;
+  --nav-item-gap: 0.25rem;
+
+  /* Colors */
+  --nav-bg: var(--bg-base, #ffffff);
+  --nav-border-color: var(--border-default, #e2e8f0);
+  --nav-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.05);
+
+  /* Links */
+  --nav-link-color: var(--text-body, #374151);
+  --nav-link-color-hover: var(--primary-base, #4f46e5);
+  --nav-link-bg-hover: var(--bg-surface, #f8fafc);
+  --nav-link-padding: 0.5rem 0.75rem;
+  --nav-link-radius: 6px;
+  --nav-link-font-size: 0.9rem;
+  --nav-link-font-weight: 500;
+  --nav-link-transition: color 0.2s ease, background 0.2s ease;
+
+  /* Submenu */
+  --nav-submenu-bg: var(--bg-base, #ffffff);
+  --nav-submenu-border: var(--border-default, #e2e8f0);
+  --nav-submenu-shadow: 0 10px 25px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.06);
+  --nav-submenu-radius: 10px;
+  --nav-submenu-min-width: 200px;
+  --nav-submenu-padding: 0.5rem;
+  --nav-submenu-item-color: var(--text-body, #374151);
+  --nav-submenu-item-color-hover: var(--primary-base, #4f46e5);
+  --nav-submenu-item-bg-hover: var(--bg-surface, #f5f5ff);
+  --nav-submenu-item-radius: 6px;
+  --nav-submenu-item-padding: 0.6rem 1rem;
+
+  /* Caret */
+  --nav-caret-size: 0.45rem;
+  --nav-caret-color: var(--text-muted, #9ca3af);
+  --nav-caret-color-open: var(--primary-base, #4f46e5);
+
+  /* Buttons */
+  --nav-btn-font-size: 0.875rem;
+  --nav-btn-font-weight: 600;
+  --nav-btn-padding: 0.5rem 1.125rem;
+  --nav-btn-radius: 8px;
+  --nav-btn-gap: 0.625rem;
+  --nav-btn-transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
+  --nav-btn-primary-bg: var(--primary-base, #4f46e5);
+  --nav-btn-primary-color: var(--primary-contrasted, #ffffff);
+  --nav-btn-primary-bg-hover: var(--primary-muted, #4338ca);
+  --nav-btn-primary-shadow: 0 1px 3px rgba(79, 70, 229, 0.35);
+
+  --nav-btn-secondary-color: var(--text-body, #374151);
+  --nav-btn-secondary-border: var(--border-default, #d1d5db);
+  --nav-btn-secondary-bg-hover: var(--bg-surface, #f9fafb);
+  --nav-btn-secondary-border-hover: var(--primary-base, #4f46e5);
+
+  /* Burger */
+  --nav-burger-size: 36px;
+  --nav-burger-color: var(--text-main, #111827);
+  --nav-burger-radius: 6px;
+
+  display: block;
+}
+
+/* ─── Wrapper ─────────────────────────────────────────────────────────────── */
+.nav {
+  display: flex;
+  align-items: center;
+  height: var(--nav-height);
+  padding: 0 var(--nav-padding-x);
+  gap: var(--nav-gap);
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border-color);
+  box-shadow: var(--nav-shadow);
+  position: relative;
+  z-index: 100;
+}
+
+/* ─── Logo ────────────────────────────────────────────────────────────────── */
+.nav__logo {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.nav__logo ::slotted(img) {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+/* ─── Menu ────────────────────────────────────────────────────────────────── */
+.nav__menu {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* ─── Nav list ────────────────────────────────────────────────────────────── */
+.nav__menu ::slotted([slot="nav-items"]) {
+  display: flex;
+  align-items: center;
+  gap: var(--nav-item-gap);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Nav items (light DOM slotted) — styles exposed via custom properties  */
+/* Items are styled in the light DOM but we set CSS vars at :host level      */
+
+/* ─── Actions ─────────────────────────────────────────────────────────────── */
+.nav__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--nav-btn-gap);
+  margin-left: auto;
+}
+
+/* ─── Burger ──────────────────────────────────────────────────────────────── */
+.nav__burger {
+  display: none;
+  flex-shrink: 0;
+  width: var(--nav-burger-size);
+  height: var(--nav-burger-size);
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--nav-burger-radius);
+  color: var(--nav-burger-color);
+  padding: 0;
+  transition: background 0.2s ease;
+  margin-left: auto;
+}
+
+.nav__burger:hover {
+  background: var(--nav-link-bg-hover);
+}
+
+.nav__burger svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .nav__burger {
+    display: flex;
+  }
+
+  .nav__menu {
+    display: none;
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background: var(--nav-bg);
+    border-bottom: 1px solid var(--nav-border-color);
+    box-shadow: var(--nav-submenu-shadow);
+    padding: 0.75rem var(--nav-padding-x);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    z-index: 99;
+  }
+
+  .nav__menu.is-open {
+    display: flex;
+  }
+
+  .nav__menu ::slotted([slot="nav-items"]) {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .nav__actions {
+    margin-left: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--nav-border-color);
+    width: 100%;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  Light-DOM styles (injected via adoptedStyleSheets or global stylesheet)   */
+/*  We expose CSS custom properties so the host page can style slotted items  */
+/* ─────────────────────────────────────────────────────────────────────────── */
+
+/*
+  The following rules target slotted light DOM children.
+  They are intended to be placed in a companion global CSS file if Shadow DOM
+  prevents them from applying, or kept here when using open Shadow DOM.
+*/
+
+/* Nav item link */
+::slotted(.nav-item > a),
+::slotted(.nav-item > [data-submenu-trigger]) {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: var(--nav-link-padding);
+  border-radius: var(--nav-link-radius);
+  font-size: var(--nav-link-font-size);
+  font-weight: var(--nav-link-font-weight);
+  color: var(--nav-link-color);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: var(--nav-link-transition);
+  cursor: pointer;
+}
+
+/* Buttons */
+::slotted(.btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--nav-btn-padding);
+  border-radius: var(--nav-btn-radius);
+  font-size: var(--nav-btn-font-size);
+  font-weight: var(--nav-btn-font-weight);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--nav-btn-transition);
+  border: 1px solid transparent;
+}
