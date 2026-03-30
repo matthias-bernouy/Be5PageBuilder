@@ -1,40 +1,38 @@
 /* ═══════════════════════════════════════════════
-   NavBar — Variables
+   HorizontalMenu — Variables
    ═══════════════════════════════════════════════ */
 
 :host {
-    --navbar-bg: var(--bg-surface, #ffffff);
-    --navbar-height: 64px;
-    --navbar-padding-x: 32px;
-    --navbar-padding-y: 0px;
-    --navbar-gap: 8px;
-    --navbar-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-    --navbar-border-color: var(--border-default, #e5e7eb);
-    --navbar-border-width: 1px;
-    --navbar-z-index: 1000;
+    --hmenu-bg:              var(--bg-surface, #ffffff);
+    --hmenu-height:          64px;
+    --hmenu-padding-x:       32px;
+    --hmenu-padding-y:       0px;
+    --hmenu-gap:             4px;
+    --hmenu-shadow:          0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --hmenu-border-color:    var(--border-default, #e5e7eb);
+    --hmenu-border-width:    1px;
+    --hmenu-z-index:         1000;
 
     /* Logo */
-    --navbar-logo-max-height: 38px;
-    --navbar-logo-gap: 24px;
+    --hmenu-logo-max-height: 38px;
+    --hmenu-logo-gap:        24px;
 
     /* Actions */
-    --navbar-actions-gap: 12px;
+    --hmenu-actions-gap:     12px;
 
-    /* Toggle (mobile) */
-    --navbar-toggle-size: 40px;
-    --navbar-toggle-bar-width: 22px;
-    --navbar-toggle-bar-height: 2px;
-    --navbar-toggle-bar-color: var(--text-main, #1f2937);
-    --navbar-toggle-bar-radius: 2px;
-    --navbar-toggle-bar-gap: 6px;
-    --navbar-toggle-radius: 6px;
-    --navbar-toggle-hover-bg: var(--bg-base, #f3f4f6);
+    /* Toggle hamburger (mobile) */
+    --hmenu-toggle-size:         40px;
+    --hmenu-toggle-bar-width:    22px;
+    --hmenu-toggle-bar-height:   2px;
+    --hmenu-toggle-bar-color:    var(--text-main, #1f2937);
+    --hmenu-toggle-bar-radius:   2px;
+    --hmenu-toggle-bar-gap:      6px;
+    --hmenu-toggle-radius:       6px;
+    --hmenu-toggle-hover-bg:     var(--bg-base, #f3f4f6);
 
-    /* Breakpoint mobile */
-    --navbar-mobile-bp: 768px;
-    --navbar-mobile-bg: var(--bg-surface, #ffffff);
-    --navbar-mobile-padding: 16px;
-    --navbar-mobile-gap: 4px;
+    /* Mobile */
+    --hmenu-mobile-padding: 16px;
+    --hmenu-mobile-gap:     4px;
 
     display: block;
     width: 100%;
@@ -43,46 +41,43 @@
 :host([sticky]) {
     position: sticky;
     top: 0;
-    z-index: var(--navbar-z-index);
+    z-index: var(--hmenu-z-index);
 }
 
 /* ═══════════════════════════════════════════════
-   Layout principal
+   Layout
    ═══════════════════════════════════════════════ */
 
 .navbar {
     display: flex;
     align-items: center;
-    height: var(--navbar-height);
-    padding: var(--navbar-padding-y) var(--navbar-padding-x);
-    background: var(--navbar-bg);
-    box-shadow: var(--navbar-shadow);
-    border-bottom: var(--navbar-border-width) solid var(--navbar-border-color);
+    height: var(--hmenu-height);
+    padding: var(--hmenu-padding-y) var(--hmenu-padding-x);
+    background: var(--hmenu-bg);
+    box-shadow: var(--hmenu-shadow);
+    border-bottom: var(--hmenu-border-width) solid var(--hmenu-border-color);
 }
 
-/* Bloc gauche : logo + toggle mobile */
 .navbar-start {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    gap: var(--navbar-logo-gap);
+    gap: var(--hmenu-logo-gap);
 }
 
-/* Bloc central : liens de navigation */
 .navbar-center {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: var(--navbar-gap);
-    padding: 0 var(--navbar-logo-gap);
+    gap: var(--hmenu-gap);
+    padding: 0 var(--hmenu-logo-gap);
 }
 
-/* Bloc droit : actions */
 .navbar-end {
     display: flex;
     align-items: center;
     flex-shrink: 0;
-    gap: var(--navbar-actions-gap);
+    gap: var(--hmenu-actions-gap);
 }
 
 /* ═══════════════════════════════════════════════
@@ -95,7 +90,7 @@
 }
 
 .navbar-logo ::slotted(img) {
-    max-height: var(--navbar-logo-max-height);
+    max-height: var(--hmenu-logo-max-height);
     width: auto;
     object-fit: contain;
     display: block;
@@ -109,28 +104,28 @@
     display: none;
     align-items: center;
     justify-content: center;
-    width: var(--navbar-toggle-size);
-    height: var(--navbar-toggle-size);
+    width: var(--hmenu-toggle-size);
+    height: var(--hmenu-toggle-size);
     padding: 0;
     border: none;
-    border-radius: var(--navbar-toggle-radius);
+    border-radius: var(--hmenu-toggle-radius);
     background: transparent;
     cursor: pointer;
     transition: background 150ms ease;
 }
 
 .navbar-toggle:hover {
-    background: var(--navbar-toggle-hover-bg);
+    background: var(--hmenu-toggle-hover-bg);
 }
 
 .navbar-toggle-icon,
 .navbar-toggle-icon::before,
 .navbar-toggle-icon::after {
     display: block;
-    width: var(--navbar-toggle-bar-width);
-    height: var(--navbar-toggle-bar-height);
-    background: var(--navbar-toggle-bar-color);
-    border-radius: var(--navbar-toggle-bar-radius);
+    width: var(--hmenu-toggle-bar-width);
+    height: var(--hmenu-toggle-bar-height);
+    background: var(--hmenu-toggle-bar-color);
+    border-radius: var(--hmenu-toggle-bar-radius);
     transition: transform 200ms ease, opacity 200ms ease;
 }
 
@@ -146,14 +141,13 @@
 }
 
 .navbar-toggle-icon::before {
-    top: calc(-1 * var(--navbar-toggle-bar-gap));
+    top: calc(-1 * var(--hmenu-toggle-bar-gap));
 }
 
 .navbar-toggle-icon::after {
-    top: var(--navbar-toggle-bar-gap);
+    top: var(--hmenu-toggle-bar-gap);
 }
 
-/* État ouvert — croix */
 :host([open]) .navbar-toggle-icon {
     background: transparent;
 }
@@ -176,14 +170,14 @@
     .navbar {
         flex-wrap: wrap;
         height: auto;
-        min-height: var(--navbar-height);
-        padding: 0 var(--navbar-mobile-padding);
+        min-height: var(--hmenu-height);
+        padding: 0 var(--hmenu-mobile-padding);
     }
 
     .navbar-start {
         flex: 1;
         justify-content: space-between;
-        min-height: var(--navbar-height);
+        min-height: var(--hmenu-height);
     }
 
     .navbar-toggle {
@@ -196,8 +190,8 @@
         flex-basis: 100%;
         flex-direction: column;
         align-items: stretch;
-        gap: var(--navbar-mobile-gap);
-        padding: var(--navbar-mobile-padding) 0;
+        gap: var(--hmenu-mobile-gap);
+        padding: var(--hmenu-mobile-padding) 0;
     }
 
     :host([open]) .navbar-center,
@@ -206,8 +200,8 @@
     }
 
     .navbar-end {
-        border-top: var(--navbar-border-width) solid var(--navbar-border-color);
-        padding-top: var(--navbar-mobile-padding);
-        margin-bottom: var(--navbar-mobile-padding);
+        border-top: var(--hmenu-border-width) solid var(--hmenu-border-color);
+        padding-top: var(--hmenu-mobile-padding);
+        margin-bottom: var(--hmenu-mobile-padding);
     }
 }

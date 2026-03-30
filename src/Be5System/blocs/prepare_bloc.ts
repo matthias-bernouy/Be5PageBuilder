@@ -20,12 +20,12 @@ export async function prepare_bloc(fileView: File, fileEditor: File, label: stri
     let viewJS = await viewBuild.outputs[0]?.text() || "";
     let editorJS = await editorBuild.outputs[0]?.text() || "";
 
-    viewJS = viewJS.replace("BE5_TAG_TO_BE_REPLACED", blocId);
-
+    viewJS = viewJS.replaceAll("BE5_TAG_TO_BE_REPLACED", blocId);
+    
     editorJS = editorJS
-        .replace("BE5_TAG_TO_BE_REPLACED", blocId)
-        .replace("BE5_LABEL_TO_BE_REPLACED", label)
-        .replace("BE5_GROUP_TO_BE_REPLACED", group)
+        .replaceAll("BE5_TAG_TO_BE_REPLACED", blocId)
+        .replaceAll("BE5_LABEL_TO_BE_REPLACED", label)
+        .replaceAll("BE5_GROUP_TO_BE_REPLACED", group)
 
     return {
         id: blocId,

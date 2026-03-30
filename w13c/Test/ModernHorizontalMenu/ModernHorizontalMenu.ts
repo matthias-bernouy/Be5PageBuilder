@@ -1,71 +1,72 @@
 import { Component } from "src/core/Utilities/Component";
-import template from "./template.html" with { type: "text" };
 import css from "./style.css" with { type: "text" };
+import template from "./template.html" with { type: "text" };
 
-export class HorizontalNav extends Component {
-  private _mobileToggle: HTMLButtonElement | null = null;
-  private _navMenu: HTMLElement | null = null;
+class NavBar extends Component {
+    private toggleBtn: HTMLButtonElement | null = null;
+    private navCenter: HTMLElement | null = null;
+    private navEnd: HTMLElement | null = null;
 
-  constructor() {
-    super({ css, template: template as unknown as string });
-  }
-
-  connectedCallback() {
-    this._mobileToggle = this.shadowRoot?.querySelector(".nav__burger") ?? null;
-    this._navMenu = this.shadowRoot?.querySelector(".nav__menu") ?? null;
-
-    this._mobileToggle?.addEventListener("click", () => this._toggleMenu());
-
-    // Close submenus when clicking outside
-    document.addEventListener("click", (e) => {
-      if (!this.contains(e.target as Node)) {
-        this._closeAllSubmenus();
-      }
-    });
-
-    // Handle submenu toggle on slotted nav items
-    this.addEventListener("click", (e) => {
-      const target = e.target as HTMLElement;
-      const trigger = target.closest("[data-submenu-trigger]") as HTMLElement | null;
-      if (trigger) {
-        e.preventDefault();
-        e.stopPropagation();
-        this._toggleSubmenu(trigger);
-      }
-    });
-  }
-
-  private _toggleMenu(): void {
-    const isOpen = this._navMenu?.classList.contains("is-open");
-    if (isOpen) {
-      this._navMenu?.classList.remove("is-open");
-      this._mobileToggle?.setAttribute("aria-expanded", "false");
-    } else {
-      this._navMenu?.classList.add("is-open");
-      this._mobileToggle?.setAttribute("aria-expanded", "true");
+    constructor() {
+        super({ css, template: template as unknown as string });
     }
-  }
 
-  private _toggleSubmenu(trigger: HTMLElement): void {
-    const parentItem = trigger.closest(".nav-item") as HTMLElement | null;
-    const isOpen = parentItem?.classList.contains("is-open");
-    this._closeAllSubmenus();
-    if (!isOpen && parentItem) {
-      parentItem.classList.add("is-open");
-      trigger.setAttribute("aria-expanded", "true");
+    connectedCallback() {
+        super.connectedCallback?.();
+
+        const shadow = this.shadowRoot!;
+        this.toggleBtn = shadow.querySelector(".navbar-toggle");
+        this.navCenter = shadow.querySelector(".navbar-center");
+        this.navEnd = shadow.querySelector(".navbar-end");
+
+        this.toggleBtn?.addEventListener("click", () => this.handleToggle());
+
+        // Fermer le menu mobile au clic sur un lien
+        this.addEventListener("click", (e: Event) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === "A" && this.hasAttribute("open")) {
+                this.removeAttribute("open");
+                this.syncToggleAria();
+            }
+        });
     }
-  }
 
-  private _closeAllSubmenus(): void {
-    this.querySelectorAll(".nav-item.is-open").forEach((item) => {
-      item.classList.remove("is-open");
-      item.querySelector("[data-submenu-trigger]")?.setAttribute("aria-expanded", "false");
-    });
-  }
+    private handleToggle(): void {
+        if (this.hasAttribute("open")) {
+            this.removeAttribute("open");
+        } else {
+            this.setAttribute("open", "");
+        }
+        this.syncToggleAria();
+    }
 
-  get panelConfig(): HTMLElement | null {
-    return null;
-  }
+    private syncToggleAria(): void {
+        const isOpen = this.hasAttribute("open");
+        this.toggleBtn?.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    get panelConfig(): HTMLElement | null {
+        const panel = document.createElement("div");
+        panel.style.display = "flex";
+        panel.style.flexDirection = "column";
+        panel.style.gap = "12px";
+        panel.style.padding = "8px";
+
+        // Sticky toggle
+        const stickyCheckbox = document.createElement("w13c-checkbox") as any;
+        stickyCheckbox.textContent = "Menu fixe (sticky)";
+        stickyCheckbox.checked = this.hasAttribute("sticky");
+        stickyCheckbox.addEventListener("change", () => {
+            if (stickyCheckbox.checked) {
+                this.setAttribute("sticky", "");
+            } else {
+                this.removeAttribute("sticky");
+            }
+        });
+        panel.appendChild(stickyCheckbox);
+
+        return panel;
+    }
 }
 
-customElements.define("be5-horizontal-nav", HorizontalNav);
+customElements.define("BE5_TAG_TO_BE_REPLACED", NavBar);

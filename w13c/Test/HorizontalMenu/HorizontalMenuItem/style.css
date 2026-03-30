@@ -1,0 +1,147 @@
+/* ═══════════════════════════════════════════════
+   HorizontalMenuItem — Variables
+   ═══════════════════════════════════════════════ */
+
+:host {
+    --item-color:              var(--text-body, #374151);
+    --item-color-hover:        var(--primary-base, #2563eb);
+    --item-bg-hover:           var(--bg-base, #f3f4f6);
+    --item-font-size:          0.9375rem;
+    --item-font-weight:        500;
+    --item-padding-x:          14px;
+    --item-padding-y:          8px;
+    --item-radius:             6px;
+    --item-gap:                6px;
+    --item-transition:         color 150ms ease, background 150ms ease;
+
+    /* Flèche */
+    --item-arrow-size:         10px;
+    --item-arrow-color:        var(--text-muted, #9ca3af);
+    --item-arrow-transition:   transform 200ms ease;
+
+    /* Dropdown */
+    --item-dropdown-bg:        var(--bg-surface, #ffffff);
+    --item-dropdown-shadow:    0 4px 16px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0, 0, 0, 0.06);
+    --item-dropdown-radius:    10px;
+    --item-dropdown-border:    var(--border-default, #e5e7eb);
+    --item-dropdown-padding:   8px;
+    --item-dropdown-min-width: 200px;
+    --item-dropdown-gap:       2px;
+    --item-dropdown-offset:    6px;
+
+    /* Liens dans le dropdown */
+    --item-sub-color:          var(--text-body, #374151);
+    --item-sub-color-hover:    var(--primary-base, #2563eb);
+    --item-sub-bg-hover:       var(--bg-base, #f3f4f6);
+    --item-sub-font-size:      0.875rem;
+    --item-sub-font-weight:    400;
+    --item-sub-padding-x:      12px;
+    --item-sub-padding-y:      8px;
+    --item-sub-radius:         6px;
+
+    position: relative;
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════
+   Label
+   ═══════════════════════════════════════════════ */
+
+.item-label {
+    display: flex;
+    align-items: center;
+    gap: var(--item-gap);
+    padding: var(--item-padding-y) var(--item-padding-x);
+    border-radius: var(--item-radius);
+    color: var(--item-color);
+    font-size: var(--item-font-size);
+    font-weight: var(--item-font-weight);
+    cursor: pointer;
+    user-select: none;
+    transition: var(--item-transition);
+}
+
+.item-label:hover {
+    color: var(--item-color-hover);
+    background: var(--item-bg-hover);
+}
+
+.item-label ::slotted(a) {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* Flèche — cachée par défaut, visible si sous-menu */
+
+.item-arrow {
+    display: none;
+    width: var(--item-arrow-size);
+    height: auto;
+    color: var(--item-arrow-color);
+    flex-shrink: 0;
+    transition: var(--item-arrow-transition);
+}
+
+:host([has-submenu]) .item-arrow {
+    display: block;
+}
+
+:host([open]) .item-arrow {
+    transform: rotate(180deg);
+}
+
+/* ═══════════════════════════════════════════════
+   Dropdown — desktop
+   ═══════════════════════════════════════════════ */
+
+.item-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + var(--item-dropdown-offset));
+    left: 0;
+    min-width: var(--item-dropdown-min-width);
+    background: var(--item-dropdown-bg);
+    border: 1px solid var(--item-dropdown-border);
+    border-radius: var(--item-dropdown-radius);
+    box-shadow: var(--item-dropdown-shadow);
+    padding: var(--item-dropdown-padding);
+    z-index: 100;
+    flex-direction: column;
+    gap: var(--item-dropdown-gap);
+}
+
+:host([open]) .item-dropdown {
+    display: flex;
+}
+
+.item-dropdown ::slotted(a) {
+    display: block;
+    padding: var(--item-sub-padding-y) var(--item-sub-padding-x);
+    border-radius: var(--item-sub-radius);
+    color: var(--item-sub-color);
+    font-size: var(--item-sub-font-size);
+    font-weight: var(--item-sub-font-weight);
+    text-decoration: none;
+    transition: color 150ms ease, background 150ms ease;
+}
+
+.item-dropdown ::slotted(a:hover) {
+    color: var(--item-sub-color-hover);
+    background: var(--item-sub-bg-hover);
+}
+
+/* ═══════════════════════════════════════════════
+   Responsive — mobile (accordion)
+   ═══════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+    .item-dropdown {
+        position: static;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        padding: 0 0 0 var(--item-padding-x);
+        background: transparent;
+        min-width: 0;
+    }
+}
