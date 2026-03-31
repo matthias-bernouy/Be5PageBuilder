@@ -1,4 +1,4 @@
-import "src/core/Editor/AdminLayout/AdminLayout"
+import "src/core/Editor/components/AdminLayout/AdminLayout"
 
 import "w13c/core/Form/Button/Button"
 import "w13c/core/Form/Input/Input"

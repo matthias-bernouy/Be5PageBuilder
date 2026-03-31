@@ -2,9 +2,9 @@ import "w13c/core/Dialog/LateralDialog/LateralDialog"
 import "w13c/core/Form/Input/Input"
 import "w13c/core/Form/Checkbox/Checkbox"
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
-import { Component } from "src/core/Utilities/Component";
+import { Component } from "src/core/Component/core/Component";
 
-import "../Items/ComponentConfigItem";
+import "./ComponentConfigItem";
 import "w13c/core/Form/FormSection";
 
 export class ConfigPanel extends Component {

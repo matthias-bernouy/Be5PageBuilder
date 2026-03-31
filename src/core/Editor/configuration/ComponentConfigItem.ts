@@ -1,5 +1,5 @@
 import type { Component } from "src/core/Component/core/Component";
-import { BlocLibrary } from "../../BlocLibrary/BlocLibrary";
+import { BlocLibrary } from "../components/BlocLibrary/BlocLibrary";
 import { disableBlocActions } from "src/Be5System/disableBlocActions";
 import { ConfigItem } from "./ConfigItem";
 

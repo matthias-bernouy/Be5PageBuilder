@@ -1,4 +1,4 @@
-import { Component } from "src/core/Utilities/Component";
+import { Component } from "src/core/Component/core/Component";
 import css from "./style.css" with { type: "text" };
 import template from "./template.html" with { type: "text" };
 import { registerFooterMenu } from "./FooterMenu/tag";

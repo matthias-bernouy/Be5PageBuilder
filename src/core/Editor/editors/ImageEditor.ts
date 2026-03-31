@@ -1,5 +1,5 @@
-import { Editor } from "../Base/Editor";
-import { ResizeInstance } from "../Base/ResizeInstance";
+import { Editor } from "../core/Editor";
+import { ResizeInstance } from "../core/ResizeInstance";
 
 const cssStyle = `
     img:hover {

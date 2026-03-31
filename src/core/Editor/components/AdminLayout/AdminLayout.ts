@@ -1,4 +1,4 @@
-import { Component } from "src/core/Utilities/Component";
+import { Component } from "src/core/Component/core/Component";
 
 import "w13c/core/Menu/LateralMenu/LateralMenu"
 import "w13c/core/Layout/LeftMenuLayout/LeftMenuLayout"

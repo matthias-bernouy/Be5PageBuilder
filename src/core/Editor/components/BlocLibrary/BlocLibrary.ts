@@ -1,7 +1,7 @@
-import { Component, type ComponentMetadata } from 'src/core/Utilities/Component';
+import { Component, type ComponentMetadata } from 'src/core/Component/core/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { TagElement } from '../Base/ObserverManager';
+import type { TagElement } from '../core/ObserverManager';
 
 const DEFAULT_COMPONENT_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">

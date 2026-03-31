@@ -1,6 +1,6 @@
-import { BlocLibrary } from "../BlocLibrary/BlocLibrary";
-import { Editor } from "../Base/Editor";
-import type { PageMode } from "../Base/EditorManager";
+import { BlocLibrary } from "../components/BlocLibrary/BlocLibrary";
+import { Editor } from "../core/Editor";
+import type { PageMode } from "../core/EditorManager";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote):empty::before {

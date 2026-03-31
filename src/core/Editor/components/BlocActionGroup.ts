@@ -1,5 +1,5 @@
 import { HorizontalActionGroup } from 'w13c/core/HorizontalActionGroup/HorizontalActionGroup';
-import type { Editor } from './Editor';
+import type { Editor } from '../core/Editor';
 
 export class BlocActionGroup extends HorizontalActionGroup {
 

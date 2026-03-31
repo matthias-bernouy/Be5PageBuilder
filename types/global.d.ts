@@ -1,5 +1,5 @@
-import type { EditorManager } from "src/core/Editor/Base/EditorManager";
-import type { MediaCenter } from "src/core/Editor/Component/MediaCenter/MediaCenter";
+import type { EditorManager } from "src/core/Editor/core/EditorManager";
+import type { MediaCenter } from "src/core/Editor/components/MediaCenter/MediaCenter";
 
 declare module "*.css" {
   const content: string;

@@ -1,4 +1,4 @@
-import { Editor } from "../Base/Editor";
+import { Editor } from "../core/Editor";
 
 const cssStyle = `
     li:empty::before{

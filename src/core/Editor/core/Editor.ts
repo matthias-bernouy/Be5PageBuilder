@@ -1,4 +1,4 @@
-import { ComponentConfigItem } from "../BlocConfiguration/Items/ComponentConfigItem";
+import { ComponentConfigItem } from "../configuration/ComponentConfigItem";
 
 export abstract class Editor {
 

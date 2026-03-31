@@ -1,10 +1,10 @@
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
-import { MediaCenter } from "../MediaCenter/MediaCenter";
-import { FloatingToolbar } from "../FloatingToolbar/FloatingToolbar";
-import { EditorToolbar } from "../RichTextBar/RichTextBar";
-import { ConfigPanel } from "../BlocConfiguration/display/ConfigPanel";
-import { BlocActionGroup } from "./BlocActionGroup";
+import { MediaCenter } from "../components/MediaCenter/MediaCenter";
+import { FloatingToolbar } from "../components/FloatingToolbar/FloatingToolbar";
+import { EditorToolbar } from "../components/RichTextBar/RichTextBar";
+import { ConfigPanel } from "../configuration/ConfigPanel";
+import { BlocActionGroup } from "../components/BlocActionGroup";
 
 export type PageModeEnum = [
     "editor-mode",

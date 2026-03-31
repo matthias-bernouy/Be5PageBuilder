@@ -11,7 +11,7 @@ import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog
 import type { Input } from "w13c/core/Form/Input/Input";
 
 import { Checkbox } from "w13c/core/Form/Checkbox/Checkbox";
-import { Component } from "src/core/Utilities/Component";
+import { Component } from "src/core/Component/core/Component";
 
 export class PageConfiguration extends Component {
 

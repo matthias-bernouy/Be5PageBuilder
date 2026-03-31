@@ -1,4 +1,4 @@
-import { Editor } from "src/core/Editor/Base/Editor";
+import { Editor } from "src/core/Editor/core/Editor";
 import Panel from "./panel-config.html" with { type: 'text' }
 
 export class HeroSectionEditor extends Editor {

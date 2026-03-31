@@ -1,8 +1,8 @@
-import "src/core/Editor/MediaCenter/MediaCenter"
+import "src/core/Editor/components/MediaCenter/MediaCenter"
 
-import { ImageEditor } from "../Component/ImageEditor";
-import { TextEditor, textTags } from "../Component/TextEditor";
-import { ListEditor } from "../Component/ListEditor";
+import { ImageEditor } from "../editors/ImageEditor";
+import { TextEditor, textTags } from "../editors/TextEditor";
+import { ListEditor } from "../editors/ListEditor";
 import type { Editor } from "./Editor";
 
 export type TagElement = {
