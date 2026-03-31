@@ -1,4 +1,4 @@
-import { parseHTML } from "linkedom";
+import { parseHTML, "" } from "linkedom";
 import type { PageBuilder } from "src/PageBuilder";
 import { join } from "node:path"
 import { send_html } from "be5-system";
@@ -6,6 +6,8 @@ import { send_html } from "be5-system";
 export default async function ViewPageServer(req: Request, system: PageBuilder){
     // const html = await Bun.file(join(__dirname, "./index.html")).text();
     // const { document } = parseHTML(html);
+
+    
 
     // const url = new URL(req.url);
     // const identifier = url.searchParams.get("identifier") || "";

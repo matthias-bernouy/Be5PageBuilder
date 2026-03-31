@@ -4,63 +4,66 @@ import { basename, dirname, join } from "node:path";
 import type { PageBuilder } from "src/PageBuilder";
 
 export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: IBe5_Runner) {
-    const glob = new Bun.Glob("**/*.html");
+    type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
+    const pages = new Map<string, PageEntry>();
 
-    for await (const htmlFile of glob.scan(absolutePath)) {
-        const relativeDir = dirname(htmlFile);
-        const fileName = basename(htmlFile, ".html");
-        
-        let urlParts = [baseUrl];
+    const fileTypes = [
+        { glob: "**/*.html",      suffix: ".html",      key: "htmlFile"   },
+        { glob: "**/*.server.ts", suffix: ".server.ts", key: "serverFile" },
+        { glob: "**/*.client.ts", suffix: ".client.ts", key: "clientFile" },
+    ] as const;
 
-        if (relativeDir !== ".") {
-            urlParts.push(relativeDir);
+    for (const { glob, suffix, key } of fileTypes) {
+        for await (const file of new Bun.Glob(glob).scan(absolutePath)) {
+            const routeKey = toRouteKey(file, suffix);
+            const entry = pages.get(routeKey) || {};
+            (entry as any)[key] = join(absolutePath, file);
+            pages.set(routeKey, entry);
         }
+    }
 
-        if (fileName !== relativeDir && fileName !== "index") {
-            urlParts.push(fileName);
-        }
+    for (const [routeKey, { serverFile, clientFile, htmlFile }] of pages) {
+        const urlPath = join(baseUrl, routeKey).replace(/\\/g, '/');
 
-        const urlPath = join(...urlParts).replace(/\\/g, '/');
-
-        const pageDir = join(absolutePath, relativeDir);
-
-        const findFile = async (suffix: string) => {
-            const scanner = new Bun.Glob(`*${suffix}`);
-            for await (const file of scanner.scan({ cwd: pageDir })) return join(pageDir, file);
-            return null;
-        };
-
-        const serverFile = await findFile(".server.ts");
-        const clientFile = await findFile(".client.ts");
-        const htmlPath   = await findFile(".html") || "index.html";
-
-        if (serverFile){
+        if (serverFile) {
             const module = await import(serverFile);
             const serverHandler = module.default as (req: Request, system: PageBuilder) => Promise<Response>;
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
                 return await serverHandler(req, system);
             });
-        } else {
+        } else if (htmlFile) {
             runner.addEndpoint("GET", urlPath, () => {
-                return new Response(Bun.file(htmlPath));
+                return new Response(Bun.file(htmlFile));
             });
         }
 
         if (clientFile) {
             runner.addEndpoint("GET", urlPath + ".js", async () => {
-                try{
+                try {
                     const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
                     return send_js(await result.outputs[0]!.text());
-                } catch (e){
+                } catch (e) {
                     console.error("Error building client script for", urlPath, e);
                     return new Response("// Error building client script", {
                         headers: { "Content-Type": "text/javascript" }
                     });
                 }
-
             });
         }
     }
+}
+
+// editor/editor.html → "editor"  (dirname === basename → simplifie)
+// script.client.ts   → "script"  (pas de dossier)
+// foo/bar.html       → "foo/bar" (dirname !== basename → garde le chemin complet)
+function toRouteKey(filePath: string, suffix: string): string {
+    const base = filePath.slice(0, -suffix.length);
+    const dir = dirname(base);
+    const name = basename(base);
+
+    if (dir === ".") return name;
+    if (name === basename(dir)) return dir;
+    return base;
 }
 
 
