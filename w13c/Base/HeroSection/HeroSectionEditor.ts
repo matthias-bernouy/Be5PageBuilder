@@ -1,52 +1,31 @@
-import { disableBlocActions } from "src/Be5System/disableBlocActions";
 import { Editor } from "src/core/Editor/Base/Editor";
-import { StringBlocConfiguration } from "src/core/Editor/BlocConfiguration/Basics/StringBlocConfiguration";
-import type { BlocConfiguration } from "src/core/Editor/BlocConfiguration/BlocConfiguration";
-import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
+import { SectionComponent } from "src/core/Editor/BlocConfiguration/SectionComponent";
+import { SelectComponent } from "src/core/Editor/BlocConfiguration/SelectComponent";
 
 export class HeroSectionEditor extends Editor {
 
-    private _imageSlot: HTMLImageElement;
-    private _titleSlot: HTMLElement;
-    private _contentSlot: HTMLElement;
-    private _footerSlot: HTMLElement;
-
-    private _configurations: BlocConfiguration[] = [
-        new StringBlocConfiguration({ key: "title", label: "Title", defaultValue: "_titleValue" }),
-        new StringBlocConfiguration({ key: "content", label: "Content", defaultValue: "_contentValue" }),
-        new StringBlocConfiguration({ key: "footer", label: "Footer", defaultValue: "_footerValue" }),
-        new StringBlocConfiguration({ key: "image", label: "Image", defaultValue: "this._imageSlot.src" }),
-    ];
+    override configuration: HTMLElement[];
 
     constructor(target: HTMLElement) {
+
         super(target, "");
 
-        this._titleSlot = createDefaultElement(this.target, "title", "span", "Title");
-        this._contentSlot = createDefaultElement(this.target, "content", "span", "lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. ");
-        this._footerSlot = createDefaultElement(this.target, "footer", 'span', 'footer');
+        console.log("création")
+        this.configuration = [];
 
-        if (!this.target.querySelector('img')) {
-            const img = document.createElement("img");
-            img.setAttribute("slot", "image");
-            img.src = "https://picsum.photos/200";
-            this.target.append(img);
-            this._imageSlot = img;
-        } else {
-            this._imageSlot = this.target.querySelector('img')!;
-        }
+        const components = new SelectComponent();
+        components.setInfo("components", this);
+        components.setMultiple(true);
+
+        const textSection = SectionComponent.create("Contenu", [
+            components
+        ]);
+
+        this.configuration.push(textSection);
+
     }
 
     init() {
-        disableBlocActions([
-            this._imageSlot,
-            this._titleSlot,
-            this._contentSlot,
-            this._footerSlot
-        ])
-    }
-
-    override get configurations(): BlocConfiguration[] {
-        return this._configurations;
     }
 
     restore() {

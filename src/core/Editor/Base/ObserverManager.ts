@@ -25,7 +25,7 @@ export class ObserverManager {
 
         this.workingElement = workingElement;
         textTags.forEach((tag) => {
-            if (["p", "span"].includes(tag)){
+            if (["p", "span", "a"].includes(tag)){
                 this.register_editor({
                     tag, 
                     cl: TextEditor,

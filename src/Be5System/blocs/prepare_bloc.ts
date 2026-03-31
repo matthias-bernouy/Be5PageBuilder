@@ -1,4 +1,5 @@
 import { randomUUIDv7 } from "bun";
+import { rmSync } from "node:fs";
 
 export async function prepare_bloc(fileView: File, fileEditor: File, label: string, group: string) {
     const blocId = `be5-${randomUUIDv7()}`;
@@ -21,11 +22,14 @@ export async function prepare_bloc(fileView: File, fileEditor: File, label: stri
     let editorJS = await editorBuild.outputs[0]?.text() || "";
 
     viewJS = viewJS.replaceAll("BE5_TAG_TO_BE_REPLACED", blocId);
-    
+
     editorJS = editorJS
         .replaceAll("BE5_TAG_TO_BE_REPLACED", blocId)
         .replaceAll("BE5_LABEL_TO_BE_REPLACED", label)
         .replaceAll("BE5_GROUP_TO_BE_REPLACED", group)
+
+    rmSync("./tmp", { recursive: true, force: true });
+    rmSync("./dist", { recursive: true, force: true });
 
     return {
         id: blocId,

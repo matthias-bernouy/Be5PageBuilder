@@ -95,7 +95,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
                 this.close();
                 break;
             case "edit":
-                document.EditorManager.getBlocConfigPanel().show(this._editor!.panelConfig!);
+                document.EditorManager.getBlocConfigPanel().show(this._editor!.configuration!);
                 break;
             case "duplicate":
                 const clone = this._target!.cloneNode(true) as HTMLElement;
@@ -116,7 +116,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private smartRender(): void {
         const config = this._editor!.actionBarConfiguration;
-        const hasConfig = this._editor!.panelConfig != null;
+        const hasConfig = this._editor!.configuration.length > 0;
+
         
         const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig;
 

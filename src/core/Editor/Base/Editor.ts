@@ -1,9 +1,9 @@
-import type { BlocConfiguration } from "../BlocConfiguration/BlocConfiguration";
-
 export abstract class Editor {
 
+    private targetIdentifier: string;
     private static styleElement: Map<string, HTMLStyleElement>;
     public         target:       HTMLElement;
+    public         _panelConfig: HTMLElement;
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["edit", true],
@@ -13,8 +13,15 @@ export abstract class Editor {
         ["saveAsTemplate", false]
     ]);
 
-    constructor(target: HTMLElement, styles: string) {
+    constructor(target: HTMLElement, styles: string, editor: string) {
         this.target = target;
+
+        this.targetIdentifier = crypto.randomUUID();
+        this.target.setAttribute("data-identifier", this.targetIdentifier)
+
+        this._panelConfig = document.createElement("div");
+        this._panelConfig.innerHTML = editor;
+        this._setPanelItemIdentifiers();
 
         document.addEventListener("switch-mode", (e: CustomEventInit) => {
             if (e.detail === "editor-mode") {
@@ -34,8 +41,13 @@ export abstract class Editor {
         if (document.EditorManager?.getBlocActionGroup()){
             document.EditorManager.getBlocActionGroup().close();
         }
+    }
 
-
+    private _setPanelItemIdentifiers(): void {
+        const panelItems = this._panelConfig.querySelectorAll('p9r-panel-item');
+        panelItems.forEach((item) => {
+            item.setAttribute('data-identifier', this.targetIdentifier);
+        });
     }
 
     private handleHover = () => {
@@ -103,12 +115,16 @@ export abstract class Editor {
 
     }
 
+    public render(){
+        
+    }
+
     get actionBarConfiguration(){
         return this._actionBarFeatures;
     }
 
     get panelConfig(): HTMLElement | null {
-        return null;
+        return this._panelConfig;
     };
 
     abstract init(): void;

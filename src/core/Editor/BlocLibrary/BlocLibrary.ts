@@ -103,4 +103,6 @@ export class BlocLibrary extends Component {
     }
 }
 
-customElements.define("w13c-action-bar", BlocLibrary);
+if ( !customElements.get("w13c-action-bar") ){
+    customElements.define("w13c-action-bar", BlocLibrary);
+}

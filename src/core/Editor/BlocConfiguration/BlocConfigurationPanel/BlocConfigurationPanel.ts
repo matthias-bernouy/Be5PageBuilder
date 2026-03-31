@@ -6,6 +6,9 @@ import css from './style.css' with { type: 'text' };
 import type { LateralDialog } from "w13c/Dialog/LateralDialog/LateralDialog";
 import { Component } from "src/core/Utilities/Component";
 
+import "../SelectComponent";
+import "../SectionComponent";
+
 export class BlocConfigurationPanel extends Component {
 
     private dialog : LateralDialog | null = null;
@@ -21,9 +24,16 @@ export class BlocConfigurationPanel extends Component {
         this.dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog") as LateralDialog;
     }
 
-    show(element: HTMLElement) {
-        this.replaceChildren(element);
+    show(element: HTMLElement[]) {
+        this.replaceChildren();
+        element.forEach((ele) => {
+            this.append(ele);
+        })
         this.dialog?.show();
+    }
+
+    close(){
+        this.dialog?.close();
     }
 
 }

@@ -1,0 +1,58 @@
+/* ═══════════════════════════════════════════════
+   FooterMenu — Variables
+   ═══════════════════════════════════════════════ */
+
+:host {
+    --menu-title-font-size:   0.875rem;
+    --menu-title-font-weight: 600;
+    --menu-title-color:       var(--text-main, #1f2937);
+    --menu-title-margin-bottom: 12px;
+
+    --menu-link-font-size:    0.875rem;
+    --menu-link-color:        var(--text-body, #374151);
+    --menu-link-color-hover:  var(--primary-base, #2563eb);
+    --menu-link-line-height:  1.625;
+    --menu-link-transition:   color 150ms ease;
+
+    display: block;
+}
+
+/* ═══════════════════════════════════════════════
+   Layout
+   ═══════════════════════════════════════════════ */
+
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.menu-title {
+    margin: 0;
+    font-size: var(--menu-title-font-size);
+    font-weight: var(--menu-title-font-weight);
+    color: var(--menu-title-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding-bottom: var(--menu-title-margin-bottom);
+    border-bottom: 1px solid var(--border-default, #e5e7eb);
+}
+
+.menu-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.menu-links ::slotted(a) {
+    display: block;
+    font-size: var(--menu-link-font-size);
+    color: var(--menu-link-color);
+    text-decoration: none;
+    line-height: var(--menu-link-line-height);
+    transition: var(--menu-link-transition);
+}
+
+.menu-links ::slotted(a:hover) {
+    color: var(--menu-link-color-hover);
+}

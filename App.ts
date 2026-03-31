@@ -16,22 +16,12 @@ const MediaRepository       = new DefaultMediaRepository("MediaProvider 1", mong
 PageBuilderRepository.reset();
 await MediaRepository.reset();
 
-try {
-    const imagesFolder = await MediaRepository.createFolder("new-folder")
-    const jpgFolder = await MediaRepository.createFolder("jpg folder",imagesFolder.id)
-    const jpgImage = await MediaRepository.upload(
-        Bun.file("./image.jpg") as unknown as File,
-        jpgFolder.id
-    )
-} catch (e){
-    console.log(e)
-}
- 
 
 const AuthenticationCore = new Authentication(AuthRepository, BunRunnerCore, {
    defaultRedirection: "/page-builder/admin/pages",
    basePath: "/auth"
 });
+
 AuthenticationCore.registerDisabled = true;
 
 

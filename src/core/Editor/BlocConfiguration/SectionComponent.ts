@@ -1,0 +1,111 @@
+import { Component } from 'src/core/Utilities/Component';
+
+export class SectionComponent extends Component {
+    private _title: string = "Default";
+    private _items: HTMLElement[] = [];
+
+    constructor() {
+        super();
+    }
+
+    static create(title: string, items: HTMLElement[]){
+        const o = document.createElement("p9r-section") as SectionComponent;
+        o._title = title;
+        o._items = items;
+        o.render();
+        o.appendItems();
+        return o;
+    }
+
+    connectedCallback() {
+        this.render();
+        this.appendItems();
+    }
+
+    /**
+     * Injecte les instances réelles des éléments dans le container
+     */
+    private appendItems() {
+        const container = this.shadowRoot!.querySelector('.content');
+        console.log(this._items)
+        if (container) {
+            this._items.forEach(item => container.appendChild(item));
+        }
+    }
+
+    private render() {
+        this.shadowRoot!.innerHTML = `
+            <style>
+                :host {
+                    display: block;
+                    margin-bottom: 32px;
+                    animation: fadeIn 0.3s ease-out;
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .section-container {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 16px;
+                }
+
+                header {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding-bottom: 12px;
+                    border-bottom: 1px solid var(--border-default);
+                }
+
+                .accent-bar {
+                    width: 3px;
+                    height: 14px;
+                    background: var(--primary-base);
+                    border-radius: 4px;
+                    box-shadow: 0 0 8px var(--primary-muted);
+                }
+
+                .title-wrapper {
+                    color: var(--text-main);
+                    font-size: 11px;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                    letter-spacing: 0.1em;
+                    user-select: none;
+                }
+
+                .content {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px; /* Espace entre les inputs/composants */
+                    padding: 4px 0 4px 12px;
+                }
+
+                /* Force les enfants à prendre toute la largeur */
+                .content > * {
+                    width: 100%;
+                }
+            </style>
+
+            <section class="section-container">
+                <header>
+                    <div class="accent-bar"></div>
+                    <div class="title-wrapper">
+                        ${this._title}
+                    </div>
+                </header>
+
+                <main class="content">
+                    </main>
+            </section>
+        `;
+    }
+}
+
+if ( !customElements.get("p9r-section") ){
+    customElements.define("p9r-section", SectionComponent);
+}
