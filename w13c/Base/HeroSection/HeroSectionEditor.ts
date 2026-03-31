@@ -1,28 +1,10 @@
 import { Editor } from "src/core/Editor/Base/Editor";
-import { SectionComponent } from "src/core/Editor/BlocConfiguration/SectionComponent";
-import { SelectComponent } from "src/core/Editor/BlocConfiguration/SelectComponent";
+import Panel from "./panel-config.html" with { type: 'text' }
 
 export class HeroSectionEditor extends Editor {
 
-    override configuration: HTMLElement[];
-
     constructor(target: HTMLElement) {
-
-        super(target, "");
-
-        console.log("création")
-        this.configuration = [];
-
-        const components = new SelectComponent();
-        components.setInfo("components", this);
-        components.setMultiple(true);
-
-        const textSection = SectionComponent.create("Contenu", [
-            components
-        ]);
-
-        this.configuration.push(textSection);
-
+        super(target, "", Panel as unknown as string);
     }
 
     init() {

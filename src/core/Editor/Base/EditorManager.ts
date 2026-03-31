@@ -3,7 +3,7 @@ import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "../MediaCenter/MediaCenter";
 import { FloatingToolbar } from "../FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../RichTextBar/RichTextBar";
-import { BlocConfigurationPanel } from "../BlocConfiguration/BlocConfigurationPanel/BlocConfigurationPanel";
+import { BlocConfigurationPanel } from "../BlocConfiguration/BlocConfigurationPanel";
 import { BlocActionGroup } from "./BlocActionGroup";
 
 export type PageModeEnum = [

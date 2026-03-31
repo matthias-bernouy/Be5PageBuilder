@@ -1,13 +1,11 @@
 import "w13c/Dialog/LateralDialog/LateralDialog"
 import "w13c/Base/Form/Input/Input"
 import "w13c/Base/Form/Checkbox/Checkbox"
-import html from './template.html' with { type: 'text' };
-import css from './style.css' with { type: 'text' };
 import type { LateralDialog } from "w13c/Dialog/LateralDialog/LateralDialog";
 import { Component } from "src/core/Utilities/Component";
 
-import "../SelectComponent";
-import "../SectionComponent";
+import "./PanelComponentItem";
+import "./SectionComponent";
 
 export class BlocConfigurationPanel extends Component {
 
@@ -15,8 +13,13 @@ export class BlocConfigurationPanel extends Component {
 
     constructor() {
         super({
-            css: css as unknown as string,
-            template: html as unknown as string
+            css: "",
+            template: `
+            <w13c-lateral-dialog>
+                <slot></slot>
+                <span slot="title">Element Configuration</span>
+            </w13c-lateral-dialog>
+            `
         });
     }
 
@@ -24,11 +27,8 @@ export class BlocConfigurationPanel extends Component {
         this.dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog") as LateralDialog;
     }
 
-    show(element: HTMLElement[]) {
-        this.replaceChildren();
-        element.forEach((ele) => {
-            this.append(ele);
-        })
+    show(element: HTMLElement) {
+        this.replaceChildren(element);
         this.dialog?.show();
     }
 

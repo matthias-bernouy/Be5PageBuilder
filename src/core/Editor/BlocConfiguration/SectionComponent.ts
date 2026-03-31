@@ -1,36 +1,12 @@
 import { Component } from 'src/core/Utilities/Component';
 
 export class SectionComponent extends Component {
-    private _title: string = "Default";
-    private _items: HTMLElement[] = [];
-
     constructor() {
         super();
     }
 
-    static create(title: string, items: HTMLElement[]){
-        const o = document.createElement("p9r-section") as SectionComponent;
-        o._title = title;
-        o._items = items;
-        o.render();
-        o.appendItems();
-        return o;
-    }
-
     connectedCallback() {
         this.render();
-        this.appendItems();
-    }
-
-    /**
-     * Injecte les instances réelles des éléments dans le container
-     */
-    private appendItems() {
-        const container = this.shadowRoot!.querySelector('.content');
-        console.log(this._items)
-        if (container) {
-            this._items.forEach(item => container.appendChild(item));
-        }
     }
 
     private render() {
@@ -58,7 +34,6 @@ export class SectionComponent extends Component {
                     align-items: center;
                     gap: 10px;
                     padding-bottom: 12px;
-                    border-bottom: 1px solid var(--border-default);
                 }
 
                 .accent-bar {
@@ -95,12 +70,13 @@ export class SectionComponent extends Component {
                 <header>
                     <div class="accent-bar"></div>
                     <div class="title-wrapper">
-                        ${this._title}
+                        ${this.getAttribute("data-title")}
                     </div>
                 </header>
 
                 <main class="content">
-                    </main>
+                    <slot></slot>
+                </main>
             </section>
         `;
     }

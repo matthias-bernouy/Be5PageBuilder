@@ -1,35 +1,30 @@
 <div id="hero-panel">
-    <p9r-section>
-        <label>Titre</label>
-        <p9r-panel-item
-            data-slot-target="title"
-            data-element="input"
+    <p9r-section data-title="Configuration">
+        <p9r-panel-component-item
             data-key="title"
-            data-name="Titre">
-        </p9r-panel-item>
+            data-slot-name="title"
+            data-multiple="true">
+            <h1>Un super titre</h1>
+        </p9r-panel-component-item>
 
-        <label>Contenu</label>
-        <p9r-panel-item
-            data-slot-target="content"
-            data-element="textarea"
+
+        <p9r-panel-component-item
             data-key="content"
-            data-name="Contenu">
-        </p9r-panel-item>
+            data-slot-name="content">
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate tempore iure, fuga nisi temporibus a! Ratione minus est dicta dolores consequuntur labore, molestiae voluptatibus, dignissimos cupiditate quo voluptates perspiciatis recusandae.</p>
+        </p9r-panel-component-item>
 
-        <label>Footer</label>
-        <p9r-panel-item
-            data-slot-target="footer"
-            data-element="input"
+        <p9r-panel-component-item
             data-key="footer"
-            data-name="Footer">
-        </p9r-panel-item>
+            data-slot-name="footer">
+            <p>Footer</p>
+        </p9r-panel-component-item>
 
-        <label>Image</label>
-        <p9r-panel-item
-            data-slot-target="image"
-            data-element="img"
+        <p9r-panel-component-item
             data-key="image"
-            data-name="Image">
-        </p9r-panel-item>
+            data-slot-name="image">
+            <img>
+        </p9r-panel-component-item>
     </p9r-section>
+
 </div>

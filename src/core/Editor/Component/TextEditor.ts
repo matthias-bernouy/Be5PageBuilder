@@ -140,10 +140,13 @@ export class TextEditor extends Editor {
     }
 
     private handleInput(e: Event) {
+        console.log("text input")
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
         if (this.target.innerText === "/" && this.isBlocAvailable) {
+            e.stopPropagation();
+            e.stopImmediatePropagation()
             const actionbar = BlocLibrary.open();
             actionbar.addEventListener("insert", (e: any) => {
                 const new_node = this.createElement(e.detail.id);

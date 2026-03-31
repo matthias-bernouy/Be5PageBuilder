@@ -1,9 +1,11 @@
+import { PanelComponentItem } from "../BlocConfiguration/PanelComponentItem";
+
 export abstract class Editor {
 
     private targetIdentifier: string;
     private static styleElement: Map<string, HTMLStyleElement>;
     public         target:       HTMLElement;
-    public         _panelConfig: HTMLElement;
+    public         _panelConfig: HTMLElement | null = null;
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["edit", true],
@@ -13,15 +15,19 @@ export abstract class Editor {
         ["saveAsTemplate", false]
     ]);
 
-    constructor(target: HTMLElement, styles: string, editor: string) {
+    private registerOnEditorMode: (() => void)[] = [];
+
+    constructor(target: HTMLElement, styles: string, editor?: string) {
         this.target = target;
 
         this.targetIdentifier = crypto.randomUUID();
         this.target.setAttribute("data-identifier", this.targetIdentifier)
 
-        this._panelConfig = document.createElement("div");
-        this._panelConfig.innerHTML = editor;
-        this._setPanelItemIdentifiers();
+        if ( editor ) {
+            this._panelConfig = document.createElement("div");
+            this._panelConfig.innerHTML = editor;
+            this._setPanelItemIdentifiers();
+        }
 
         document.addEventListener("switch-mode", (e: CustomEventInit) => {
             if (e.detail === "editor-mode") {
@@ -44,19 +50,25 @@ export abstract class Editor {
     }
 
     private _setPanelItemIdentifiers(): void {
-        const panelItems = this._panelConfig.querySelectorAll('p9r-panel-item');
+        if ( !this._panelConfig ) return;
+        const panelItems = this._panelConfig.querySelectorAll('*') as unknown as any[];
         panelItems.forEach((item) => {
-            item.setAttribute('data-identifier', this.targetIdentifier);
+            item.setAttribute('data-component-identifier', this.targetIdentifier);
+            if ( item.init ) item.init();
+            if (item.tagName.toLowerCase() === 'p9r-panel-component-item') {
+                console.log(item)
+                // Ici, TS a besoin d'un cast pour accéder à tes méthodes privées/publiques
+                const componentItem = item as PanelComponentItem;
+                if (componentItem.onEditorMode) {
+                    this.registerOnEditorMode.push(componentItem.onEditorMode);
+                }
+            }
         });
     }
 
     private handleHover = () => {
         document.EditorManager.getBlocActionGroup().setEditor(this);
         document.EditorManager.getBlocActionGroup().open();
-    }
-
-    public onConfigChange(key: string, value: any) {
-        console.log("Config change", key, value)
     }
 
     public viewClient() {
@@ -80,10 +92,16 @@ export abstract class Editor {
         this.target.removeAttribute("data-disable-add-after");
         this.target.removeAttribute("data-disable-save-as-template");
 
+        this.target.removeAttribute("data-identifier")
+
     }
 
     public viewEditor() {
+        console.log(this._panelConfig)
         this.init();
+        this.registerOnEditorMode.forEach((ele) => {
+            ele();
+        })
         this.target.addEventListener("mouseenter", this.handleHover);
 
         Editor.styleElement.forEach((v, k) => {
@@ -93,6 +111,7 @@ export abstract class Editor {
         this.target.draggable = true;
         this.target.classList.add("editor-block")
         this.target.setAttribute("data-is-editor", "true")
+        this.target.setAttribute("data-identifier", this.targetIdentifier)
 
         if (this.target.getAttribute("data-disable-delete") === "true") {
             this._actionBarFeatures.set("delete", false);
