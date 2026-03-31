@@ -26,11 +26,6 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 
-		"paths": {
-			"@blocs/*": [ "src/core/blocs/*" ]
-		}
-
-		
 	},
 
 	"include": [

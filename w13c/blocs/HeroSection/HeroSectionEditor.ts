@@ -1,10 +1,10 @@
 import { Editor } from "src/core/Editor/core/Editor";
-import Panel from "./panel-config.html" with { type: 'text' }
+import Config from "./configuration.html" with { type: 'text' }
 
 export class HeroSectionEditor extends Editor {
 
     constructor(target: HTMLElement) {
-        super(target, "", Panel as unknown as string);
+        super(target, "", Config as unknown as string);
     }
 
     init() {
