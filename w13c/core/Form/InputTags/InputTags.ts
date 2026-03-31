@@ -4,7 +4,7 @@ import css from './style.css' with { type: 'text' };
 
 // On s'assure que Input est chargé
 import "../Input/Input"; 
-import "w13c/Base/Tag/Tag";
+import "w13c/core/Tag/Tag";
 
 export class InputTags extends Component {
     static formAssociated = true;
