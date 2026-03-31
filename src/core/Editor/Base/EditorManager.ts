@@ -3,7 +3,7 @@ import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "../MediaCenter/MediaCenter";
 import { FloatingToolbar } from "../FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../RichTextBar/RichTextBar";
-import { BlocConfigurationPanel } from "../BlocConfiguration/BlocConfigurationPanel";
+import { ConfigPanel } from "../BlocConfiguration/display/ConfigPanel";
 import { BlocActionGroup } from "./BlocActionGroup";
 
 export type PageModeEnum = [
@@ -22,7 +22,7 @@ export class EditorManager{
 
     private mediaCenter: MediaCenter;
     private toolbar: FloatingToolbar;
-    private elementPanelConfig: BlocConfigurationPanel;
+    private elementPanelConfig: ConfigPanel;
     private blocActionGroup: BlocActionGroup;
 
     private observer: ObserverManager;
@@ -35,7 +35,7 @@ export class EditorManager{
 
         this.mediaCenter        = new MediaCenter();
         this.toolbar            = new FloatingToolbar();
-        this.elementPanelConfig = new BlocConfigurationPanel();
+        this.elementPanelConfig = new ConfigPanel();
         this.blocActionGroup    = new BlocActionGroup();
 
         this.editorSystem.append(this.mediaCenter)

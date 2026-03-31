@@ -1,4 +1,4 @@
-import { PanelComponentItem } from "../BlocConfiguration/PanelComponentItem";
+import { ComponentConfigItem } from "../BlocConfiguration/Items/ComponentConfigItem";
 
 export abstract class Editor {
 
@@ -58,7 +58,7 @@ export abstract class Editor {
             if (item.tagName.toLowerCase() === 'p9r-panel-component-item') {
                 console.log(item)
                 // Ici, TS a besoin d'un cast pour accéder à tes méthodes privées/publiques
-                const componentItem = item as PanelComponentItem;
+                const componentItem = item as ComponentConfigItem;
                 if (componentItem.onEditorMode) {
                     this.registerOnEditorMode.push(componentItem.onEditorMode);
                 }

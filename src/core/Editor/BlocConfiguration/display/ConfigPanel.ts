@@ -4,10 +4,10 @@ import "w13c/Base/Form/Checkbox/Checkbox"
 import type { LateralDialog } from "w13c/Dialog/LateralDialog/LateralDialog";
 import { Component } from "src/core/Utilities/Component";
 
-import "./PanelComponentItem";
-import "./SectionComponent";
+import "../Items/ComponentConfigItem";
+import "w13c/Base/Form/FormSection";
 
-export class BlocConfigurationPanel extends Component {
+export class ConfigPanel extends Component {
 
     private dialog : LateralDialog | null = null;
 
@@ -38,4 +38,4 @@ export class BlocConfigurationPanel extends Component {
 
 }
 
-customElements.define("p9r-bloc-configuration", BlocConfigurationPanel)
+customElements.define("p9r-bloc-configuration", ConfigPanel)

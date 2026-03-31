@@ -1,8 +1,9 @@
 import type { Component } from "src/core/Utilities/Component";
-import { BlocLibrary } from "../BlocLibrary/BlocLibrary";
+import { BlocLibrary } from "../../BlocLibrary/BlocLibrary";
 import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { ConfigItem } from "./ConfigItem";
 
-export class PanelComponentItem extends HTMLElement {
+export class ComponentConfigItem extends ConfigItem {
 
     private _value: Component[] = [];
     private _isMultiple: boolean = false;
@@ -149,5 +150,5 @@ export class PanelComponentItem extends HTMLElement {
 }
 
 if ( !customElements.get("p9r-panel-component-item") ){
-    customElements.define('p9r-panel-component-item', PanelComponentItem);
+    customElements.define('p9r-panel-component-item', ComponentConfigItem);
 }

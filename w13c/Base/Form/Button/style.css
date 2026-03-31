@@ -105,6 +105,15 @@
   width: 100%;
 }
 
+:host([align="left"]) {
+  justify-content: start;
+}
+
+:host([align="right"]) {
+  justify-content: end;
+}
+
+
 .button:hover {
   background-color: var(--_btn-hover-bg);
   opacity: var(--_btn-hover-opacity, 1);

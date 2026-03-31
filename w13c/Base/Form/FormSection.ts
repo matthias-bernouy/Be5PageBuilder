@@ -1,6 +1,6 @@
 import { Component } from 'src/core/Utilities/Component';
 
-export class SectionComponent extends Component {
+export class FormSection extends Component {
     constructor() {
         super();
     }
@@ -83,5 +83,5 @@ export class SectionComponent extends Component {
 }
 
 if ( !customElements.get("p9r-section") ){
-    customElements.define("p9r-section", SectionComponent);
+    customElements.define("p9r-section", FormSection);
 }
