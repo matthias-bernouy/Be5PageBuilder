@@ -29,5 +29,7 @@ export default async function updatePage(req: Request, system: PageBuilder) {
         identifier: identifier
     }, body.identifier ?? undefined);
 
+    system.cache.delete(`article:${identifier}`);
+
     return new Response("Page updated");
 }

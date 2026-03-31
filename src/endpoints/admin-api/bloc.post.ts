@@ -18,5 +18,8 @@ export default async function importBloc(req: Request, system: PageBuilder) {
 
     await system.repository.createBloc(bloc);
 
+    // Invalider le cache du bloc + toutes les pages qui pourraient l'utiliser
+    system.cache.delete(`bloc:${bloc.id}`);
+
     return new Response("Bloc imported");
 }

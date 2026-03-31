@@ -13,10 +13,6 @@ const PageBuilderRepository = new DefaultPageBuilderRepository(mongoClient, dbNa
 const AuthRepository        = new AuthRepositoryProvider(mongoClient, dbName);
 const MediaRepository       = new DefaultMediaRepository("MediaProvider 1", mongoClient, dbName, BunRunnerCore);
 
-PageBuilderRepository.reset();
-await MediaRepository.reset();
-
-
 const AuthenticationCore = new Authentication(AuthRepository, BunRunnerCore, {
    defaultRedirection: "/page-builder/admin/pages",
    basePath: "/auth"

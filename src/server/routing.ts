@@ -1,7 +1,7 @@
-import type { Be5_Runner, IBe5_Runner } from "be5-interfaces";
-import { send_html, send_js, type Be5System } from "be5-system";
+import type { IBe5_Runner } from "be5-interfaces";
 import { basename, dirname, join } from "node:path";
 import type { PageBuilder } from "src/PageBuilder";
+import { cachedResponseAsync, compress } from "src/server/compression";
 
 export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: IBe5_Runner) {
     type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
@@ -32,22 +32,22 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
                 return await serverHandler(req, system);
             });
         } else if (htmlFile) {
-            runner.addEndpoint("GET", urlPath, () => {
-                return new Response(Bun.file(htmlFile));
+            const cacheKey = `html:${urlPath}`;
+            runner.addEndpoint("GET", urlPath, async (req: Request) => {
+                return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+                    const content = await Bun.file(htmlFile).text();
+                    return compress(content, "text/html");
+                });
             });
         }
 
         if (clientFile) {
-            runner.addEndpoint("GET", urlPath + ".js", async () => {
-                try {
+            const cacheKey = `js:${urlPath}`;
+            runner.addEndpoint("GET", urlPath + ".js", async (req: Request) => {
+                return cachedResponseAsync(req, cacheKey, system.cache, async () => {
                     const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
-                    return send_js(await result.outputs[0]!.text());
-                } catch (e) {
-                    console.error("Error building client script for", urlPath, e);
-                    return new Response("// Error building client script", {
-                        headers: { "Content-Type": "text/javascript" }
-                    });
-                }
+                    return compress(await result.outputs[0]!.text(), "text/javascript");
+                });
             });
         }
     }
@@ -70,9 +70,11 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        runner.addEndpoint("GET", endpointUrl, () => {
-            return new Response(Bun.file(fullPath), {
-                headers: { "Content-Type": "text/css" }
+        const cacheKey = `css:${endpointUrl}`;
+        runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
+            return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+                const content = await Bun.file(fullPath).text();
+                return compress(content, "text/css");
             });
         });
     }
@@ -84,9 +86,11 @@ export async function registerJSFolder(url: string, absoluteFolderPath: string, 
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        runner.addEndpoint("GET", endpointUrl, () => {
-            return new Response(Bun.file(fullPath), {
-                headers: { "Content-Type": "text/javascript" }
+        const cacheKey = `js:${endpointUrl}`;
+        runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
+            return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+                const content = await Bun.file(fullPath).text();
+                return compress(content, "text/javascript");
             });
         });
     }
