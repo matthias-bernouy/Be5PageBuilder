@@ -1,6 +1,6 @@
 import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
 import { Editor } from "src/core/Editor/core/Editor";
-import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { disableBlocActions } from "src/core/Editor/editors/disableBlocActions";
 
 const tag = "BE5_TAG_TO_BE_REPLACED";
 const footerMenuTag = tag + "-menu";

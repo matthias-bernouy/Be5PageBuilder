@@ -1,5 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
-import contains from "src/Be5System/contains";
+import contains from "src/server/helpers";
 import type { TPage } from "src/interfaces/contract/Repository/TModels";
 
 export default async function updatePage(req: Request, system: PageBuilder) {

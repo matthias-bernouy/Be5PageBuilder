@@ -1,6 +1,6 @@
 import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
 import { Editor } from "src/core/Editor/core/Editor";
-import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { disableBlocActions } from "src/core/Editor/editors/disableBlocActions";
 
 class NavBarEditor extends Editor {
     private logo: HTMLImageElement;

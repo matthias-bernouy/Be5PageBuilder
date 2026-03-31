@@ -1,6 +1,6 @@
 import type { Component } from "src/core/Component/core/Component";
 import { BlocLibrary } from "../components/BlocLibrary/BlocLibrary";
-import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { disableBlocActions } from "src/core/Editor/editors/disableBlocActions";
 import { ConfigItem } from "./ConfigItem";
 
 export class ComponentConfigItem extends ConfigItem {

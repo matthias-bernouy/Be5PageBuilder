@@ -1,5 +1,5 @@
-import { generate_bloc_files } from "src/Be5System/blocs/generate_bloc_files";
-import { prepare_bloc } from "src/Be5System/blocs/prepare_bloc";
+import { generate_bloc_files } from "src/server/blocs/generate_bloc_files";
+import { prepare_bloc } from "src/server/blocs/prepare_bloc";
 import { join } from "path";
 import { DefaultPageBuilderRepository } from "src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
 import { MongoClient } from "mongodb";

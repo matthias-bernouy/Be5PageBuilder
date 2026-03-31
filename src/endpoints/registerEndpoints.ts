@@ -1,4 +1,4 @@
-import { registerUIFolder, registerCSSFolder, registerAPIFolder } from "src/Be5System/utilities";
+import { registerUIFolder, registerCSSFolder, registerAPIFolder } from "src/server/routing";
 import { join } from "node:path"
 import type { PageBuilder } from "src/PageBuilder";
 import type { Middleware } from "be5-interfaces";

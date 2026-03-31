@@ -90,7 +90,7 @@ import { Component } from "src/core/Utilities/Component";
 ```ts
 import { Editor } from "src/core/Editor/core/Editor";
 import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
-import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { disableBlocActions } from "src/core/Editor/editors/disableBlocActions";
 ```
 
 **Règles :**

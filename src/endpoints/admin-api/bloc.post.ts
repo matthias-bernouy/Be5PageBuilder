@@ -1,5 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
-import { prepare_bloc } from "src/Be5System/blocs/prepare_bloc";
+import { prepare_bloc } from "src/server/blocs/prepare_bloc";
 
 export default async function importBloc(req: Request, system: PageBuilder) {
 

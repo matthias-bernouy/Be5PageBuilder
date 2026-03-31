@@ -1,4 +1,4 @@
-import { disableBlocActions } from "src/Be5System/disableBlocActions";
+import { disableBlocActions } from "src/core/Editor/editors/disableBlocActions";
 import { Editor } from "src/core/Editor/core/Editor";
 import { createDefaultElement } from "src/core/Utilities/createDefaultElement";
 
