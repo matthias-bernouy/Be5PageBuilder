@@ -125,7 +125,6 @@ export class EditorManager{
             body: JSON.stringify(body)
         })
         res.then((a) => {
-            //console.log(a)
         })
         this.switchMode("editor-mode");
     }

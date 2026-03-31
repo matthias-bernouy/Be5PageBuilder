@@ -140,7 +140,6 @@ export class TextEditor extends Editor {
     }
 
     private handleInput(e: Event) {
-        console.log("text input")
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }

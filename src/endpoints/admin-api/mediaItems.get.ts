@@ -8,8 +8,6 @@ export default async function mediaItems(req: Request, system: PageBuilder) {
 
     let allowedTypes: ("folder" | "image" | "other")[] = ["image", "other"];
 
-    console.log(typesParam)
-
     if (typesParam) {
         try {
             const parsed = JSON.parse(typesParam);

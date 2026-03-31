@@ -56,8 +56,6 @@ export abstract class Editor {
             item.setAttribute('data-component-identifier', this.targetIdentifier);
             if ( item.init ) item.init();
             if (item.tagName.toLowerCase() === 'p9r-panel-component-item') {
-                console.log(item)
-                // Ici, TS a besoin d'un cast pour accéder à tes méthodes privées/publiques
                 const componentItem = item as ComponentConfigItem;
                 if (componentItem.onEditorMode) {
                     this.registerOnEditorMode.push(componentItem.onEditorMode);
@@ -97,7 +95,6 @@ export abstract class Editor {
     }
 
     public viewEditor() {
-        console.log(this._panelConfig)
         this.init();
         this.registerOnEditorMode.forEach((ele) => {
             ele();

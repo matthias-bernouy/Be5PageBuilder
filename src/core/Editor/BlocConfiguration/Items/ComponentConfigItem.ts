@@ -121,14 +121,12 @@ export class ComponentConfigItem extends ConfigItem {
     }
 
     onEditorMode = () => {
-        console.log(this._value);
         this._value.forEach((ele) => {
             disableBlocActions(ele);
         })
     }
 
     set value(val: Component[]) {
-        console.log("new val", val)
         if (this._value === val) return;
         this._value = val;
 
