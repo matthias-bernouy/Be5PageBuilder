@@ -53,9 +53,6 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
     }
 }
 
-// editor/editor.html → "editor"  (dirname === basename → simplifie)
-// script.client.ts   → "script"  (pas de dossier)
-// foo/bar.html       → "foo/bar" (dirname !== basename → garde le chemin complet)
 function toRouteKey(filePath: string, suffix: string): string {
     const base = filePath.slice(0, -suffix.length);
     const dir = dirname(base);
