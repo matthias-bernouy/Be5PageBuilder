@@ -63,7 +63,17 @@ export class ObserverManager {
         existingElements.forEach((el: any) => this.make_it_editor(el));
 
         const callback = (mutationsList: MutationRecord[]) => {
+
             for (const mutation of mutationsList) {
+
+                for ( const removeNode of Array.from(mutation.removedNodes) ){
+                    const node = removeNode as any;
+                    if ( !node.getAttribute ) return;
+                    const identifier = node.getAttribute("data-identifier");
+                    if ( !identifier ) return;
+                    document.compIdentifierToEditor.delete(identifier);
+                }
+
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node: Node) => {
                         if (node instanceof HTMLElement) {

@@ -1,5 +1,6 @@
 import type { EditorManager } from "src/core/Editor/core/EditorManager";
 import type { MediaCenter } from "src/core/Editor/components/MediaCenter/MediaCenter";
+import type { Editor } from "src/core/Editor/core/Editor";
 
 declare module "*.css" {
   const content: string;
@@ -14,7 +15,8 @@ declare module "*.html" {
 declare global {
 
   interface Document {
-      EditorManager: EditorManager
+      EditorManager: EditorManager,
+      compIdentifierToEditor: Map<string, Editor>
   }
 
 }
