@@ -69,9 +69,9 @@ export class ObserverManager {
                 for (const removeNode of Array.from(mutation.removedNodes)) {
                     const node = removeNode as any;
                     if (!node.getAttribute) return;
-                    const identifier = node.getAttribute("data-identifier");
+                    const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
                     if (!identifier) return;
-                    const componentParent = node.getAttribute("data-component-identifier");
+                    const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
                     document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
                     document.compIdentifierToEditor.delete(identifier);
                 }
@@ -127,7 +127,7 @@ export class ObserverManager {
             const editor = new cl(node);
             editor.viewEditor();
         }
-        const parentComponent = node.getAttribute("data-component-identifier");
+        const parentComponent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if ( parentComponent ){
             document.compIdentifierToEditor.get(parentComponent)?.onChildrenAdded();
         }

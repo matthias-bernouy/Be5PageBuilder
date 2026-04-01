@@ -15,9 +15,9 @@ export class CompSync extends HTMLElement {
 
     connectedCallback() {
         this.style.display = "none";
-        const componentIdentifier = this.getAttribute("data-component-identifier");
+        const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if (componentIdentifier) {
-            this._component = document.querySelector(`[data-identifier="${componentIdentifier}"]`);
+            this._component = document.querySelector(`[${p9r.attr.EDITOR.IDENTIFIER}="${componentIdentifier}"]`);
         }
         requestAnimationFrame(() => {
             this._sync();
@@ -45,19 +45,19 @@ export class CompSync extends HTMLElement {
         }
         const slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as Component[];
         slots.forEach((slot) => {
-            slot.setAttribute("data-component-identifier", this.getAttribute("data-component-identifier")!)
+            slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
-                slot.setAttribute("data-disable-add-before", "true");
-                slot.setAttribute("data-disable-add-after", "true");
+                slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+                slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
                 if ( slots.length == this.min ) {
-                    slot.setAttribute("data-disable-delete", "true");
+                    slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
                 } else {
-                    slot.removeAttribute("data-disable-delete")
+                    slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE)
                 }
             } else {
                 disableBlocActions(slot);
             }
-            const editor = document.compIdentifierToEditor.get(slot.getAttribute("data-identifier")!);
+            const editor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
             editor?.viewEditor();
         })
     }

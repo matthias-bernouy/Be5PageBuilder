@@ -5,9 +5,9 @@ export class AttrSync extends HTMLElement {
     private _component: Component | null = null;
 
     connectedCallback() {
-        const componentIdentifier = this.getAttribute("data-component-identifier");
+        const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if (componentIdentifier) {
-            this._component = document.querySelector(`[data-identifier="${componentIdentifier}"]`);
+            this._component = document.querySelector(`[${p9r.attr.EDITOR.IDENTIFIER}="${componentIdentifier}"]`);
         }
         requestAnimationFrame(() => {
             this._sync();

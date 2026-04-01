@@ -19,7 +19,7 @@ export abstract class Editor {
         this.target = target;
 
         this.targetIdentifier = crypto.randomUUID();
-        this.target.setAttribute("data-identifier", this.targetIdentifier);
+        this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier);
 
         if ( !document.compIdentifierToEditor ) document.compIdentifierToEditor = new Map();
         if ( document.compIdentifierToEditor.has(this.targetIdentifier) ){
@@ -59,7 +59,7 @@ export abstract class Editor {
         if ( !this._panelConfig ) return;
         const panelItems = this._panelConfig.querySelectorAll('*') as unknown as any[];
         panelItems.forEach((item) => {
-            item.setAttribute('data-component-identifier', this.targetIdentifier);
+            item.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.targetIdentifier);
         });
     }
 
@@ -82,15 +82,15 @@ export abstract class Editor {
             this.target.removeAttribute("class");
         }
 
-        this.target.removeAttribute("data-disable-delete");
-        this.target.removeAttribute("data-disable-edit");
-        this.target.removeAttribute("data-disable-duplicate");
-        this.target.removeAttribute("data-disable-add-before");
-        this.target.removeAttribute("data-disable-add-after");
-        this.target.removeAttribute("data-disable-save-as-template");
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_EDIT);
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE);
 
-        this.target.removeAttribute("data-identifier")
-        this.target.removeAttribute("data-component-identifier")
+        this.target.removeAttribute(p9r.attr.EDITOR.IDENTIFIER)
+        this.target.removeAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)
 
     }
 
@@ -107,14 +107,14 @@ export abstract class Editor {
         this.target.draggable = true;
         this.target.classList.add("editor-block")
         this.target.setAttribute("data-is-editor", "true")
-        this.target.setAttribute("data-identifier", this.targetIdentifier)
+        this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier)
 
-        this._actionBarFeatures.set("delete", this.target.getAttribute("data-disable-delete") !== "true");
-        this._actionBarFeatures.set("edit", this.target.getAttribute("data-disable-edit") !== "true");
-        this._actionBarFeatures.set("duplicate", this.target.getAttribute("data-disable-duplicate") !== "true");
-        this._actionBarFeatures.set("addBefore", this.target.getAttribute("data-disable-add-before") !== "true");
-        this._actionBarFeatures.set("addAfter", this.target.getAttribute("data-disable-add-after") !== "true");
-        this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute("data-disable-save-as-template") !== "true");
+        this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
+        this._actionBarFeatures.set("edit", this.target.getAttribute(p9r.attr.ACTION.DISABLE_EDIT) !== "true");
+        this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
+        this._actionBarFeatures.set("addBefore", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
+        this._actionBarFeatures.set("addAfter", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
+        this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
 
     }
 

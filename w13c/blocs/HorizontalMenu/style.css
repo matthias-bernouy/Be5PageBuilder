@@ -1,0 +1,26 @@
+:host {
+    --menu-bg: var(--bg-surface, #ffffff);
+    --menu-padding: 0.5rem 1rem;
+    --menu-gap: 1rem;
+
+    display: block;
+    background: var(--menu-bg);
+}
+
+.horizontal-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--menu-gap);
+    padding: var(--menu-padding);
+}
+
+::slotted([slot="nav"]) {
+    text-decoration: none;
+    color: var(--text-main, #333);
+    padding: 0.5rem 0.75rem;
+    transition: color 0.2s;
+}
+
+::slotted([slot="nav"]:hover) {
+    color: var(--primary-base, #0066cc);
+}

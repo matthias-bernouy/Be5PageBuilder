@@ -20,6 +20,7 @@ const AuthenticationCore = new Authentication(AuthRepository, BunRunnerCore, {
 
 AuthenticationCore.registerDisabled = true;
 
+await PageBuilderRepository.reset();
 
 new PageBuilder(
     BunRunnerCore, 
