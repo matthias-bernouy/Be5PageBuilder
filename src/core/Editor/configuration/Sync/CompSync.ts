@@ -1,5 +1,6 @@
 import type { Component } from "src/core/Component/core/Component";
 import { disableBlocActions } from "../../editors/disableBlocActions";
+import type { Editor } from "../../core/Editor";
 
 /**
  * @param data-multiple        - default: true
@@ -20,6 +21,7 @@ export class CompSync extends HTMLElement {
         }
         requestAnimationFrame(() => {
             this._sync();
+            this.init();
         });
     }
 
@@ -41,8 +43,35 @@ export class CompSync extends HTMLElement {
         if ( !slotName || !child ) {
             throw new Error("p9r-comp-sync require a child with attribute 'slot'");
         }
-        const slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as HTMLElement[];
-        disableBlocActions(slots);
+        const slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as Component[];
+        slots.forEach((slot) => {
+            slot.setAttribute("data-component-identifier", this.getAttribute("data-component-identifier")!)
+            if (this.isMultiple){
+                slot.setAttribute("data-disable-add-before", "true");
+                slot.setAttribute("data-disable-add-after", "true");
+                if ( slots.length == this.min ) {
+                    slot.setAttribute("data-disable-delete", "true");
+                } else {
+                    slot.removeAttribute("data-disable-delete")
+                }
+            } else {
+                disableBlocActions(slot);
+            }
+            const editor = document.compIdentifierToEditor.get(slot.getAttribute("data-identifier")!);
+            editor?.viewEditor();
+        })
+    }
+
+    get isMultiple(){
+        return this.hasAttribute("allow-multiple");
+    }
+
+    get min(){
+        return 1;
+    }
+
+    get max(){
+        return 999;
     }
 
 }

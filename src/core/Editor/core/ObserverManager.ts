@@ -25,9 +25,9 @@ export class ObserverManager {
 
         this.workingElement = workingElement;
         textTags.forEach((tag) => {
-            if (["p", "span", "a"].includes(tag)){
+            if (["p", "span", "a"].includes(tag)) {
                 this.register_editor({
-                    tag, 
+                    tag,
                     cl: TextEditor,
                     visible: false,
                     label: tag
@@ -60,17 +60,19 @@ export class ObserverManager {
         });
 
         const existingElements = workingElement.querySelectorAll('*');
-        existingElements.forEach((el: any) => this.make_it_editor(el) );
+        existingElements.forEach((el: any) => this.make_it_editor(el));
 
         const callback = (mutationsList: MutationRecord[]) => {
 
             for (const mutation of mutationsList) {
 
-                for ( const removeNode of Array.from(mutation.removedNodes) ){
+                for (const removeNode of Array.from(mutation.removedNodes)) {
                     const node = removeNode as any;
-                    if ( !node.getAttribute ) return;
+                    if (!node.getAttribute) return;
                     const identifier = node.getAttribute("data-identifier");
-                    if ( !identifier ) return;
+                    if (!identifier) return;
+                    const componentParent = node.getAttribute("data-component-identifier");
+                    document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
                     document.compIdentifierToEditor.delete(identifier);
                 }
 
@@ -97,11 +99,11 @@ export class ObserverManager {
         });
     }
 
-    getGroups(){
+    getGroups() {
         return this.groups;
     }
 
-    getItemsByGroup(group: string){
+    getItemsByGroup(group: string) {
         return this.editors.values().filter(v => v.visible && v.group === group);
     }
 
@@ -121,9 +123,13 @@ export class ObserverManager {
         const tag = node.tagName.toLowerCase();
         if (!this.editors.keys().toArray().includes(tag)) return
         const cl = this.editors.get(tag)?.cl;
-        if (cl) { 
+        if (cl) {
             const editor = new cl(node);
             editor.viewEditor();
+        }
+        const parentComponent = node.getAttribute("data-component-identifier");
+        if ( parentComponent ){
+            document.compIdentifierToEditor.get(parentComponent)?.onChildrenAdded();
         }
     }
 }

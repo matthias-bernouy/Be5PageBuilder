@@ -90,10 +90,12 @@ export abstract class Editor {
         this.target.removeAttribute("data-disable-save-as-template");
 
         this.target.removeAttribute("data-identifier")
+        this.target.removeAttribute("data-component-identifier")
 
     }
 
     public viewEditor() {
+        this._setPanelItemIdentifiers();
         this._panelConfig?.init();
         this.init();
         this.target.addEventListener("mouseenter", this.handleHover);
@@ -107,25 +109,21 @@ export abstract class Editor {
         this.target.setAttribute("data-is-editor", "true")
         this.target.setAttribute("data-identifier", this.targetIdentifier)
 
-        if (this.target.getAttribute("data-disable-delete") === "true") {
-            this._actionBarFeatures.set("delete", false);
-        }
-        if (this.target.getAttribute("data-disable-edit") === "true") {
-            this._actionBarFeatures.set("edit", false);
-        }
-        if (this.target.getAttribute("data-disable-duplicate") === "true") {
-            this._actionBarFeatures.set("duplicate", false);
-        }
-        if (this.target.getAttribute("data-disable-add-before") === "true") {
-            this._actionBarFeatures.set("addBefore", false);
-        }
-        if (this.target.getAttribute("data-disable-add-after") === "true") {
-            this._actionBarFeatures.set("addAfter", false);
-        }
-        if (this.target.getAttribute("data-disable-save-as-template") === "true") {
-            this._actionBarFeatures.set("saveAsTemplate", false);
-        }
+        this._actionBarFeatures.set("delete", this.target.getAttribute("data-disable-delete") !== "true");
+        this._actionBarFeatures.set("edit", this.target.getAttribute("data-disable-edit") !== "true");
+        this._actionBarFeatures.set("duplicate", this.target.getAttribute("data-disable-duplicate") !== "true");
+        this._actionBarFeatures.set("addBefore", this.target.getAttribute("data-disable-add-before") !== "true");
+        this._actionBarFeatures.set("addAfter", this.target.getAttribute("data-disable-add-after") !== "true");
+        this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute("data-disable-save-as-template") !== "true");
 
+    }
+
+    onChildrenRemoved(){
+        this._panelConfig?.init();
+    }
+
+    onChildrenAdded(){
+        this._panelConfig?.init();
     }
 
     get actionBarConfiguration(){
