@@ -60,7 +60,7 @@ export class ObserverManager {
         });
 
         const existingElements = workingElement.querySelectorAll('*');
-        existingElements.forEach((el: any) => this.make_it_editor(el));
+        existingElements.forEach((el: any) => this.make_it_editor(el) );
 
         const callback = (mutationsList: MutationRecord[]) => {
 
@@ -78,15 +78,11 @@ export class ObserverManager {
                     mutation.addedNodes.forEach((node: Node) => {
                         if (node instanceof HTMLElement) {
 
-                            if (!node.dataset.isEditor) {
-                                this.make_it_editor(node);
-                            }
+                            this.make_it_editor(node);
 
                             node.querySelectorAll('*').forEach((child: Element) => {
                                 const htmlChild = child as HTMLElement;
-                                if (!htmlChild.dataset.isEditor) {
-                                    this.make_it_editor(htmlChild);
-                                }
+                                this.make_it_editor(htmlChild);
                             });
                         }
                     });
@@ -121,7 +117,9 @@ export class ObserverManager {
     }
 
     make_it_editor(node: HTMLElement) {
+        if (node.dataset.isEditor) return;
         const tag = node.tagName.toLowerCase();
+        if (!this.editors.keys().toArray().includes(tag)) return
         const cl = this.editors.get(tag)?.cl;
         if (cl) { 
             const editor = new cl(node);

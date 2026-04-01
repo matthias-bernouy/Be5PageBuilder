@@ -1,4 +1,5 @@
 import type { Component } from "src/core/Component/core/Component";
+import { disableBlocActions } from "../../editors/disableBlocActions";
 
 /**
  * @param data-multiple        - default: true
@@ -32,9 +33,16 @@ export class CompSync extends HTMLElement {
             const toAppend = child.cloneNode(true);
             this._component?.append(toAppend);
         }
-        requestAnimationFrame(() => {
-            const slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`));
-        });
+    }
+
+    init(){
+        const child = this.firstElementChild;
+        const slotName = child?.getAttribute("slot");
+        if ( !slotName || !child ) {
+            throw new Error("p9r-comp-sync require a child with attribute 'slot'");
+        }
+        const slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as HTMLElement[];
+        disableBlocActions(slots);
     }
 
 }

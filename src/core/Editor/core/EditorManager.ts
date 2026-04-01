@@ -3,7 +3,7 @@ import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "../components/MediaCenter/MediaCenter";
 import { FloatingToolbar } from "../components/FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../components/RichTextBar/RichTextBar";
-import { ConfigPanel } from "../configuration/ConfigPanel";
+import "../configuration/ConfigPanel";
 import { BlocActionGroup } from "../components/BlocActionGroup";
 
 export type PageModeEnum = [
@@ -22,7 +22,6 @@ export class EditorManager{
 
     private mediaCenter: MediaCenter;
     private toolbar: FloatingToolbar;
-    private elementPanelConfig: ConfigPanel;
     private blocActionGroup: BlocActionGroup;
 
     private observer: ObserverManager;
@@ -35,13 +34,11 @@ export class EditorManager{
 
         this.mediaCenter        = new MediaCenter();
         this.toolbar            = new FloatingToolbar();
-        this.elementPanelConfig = new ConfigPanel();
         this.blocActionGroup    = new BlocActionGroup();
 
         this.editorSystem.append(this.mediaCenter)
         this.editorSystem.append(this.toolbar)
         this.editorSystem.append(new EditorToolbar())
-        this.editorSystem.append(this.elementPanelConfig)
         this.editorSystem.append(this.blocActionGroup)
 
         new DragManager(workingElement);
@@ -66,10 +63,6 @@ export class EditorManager{
 
     getObserver(){
         return this.observer;
-    }
-
-    getBlocConfigPanel(){
-        return this.elementPanelConfig;
     }
 
     getConfiguration(){

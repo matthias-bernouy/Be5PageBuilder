@@ -77,6 +77,7 @@ export class FormSection extends Component {
                     gap: 16px;
                     padding: 4px 14px 14px;
                     border-top: 1px solid var(--border-default, #e5e7eb);
+                    padding: 1rem;
                 }
 
                 :host(.collapsed) .content {

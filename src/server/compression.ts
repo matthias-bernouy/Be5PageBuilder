@@ -37,7 +37,6 @@ export async function cachedResponseAsync(
     generate: () => Promise<CacheEntry>
 ): Promise<Response> {
     let entry = cache.get(key);
-    console.log(entry)
 
     if (!entry) {
         entry = await generate();

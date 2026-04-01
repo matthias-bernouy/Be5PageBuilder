@@ -1,108 +1,38 @@
 :host {
+  --active-index: 0;
+  --total-options: 1;
   display: block;
-  margin-bottom: 1.75rem;
-  --transition-speed: 0.25s;
-  --transition-easing: cubic-bezier(0.4, 0, 0.2, 1); /* Animation fluide et "physique" */
-}
-
-.switch-container {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-family: system-ui, -apple-system, sans-serif;
-}
-
-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-main);
-  cursor: pointer;
 }
 
 .switch-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
-  background-color: var(--bg-base); /* Fond légèrement grisé */
+  display: grid;
+  /* On crée autant de colonnes que d'options, toutes égales */
+  grid-template-columns: repeat(var(--total-options), 1fr);
+  background-color: var(--bg-base);
   border: 1px solid var(--border-default);
   border-radius: 8px;
-  padding: 2px; /* Espacement entre le bord et le slider */
-  overflow: hidden; /* Pour que le slider reste dans les clous */
-  cursor: pointer;
+  padding: 2px;
 }
 
-/* Le rectangle glissant (le slider) */
 .selection-slider {
   position: absolute;
   top: 2px;
   bottom: 2px;
   left: 2px;
-  /* La largeur sera calculée dynamiquement en JS (ex: 33.33% pour 3 options) */
-  background-color: var(--bg-surface); /* Le rectangle est blanc/clair */
-  border-radius: 6px; /* Légèrement plus petit que le wrapper */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: transform var(--transition-speed) var(--transition-easing), 
-              width var(--transition-speed) var(--transition-easing);
-  will-change: transform; /* Optimisation GPU */
-  z-index: 1; /* Derrière le texte mais devant le fond */
+  /* Largeur automatique basée sur le nombre de colonnes */
+  width: calc(100% / var(--total-options) - 4px);
+  background-color: var(--bg-surface);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  /* Déplacement fluide basé sur l'index */
+  transform: translateX(calc(var(--active-index) * 100%));
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
 }
 
-.options-container {
-  display: flex;
-  width: 100%;
-  z-index: 2; /* Pour que le texte soit cliquable et visible */
-}
-
-/* Style appliqué aux éléments <option> dans le slot */
-::slotted(option) {
-  flex: 1; /* Chaque option prend une place égale */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem 1rem;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--text-body);
-  text-align: center;
-  transition: color var(--transition-speed);
-  cursor: pointer;
-  user-select: none; /* Empêche la sélection de texte accidentelle */
-}
-
-/* Style quand une option est sélectionnée */
-::slotted(option[selected]) {
-  color: var(--primary-contrasted); /* Couleur contrastée sur le slider blanc */
-}
-
-/* État Focus (A11y) sur le wrapper complet */
-.switch-wrapper:focus-within {
-  border-color: var(--primary-base);
-  box-shadow: 0 0 0 3px var(--primary-muted);
-}
-
-/* États d'erreur */
-:host([error]) .switch-wrapper {
-  border-color: var(--danger-base);
-}
-
-:host([error]) label {
-  color: var(--danger-base);
-}
-
-.error-message {
-  font-size: 0.75rem;
-  color: var(--danger-base);
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-:host([error]) .error-message {
-  opacity: 1;
-}
-
-/* Désactivé */
-:host([disabled]) .switch-wrapper {
-  opacity: 0.6;
-  cursor: not-allowed;
-  pointer-events: none;
+/* On stylise les éléments du slot directement s'ils sont cochés */
+::slotted([aria-checked="true"]) {
+  color: var(--primary-base) !important;
+  font-weight: 600;
 }

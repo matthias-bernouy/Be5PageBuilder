@@ -38,6 +38,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
 
     const inlineScript = document.createElement("script");
     inlineScript.textContent = script;
+    inlineScript.defer = true;
     scripts.push(inlineScript);
 
 
@@ -47,7 +48,7 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
         scripts.push(script);
     })
 
-    document.body.append(...scripts);
+    document.head.append(...scripts);
 
     if (identifier) {
         const page = await system.repository.getPageByIdentifier(identifier);

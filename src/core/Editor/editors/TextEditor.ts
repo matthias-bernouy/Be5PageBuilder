@@ -71,7 +71,6 @@ export class TextEditor extends Editor {
 
     }
 
-
     private handlePaste(e: ClipboardEvent) {
         e.preventDefault();
         const text = e.clipboardData?.getData("text/plain") || "";
@@ -89,10 +88,6 @@ export class TextEditor extends Editor {
         range.setEndAfter(textNode);
         selection.removeAllRanges();
         selection.addRange(range);
-    }
-
-    private isManaged(){
-       return this.target.parentElement?.closest('w13c-quote, w13c-article');
     }
 
     private createElement(tag: string){
@@ -156,16 +151,11 @@ export class TextEditor extends Editor {
 
     init() {
         this.target.dataset.editorTextEditable  = "true";
-        if (!this.isManaged()) {
-            this.target.dataset.editorBlocManagment = "true";
-        } else {
-            this.target.draggable = false;
-        }
 
         const editable = this.target.dataset.editorTextEditable;
         this.isTextEditable = editable != null && editable === "true";
         const blocManageur = this.target.dataset.editorBlocManagment;
-        this.isBlocAvailable = blocManageur != null && blocManageur === "true";
+        this.isBlocAvailable = true
 
         this.target.removeEventListener("keydown", this.onKeyDown);
         this.target.removeEventListener("input", this.onInput);

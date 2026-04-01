@@ -50,29 +50,18 @@ export class SegmentedSwitch extends Component {
     get name() { return this.getAttribute('name') || ""; }
 
     private _onSlotChange(slot: HTMLSlotElement) {
-        // On ne garde que les éléments <option>
-        const assignedOptions = slot.assignedElements().filter(el => el.tagName === 'OPTION');
-        this._optionCount = assignedOptions.length;
+        const options = slot.assignedElements();
+        this._optionCount = options.length;
+        this.style.setProperty('--total-options', this._optionCount.toString());
 
-        if (this._optionCount > 3) {
-            console.warn("w13c-segmented-switch: Il est recommandé de ne pas dépasser 3 options pour ce composant.");
-        }
+        options.forEach((opt, index) => {
+            opt.setAttribute('role', 'radio');
+            opt.setAttribute('tabindex', '0'); // Rendre focusable
+            
+            opt.onclick = () => this.value = opt.getAttribute('value') || "";
+        });
 
-        // 1. Calculer la largeur du slider
-        if (this._slider) {
-            this._slider.style.width = `calc(${(100 / this._optionCount)}% - 4px)`; // -4px pour le padding de 2px de chaque côté
-        }
-
-        // 2. Initialiser la valeur si une option est marquée 'selected'
-        const selectedOption = assignedOptions.find(opt => opt.hasAttribute('selected'));
-        if (selectedOption && !this.hasAttribute('value')) {
-            // Petit hack pour laisser le temps au DOM de se stabiliser avant de calculer la position
-            requestAnimationFrame(() => {
-                this.value = selectedOption.getAttribute('value') || "";
-            });
-        } else if (this.hasAttribute('value')) {
-             requestAnimationFrame(() => this._updateSliderPosition());
-        }
+        this._updateSliderPosition();
     }
 
     private _handleOptionClick(e: Event) {
@@ -84,32 +73,16 @@ export class SegmentedSwitch extends Component {
         }
     }
 
-    /**
-     * Calcule le `transform: translateX()` du slider en fonction de l'index de la valeur.
-     */
     private _updateSliderPosition() {
-        if (!this._slider || !this._optionsContainer || this._optionCount === 0) return;
-
-        // On récupère les options du slot pour trouver l'index
-        const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement;
-        const options = slot.assignedElements().filter(el => el.tagName === 'OPTION');
+        const options = (this.shadowRoot?.querySelector('slot') as HTMLSlotElement).assignedElements();
         const index = options.findIndex(opt => opt.getAttribute('value') === this.value);
-
-        if (index === -1) {
-            // Valeur non trouvée, on cache le slider
-            this._slider.style.opacity = '0';
-            return;
+        
+        if (index !== -1) {
+            this.style.setProperty('--active-index', index.toString());
+            options.forEach((opt, i) => opt.setAttribute('aria-checked', (i === index).toString()));
         }
-
-        // Calcul du déplacement : (index * 100% de la largeur d'une option)
-        const xPercent = (index * 100); 
-        this._slider.style.opacity = '1';
-        this._slider.style.transform = `translate3d(${xPercent}%, 0, 0)`;
     }
 
-    /**
-     * Met à jour l'attribut 'selected' sur les éléments <option> du slot (pour le CSS)
-     */
     private _updateSlottedSelections(selectedValue: string) {
         const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement;
         const options = slot.assignedElements().filter(el => el.tagName === 'OPTION');
@@ -125,7 +98,6 @@ export class SegmentedSwitch extends Component {
 
     attributeChangedCallback(name: string, _oldVal: string, newVal: string) {
         if (name === 'value') this.value = newVal;
-        // Gérer disabled, name, etc.
     }
 }
 

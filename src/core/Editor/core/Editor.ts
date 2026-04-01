@@ -1,12 +1,11 @@
-import "../configuration/DataConfigItem";
-import "../configuration/ListConfigItem";
+import { ConfigPanel } from "../configuration/ConfigPanel";
 
 export abstract class Editor {
 
     private targetIdentifier: string;
     private static styleElement: Map<string, HTMLStyleElement>;
     public         target:       HTMLElement;
-    public         _panelConfig: HTMLElement | null = null;
+    public         _panelConfig: ConfigPanel | null = null;
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["edit", true],
@@ -15,8 +14,6 @@ export abstract class Editor {
         ["addAfter", true],
         ["saveAsTemplate", false]
     ]);
-
-    private registerOnEditorMode: (() => void)[] = [];
 
     constructor(target: HTMLElement, styles: string, editor?: string) {
         this.target = target;
@@ -32,9 +29,10 @@ export abstract class Editor {
         document.compIdentifierToEditor.set(this.targetIdentifier, this);
 
         if ( editor ) {
-            this._panelConfig = document.createElement("div");
-            this._panelConfig.innerHTML = editor;
+            this._panelConfig = document.createElement("p9r-config-panel") as ConfigPanel;
+            this._panelConfig.innerHTML += editor;
             this._setPanelItemIdentifiers();
+            document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig)
         }
 
         document.addEventListener("switch-mode", (e: CustomEventInit) => {
@@ -62,10 +60,6 @@ export abstract class Editor {
         const panelItems = this._panelConfig.querySelectorAll('*') as unknown as any[];
         panelItems.forEach((item) => {
             item.setAttribute('data-component-identifier', this.targetIdentifier);
-            if ( item.init ) item.init();
-            if ( item.onEditorMode ) {
-                this.registerOnEditorMode.push(item.onEditorMode);
-            }
         });
     }
 
@@ -100,10 +94,8 @@ export abstract class Editor {
     }
 
     public viewEditor() {
+        this._panelConfig?.init();
         this.init();
-        this.registerOnEditorMode.forEach((ele) => {
-            ele();
-        })
         this.target.addEventListener("mouseenter", this.handleHover);
 
         Editor.styleElement.forEach((v, k) => {
@@ -136,16 +128,12 @@ export abstract class Editor {
 
     }
 
-    public render(){
-        
-    }
-
     get actionBarConfiguration(){
         return this._actionBarFeatures;
     }
 
-    get panelConfig(): HTMLElement | null {
-        return this._panelConfig;
+    showConfigPanel() {
+        this._panelConfig?.show();
     };
 
     abstract init(): void;

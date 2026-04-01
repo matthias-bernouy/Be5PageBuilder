@@ -1,15 +1,18 @@
 <div class="select-container">
-    <label for="native-select">
+    <label id="select-label">
         <slot name="label">Sélectionner</slot>
     </label>
 
-    <div class="select-wrapper">
-        <select id="native-select">
-            </select>
-        
+    <div id="select-trigger" class="select-wrapper" aria-labelledby="select-label">
+        <span id="display-value">Sélectionner</span>
         <div class="chevron">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </div>
+    </div>
+
+    <div id="custom-dropdown" class="custom-dropdown">
+        <ul id="custom-options-list" class="custom-options-list">
+            </ul>
     </div>
 
     <div style="display: none !important;">

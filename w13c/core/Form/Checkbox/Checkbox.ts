@@ -44,4 +44,6 @@ export class Checkbox extends Component {
     }
 }
 
-customElements.define("w13c-checkbox", Checkbox);
+if ( !customElements.get("w13c-checkbox") ){
+    customElements.define("w13c-checkbox", Checkbox);
+}

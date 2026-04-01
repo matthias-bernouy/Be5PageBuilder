@@ -1,6 +1,5 @@
 :host {
   display: block;
-  margin-bottom: 1.5rem;
   --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -8,10 +7,10 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  font-family: inherit; /* Utilise la police du parent */
+  font-family: inherit;
+  position: relative;
 }
 
-/* Label plus élégant */
 label {
   font-size: 0.8rem;
   font-weight: 600;
@@ -21,65 +20,115 @@ label {
 }
 
 .select-wrapper {
-  position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-default);
-  border-radius: 10px; /* Coins plus arrondis pour un look moderne */
+  border-radius: 10px;
+  cursor: pointer;
+  padding: 0.7rem 1rem;
+  outline: none;
   transition: border-color var(--transition), box-shadow var(--transition), transform 0.1s ease;
 }
 
-/* Petit effet de "clic" quand on presse */
-.select-wrapper:active {
+.select-wrapper:active:not([disabled]) {
   transform: scale(0.99);
 }
 
-/* Le Select natif */
-select {
-  width: 100%;
-  padding: 0.7rem 2.8rem 0.7rem 1rem;
+#display-value {
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-main);
-  background: transparent;
-  border: none;
-  appearance: none;
-  outline: none;
-  cursor: pointer;
-  z-index: 2;
 }
 
-/* Custom Chevron plus fin */
 .chevron {
-  position: absolute;
-  right: 1rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
   color: var(--text-body);
   transition: transform var(--transition);
-  z-index: 1;
 }
 
-/* Animation du chevron quand on focus le select */
-.select-wrapper:focus-within .chevron {
-  transform: translateY(2px);
+/* Rotation du chevron */
+.select-wrapper[aria-expanded="true"] .chevron {
+  transform: rotate(180deg);
   color: var(--primary-base);
 }
 
-/* État Focus avec tes variables OKLCH */
-.select-wrapper:focus-within {
+/* État Focus uniformisé */
+:host(:focus-within) .select-wrapper:not([disabled]) {
   border-color: var(--primary-base);
   box-shadow: 0 0 0 4px var(--primary-muted);
 }
 
-/* État de survol */
-.select-wrapper:hover {
+.select-wrapper:hover:not([disabled]) {
   border-color: var(--text-muted);
 }
 
-/* Gestion du Error state */
+/* --- Le Menu Déroulant CUSTOM (Le cœur du design que tu cherchais) --- */
+.custom-dropdown {
+  position: absolute;
+  top: 100%; /* Juste en dessous du trigger */
+  left: 0;
+  width: 100%;
+  margin-top: 0.5rem;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 10px; /* Voilà tes coins arrondis ! */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Petit effet d'ombre */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity var(--transition), visibility var(--transition), transform var(--transition);
+  z-index: 10;
+  overflow: hidden; /* Pour que les coins arrondis fonctionnent avec les enfants */
+}
+
+/* Quand ouvert */
+.custom-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* La liste */
+.custom-options-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.5rem 0; /* Petit padding interne */
+  max-height: 250px; /* Liste défilante si trop d'items */
+  overflow-y: auto;
+}
+
+/* --- L'Option CUSTOM stylisée --- */
+.custom-option {
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: background var(--transition);
+  outline: none;
+}
+
+/* Survol / Item Actif au clavier */
+.custom-option:hover,
+.custom-option.active {
+  background-color: var(--border-default); /* Un gris léger pour le hover */
+}
+
+/* Option Sélectionnée */
+.custom-option.selected {
+  background-color: var(--primary-muted); /* Tes variables OKLCH */
+  color: var(--primary-base);
+  font-weight: 600;
+}
+
+/* Item actif + Sélectionné */
+.custom-option.selected.active {
+    background-color: var(--border-default);
+}
+
+
+/* --- États globaux --- */
 :host([error]) .select-wrapper {
   border-color: var(--danger-base);
   background-color: var(--danger-muted);
@@ -96,8 +145,34 @@ select {
   margin-top: 0.25rem;
 }
 
-/* Option désactivée */
 :host([disabled]) {
   opacity: 0.5;
-  pointer-events: none;
+  cursor: not-allowed;
+}
+
+:host([disabled]) .select-wrapper {
+  cursor: not-allowed;
+}
+
+/* --- Mode Inline --- */
+:host([inline]) .select-container {
+  flex-direction: row;
+  align-items: center; /* Aligne verticalement le label et le select */
+  gap: 1rem;           /* Espace entre le label et le select */
+}
+
+:host([inline]) label {
+  margin-bottom: 0;
+  white-space: nowrap;
+  min-width: fit-content;
+}
+
+:host([inline]) .select-wrapper {
+  flex: 1;
+}
+
+:host([inline]) .custom-dropdown {
+  width: calc(100% - (var(--label-width, 0px))); 
+  left: auto;
+  right: 0;
 }

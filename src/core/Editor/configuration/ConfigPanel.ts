@@ -1,13 +1,14 @@
 import "w13c/core/Dialog/LateralDialog/LateralDialog"
 import "w13c/core/Form/Input/Input"
 import "w13c/core/Form/Checkbox/Checkbox"
+import "w13c/core/Form/Select/Select"
+import "w13c/core/Form/FormSection"
+
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
 import { Component } from "src/core/Component/core/Component";
 
-import "./ComponentConfigItem";
 import "./Sync/AttrSync";
 import "./Sync/CompSync";
-import "w13c/core/Form/FormSection";
 
 export class ConfigPanel extends Component {
 
@@ -29,8 +30,7 @@ export class ConfigPanel extends Component {
         this.dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog") as LateralDialog;
     }
 
-    show(element: HTMLElement) {
-        this.replaceChildren(element);
+    show() {
         this.dialog?.show();
     }
 
@@ -38,6 +38,15 @@ export class ConfigPanel extends Component {
         this.dialog?.close();
     }
 
+    init(){
+        const elements = Array.from(this.querySelectorAll("*")) as any[];
+        for ( const element of elements ) {
+            if ( element.init ) element.init();
+        }
+    }
+
 }
 
-customElements.define("p9r-bloc-configuration", ConfigPanel)
+if ( !customElements.get("p9r-config-panel") ){
+    customElements.define("p9r-config-panel", ConfigPanel)
+}
