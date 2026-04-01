@@ -1,4 +1,5 @@
-import { ComponentConfigItem } from "../configuration/ComponentConfigItem";
+import "../configuration/DataConfigItem";
+import "../configuration/ListConfigItem";
 
 export abstract class Editor {
 
@@ -55,11 +56,8 @@ export abstract class Editor {
         panelItems.forEach((item) => {
             item.setAttribute('data-component-identifier', this.targetIdentifier);
             if ( item.init ) item.init();
-            if (item.tagName.toLowerCase() === 'p9r-panel-component-item') {
-                const componentItem = item as ComponentConfigItem;
-                if (componentItem.onEditorMode) {
-                    this.registerOnEditorMode.push(componentItem.onEditorMode);
-                }
+            if ( item.onEditorMode ) {
+                this.registerOnEditorMode.push(item.onEditorMode);
             }
         });
     }
