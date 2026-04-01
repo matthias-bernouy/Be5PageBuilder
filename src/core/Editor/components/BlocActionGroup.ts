@@ -99,7 +99,10 @@ export class BlocActionGroup extends HorizontalActionGroup {
                 break;
             case "duplicate":
                 const clone = this._target!.cloneNode(true) as HTMLElement;
-                clone.removeAttribute("data-is-editor");
+                clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+                clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach(el => {
+                    el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+                });
                 this._target!.after(clone);
                 this.close();
                 break;

@@ -119,7 +119,7 @@ export class ObserverManager {
     }
 
     make_it_editor(node: HTMLElement) {
-        if (node.dataset.isEditor) return;
+        if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) return;
         const tag = node.tagName.toLowerCase();
         if (!this.editors.keys().toArray().includes(tag)) return
         const cl = this.editors.get(tag)?.cl;

@@ -75,7 +75,7 @@ export abstract class Editor {
         Editor.styleElement.forEach((v, k) => {
             v.remove();
         })
-        this.target.removeAttribute("data-is-editor")
+        this.target.removeAttribute(p9r.attr.EDITOR.IS_EDITOR)
         this.target.classList.remove("editor-block")
         this.target.removeAttribute("draggable")
         if (this.target.getAttribute("class") === "") {
@@ -106,7 +106,7 @@ export abstract class Editor {
 
         this.target.draggable = true;
         this.target.classList.add("editor-block")
-        this.target.setAttribute("data-is-editor", "true")
+        this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true")
         this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier)
 
         this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");

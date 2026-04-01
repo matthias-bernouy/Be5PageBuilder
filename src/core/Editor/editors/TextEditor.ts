@@ -4,7 +4,7 @@ import type { PageMode } from "../core/EditorManager";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote):empty::before {
-    content: attr(data-placeholder);
+    content: attr(p9r-text-placeholder);
     //color: #aaa;
     pointer-events: none;
     display: block;
@@ -45,7 +45,7 @@ export class TextEditor extends Editor {
     observeAttributes(){
         const observer = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
-                if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('data-')) {
+                if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
                     if ( document.EditorManager.getMode() === "editor-mode" ){
                         if ( !this.isInitializing ){
                             this.isInitializing = true;
@@ -61,7 +61,7 @@ export class TextEditor extends Editor {
             if ( mode === "editor-mode" ) {
                 observer.observe(this.target, {
                     attributes: true,
-                    attributeFilter: ["data-editor-bloc-managment", "data-editor-text-editable"]
+                    attributeFilter: [p9r.attr.TEXT.BLOC_MANAGEMENT, p9r.attr.TEXT.EDITABLE]
                 })
             } else {
                 this.isInitializing = false;
@@ -95,11 +95,11 @@ export class TextEditor extends Editor {
         Array.from(this.target.attributes).forEach(attr => {
             element.setAttribute(attr.name, attr.value);
         });
-        delete element.dataset.isEditor;
+        element.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
         if ( !textTags.has(tag) ) {
-            delete element.dataset.editorTextEditable;
-            delete element.dataset.editorBlocManagment;
-            delete element.dataset.placeholder;
+            element.removeAttribute(p9r.attr.TEXT.EDITABLE);
+            element.removeAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
+            element.removeAttribute(p9r.attr.TEXT.PLACEHOLDER);
             element.removeAttribute("tabindex");
             element.removeAttribute("contenteditable");
         }
@@ -150,11 +150,11 @@ export class TextEditor extends Editor {
     }
 
     init() {
-        this.target.dataset.editorTextEditable  = "true";
+        this.target.setAttribute(p9r.attr.TEXT.EDITABLE, "true");
 
-        const editable = this.target.dataset.editorTextEditable;
+        const editable = this.target.getAttribute(p9r.attr.TEXT.EDITABLE);
         this.isTextEditable = editable != null && editable === "true";
-        const blocManageur = this.target.dataset.editorBlocManagment;
+        const blocManageur = this.target.getAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
         this.isBlocAvailable = true
 
         this.target.removeEventListener("keydown", this.onKeyDown);
@@ -169,9 +169,9 @@ export class TextEditor extends Editor {
             this.target.tabIndex = 0;
             this.target.contentEditable = "true";
             if (this.isBlocAvailable){
-                this.target.dataset.placeholder = "Tapez / ou écrivez du texte";
+                this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez / ou écrivez du texte");
             } else {
-                this.target.dataset.placeholder = "Tapez du texte";
+                this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez du texte");
             }
             requestAnimationFrame(() => {
                 if (this.target.isConnected) {
@@ -184,10 +184,10 @@ export class TextEditor extends Editor {
     restore() {
         this.target.removeAttribute('tabIndex');
         this.target.removeAttribute('contentEditable');
-        this.target.removeAttribute('data-placeholder');
+        this.target.removeAttribute(p9r.attr.TEXT.PLACEHOLDER);
 
-        this.target.removeAttribute('data-editor-bloc-managment');
-        this.target.removeAttribute('data-editor-text-editable');
+        this.target.removeAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
+        this.target.removeAttribute(p9r.attr.TEXT.EDITABLE);
 
         this.target.removeEventListener("keydown", this.onKeyDown);
         this.target.removeEventListener("input", this.onInput);

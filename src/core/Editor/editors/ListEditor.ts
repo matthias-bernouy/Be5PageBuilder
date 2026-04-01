@@ -2,7 +2,7 @@ import { Editor } from "../core/Editor";
 
 const cssStyle = `
     li:empty::before{
-        content: attr(data-placeholder);
+        content: attr(p9r-text-placeholder);
         color: #aaa;
         pointer-events: none;
         display: block;
@@ -77,7 +77,7 @@ export class ListEditor extends Editor {
             item.removeEventListener("keydown", this.onKeyDown);
             item.removeEventListener("input", this.onInput);
             item.contentEditable = "true";
-            item.dataset.placeholder = "Tapez du texte"
+            item.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez du texte")
             item.addEventListener("keydown", this.onKeyDown);
             item.addEventListener("input", this.onInput);
         })
