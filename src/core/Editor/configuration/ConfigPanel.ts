@@ -5,6 +5,8 @@ import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog
 import { Component } from "src/core/Component/core/Component";
 
 import "./ComponentConfigItem";
+import "./Sync/AttrSync";
+import "./Sync/CompSync";
 import "w13c/core/Form/FormSection";
 
 export class ConfigPanel extends Component {
