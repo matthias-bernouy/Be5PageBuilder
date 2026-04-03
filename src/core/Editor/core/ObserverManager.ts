@@ -111,7 +111,7 @@ export class ObserverManager {
         this.editors.set(element.tag, {
             ...element,
             group: element.group || "default",
-            visible: element.visible || true
+            visible: element.visible || true // BADDDDDD
         });
         this.groups.add(element.group || "default")
         const existingElements = this.workingElement.querySelectorAll(element.tag);

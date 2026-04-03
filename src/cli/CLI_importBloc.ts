@@ -18,8 +18,8 @@ export default async function CLI_importBloc(args: string[]) {
     const MongoClientDefault = new DefaultPageBuilderRepository(mongoClient, db)
 
     await generate_bloc_files(
-        join(cwd, path, name, name + ".ts"),
-        join(cwd, path, name, name + "Editor.ts"),
+        join(cwd, path, name, "base", name + ".ts"),
+        join(cwd, path, name, "base", name + "Editor.ts"),
         name
     );
 

@@ -43,8 +43,13 @@ export class CompSync extends HTMLElement {
         if ( !slotName || !child ) {
             throw new Error("p9r-comp-sync require a child with attribute 'slot'");
         }
-        const slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as Component[];
+        let slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as Component[];
+
         slots.forEach((slot) => {
+            let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
+            subElements.forEach(sub => {
+                disableBlocActions(sub);
+            })
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
                 slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
