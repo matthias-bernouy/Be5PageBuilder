@@ -28,11 +28,15 @@ export class CompSync extends HTMLElement {
 
     private _sync() {
         const child = this.firstElementChild;
-        const slotName = child?.getAttribute("slot");
-        if ( !slotName || !child ) {
-            throw new Error("p9r-comp-sync require a child with attribute 'slot'");
+        if (!child) {
+            throw new Error("p9r-comp-sync require a child");
         }
-        if ( !this._component?.querySelector(`[slot="${slotName}"]`) ) {
+
+        const slotName = child.getAttribute("slot");
+        
+        const selector = slotName ? `[slot="${slotName}"]` : ':not([slot])';
+
+        if (!this._component?.querySelector(selector)) {
             const toAppend = child.cloneNode(true);
             this._component?.append(toAppend);
         }
@@ -41,12 +45,26 @@ export class CompSync extends HTMLElement {
     init(){
         const child = this.firstElementChild;
         const slotName = child?.getAttribute("slot");
-        if ( !slotName || !child ) {
+
+        if ( !child ) {
             throw new Error("p9r-comp-sync require a child with attribute 'slot'");
         }
-        let slots = Array.from(this._component?.querySelectorAll(`[slot="${slotName}"]`)!) as Component[];
+
+        const selector = slotName 
+                ? `:scope > [slot="${slotName}"]` 
+                : `:scope > :not([slot])`;
+
+        let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
+
+        this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
+        this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+        this._component?.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
 
         slots.forEach((slot) => {
+            if (this.componentSelectionDisabled) {
+                slot.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
+            }
+            slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
             subElements.forEach(sub => {
                 disableBlocActions(sub);
@@ -55,16 +73,19 @@ export class CompSync extends HTMLElement {
             })
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
+
                 if (this.inlineAdding){
                      slot.setAttribute(p9r.attr.ACTION.INLINE_ADDING, "true");
                 } else {
                     slot.removeAttribute(p9r.attr.ACTION.INLINE_ADDING);
                 }
+
                 if ( slots.length == this.min ) {
                     slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
                 } else {
                     slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE)
                 }
+
             } else {
                 disableBlocActions(slot);
             }
@@ -87,6 +108,10 @@ export class CompSync extends HTMLElement {
 
     get inlineAdding(){
         return this.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
+    }
+
+    get componentSelectionDisabled(){
+        return this.hasAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
     }
 
 }

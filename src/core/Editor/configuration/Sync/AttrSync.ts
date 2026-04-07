@@ -29,7 +29,9 @@ export class AttrSync extends HTMLElement {
             if (val) {
                 input.value = val;
             } else {
-                this._component?.setAttribute(input.name, input.value);
+                if (input.value) {
+                    this._component?.setAttribute(input.name, input.value);
+                }
             }
         });
     }

@@ -1,7 +1,8 @@
 import { Editor } from "src/core/Editor/core/Editor";
-import Config from "../configuration.html" with { type: 'text' }
 import { registerEditor } from "src/core/Editor/core/registerEditor";
-export class HorizontalMenuEditor extends Editor {
+import Config from "./configuration.html" with { type: 'text' };
+
+export class ButtonEditor extends Editor {
 
     constructor(target: HTMLElement) {
         super(target, "", Config as unknown as string);
@@ -15,9 +16,5 @@ export class HorizontalMenuEditor extends Editor {
 }
 
 registerEditor({
-    cl: HorizontalMenuEditor
-})
-
-registerEditor({
-    suffix: "-item"
-})
+    cl: ButtonEditor
+});

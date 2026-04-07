@@ -1,0 +1,46 @@
+<p9r-attr-sync>
+    <p9r-section data-title="Style">
+        <select name="variant">
+            <option selected value="filled">Rempli</option>
+            <option value="outline">Outline</option>
+            <option value="ghost">Ghost</option>
+        </select>
+        <select name="color">
+            <option selected value="primary">Primaire</option>
+            <option value="secondary">Secondaire</option>
+            <option value="success">Succès</option>
+            <option value="danger">Danger</option>
+            <option value="warning">Attention</option>
+            <option value="info">Info</option>
+        </select>
+    </p9r-section>
+    <p9r-section data-title="Taille">
+        <select name="size">
+            <option value="sm">Petit</option>
+            <option selected value="md">Moyen</option>
+            <option value="lg">Grand</option>
+        </select>
+    </p9r-section>
+    <p9r-section data-title="lien">
+        <div>
+            <label for="target">Target</label>
+            <select name="target" id="target">
+                <option value="_blank">Blank</option>
+                <option value="_self">Self</option>
+            </select>
+        </div>
+        <div>
+            <label for="href">Lien</label>
+            <input name="href" id="href" type="text" placeholder="https://google.com" />
+        </div>
+    </p9r-section>
+</p9r-attr-sync>
+
+<p9r-section data-title="Icônes">
+    <p9r-image-sync slotTarget="icon-left" label="Icône gauche"></p9r-image-sync>
+    <p9r-image-sync slotTarget="icon-right" label="Icône droite"></p9r-image-sync>
+</p9r-section>
+
+<p9r-comp-sync>
+    <span>Bouton</span>
+</p9r-comp-sync>

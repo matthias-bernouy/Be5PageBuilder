@@ -9,6 +9,7 @@ import { Component } from "src/core/Component/core/Component";
 
 import "./Sync/AttrSync";
 import "./Sync/CompSync";
+import "./Sync/ImageSync";
 
 export class ConfigPanel extends Component {
 
@@ -26,7 +27,7 @@ export class ConfigPanel extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this.dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog") as LateralDialog;
     }
 
