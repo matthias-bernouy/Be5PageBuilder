@@ -1,5 +1,6 @@
 import { Editor } from "src/core/Editor/core/Editor";
 import Config from "../configuration.html" with { type: 'text' }
+import { EmptyEditor } from "src/core/Editor/core/EmptyEditor";
 
 export class HorizontalMenuEditor extends Editor {
 
@@ -14,18 +15,6 @@ export class HorizontalMenuEditor extends Editor {
     }
 }
 
-export class EmptyEditor extends Editor {
-    constructor(target: HTMLElement) {
-        super(target, "", "");
-    }
-
-    init() {
-    }
-
-    restore() {
-    } 
-}
-
 document.EditorManager.getObserver().register_editor({
     tag: "BE5_TAG_TO_BE_REPLACED",
     cl: HorizontalMenuEditor,
@@ -33,10 +22,6 @@ document.EditorManager.getObserver().register_editor({
     group: "BE5_GROUP_TO_BE_REPLACED"
 });
 
-document.EditorManager.getObserver().register_editor({
-    tag: "BE5_TAG_TO_BE_REPLACED-item",
-    cl: EmptyEditor,
-    label: "BE5_LABEL_TO_BE_REPLACED",
-    group: "BE5_GROUP_TO_BE_REPLACED",
-    visible: false 
-})
+document.EditorManager.getObserver().register_sub_components([
+    "BE5_TAG_TO_BE_REPLACED-item"
+])

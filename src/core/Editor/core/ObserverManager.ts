@@ -4,6 +4,7 @@ import { ImageEditor } from "../editors/ImageEditor";
 import { TextEditor, textTags } from "../editors/TextEditor";
 import { ListEditor } from "../editors/ListEditor";
 import type { Editor } from "./Editor";
+import { EmptyEditor } from "./EmptyEditor";
 
 export type TagElement = {
     cl: new (node: HTMLElement) => Editor,
@@ -116,6 +117,17 @@ export class ObserverManager {
         this.groups.add(element.group || "default")
         const existingElements = this.workingElement.querySelectorAll(element.tag);
         existingElements.forEach((el: any) => this.make_it_editor(el));
+    }
+
+    register_sub_components(tag: string[]) {
+        tag.forEach(t => {
+            this.editors.set(t, {
+                cl: EmptyEditor,
+                tag: t,
+                label: t,
+                visible: false
+            })
+        })
     }
 
     make_it_editor(node: HTMLElement) {
