@@ -1,0 +1,48 @@
+.p9r-insert-btn {
+    position: absolute;
+    z-index: 10001;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-base, #4361ee);
+    background: var(--bg-surface, #fff);
+    color: var(--primary-base, #4361ee);
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.p9r-insert-btn::before {
+    content: '';
+    position: absolute;
+    inset: -10px;
+    pointer-events: auto;
+}
+
+.p9r-insert-btn--before::before {
+    bottom: 0;
+}
+
+.p9r-insert-btn--after::before {
+    top: 0;
+}
+
+.p9r-insert-btn--before.p9r-insert-btn--inline::before {
+    bottom: -10px;
+    right: 0;
+}
+
+.p9r-insert-btn--after.p9r-insert-btn--inline::before {
+    top: -10px;
+    left: 0;
+}
+
+.p9r-insert-btn:hover {
+    background: var(--primary-base, #4361ee);
+    color: #fff;
+    transform: scale(1.15);
+}

@@ -165,6 +165,9 @@ export class TextEditor extends Editor {
         this.target.addEventListener("input", this.onInput);
         this.target.addEventListener("paste", this.onPaste);
 
+        this.target.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
+        this.target.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+
         if ( this.isTextEditable ){
             this.target.tabIndex = 0;
             this.target.contentEditable = "true";

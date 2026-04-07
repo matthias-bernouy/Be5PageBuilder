@@ -1,13 +1,15 @@
 export const P9R_ATTR = {
     ACTION: {
-        DISABLE_DELETE:          "p9r-action-disable-delete",
-        DISABLE_ADD_BEFORE:      "p9r-action-disable-add-before",
-        DISABLE_ADD_AFTER:       "p9r-action-disable-add-after",
-        DISABLE_DRAGGING:        "p9r-action-disable-dragging",
-        DISABLE_DUPLICATE:       "p9r-action-disable-duplicate",
-        DISABLE_EDIT:            "p9r-action-disable-edit",
-        DISABLE_SAVE_AS_TEMPLATE: "p9r-action-disable-save-as-template",
+        DISABLE_DELETE:           "p9r-action-disable-delete",
+        DISABLE_ADD_BEFORE:       "p9r-action-disable-add-before",
+        DISABLE_ADD_AFTER:        "p9r-action-disable-add-after",
+        DISABLE_DRAGGING:         "p9r-action-disable-dragging",
+        DISABLE_DUPLICATE:        "p9r-action-disable-duplicate",
+        DISABLE_EDIT:             "p9r-action-disable-edit",
+        DISABLE_SAVE_AS_TEMPLATE:  "p9r-action-disable-save-as-template",
+        DISABLE_CHANGE_COMPONENT: "p9r-action-disable-change-component"
     },
+
     TEXT: {
         DISABLE_TYPE:         "p9r-text-disable-type",
         DISABLE_EDITING:      "p9r-text-disable-editing",
@@ -20,9 +22,11 @@ export const P9R_ATTR = {
         BLOC_MANAGEMENT:      "p9r-text-bloc-management",
         PLACEHOLDER:          "p9r-text-placeholder",
     },
+
     EDITOR: {
         IDENTIFIER:        "p9r-identifier",
         PARENT_IDENTIFIER: "p9r-parent-identifier",
         IS_EDITOR:         "p9r-is-editor",
     }
+
 } as const;

@@ -49,11 +49,11 @@ export class CompSync extends HTMLElement {
             let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
             subElements.forEach(sub => {
                 disableBlocActions(sub);
+                const editor = document.compIdentifierToEditor.get(sub.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
+                editor?.viewEditor();
             })
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
-                slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
-                slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
                 if ( slots.length == this.min ) {
                     slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
                 } else {

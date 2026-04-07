@@ -20,6 +20,7 @@
 
     transition: opacity 0.2s ease, transform 0.2s ease;
     transform: translate(-50%, 10px);
+    z-index: 9999999999;
 }
 
 :host(.visible) {

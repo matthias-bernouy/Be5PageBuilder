@@ -1,19 +1,56 @@
 import { HorizontalActionGroup } from 'w13c/core/HorizontalActionGroup/HorizontalActionGroup';
 import type { Editor } from '../../core/Editor';
+import { BlocLibrary } from '../BlocLibrary/BlocLibrary';
 import css from './style.css' with { type: 'text' };
 import template from './template.html' with { type: 'text' };
+import insertBtnCss from './insert-btn.css' with { type: 'text' };
+import insertBtnHtml from './insert-btn.html' with { type: 'text' };
 
 export class BlocActionGroup extends HorizontalActionGroup {
 
     private _target: HTMLElement | null = null;
     private _editor: Editor | null = null;
     private _lastConfigKey: string = "";
+    private _btnBefore: HTMLButtonElement;
+    private _btnAfter: HTMLButtonElement;
+    private _cooldown: boolean = false;
 
     constructor() {
         super();
+
         const style = document.createElement('style');
         style.textContent = css as unknown as string;
         this.shadowRoot!.appendChild(style);
+
+        BlocActionGroup._injectInsertBtnStyles();
+
+        this._btnBefore = this._createInsertButton('before');
+        this._btnAfter = this._createInsertButton('after');
+        this._btnBefore.addEventListener('click', () => this._insertClone('before'));
+        this._btnAfter.addEventListener('click', () => this._insertClone('after'));
+    }
+
+    private static _stylesInjected = false;
+    private static _injectInsertBtnStyles() {
+        if (BlocActionGroup._stylesInjected) return;
+        const style = document.createElement('style');
+        style.textContent = insertBtnCss as unknown as string;
+        document.head.appendChild(style);
+        BlocActionGroup._stylesInjected = true;
+    }
+
+    private _createInsertButton(position: 'before' | 'after'): HTMLButtonElement {
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = (insertBtnHtml as unknown as string).trim();
+        const btn = wrapper.firstElementChild as HTMLButtonElement;
+        btn.classList.add(`p9r-insert-btn--${position}`);
+        return btn;
+    }
+
+    override connectedCallback() {
+        super.connectedCallback();
+        this.parentElement?.appendChild(this._btnBefore);
+        this.parentElement?.appendChild(this._btnAfter);
     }
 
     setEditor(editor: Editor) {
@@ -27,7 +64,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     }
 
     open() {
-        if (!this._editor || !this._target) return;
+        if (!this._editor || !this._target || this._cooldown) return;
 
         this.smartRender();
 
@@ -36,11 +73,11 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const y = rect.bottom + window.scrollY;
 
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-
         this.style.visibility = "visible";
         this.style.opacity = "1";
         this.style.pointerEvents = "auto";
 
+        this._positionInsertButtons(rect);
         this.addEventListeners();
     }
 
@@ -48,13 +85,98 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.style.visibility = "hidden";
         this.style.opacity = "0";
         this.style.pointerEvents = "none";
+        this._btnBefore.style.display = "none";
+        this._btnAfter.style.display = "none";
         this.removeEventListeners();
     }
+
+    private _positionInsertButtons(rect: DOMRect) {
+        const config = this._editor!.actionBarConfiguration;
+        const showBefore = config.get("addBefore");
+        const showAfter = config.get("addAfter");
+
+        console.log(showBefore, showAfter);
+
+        if (!showBefore && !showAfter) return;
+
+        const isInline = this._target!.hasAttribute(p9r.attr.ACTION.ADD_BEFORE_AFTER_IN_ROW);
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+
+        this._btnBefore.classList.toggle('p9r-insert-btn--inline', isInline);
+        this._btnAfter.classList.toggle('p9r-insert-btn--inline', isInline);
+
+        if (isInline) {
+            const centerY = rect.top + scrollY + rect.height / 2 - 12;
+            if (showBefore) {
+                this._btnBefore.style.left = `${rect.left + scrollX - 12}px`;
+                this._btnBefore.style.top = `${centerY}px`;
+                this._btnBefore.style.display = "flex";
+            }
+            if (showAfter) {
+                this._btnAfter.style.left = `${rect.right + scrollX - 12}px`;
+                this._btnAfter.style.top = `${centerY}px`;
+                this._btnAfter.style.display = "flex";
+            }
+        } else {
+            const centerX = rect.left + scrollX + rect.width / 2 - 12;
+            if (showBefore) {
+                this._btnBefore.style.left = `${centerX}px`;
+                this._btnBefore.style.top = `${rect.top + scrollY - 12}px`;
+                this._btnBefore.style.display = "flex";
+            }
+            if (showAfter) {
+                this._btnAfter.style.left = `${centerX}px`;
+                this._btnAfter.style.top = `${rect.bottom + scrollY - 12}px`;
+                this._btnAfter.style.display = "flex";
+            }
+        }
+    }
+
+    private _insertClone(position: 'before' | 'after') {
+        if (!this._target) return;
+        const clone = this._target.cloneNode(true) as HTMLElement;
+        clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+        clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach(el => {
+            el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+        });
+        if (position === 'before') {
+            this._target.before(clone);
+        } else {
+            this._target.after(clone);
+        }
+        this.close();
+        this._cooldown = true;
+        requestAnimationFrame(() => { this._cooldown = false; });
+    }
+
+    private _changeComponent() {
+        if (!this._target) return;
+        const library = BlocLibrary.open();
+        library.addEventListener('insert', ((e: CustomEvent) => {
+            const newEl = document.createElement(e.detail.id);
+
+            for (const attr of Array.from(this._target!.attributes)) {
+                if (attr.name === p9r.attr.EDITOR.IS_EDITOR) continue;
+                if (attr.name === p9r.attr.EDITOR.IDENTIFIER) continue;
+                newEl.setAttribute(attr.name, attr.value);
+            }
+
+            newEl.innerHTML = this._target!.innerHTML;
+
+            this._target!.replaceWith(newEl);
+            this.close();
+        }) as EventListener);
+    }
+
+    // ── Event listeners ──
 
     private addEventListeners() {
         this.addEventListener("action-click" as any, this.handleBlocActionClick);
         this.addEventListener("mouseleave", this.handleLeave);
         this._target?.addEventListener("mouseleave", this.handleLeave);
+        this._btnBefore.addEventListener("mouseenter", this.handleInsertBtnEnter);
+        this._btnAfter.addEventListener("mouseenter", this.handleInsertBtnEnter);
         window.addEventListener("keydown", this.handleKeyDown);
     }
 
@@ -62,8 +184,12 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.removeEventListener("action-click" as any, this.handleBlocActionClick);
         this.removeEventListener("mouseleave", this.handleLeave);
         this._target?.removeEventListener("mouseleave", this.handleLeave);
+        this._btnBefore.removeEventListener("mouseenter", this.handleInsertBtnEnter);
+        this._btnAfter.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         window.removeEventListener("keydown", this.handleKeyDown);
     }
+
+    private handleInsertBtnEnter = () => {}
 
     private handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") this.close();
@@ -72,38 +198,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private handleLeave = (e: MouseEvent) => {
         const toElement = e.relatedTarget as HTMLElement;
         if (this.contains(toElement)) return;
+        if (toElement === this._btnBefore || toElement === this._btnAfter) return;
         this.close();
     }
 
     private handleBlocActionClick = (e: CustomEvent) => {
-        const action = e.detail.action;
-        const p = document.createElement("p");
-
-        switch (action) {
-            case "delete":
-                this._target?.remove();
-                this.close();
-                break;
-            case "edit":
-                this._editor?.showConfigPanel();
-                break;
-            case "duplicate":
-                const clone = this._target!.cloneNode(true) as HTMLElement;
-                clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-                clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach(el => {
-                    el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-                });
-                this._target!.after(clone);
-                this.close();
-                break;
-            case "add-before":
-                this._target!.parentElement?.insertBefore(p, this._target!);
-                this.close();
-                break;
-            case "add-after":
-                this._target!.parentElement?.insertBefore(p, this._target!.nextSibling);
-                this.close();
-                break;
+        console.log(e.detail.action);
+        switch (e.detail.action) {
+            case "delete":       this._target?.remove(); this.close(); break;
+            case "edit":         this._editor?.showConfigPanel(); break;
+            case "duplicate":    this._insertClone('after'); break;
+            case "changeComponent": this._changeComponent(); break;
         }
     }
 
@@ -115,22 +220,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const config = this._editor!.actionBarConfiguration;
         const hasConfig = this._editor!._panelConfig != null;
 
-        console.log(config, hasConfig)
-
         const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig;
         if (this._lastConfigKey === currentConfigKey) return;
         this._lastConfigKey = currentConfigKey;
 
         this.innerHTML = template as unknown as string;
 
-        this._toggle("add-before", config.get("addBefore")!);
-        this._toggle("add-after", config.get("addAfter")!);
         this._toggle("edit", hasConfig);
         this._toggle("duplicate", config.get("duplicate")!);
+        this._toggle("changeComponent", config.get("changeComponent")!);
         this._toggle("delete", config.get("delete")!);
 
-        const showAdd = config.get("addBefore") || config.get("addAfter");
-        this.querySelector('[data-group="add"]')?.toggleAttribute("hidden", !showAdd);
         this.querySelector('[data-group="delete"]')?.toggleAttribute("hidden", !config.get("delete"));
     }
 }

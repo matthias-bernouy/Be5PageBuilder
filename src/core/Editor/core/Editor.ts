@@ -10,12 +10,14 @@ export abstract class Editor {
         ["delete", true],
         ["edit", true],
         ["duplicate", true],
-        ["addBefore", true],
-        ["addAfter", true],
+        ["addBefore", false],
+        ["addAfter", false],
+        ["changeComponent", false],
         ["saveAsTemplate", false]
     ]);
 
     constructor(target: HTMLElement, styles: string, editor?: string) {
+        console.log(target.tagName, "editor created");
         this.target = target;
 
         this.targetIdentifier = crypto.randomUUID();
@@ -87,7 +89,8 @@ export abstract class Editor {
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
-        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE);
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT)
+        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE)
 
         this.target.removeAttribute(p9r.attr.EDITOR.IDENTIFIER)
         this.target.removeAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)
@@ -95,10 +98,12 @@ export abstract class Editor {
     }
 
     public viewEditor() {
+        // Default values
+        this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
+
         this._setPanelItemIdentifiers();
         this._panelConfig?.init();
         this.init();
-        this.target.addEventListener("mouseenter", this.handleHover);
 
         Editor.styleElement.forEach((v, k) => {
             document.body.append(v)
@@ -114,7 +119,12 @@ export abstract class Editor {
         this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
         this._actionBarFeatures.set("addBefore", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
         this._actionBarFeatures.set("addAfter", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
+        this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) !== "true");
         this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
+
+        if (this._actionBarFeatures.values().some(v => v === true)){
+            this.target.addEventListener("mouseenter", this.handleHover);
+        }
 
     }
 
