@@ -11,5 +11,7 @@ export function disableBlocActions(target: HTMLElement[] | HTMLElement) {
         t.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
         t.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
         t.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
+        t.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
+        t.setAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT, "false");
     });
 }

@@ -91,6 +91,7 @@ export abstract class Editor {
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT)
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE)
+        this.target.removeAttribute(p9r.attr.ACTION.INLINE_ADDING)
 
         this.target.removeAttribute(p9r.attr.EDITOR.IDENTIFIER)
         this.target.removeAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)

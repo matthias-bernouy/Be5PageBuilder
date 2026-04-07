@@ -3,7 +3,7 @@ import { Editor } from "../core/Editor";
 import type { PageMode } from "../core/EditorManager";
 
 const cssStyle = `
-:is(h1, h2, h3, h4, h5, h6, p, span, blockquote):empty::before {
+:is(h1, h2, h3, h4, h5, h6, p, span, blockquote, a):empty::before {
     content: attr(p9r-text-placeholder);
     //color: #aaa;
     pointer-events: none;
@@ -33,9 +33,7 @@ export class TextEditor extends Editor {
     private onKeyDown = (e: KeyboardEvent) => this.handleKeyDown(e);
     private onInput = (e: Event) => this.handleInput(e);
     private onPaste = (e: ClipboardEvent) => this.handlePaste(e);
-    private isBlocAvailable: boolean = false;
-    private isTextEditable: boolean = false;
-    private isInitializing = false; // Verrou pour éviter l'auto-déclenchement
+    private isInitializing = false;
 
     constructor(target: HTMLElement) {
         super(target, cssStyle);
@@ -124,7 +122,7 @@ export class TextEditor extends Editor {
             });
         }
 
-        if (e.key === "Backspace" && this.target.innerHTML === "" && this.isBlocAvailable){
+        if (e.key === "Backspace" && this.target.innerHTML === "" && !this.isDeleteDisabled) {
             this.restore();
             const previous = this.target.previousElementSibling as HTMLElement | null;
             const next = this.target.nextElementSibling as HTMLElement | null;
@@ -138,7 +136,7 @@ export class TextEditor extends Editor {
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
-        if (this.target.innerText === "/" && this.isBlocAvailable) {
+        if (this.target.innerText === "/" && this.isBlocManagementEnabled) {
             e.stopPropagation();
             e.stopImmediatePropagation()
             const actionbar = BlocLibrary.open();
@@ -150,13 +148,6 @@ export class TextEditor extends Editor {
     }
 
     init() {
-        this.target.setAttribute(p9r.attr.TEXT.EDITABLE, "true");
-
-        const editable = this.target.getAttribute(p9r.attr.TEXT.EDITABLE);
-        this.isTextEditable = editable != null && editable === "true";
-        const blocManageur = this.target.getAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
-        this.isBlocAvailable = true
-
         this.target.removeEventListener("keydown", this.onKeyDown);
         this.target.removeEventListener("input", this.onInput);
         this.target.removeEventListener("paste", this.onPaste);
@@ -171,7 +162,7 @@ export class TextEditor extends Editor {
         if ( this.isTextEditable ){
             this.target.tabIndex = 0;
             this.target.contentEditable = "true";
-            if (this.isBlocAvailable){
+            if (this.isBlocManagementEnabled){
                 this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez / ou écrivez du texte");
             } else {
                 this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez du texte");
@@ -182,6 +173,21 @@ export class TextEditor extends Editor {
                 }
             });
         }
+    }
+
+    private get isDeleteDisabled(){
+        const deleteAttr = this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE);
+        return deleteAttr ? deleteAttr === "true" : false;
+    }
+
+    private get isBlocManagementEnabled(){
+        const blocManagementAttr = this.target.getAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
+        return blocManagementAttr ? blocManagementAttr === "true" : true;
+    }
+
+    private get isTextEditable(){
+        const textEditableAttr = this.target.getAttribute(p9r.attr.TEXT.EDITABLE);
+        return textEditableAttr ? textEditableAttr === "true" : true;
     }
 
     restore() {
