@@ -120,7 +120,6 @@ export class ObserverManager {
     }
 
     register_sub_components(tag: string[]) {
-        console.log(tag, "registered as sub component")
         tag.forEach(t => {
             this.editors.set(t, {
                 cl: EmptyEditor,

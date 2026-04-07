@@ -17,7 +17,6 @@ export abstract class Editor {
     ]);
 
     constructor(target: HTMLElement, styles: string, editor?: string) {
-        console.log(target.tagName, "editor created");
         this.target = target;
 
         this.targetIdentifier = crypto.randomUUID();

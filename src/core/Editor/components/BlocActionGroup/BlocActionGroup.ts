@@ -111,8 +111,6 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const showBefore = config.get("addBefore");
         const showAfter = config.get("addAfter");
 
-        console.log(showBefore, showAfter);
-
         if (!showBefore && !showAfter) return;
 
         const isInline = this._target!.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
@@ -194,6 +192,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnBefore.addEventListener("mouseenter", this.handleInsertBtnEnter);
         this._btnAfter.addEventListener("mouseenter", this.handleInsertBtnEnter);
         window.addEventListener("keydown", this.handleKeyDown);
+        window.addEventListener("click", this.handleClickOutside);
     }
 
     private removeEventListeners() {
@@ -203,12 +202,20 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnBefore.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         this._btnAfter.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         window.removeEventListener("keydown", this.handleKeyDown);
+        window.removeEventListener("click", this.handleClickOutside);
     }
 
     private handleInsertBtnEnter = () => {}
 
     private handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") this.close();
+    }
+
+    private handleClickOutside = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        if (this.contains(target)) return;
+        if (target === this._btnBefore || target === this._btnAfter) return;
+        this.close();
     }
 
     private handleLeave = (e: MouseEvent) => {
@@ -219,7 +226,6 @@ export class BlocActionGroup extends HorizontalActionGroup {
     }
 
     private handleBlocActionClick = (e: CustomEvent) => {
-        console.log(e.detail.action);
         switch (e.detail.action) {
             case "delete":       this._target?.remove(); this.close(); break;
             case "edit":         this._editor?.showConfigPanel(); break;

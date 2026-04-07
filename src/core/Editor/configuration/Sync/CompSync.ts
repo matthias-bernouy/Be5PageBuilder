@@ -22,6 +22,7 @@ export class CompSync extends HTMLElement {
         requestAnimationFrame(() => {
             this._sync();
             this.init();
+            this._component?.connectedCallback();    
         });
     }
 

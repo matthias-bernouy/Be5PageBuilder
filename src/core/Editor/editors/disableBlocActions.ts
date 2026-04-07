@@ -2,7 +2,6 @@
 
 export function disableBlocActions(target: HTMLElement[] | HTMLElement) {
     const targets = Array.isArray(target) ? target : [target];
-    console.log(targets);
     targets.forEach(t => {
         t.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
         t.setAttribute(p9r.attr.ACTION.DISABLE_EDIT, "true");

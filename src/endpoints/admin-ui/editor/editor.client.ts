@@ -1,7 +1,5 @@
 import "src/core/global";
 
-console.log(p9r);
-
 import { EditorManager } from "src/core/Editor/core/EditorManager";
 
 import "src/core/Editor/components/PageConfiguration/PageConfiguration"

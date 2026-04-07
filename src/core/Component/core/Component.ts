@@ -20,4 +20,7 @@ export abstract class Component extends HTMLElement {
             shadow.appendChild(template.content.cloneNode(true));
         }
     }
+
+    connectedCallback() {
+    }
 }
