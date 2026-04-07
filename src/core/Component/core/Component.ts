@@ -5,9 +5,6 @@ export type ComponentMetadata = {
 
 export abstract class Component extends HTMLElement {
 
-    _label: string = "Default Label";
-    _group: string = "Default Group";
-
     constructor(metadata?: ComponentMetadata) {
         super();
         const shadow = this.attachShadow({ mode: "open" });
@@ -23,4 +20,6 @@ export abstract class Component extends HTMLElement {
 
     connectedCallback() {
     }
+
+
 }

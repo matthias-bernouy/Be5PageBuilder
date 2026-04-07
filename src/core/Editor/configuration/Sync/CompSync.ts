@@ -56,13 +56,17 @@ export class CompSync extends HTMLElement {
 
         let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
 
-        this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
-        this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
-        this._component?.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
+        // if ( !this._component?.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER) ){
+        //     this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
+        //     this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+        //     this._component?.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
+        // }
 
         slots.forEach((slot) => {
-            if (this.componentSelectionDisabled) {
-                slot.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
+            if ( this.optionnal ) {
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
+            } else {
+                slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
             }
             slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
@@ -87,7 +91,7 @@ export class CompSync extends HTMLElement {
                 }
 
             } else {
-                disableBlocActions(slot);
+                //disableBlocActions(slot);
             }
             const editor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
             editor?.viewEditor();
@@ -96,6 +100,10 @@ export class CompSync extends HTMLElement {
 
     get isMultiple(){
         return this.hasAttribute("allow-multiple");
+    }
+
+    get optionnal(){
+        return this.hasAttribute("optionnal");
     }
 
     get min(){
@@ -108,10 +116,6 @@ export class CompSync extends HTMLElement {
 
     get inlineAdding(){
         return this.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
-    }
-
-    get componentSelectionDisabled(){
-        return this.hasAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
     }
 
 }

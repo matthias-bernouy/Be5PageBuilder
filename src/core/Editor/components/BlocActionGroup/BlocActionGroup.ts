@@ -170,10 +170,12 @@ export class BlocActionGroup extends HorizontalActionGroup {
         library.addEventListener('insert', ((e: CustomEvent) => {
             const newEl = document.createElement(e.detail.id);
 
-            for (const attr of Array.from(this._target!.attributes)) {
-                if (attr.name === p9r.attr.EDITOR.IS_EDITOR) continue;
-                if (attr.name === p9r.attr.EDITOR.IDENTIFIER) continue;
-                newEl.setAttribute(attr.name, attr.value);
+            if (this._target!.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
+                newEl.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this._target!.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!);
+            }
+
+            if (this._target!.hasAttribute("slot")) {
+                newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
             }
 
             newEl.innerHTML = this._target!.innerHTML;

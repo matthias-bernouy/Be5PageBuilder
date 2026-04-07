@@ -1,0 +1,50 @@
+:host {
+    --grid-gap: attr(spacing px, 32px);
+    --grid-item-min-width: attr(min-item-width px, 400px);
+
+    --grid-padding: 1rem;
+    --grid-title-color: var(--primary-base);
+    
+    display: block;
+    width: 100%;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: var(--grid-padding);
+}
+
+.grid-header {
+    margin-bottom: 0.5rem;
+}
+
+.grid-header ::slotted(*) {
+    margin: 0;
+    color: var(--grid-title-color);
+    font-family: inherit;
+}
+
+.grid-content {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill, 
+        minmax(min(var(--grid-item-min-width), 100%), 1fr)
+    );
+    
+    gap: var(--grid-gap);
+    align-items: start;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+::slotted(*) {
+    min-width: 0; 
+    width: 100%;
+    max-width: unset;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
