@@ -240,12 +240,22 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === "Escape") this.close();
+        if ((e.key === "Delete" || e.key === "Backspace") && this._target) {
+            const active = document.activeElement;
+            if (active && (active as HTMLElement).isContentEditable) return;
+            const canDelete = this._editor?.actionBarConfiguration.get("delete");
+            if (!canDelete) return;
+            e.preventDefault();
+            this._target.remove();
+            this.close();
+        }
     }
 
     private handleClickOutside = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
         if (this.contains(target)) return;
         if (target === this._btnBefore || target === this._btnAfter) return;
+        if (this._target?.contains(target)) return;
         this.close();
     }
 
