@@ -171,4 +171,35 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         });
     }
 
+
+    async getSystem(): Promise<TSystem> {
+        const doc = await this._systemCollection.findOne({});
+        if (doc) return doc as TSystem;
+
+        const defaults: TSystem = {
+            initializationStep: 0,
+            site: { name: "", theme: "", favicon: "", visible: true, homePage: "", page404: "", page500: "" },
+            seo: { titleTemplate: "%s", defaultDescription: "", defaultOgImage: "" },
+            editor: { blocAtPageCreation: "" },
+        };
+        await this._systemCollection.insertOne(defaults);
+        return defaults;
+    }
+
+    async updateSystem(update: Partial<TSystem>): Promise<TSystem> {
+        const flatUpdate: Record<string, any> = {};
+        for (const [section, value] of Object.entries(update)) {
+            if (section === "initializationStep") {
+                flatUpdate[section] = value;
+            } else if (typeof value === "object" && value !== null) {
+                for (const [key, val] of Object.entries(value)) {
+                    flatUpdate[`${section}.${key}`] = val;
+                }
+            }
+        }
+
+        await this._systemCollection.updateOne({}, { $set: flatUpdate }, { upsert: true });
+        return this.getSystem();
+    }
+
 }

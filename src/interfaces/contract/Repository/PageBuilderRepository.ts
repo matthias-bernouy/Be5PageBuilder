@@ -1,4 +1,4 @@
-import type { TBloc, TPage } from "./TModels";
+import type { TBloc, TPage, TSystem } from "./TModels";
 import type { TBlocMetadata } from "./TQueries";
 
 
@@ -17,5 +17,9 @@ export interface PageBuilderRepository {
     getPageByIdentifier(identifier: string): Promise<TPage | null>;
     getAllPages(): Promise<TPage[]>;
 
+
+    // SYSTEM
+    getSystem(): Promise<TSystem>;
+    updateSystem(system: Partial<TSystem>): Promise<TSystem>;
 
 }

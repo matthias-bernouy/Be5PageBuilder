@@ -66,13 +66,23 @@ export type TSystem = {
     initializationStep: number;
 
     site: {
-        theme: Uint8Array;
-        favicon: Uint8Array;
+        name: string;
+        theme: string;
+        favicon: string;
         visible: boolean;
+        homePage: string;
+        page404: string;
+        page500: string;
+    },
+
+    seo: {
+        titleTemplate: string;
+        defaultDescription: string;
+        defaultOgImage: string;
     },
 
     editor: {
-        blocAtPageCreation: string; // bloc identifier
+        blocAtPageCreation: string;
     }
 
 }
