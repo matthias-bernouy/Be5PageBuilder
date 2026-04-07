@@ -88,19 +88,18 @@ export class TextEditor extends Editor {
         selection.addRange(range);
     }
 
+    private static _editorAttrs = new Set([
+        'contenteditable', 'tabindex', 'draggable',
+    ]);
+
     private createElement(tag: string){
         const element = document.createElement(tag) as HTMLElement;
         Array.from(this.target.attributes).forEach(attr => {
+            if (attr.name.startsWith('p9r-')) return;
+            if (attr.name === 'class') return;
+            if (TextEditor._editorAttrs.has(attr.name)) return;
             element.setAttribute(attr.name, attr.value);
         });
-        element.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-        if ( !textTags.has(tag) ) {
-            element.removeAttribute(p9r.attr.TEXT.EDITABLE);
-            element.removeAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
-            element.removeAttribute(p9r.attr.TEXT.PLACEHOLDER);
-            element.removeAttribute("tabindex");
-            element.removeAttribute("contenteditable");
-        }
         return element;
     }
 
