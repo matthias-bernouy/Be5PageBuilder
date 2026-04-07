@@ -1,0 +1,37 @@
+:host {
+    --container-max-width: attr(max-width px, 1200px);
+    
+    --container-padding: 2rem;
+    --container-bg: var(--bg-surface);
+    
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.wrapper {
+    width: 100%;
+    max-width: min(var(--container-max-width), 100%);
+    margin: 0 auto;
+    padding: var(--container-padding);
+    background: var(--container-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-sizing: border-box;
+}
+
+.container-header {
+    margin-bottom: 1rem;
+    color: var(--primary-base);
+}
+
+.container-content {
+    width: 100%;
+    position: relative;
+}
+
+::slotted(*) {
+    max-width: 100%;
+    box-sizing: border-box;
+}

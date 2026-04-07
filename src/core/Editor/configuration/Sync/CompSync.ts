@@ -68,6 +68,7 @@ export class CompSync extends HTMLElement {
             } else {
                 slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
             }
+            slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
             subElements.forEach(sub => {

@@ -72,7 +72,7 @@ export type TSystem = {
     },
 
     editor: {
-        groupAtPageCreation: string;
+        blocAtPageCreation: string; // bloc identifier
     }
 
 }
