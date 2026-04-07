@@ -4,7 +4,7 @@ import { MediaCenter } from "../components/MediaCenter/MediaCenter";
 import { FloatingToolbar } from "../components/FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../components/RichTextBar/RichTextBar";
 import "../configuration/ConfigPanel";
-import { BlocActionGroup } from "../components/BlocActionGroup";
+import { BlocActionGroup } from "../components/BlocActionGroup/BlocActionGroup";
 
 export type PageModeEnum = [
     "editor-mode",
