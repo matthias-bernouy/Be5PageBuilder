@@ -62,6 +62,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
             this.close();
             return;
         }
+        this._target?.classList.remove("p9r-active");
         this._editor = editor;
         this._target = editor.target;
     }
@@ -81,10 +82,12 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
         this._positionInsertButtons(rect);
         this._resizeObserver.observe(this._target!);
+        this._target!.classList.add("p9r-active");
         this.addEventListeners();
     }
 
     close() {
+        this._target?.classList.remove("p9r-active");
         this.style.visibility = "hidden";
         this.style.opacity = "0";
         this.style.pointerEvents = "none";
