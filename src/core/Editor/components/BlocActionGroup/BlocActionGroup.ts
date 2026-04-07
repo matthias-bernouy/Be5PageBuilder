@@ -14,6 +14,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private _btnBefore: HTMLButtonElement;
     private _btnAfter: HTMLButtonElement;
     private _cooldown: boolean = false;
+    private _resizeObserver: ResizeObserver;
 
     constructor() {
         super();
@@ -28,6 +29,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnAfter = this._createInsertButton('after');
         this._btnBefore.addEventListener('click', () => this._insertClone('before'));
         this._btnAfter.addEventListener('click', () => this._insertClone('after'));
+
+        this._resizeObserver = new ResizeObserver(() => this._reflow());
     }
 
     private static _stylesInjected = false;
@@ -78,6 +81,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.style.pointerEvents = "auto";
 
         this._positionInsertButtons(rect);
+        this._resizeObserver.observe(this._target!);
         this.addEventListeners();
     }
 
@@ -87,7 +91,19 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.style.pointerEvents = "none";
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
+        this._resizeObserver.disconnect();
         this.removeEventListeners();
+    }
+
+    private _reflow() {
+        if (!this._target) return;
+        const rect = this._target.getBoundingClientRect();
+        const x = rect.left + window.scrollX;
+        const y = rect.bottom + window.scrollY;
+        this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        this._btnBefore.style.display = "none";
+        this._btnAfter.style.display = "none";
+        this._positionInsertButtons(rect);
     }
 
     private _positionInsertButtons(rect: DOMRect) {
