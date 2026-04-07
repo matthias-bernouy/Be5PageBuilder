@@ -207,8 +207,6 @@ export class BlocActionGroup extends HorizontalActionGroup {
                 newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
             }
 
-            newEl.innerHTML = this._target!.innerHTML;
-
             this._target!.replaceWith(newEl);
             this.close();
         }) as EventListener);
