@@ -28,9 +28,6 @@ export async function prepare_bloc(fileView: File, fileEditor: File, label: stri
         .replaceAll("BE5_LABEL_TO_BE_REPLACED", label)
         .replaceAll("BE5_GROUP_TO_BE_REPLACED", group)
 
-    rmSync("./tmp", { recursive: true, force: true });
-    rmSync("./dist", { recursive: true, force: true });
-
     return {
         id: blocId,
         editorJS: editorJS,

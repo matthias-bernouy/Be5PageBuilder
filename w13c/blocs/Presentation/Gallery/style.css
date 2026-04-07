@@ -1,0 +1,75 @@
+:host {
+    --label-pos: attr(label-position, top-left);
+    --label-bg: var(--primary-base);
+    --label-color: white;
+    
+    display: block;
+    width: 100%;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden; /* Pour que l'image respecte les arrondis du host */
+}
+
+.presentation-root {
+    position: relative;
+    display: flex;
+    width: 100%;
+}
+
+.image-wrapper {
+    width: 100%;
+    line-height: 0;
+}
+
+/* On force l'élément sloté dans "image" à remplir le conteneur */
+::slotted([slot="image"]) {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    display: block;
+}
+
+.label-badge {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none; /* Le label ne doit pas gêner le clic sur l'image */
+    
+    /* Style du conteneur de label */
+    background-color: var(--label-bg);
+    color: var(--label-color);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    
+    /* Espacement par rapport aux bords */
+    --offset: 16px;
+}
+
+/* Logique de positionnement via l'attribut du host */
+
+:host([label-position="top-left"]) .label-badge {
+    top: var(--offset);
+    left: var(--offset);
+}
+
+:host([label-position="top-right"]) .label-badge {
+    top: var(--offset);
+    right: var(--offset);
+}
+
+:host([label-position="bottom-left"]) .label-badge {
+    bottom: var(--offset);
+    left: var(--offset);
+}
+
+:host([label-position="bottom-right"]) .label-badge {
+    bottom: var(--offset);
+    right: var(--offset);
+}
+
+/* Si le slot label est vide, on cache le badge */
+.label-badge:not(:has(slot:not([name]):empty)) {
+    /* Logique complexe : si le slot est vide, on peut masquer */
+}

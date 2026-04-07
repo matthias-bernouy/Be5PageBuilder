@@ -203,6 +203,10 @@ export class ImageSync extends HTMLElement {
         this._updatePreview("");
     }
 
+    get isMultiSelect() {
+        return this.hasAttribute("multi-select");
+    }
+
     init() {
         this._target = this._resolveTarget();
         const currentValue = this._target?.getAttribute("src") || "";

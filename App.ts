@@ -33,3 +33,7 @@ new PageBuilder(
     })
 
 BunRunnerCore.start();
+
+Bun.spawnSync(["bun", "run", "src/cli/CLI_importBloc.ts", dbName, "./w13c/blocs/Layout", "layout"]);
+Bun.spawnSync(["bun", "run", "src/cli/CLI_importBloc.ts", dbName, "./w13c/blocs/Form", "form"]);
+Bun.spawnSync(["bun", "run", "src/cli/CLI_importBloc.ts", dbName, "./w13c/blocs/Presentation", "presentation"]);

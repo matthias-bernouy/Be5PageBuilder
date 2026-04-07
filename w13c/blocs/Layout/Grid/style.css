@@ -1,9 +1,12 @@
 :host {
+
     --grid-gap: attr(spacing px, 32px);
     --grid-item-min-width: attr(min-item-width px, 400px);
 
     --grid-padding: 1rem;
     --grid-title-color: var(--primary-base);
+
+    --grid-item-fixed-height: attr(fixed-height px, unset);
     
     display: block;
     width: 100%;
@@ -20,7 +23,7 @@
     margin-bottom: 0.5rem;
 }
 
-.grid-header ::slotted(*) {
+.grid-header {
     margin: 0;
     color: var(--grid-title-color);
     font-family: inherit;
@@ -47,4 +50,9 @@
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+}
+
+.grid-content ::slotted(*) {
+    height: var(--grid-item-fixed-height);
+    overflow: hidden;
 }

@@ -63,19 +63,26 @@ export class CompSync extends HTMLElement {
         // }
 
         slots.forEach((slot) => {
+            const slotEditor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
+            slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
+            slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
+            slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
             if ( this.optionnal ) {
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
             } else {
                 slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
             }
-            slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
-            slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
-            subElements.forEach(sub => {
-                disableBlocActions(sub);
-                const editor = document.compIdentifierToEditor.get(sub.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
-                editor?.viewEditor();
-            })
+
+            // Si le slot est un editeur, on le laissera désactiver les enfants
+            // if ( !slotEditor ){
+            //     subElements.forEach(sub => {
+            //         disableBlocActions(sub);
+            //         const editor = document.compIdentifierToEditor.get(sub.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
+            //         editor?.viewEditor();
+            //     })
+            // }
+
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
 
@@ -84,18 +91,20 @@ export class CompSync extends HTMLElement {
                 } else {
                     slot.removeAttribute(p9r.attr.ACTION.INLINE_ADDING);
                 }
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
 
                 if ( slots.length == this.min ) {
                     slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
-                } else {
-                    slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE)
+                    //slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
                 }
 
             } else {
                 //disableBlocActions(slot);
             }
-            const editor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
-            editor?.viewEditor();
+            slotEditor?.viewEditor();
         })
     }
 

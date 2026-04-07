@@ -103,8 +103,6 @@ export abstract class Editor {
 
     public viewEditor() {
         // Default values
-        this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
-
         this._setPanelItemIdentifiers();
         this._panelConfig?.init();
         this.init();
@@ -113,14 +111,16 @@ export abstract class Editor {
             document.body.append(v)
         })
 
+
+        this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
+        this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier)
+        this.target.classList.add("editor-block")
+        this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true")
+
         this.target.draggable = true;
         if ( this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)){
             this.target.removeAttribute("draggable");
         }
-
-        this.target.classList.add("editor-block")
-        this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true")
-        this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier)
 
         this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
         this._actionBarFeatures.set("edit", this.target.getAttribute(p9r.attr.ACTION.DISABLE_EDIT) !== "true");
