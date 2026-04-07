@@ -64,9 +64,9 @@ export abstract class Editor {
         });
     }
 
-    private handleHover = () => {
+    private handleHover = (e: MouseEvent) => {
         document.EditorManager.getBlocActionGroup().setEditor(this);
-        document.EditorManager.getBlocActionGroup().open();
+        document.EditorManager.getBlocActionGroup().open(e.clientX, e.clientY);
     }
 
     public viewClient() {

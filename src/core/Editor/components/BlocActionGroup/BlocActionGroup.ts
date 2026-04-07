@@ -66,14 +66,13 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._target = editor.target;
     }
 
-    open() {
+    open(mouseX?: number, mouseY?: number) {
         if (!this._editor || !this._target || this._cooldown) return;
 
         this.smartRender();
 
         const rect = this._target!.getBoundingClientRect();
-        const x = rect.left + window.scrollX;
-        const y = rect.bottom + window.scrollY;
+        const { x, y } = this._computePosition(rect, mouseX, mouseY);
 
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         this.style.visibility = "visible";
@@ -95,11 +94,38 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.removeEventListeners();
     }
 
+    private _lastMouseX: number = 0;
+    private _lastVAnchor: 'top' | 'bottom' = 'bottom';
+
+    private _computePosition(rect: DOMRect, mouseX?: number, mouseY?: number): { x: number; y: number } {
+        const centerY = rect.top + rect.height / 2;
+        const anchorTop = mouseY != null && mouseY < centerY;
+        this._lastVAnchor = anchorTop ? 'top' : 'bottom';
+
+        const mx = mouseX ?? this._lastMouseX;
+        this._lastMouseX = mx;
+
+        const halfWidth = this.offsetWidth / 2;
+        let x = mx + window.scrollX - halfWidth;
+        const minX = rect.left + window.scrollX;
+        const maxX = rect.right + window.scrollX - this.offsetWidth;
+        x = Math.max(minX, Math.min(maxX, x));
+
+        const y = anchorTop
+            ? rect.top + window.scrollY - this.offsetHeight
+            : rect.bottom + window.scrollY;
+
+        return { x, y };
+    }
+
     private _reflow() {
         if (!this._target) return;
         const rect = this._target.getBoundingClientRect();
-        const x = rect.left + window.scrollX;
-        const y = rect.bottom + window.scrollY;
+        const { x, y } = this._computePosition(
+            rect,
+            this._lastMouseX,
+            this._lastVAnchor === 'top' ? rect.top : rect.bottom,
+        );
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
@@ -224,6 +250,14 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const toElement = e.relatedTarget as HTMLElement;
         if (this.contains(toElement)) return;
         if (toElement === this._btnBefore || toElement === this._btnAfter) return;
+
+        // Si on quitte un enfant mais qu'on reste dans un parent éditeur, ré-ouvrir sur le parent
+        const parentEditor = toElement?.closest?.(`[${p9r.attr.EDITOR.IS_EDITOR}]`) as HTMLElement | null;
+        if (parentEditor && parentEditor.contains(this._target)) {
+            parentEditor.dispatchEvent(new MouseEvent('mouseenter', { clientX: e.clientX, clientY: e.clientY, bubbles: false }));
+            return;
+        }
+
         this.close();
     }
 
