@@ -99,7 +99,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
         if (!showBefore && !showAfter) return;
 
-        const isInline = this._target!.hasAttribute(p9r.attr.ACTION.ADD_BEFORE_AFTER_IN_ROW);
+        const isInline = this._target!.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
         const scrollX = window.scrollX;
         const scrollY = window.scrollY;
 

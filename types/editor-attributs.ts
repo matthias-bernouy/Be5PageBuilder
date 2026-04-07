@@ -7,7 +7,8 @@ export const P9R_ATTR = {
         DISABLE_DUPLICATE:        "p9r-action-disable-duplicate",
         DISABLE_EDIT:             "p9r-action-disable-edit",
         DISABLE_SAVE_AS_TEMPLATE:  "p9r-action-disable-save-as-template",
-        DISABLE_CHANGE_COMPONENT: "p9r-action-disable-change-component"
+        DISABLE_CHANGE_COMPONENT: "p9r-action-disable-change-component",
+        INLINE_ADDING:            "inline-adding",
     },
 
     TEXT: {

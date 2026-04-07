@@ -54,6 +54,11 @@ export class CompSync extends HTMLElement {
             })
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
+                if (this.inlineAdding){
+                     slot.setAttribute(p9r.attr.ACTION.INLINE_ADDING, "true");
+                } else {
+                    slot.removeAttribute(p9r.attr.ACTION.INLINE_ADDING);
+                }
                 if ( slots.length == this.min ) {
                     slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
                 } else {
@@ -77,6 +82,10 @@ export class CompSync extends HTMLElement {
 
     get max(){
         return 999;
+    }
+
+    get inlineAdding(){
+        return this.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
     }
 
 }
