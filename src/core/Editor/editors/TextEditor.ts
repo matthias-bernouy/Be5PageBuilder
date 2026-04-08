@@ -159,9 +159,9 @@ export class TextEditor extends Editor {
             this.target.tabIndex = 0;
             this.target.contentEditable = "true";
             if (this.isBlocManagementEnabled){
-                this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez / ou écrivez du texte");
+                this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Type / or write text");
             } else {
-                this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez du texte");
+                this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Type text");
             }
             requestAnimationFrame(() => {
                 if (this.target.isConnected) {

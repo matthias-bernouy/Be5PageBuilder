@@ -1,30 +1,30 @@
 <article class="article-container">
   <header class="article-header">
     <div class="meta-top">
-      <span class="badge"><slot name="badge">Évènement</slot></span>
-      <span class="read-time"><slot name="time">5 min de lecture</slot></span>
+      <span class="badge"><slot name="badge">Event</slot></span>
+      <span class="read-time"><slot name="time">5 min read</slot></span>
     </div>
     
-    <h1><slot name="title">Le titre de votre histoire</slot></h1>
+    <h1><slot name="title">Your story title</slot></h1>
     
     <p class="lead">
-      <slot name="lead">Un chapô captivant qui résume l'article et incite à la lecture.</slot>
+      <slot name="lead">A compelling introduction that summarizes the article.</slot>
     </p>
 
     <div class="author-box">
       <slot name="author-image"><div class="avatar-placeholder"></div></slot>
       <div class="author-info">
         <strong><slot name="author-name">Bertrand Vittecoq</slot></strong>
-        <slot name="publish-date">Publié le 10 Mars 2026</slot>
+        <slot name="publish-date">Published March 10, 2026</slot>
       </div>
     </div>
   </header>
 
   <figure class="main-image">
     <slot name="cover-image">
-      <img src="https://picsum.photos/600" alt="Couverture">
+      <img src="https://picsum.photos/600" alt="Cover">
     </slot>
-    <figcaption><slot name="image-caption">Crédit photo : Association des anciens élèves</slot></figcaption>
+    <figcaption><slot name="image-caption">Photo credit: Alumni Association</slot></figcaption>
   </figure>
 
   <section class="article-body">

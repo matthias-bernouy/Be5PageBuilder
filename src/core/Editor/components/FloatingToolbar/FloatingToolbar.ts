@@ -28,7 +28,7 @@ export class FloatingToolbar extends Component {
         this._startX = e.clientX - this.offsetLeft;
         this._startY = e.clientY - this.offsetTop;
 
-        // On capture le pointeur pour continuer à tracker même si on sort de la barre
+        // Capture pointer to continue tracking even if leaving the bar
         e.target.setPointerCapture(e.pointerId);
 
         window.addEventListener('pointermove', this._onPointerMove);
@@ -36,17 +36,17 @@ export class FloatingToolbar extends Component {
     }
 
     _onPointerMove(e: any) {
-        // Calcul des nouvelles positions
+        // Calculate new positions
         let newX = e.clientX - this._startX;
         let newY = e.clientY - this._startY;
 
-        // Optionnel : Ajouter des limites pour ne pas sortir de l'écran
+        // Clamp to viewport bounds
         newX = Math.max(0, Math.min(newX, window.innerWidth - this.offsetWidth));
         newY = Math.max(0, Math.min(newY, window.innerHeight - this.offsetHeight));
 
         this.style.left = `${newX}px`;
         this.style.top = `${newY}px`;
-        this.style.right = 'auto'; // On annule le "right" de base pour utiliser "left"
+        this.style.right = 'auto'; // Reset base "right" to use "left" instead
     }
 
     _onPointerUp(e: any) {

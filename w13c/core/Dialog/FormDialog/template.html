@@ -5,9 +5,9 @@
         <form id="form-validation" method="get">
             <header>
                 <div class="title-area">
-                    <slot name="title">Nouvelle fenêtre</slot>
+                    <slot name="title">New window</slot>
                 </div>
-                <button class="close-icon" form="close-form" type="submit" aria-label="Fermer">&times;</button>
+                <button class="close-icon" form="close-form" type="submit" aria-label="Close">&times;</button>
             </header>
 
             <section class="body">
@@ -16,8 +16,8 @@
 
             <footer class="actions">
                 <slot name="footer">
-                    <p9r-button form="close-form" type="submit" variant="ghost">Annuler</p9r-button>
-                    <p9r-button form="form-validation" type="submit" variant="filled" color="primary">Confirmer</p9r-button>
+                    <p9r-button form="close-form" type="submit" variant="ghost">Cancel</p9r-button>
+                    <p9r-button form="form-validation" type="submit" variant="filled" color="primary">Confirm</p9r-button>
                 </slot>
             </footer>
         </form>

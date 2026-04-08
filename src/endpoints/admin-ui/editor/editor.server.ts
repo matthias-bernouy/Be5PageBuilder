@@ -19,15 +19,15 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
         return `
             (function() {
                 const init = () => {
-                    // On vérifie si l'EditorManager est bien présent sur le document
+                    // Check if EditorManager is available on the document
                     if (window.document && document.EditorManager) {
                         try {
                             ${bloc.editorJS}
                         } catch (e) {
-                            console.error("Erreur lors de l'exécution du bloc ${bloc.id}:", e);
+                            console.error("Error executing bloc ${bloc.id}:", e);
                         }
                     } else {
-                        // Si pas encore là, on attend 10ms et on réessaie
+                        // Not available yet, wait 10ms and retry
                         setTimeout(init, 10);
                     }
                 };

@@ -1,14 +1,14 @@
 import "./P9rSelect";
 
 /**
- * <p9r-sizes-select name="size" label="Taille"></p9r-sizes-select>
+ * <p9r-sizes-select name="size" label="Size"></p9r-sizes-select>
  *
  * Shortcut for a P9rSelect with XS / S / M / L / XL options.
  */
 export class P9rSizesSelect extends HTMLElement {
 
     connectedCallback() {
-        const label = this.getAttribute("label") || "Taille";
+        const label = this.getAttribute("label") || "Size";
         const name = this.getAttribute("name") || "size";
 
         const select = document.createElement("p9r-select") as HTMLElement;

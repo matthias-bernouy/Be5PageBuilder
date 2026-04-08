@@ -40,10 +40,10 @@ export default async function ViewPageServer(req: Request, system: PageBuilder) 
         themeLink.setAttribute("href", "/style");
         document.head.appendChild(themeLink);
 
-        // Contenu de la page
+        // Page content
         document.body.innerHTML = page.content;
 
-        // Trouver les tags be5-* utilisés dans le contenu et ajouter leurs scripts
+        // Find be5-* tags used in content and add their scripts
         const usedTags = extractBlocTags(page.content);
 
         for (const tag of usedTags) {

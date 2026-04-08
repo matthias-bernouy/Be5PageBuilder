@@ -77,7 +77,7 @@ export class ListEditor extends Editor {
             item.removeEventListener("keydown", this.onKeyDown);
             item.removeEventListener("input", this.onInput);
             item.contentEditable = "true";
-            item.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Tapez du texte")
+            item.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Type text")
             item.addEventListener("keydown", this.onKeyDown);
             item.addEventListener("input", this.onInput);
         })

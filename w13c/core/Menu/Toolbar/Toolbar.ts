@@ -21,13 +21,13 @@ export class Toolbar extends Component {
     }
 
     /**
-     * Positionne la toolbar au dessus d'un élément
-     * @param rect Le DOMRect de l'élément cible
+     * Position the toolbar above an element
+     * @param rect The target element's DOMRect
      */
     public showAt(rect: DOMRect) {
         this.setAttribute("data-visible", "true");
         
-        // Calcul du centrage horizontal et positionnement au dessus (offset de 12px)
+        // Horizontal centering and position above (12px offset)
         const top = rect.top + window.scrollY - this.offsetHeight - 12;
         const left = rect.left + window.scrollX + (rect.width / 2);
 

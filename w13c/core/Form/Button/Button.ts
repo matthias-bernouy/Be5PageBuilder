@@ -13,7 +13,7 @@ export class Button extends Component {
         this._internals = this.attachInternals();
     }
 
-    // On observe les changements pour mettre à jour le bouton interne
+    // Observe changes to update the internal button
     static get observedAttributes() {
         return ['type', 'disabled', 'variant', 'color'];
     }
@@ -22,7 +22,7 @@ export class Button extends Component {
         this._btn = this.shadowRoot?.querySelector('button') || null;
         this._upgradeProperty('disabled');
         
-        // Valeurs par défaut si non définies
+        // Default values if not defined
         if (!this.hasAttribute('type')) this.setAttribute('type', 'button');
         if (!this.hasAttribute('variant')) this.setAttribute('variant', 'filled');
 
@@ -43,7 +43,7 @@ export class Button extends Component {
         if (type === 'reset') form.reset();
     };
 
-    // Helper pour synchroniser les propriétés JS et les attributs HTML
+    // Helper to sync JS properties and HTML attributes
     private _upgradeProperty(prop: string) {
         if (this.hasOwnProperty(prop)) {
             let value = (this as any)[prop];

@@ -1,5 +1,5 @@
 export class TableRow extends HTMLElement {
-    // On observe 'target' et on peut aussi ajouter 'href' pour l'URL
+    // Observe 'target' and 'href' for URL navigation
     static get observedAttributes() { return ['target', 'href']; }
 
     constructor() {
@@ -25,7 +25,7 @@ export class TableRow extends HTMLElement {
         this.render();
         if (this.hasAttribute('href')) {
             this.setAttribute('tabindex', '0');
-            this.setAttribute('role', 'link'); // Pour les lecteurs d'écran
+            this.setAttribute('role', 'link'); // For screen readers
         }
     }
 
@@ -37,7 +37,7 @@ export class TableRow extends HTMLElement {
                         display: table-row;
                         transition: background-color 0.15s ease;
                     }
-                    /* On affiche la main si c'est un lien */
+                    /* Show pointer cursor for links */
                     :host([href]) {
                         cursor: pointer;
                     }

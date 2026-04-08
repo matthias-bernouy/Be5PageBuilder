@@ -1,14 +1,14 @@
 <p9r-attr-sync>
-    <p9r-section data-title="Disposition">
+    <p9r-section data-title="Layout">
         <p9r-select name="direction" label="Direction">
-            <option selected value="vertical">Verticale</option>
-            <option value="horizontal">Horizontale</option>
+            <option selected value="vertical">Vertical</option>
+            <option value="horizontal">Horizontal</option>
         </p9r-select>
         <p9r-select name="media" label="Image">
-            <option selected value="visible">Afficher</option>
-            <option value="none">Masquer</option>
+            <option selected value="visible">Show</option>
+            <option value="none">Hide</option>
         </p9r-select>
-        <p9r-select name="ratio" label="Ratio image">
+        <p9r-select name="ratio" label="Image ratio">
             <option selected value="16-9">16:9</option>
             <option value="4-3">4:3</option>
             <option value="1">1:1</option>
@@ -16,36 +16,36 @@
         </p9r-select>
     </p9r-section>
     <p9r-section data-title="Style">
-        <p9r-select name="variant" label="Variante">
-            <option selected value="elevated">Élevée</option>
-            <option value="outline">Bordure</option>
-            <option value="ghost">Transparente</option>
+        <p9r-select name="variant" label="Variant">
+            <option selected value="elevated">Elevated</option>
+            <option value="outline">Outline</option>
+            <option value="ghost">Ghost</option>
         </p9r-select>
-        <p9r-range name="radius" label="Arrondi" min="0" max="32" step="1" value="16" unit="px"></p9r-range>
-        <p9r-range name="padding" label="Espacement" min="8" max="40" step="2" value="20" unit="px"></p9r-range>
+        <p9r-range name="radius" label="Border radius" min="0" max="32" step="1" value="16" unit="px"></p9r-range>
+        <p9r-range name="padding" label="Padding" min="8" max="40" step="2" value="20" unit="px"></p9r-range>
     </p9r-section>
 </p9r-attr-sync>
 
-<p9r-section data-title="Image">
-    <p9r-image-sync slotTarget="image" label="Image de couverture" default="https://placehold.co/800x450"></p9r-image-sync>
+<p9r-section data-title="Media">
+    <p9r-image-sync slotTarget="image" label="Cover image" default="https://placehold.co/800x450"></p9r-image-sync>
 </p9r-section>
 
 <p9r-comp-sync optionnal>
-    <span slot="tag">Nouveau</span>
+    <span slot="tag">New</span>
 </p9r-comp-sync>
 
 <p9r-comp-sync optionnal>
-    <span slot="subtitle">Catégorie</span>
+    <span slot="subtitle">Category</span>
 </p9r-comp-sync>
 
 <p9r-comp-sync>
-    <span slot="title">Titre de la carte</span>
+    <span slot="title">Card title</span>
 </p9r-comp-sync>
 
 <p9r-comp-sync optionnal>
-    <p slot="description">Une description concise pour donner envie d'en savoir plus.</p>
+    <p slot="description">A concise description to spark curiosity.</p>
 </p9r-comp-sync>
 
 <p9r-comp-sync allow-others-components optionnal>
-    <p slot="footer">En savoir plus</p>
+    <p slot="footer">Learn more</p>
 </p9r-comp-sync>
