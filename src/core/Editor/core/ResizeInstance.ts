@@ -1,12 +1,17 @@
 export class ResizeInstance {
     private isResizing = false;
     private hasMoved = false;
+    private isPending = false;
+    private originX = 0;
+    private originY = 0;
     private lastMouseX = 0;
     private lastMouseY = 0;
-    
+
     private startWidth = 0;
     private startHeight = 0;
     private aspectRatio = 1;
+
+    private static MOVE_THRESHOLD = 4;
 
     private target: HTMLElement;
     private onResizeCallback: (width: number, height: number) => void;
@@ -32,8 +37,11 @@ export class ResizeInstance {
 
     private onMouseDown = (e: MouseEvent): void => {
         if (e.target === this.target) {
-            this.isResizing = true;
+            this.isPending = true;
+            this.isResizing = false;
             this.hasMoved = false;
+            this.originX = e.clientX;
+            this.originY = e.clientY;
             this.lastMouseX = e.clientX;
             this.lastMouseY = e.clientY;
 
@@ -43,15 +51,24 @@ export class ResizeInstance {
 
             document.addEventListener("mousemove", this.onMouseMove);
             document.addEventListener("mouseup", this.onMouseUp);
-            
+
             e.preventDefault();
         }
     };
 
     private onMouseMove = (e: MouseEvent): void => {
-        if (!this.isResizing) return;
-        
-        if (!this.hasMoved) this.hasMoved = true;
+        if (!this.isPending && !this.isResizing) return;
+
+        // Activate resize only after moving past the threshold
+        if (this.isPending && !this.isResizing) {
+            const dx = Math.abs(e.clientX - this.originX);
+            const dy = Math.abs(e.clientY - this.originY);
+            if (dx < ResizeInstance.MOVE_THRESHOLD && dy < ResizeInstance.MOVE_THRESHOLD) return;
+            this.isPending = false;
+            this.isResizing = true;
+        }
+
+        this.hasMoved = true;
 
         const deltaX = e.clientX - this.lastMouseX;
         const deltaY = e.clientY - this.lastMouseY;
@@ -77,6 +94,7 @@ export class ResizeInstance {
     };
 
     private onMouseUp = (): void => {
+        this.isPending = false;
         setTimeout(() => {
             this.isResizing = false;
         }, 0);
