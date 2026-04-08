@@ -12,6 +12,30 @@
 - Build placeholders: `BE5_TAG_TO_BE_REPLACED`, `BE5_LABEL_TO_BE_REPLACED`, `BE5_GROUP_TO_BE_REPLACED` — never replace these
 - Component and editor are built as **separate bundles** — never cross-import between them
 
+## Data layer
+
+- Repository interface: `src/interfaces/contract/Repository/PageBuilderRepository.ts`
+- Models: `TPage`, `TBloc`, `TTemplate`, `TSystem` in `TModels.ts`
+- Default implementation uses MongoDB: `DefaultPagebuilderRepository.ts`
+- Media is a separate repository: `MediaRepository.ts` with `DefaultMediaRepository.ts`
+- API endpoints follow file-based routing: `resource.METHOD.ts` (e.g. `template.post.ts`, `templates.get.ts`)
+
+## Admin UI
+
+- Admin pages live in `src/endpoints/admin-ui/` — each folder has `*.html`, `*.server.ts`, `*.client.ts`
+- All pages use `<w13c-fixed-admin-layout>` with `slot="title"` and `slot="action"`
+- File-based routing: `*.server.ts` → GET endpoint, `*.client.ts` → compiled JS bundle
+- Auth guard on all `/page-builder/**` routes
+
+## Editor system
+
+- `EditorManager` is the central orchestrator — creates MediaCenter, FloatingToolbar, BlocActionGroup
+- `EditorManager.getContent()` returns current HTML without saving (used by TemplateConfiguration)
+- `EditorManager.save()` is page-specific (POST to `/api/page`)
+- `EditorManager.getConfiguration()` finds either `w13c-page-information` or `w13c-template-information`
+- `BlocLibrary` has 3 sections: Blocs (by group), Templates (by category), Snippets (upcoming)
+- Templates insert as HTML fragments (independent copies), blocs insert as custom elements
+
 ## CSS conventions
 
 - Use attribute selector presets (`:host([bg="surface"]) .inner { ... }`) for configuration-driven styles

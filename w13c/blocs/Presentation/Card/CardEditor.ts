@@ -4,10 +4,12 @@ import configuration from "./configuration.html" with { type: 'text' };
 
 const editorStyle = `
     .card:hover {
-        box-shadow: unset;
+        box-shadow: unset !important;
+        transform: unset !important;
+        border-color: unset !important;
     }
     .card:hover .card-media ::slotted(img) {
-        transform: unset;
+        transform: unset !important;
     }
 `;
 

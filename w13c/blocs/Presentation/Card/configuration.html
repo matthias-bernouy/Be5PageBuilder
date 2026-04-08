@@ -4,6 +4,13 @@
             <option selected value="vertical">Vertical</option>
             <option value="horizontal">Horizontal</option>
         </p9r-select>
+        <p9r-select name="align" label="Text alignment">
+            <option selected value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+        </p9r-select>
+    </p9r-section>
+    <p9r-section data-title="Media">
         <p9r-select name="media" label="Image">
             <option selected value="visible">Show</option>
             <option value="none">Hide</option>
@@ -13,6 +20,11 @@
             <option value="4-3">4:3</option>
             <option value="1">1:1</option>
             <option value="21-9">21:9</option>
+            <option value="3-4">3:4 (portrait)</option>
+        </p9r-select>
+        <p9r-select name="img-fit" label="Image fit">
+            <option selected value="cover">Cover</option>
+            <option value="contain">Contain</option>
         </p9r-select>
     </p9r-section>
     <p9r-section data-title="Style">
@@ -20,9 +32,30 @@
             <option selected value="elevated">Elevated</option>
             <option value="outline">Outline</option>
             <option value="ghost">Ghost</option>
+            <option value="filled">Filled</option>
+        </p9r-select>
+        <p9r-select name="bg" label="Background">
+            <option selected value="surface">Surface</option>
+            <option value="base">Base</option>
+            <option value="overlay">Overlay</option>
+            <option value="primary">Primary</option>
+            <option value="secondary">Secondary</option>
         </p9r-select>
         <p9r-range name="radius" label="Border radius" min="0" max="32" step="1" value="16" unit="px"></p9r-range>
-        <p9r-range name="padding" label="Padding" min="8" max="40" step="2" value="20" unit="px"></p9r-range>
+        <p9r-sizes-select name="padding" label="Padding"></p9r-sizes-select>
+    </p9r-section>
+    <p9r-section data-title="Interaction">
+        <p9r-select name="hover" label="Hover effect">
+            <option selected value="shadow">Shadow lift</option>
+            <option value="scale">Scale up</option>
+            <option value="border">Border highlight</option>
+            <option value="none">None</option>
+        </p9r-select>
+        <p9r-page-link name="href" label="Link"></p9r-page-link>
+        <p9r-select name="target" label="Open in">
+            <option selected value="_self">Same tab</option>
+            <option value="_blank">New tab</option>
+        </p9r-select>
     </p9r-section>
 </p9r-attr-sync>
 
