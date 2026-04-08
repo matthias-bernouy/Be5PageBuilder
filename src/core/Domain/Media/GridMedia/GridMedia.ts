@@ -33,7 +33,7 @@ function escapeAttr(s: string): string {
 export class GridMedia extends Component {
 
     private _folder: string | null = null;
-    private _folderLabel: string | null = null;
+    private _breadcrumb: { id: string; label: string }[] = [];
     private _items: MediaItem[] = [];
     private _activeItem: MediaItem | null = null;
 
@@ -72,23 +72,30 @@ export class GridMedia extends Component {
         this._setupDetail();
         this._setupKeyboard();
 
-        // Resolve folder label if landing on a subfolder
+        // Resolve full breadcrumb trail if landing on a subfolder
         if (this._folder) {
-            this._resolveFolderLabel(this._folder);
+            this._resolveBreadcrumbTrail(this._folder);
         }
 
         // Initial fetch
         this._fetchAndRender();
     }
 
-    private async _resolveFolderLabel(id: string) {
-        const res = await fetch(`${this.apiBase}/media/item?id=${id}`);
-        if (!res.ok) return;
-        const item = await res.json();
-        if (item?.label) {
-            this._folderLabel = item.label;
-            this._renderBreadcrumb();
+    private async _resolveBreadcrumbTrail(id: string) {
+        const trail: { id: string; label: string }[] = [];
+        let currentId: string | null = id;
+
+        while (currentId) {
+            const res = await fetch(`${this.apiBase}/media/item?id=${currentId}`);
+            if (!res.ok) break;
+            const item = await res.json();
+            if (!item) break;
+            trail.unshift({ id: currentId, label: item.label });
+            currentId = item.parent || null;
         }
+
+        this._breadcrumb = trail;
+        this._renderBreadcrumb();
     }
 
     // ── Fetch & Render ──
@@ -167,14 +174,24 @@ export class GridMedia extends Component {
 
         if (!this._folder) {
             bc.innerHTML = `<span class="bc-current">Root</span>`;
-        } else {
-            const name = this._folderLabel || this._folder;
-            bc.innerHTML = `
-                <span class="bc-item" data-folder="">Root</span>
-                <span class="bc-sep">/</span>
-                <span class="bc-current">${escapeHtml(name)}</span>
-            `;
+            return;
         }
+
+        let html = `<span class="bc-item" data-folder="" data-index="-1">Root</span>`;
+
+        for (let i = 0; i < this._breadcrumb.length; i++) {
+            const crumb = this._breadcrumb[i];
+            const isLast = i === this._breadcrumb.length - 1;
+            html += `<span class="bc-sep">/</span>`;
+
+            if (isLast) {
+                html += `<span class="bc-current">${escapeHtml(crumb.label)}</span>`;
+            } else {
+                html += `<span class="bc-item" data-folder="${escapeAttr(crumb.id)}" data-index="${i}">${escapeHtml(crumb.label)}</span>`;
+            }
+        }
+
+        bc.innerHTML = html;
     }
 
     // ── Grid interactions ──
@@ -215,7 +232,17 @@ export class GridMedia extends Component {
             const target = e.target as HTMLElement;
             if (target.classList.contains("bc-item")) {
                 const folder = target.dataset.folder || null;
-                this._navigateTo(folder);
+                const index = parseInt(target.dataset.index || "-1");
+                // Slice the breadcrumb to the clicked level
+                this._breadcrumb = this._breadcrumb.slice(0, index + 1);
+                this._folder = folder;
+
+                const url = new URL(window.location.href);
+                if (folder) url.searchParams.set("folder", folder);
+                else url.searchParams.delete("folder");
+                window.history.pushState({}, "", url.toString());
+
+                this._fetchAndRender();
             }
         });
     }
@@ -229,7 +256,13 @@ export class GridMedia extends Component {
         }
         window.history.pushState({}, "", url.toString());
         this._folder = folderId;
-        this._folderLabel = label || null;
+
+        if (!folderId) {
+            this._breadcrumb = [];
+        } else if (label) {
+            this._breadcrumb.push({ id: folderId, label });
+        }
+
         this._fetchAndRender();
     }
 
