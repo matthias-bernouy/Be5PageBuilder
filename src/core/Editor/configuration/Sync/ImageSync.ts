@@ -92,7 +92,10 @@ export class ImageSync extends HTMLElement {
 
         ImageSync._injectStyles();
 
-        requestAnimationFrame(() => this._render());
+        requestAnimationFrame(() => {
+            this._syncDefault();
+            this._render();
+        });
     }
 
     private static _stylesInjected = false;
@@ -106,6 +109,18 @@ export class ImageSync extends HTMLElement {
 
     private get _slotName(): string {
         return this.getAttribute("slotTarget") || "";
+    }
+
+    private _syncDefault() {
+        const defaultSrc = this.getAttribute("default");
+        if (!defaultSrc) return;
+        if (this._resolveTarget()) return;
+
+        const img = document.createElement("img");
+        const slot = this._slotName;
+        if (slot) img.setAttribute("slot", slot);
+        img.setAttribute("src", defaultSrc);
+        this._component?.appendChild(img);
     }
 
     private _resolveTarget(): HTMLImageElement | null {
