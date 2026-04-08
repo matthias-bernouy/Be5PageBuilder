@@ -61,6 +61,7 @@ export class CompSync extends HTMLElement {
             slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+            slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
 
             if ( !this.allowOthersComponents ) {
                 slot.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
@@ -86,12 +87,13 @@ export class CompSync extends HTMLElement {
                 }
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_DRAGGING);
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
 
                 if ( slots.length == this.min ) {
                     slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
-                    //slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
+                    slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
                 }
 
             } else {
