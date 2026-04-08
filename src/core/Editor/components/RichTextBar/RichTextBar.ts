@@ -63,8 +63,26 @@ export class EditorToolbar extends Component {
 
     private show(rect: DOMRect) {
         this.classList.add("visible");
-        const top = rect.top + window.scrollY - this.offsetHeight - 15;
-        const left = rect.left + window.scrollX + (rect.width / 2);
+
+        const scrollX = window.scrollX;
+        const scrollY = window.scrollY;
+        const gap = 10;
+        const barWidth = this.offsetWidth;
+        const barHeight = this.offsetHeight;
+
+        // Vertical: prefer above, flip below if not enough space
+        let top: number;
+        if (rect.top < barHeight + gap) {
+            top = rect.bottom + scrollY + gap;
+        } else {
+            top = rect.top + scrollY - barHeight - gap;
+        }
+
+        // Horizontal: center on selection, clamp to viewport
+        let left = rect.left + scrollX + (rect.width - barWidth) / 2;
+        const minLeft = scrollX + gap;
+        const maxLeft = scrollX + window.innerWidth - barWidth - gap;
+        left = Math.max(minLeft, Math.min(maxLeft, left));
 
         this.style.top = `${top}px`;
         this.style.left = `${left}px`;

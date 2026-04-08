@@ -1,8 +1,5 @@
 :host {
     position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
     z-index: 1000;
     display: none;
     align-items: center;
@@ -18,8 +15,7 @@
 
     border: 1px solid rgba(255, 255, 255, 0.3);
 
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    transform: translate(-50%, 10px);
+    transition: opacity 0.2s ease;
     z-index: 9999999999;
 }
 
@@ -27,7 +23,6 @@
     display: flex;
     opacity: 1;
     pointer-events: auto;
-    transform: translate(-50%, 0);
     height: fit-content;
 }
 
