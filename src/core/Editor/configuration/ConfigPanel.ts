@@ -12,6 +12,7 @@ import "./Sync/ImageSync";
 import "./Inputs/P9rSelect";
 import "./Inputs/P9rRange";
 import "./Inputs/P9rPageLink";
+import "./Inputs/P9rSizesSelect";
 import "./Inputs/P9rSelect";
 import "./Inputs/P9rRange";
 
