@@ -65,6 +65,8 @@ export class GridMedia extends Component {
 
         // Bind UI
         this._setupGrid(s);
+        this._setupContextMenu(s);
+        this._setupRename(s);
         this._setupNewFolder(s);
         this._setupDragDrop(s);
         this._setupDetail();
@@ -197,6 +199,18 @@ export class GridMedia extends Component {
             }
         });
 
+        // Right-click folder → context menu (rename / delete)
+        grid.addEventListener("contextmenu", (e) => {
+            const card = (e.target as HTMLElement).closest("p9r-card-media") as HTMLElement;
+            if (!card) return;
+
+            const item = this._items.find(i => i.id === card.dataset.id);
+            if (!item) return;
+
+            e.preventDefault();
+            this._showContextMenu(e as MouseEvent, item);
+        });
+
         breadcrumb.addEventListener("click", (e) => {
             const target = e.target as HTMLElement;
             if (target.classList.contains("bc-item")) {
@@ -217,6 +231,91 @@ export class GridMedia extends Component {
         this._folder = folderId;
         this._folderLabel = label || null;
         this._fetchAndRender();
+    }
+
+    // ── Context menu ──
+
+    private _ctxItem: MediaItem | null = null;
+
+    private _setupContextMenu(s: ShadowRoot) {
+        const menu = s.getElementById("ctx-menu")!;
+
+        menu.addEventListener("click", (e) => {
+            const btn = (e.target as HTMLElement).closest("[data-action]") as HTMLElement;
+            if (!btn || !this._ctxItem) return;
+
+            const action = btn.dataset.action;
+            if (action === "rename") {
+                this._openRename(this._ctxItem);
+            } else if (action === "delete") {
+                this._deleteItem(this._ctxItem.id);
+            }
+
+            menu.classList.remove("visible");
+        });
+
+        // Close on any click outside
+        document.addEventListener("click", () => menu.classList.remove("visible"));
+    }
+
+    private _showContextMenu(e: MouseEvent, item: MediaItem) {
+        this._ctxItem = item;
+        const menu = this.shadowRoot!.getElementById("ctx-menu")!;
+        menu.style.left = e.clientX + "px";
+        menu.style.top = e.clientY + "px";
+        menu.classList.add("visible");
+    }
+
+    private async _deleteItem(id: string) {
+        if (!confirm("Delete this item?")) return;
+        const res = await fetch(`${this.apiBase}/media/item?id=${id}`, { method: "DELETE" });
+        if (res.ok) this._fetchAndRender();
+    }
+
+    // ── Rename ──
+
+    private _renameItem: MediaItem | null = null;
+
+    private _setupRename(s: ShadowRoot) {
+        const backdrop = s.getElementById("rename-backdrop")!;
+        const input = s.getElementById("rename-input") as HTMLInputElement;
+        const confirmBtn = s.getElementById("rename-confirm")!;
+        const cancelBtn = s.getElementById("rename-cancel")!;
+
+        const hide = () => { backdrop.classList.remove("visible"); this._renameItem = null; };
+
+        const apply = async () => {
+            const name = input.value.trim();
+            if (!name || !this._renameItem) return;
+            const id = this._renameItem.id;
+            hide();
+
+            await fetch(`${this.apiBase}/media/item?id=${id}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ label: name })
+            });
+
+            this._fetchAndRender();
+        };
+
+        confirmBtn.addEventListener("click", apply);
+        cancelBtn.addEventListener("click", hide);
+        backdrop.addEventListener("click", (e) => { if (e.target === backdrop) hide(); });
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") apply();
+            if (e.key === "Escape") hide();
+        });
+    }
+
+    private _openRename(item: MediaItem) {
+        this._renameItem = item;
+        const s = this.shadowRoot!;
+        const backdrop = s.getElementById("rename-backdrop")!;
+        const input = s.getElementById("rename-input") as HTMLInputElement;
+        input.value = item.label;
+        backdrop.classList.add("visible");
+        requestAnimationFrame(() => { input.focus(); input.select(); });
     }
 
     // ── New folder ──
@@ -332,6 +431,7 @@ export class GridMedia extends Component {
     private _setupDetail() {
         this.detail.addEventListener("close", () => {
             this._activeItem = null;
+            this._fetchAndRender();
         });
     }
 
@@ -344,13 +444,9 @@ export class GridMedia extends Component {
         const dims = (item.width && item.height) ? `${item.width}×${item.height}` : "";
         const mediaUrl = `/media?id=${item.id}`;
 
-        // Set URL for copy button
-        detail.setAttribute("media-url", mediaUrl);
-
-        // Clear previous slotted content
         detail.innerHTML = "";
 
-        // Preview image
+        // Preview (files only)
         if (isImage) {
             const img = document.createElement("img");
             img.slot = "preview";
@@ -362,6 +458,7 @@ export class GridMedia extends Component {
         // Fields
         const fields = document.createElement("div");
         fields.slot = "fields";
+
         fields.innerHTML = `
             <div class="detail-field">
                 <label>Name</label>
@@ -397,7 +494,6 @@ export class GridMedia extends Component {
                 </div>
             </div>
         `;
-        detail.appendChild(fields);
 
         // Copy URL button
         const copyBtn = fields.querySelector("#btn-copy")!;
@@ -407,6 +503,8 @@ export class GridMedia extends Component {
             copyBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
             setTimeout(() => { copyBtn.innerHTML = svg; }, 1500);
         });
+
+        detail.appendChild(fields);
 
         // Actions
         const actions = document.createElement("div");
@@ -421,6 +519,14 @@ export class GridMedia extends Component {
 
         actions.querySelector("#btn-save")!.addEventListener("click", () => this._saveDetail());
         actions.querySelector("#btn-delete")!.addEventListener("click", () => this._deleteDetail());
+
+        // Enter to save & close
+        fields.addEventListener("keydown", (e: Event) => {
+            if ((e as KeyboardEvent).key === "Enter") {
+                e.preventDefault();
+                this._saveDetail();
+            }
+        });
 
         detail.open(item.label);
     }
@@ -443,7 +549,6 @@ export class GridMedia extends Component {
 
         if (res.ok) {
             detail.close();
-            this._fetchAndRender();
         }
     }
 
