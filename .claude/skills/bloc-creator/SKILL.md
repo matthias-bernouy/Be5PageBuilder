@@ -1,72 +1,75 @@
 ---
 name: bloc-creator
 description: >
-  Génère un web component BE5 complet avec son éditeur associé, en 5 fichiers
+  Generates a complete BE5 web component with its associated editor, as 5 files
   (component.ts, editor.ts, style.css, template.html, configuration.html).
-  Utiliser ce skill dès que l'utilisateur demande à créer un composant, un bloc,
-  un élément ou un widget dans l'architecture BE5 — même s'il ne mentionne pas
-  explicitement les fichiers ou le mot "skill".
+  Use this skill whenever the user asks to create a component, bloc, element,
+  or widget in the BE5 architecture — even if they don't explicitly mention
+  the files or the word "skill".
 ---
 
-# Créer un Web Component BE5 avec Éditeur
+# Create a BE5 Web Component with Editor
 
-Génère un composant `[NOM]` composé de **5 fichiers** en respectant exactement
-les conventions ci-dessous.
+Generates a `[NAME]` component composed of **5 files** following exactly
+the conventions below.
 
-## Structure des fichiers
+**IMPORTANT: All code, comments, labels, placeholders, CSS classes, and HTML
+content MUST be written in English.**
+
+## File structure
 
 ```
-[NomDuComposant]/
-├── [NomDuComposant].ts        ← component (classe + customElements.define)
-├── [NomDuComposant]Editor.ts  ← éditeur
+[ComponentName]/
+├── [ComponentName].ts        ← component (class + customElements.define)
+├── [ComponentName]Editor.ts  ← editor
 ├── style.css
 ├── template.html
-└── configuration.html         ← panneau de config déclaratif
+└── configuration.html        ← declarative config panel
 ```
 
-> **Nommage** : le fichier du composant et de l'éditeur portent le nom PascalCase
-> de la classe (ex : `Card.ts`, `CardEditor.ts`).
+> **Naming**: the component and editor files use the PascalCase class name
+> (e.g. `Card.ts`, `CardEditor.ts`).
 
 ---
 
-## Placeholders système — NE PAS MODIFIER
+## System placeholders — DO NOT MODIFY
 
-Les identifiants suivants sont des **constantes réservées au système de build**.
-Ils doivent apparaître **tels quels, textuellement** dans le code généré.
-Ne jamais les remplacer, les renommer, ni demander leur valeur à l'utilisateur.
+The following identifiers are **build-system constants**.
+They must appear **as-is, verbatim** in generated code.
+Never replace, rename, or ask the user for their value.
 
-| Constante | Rôle | Où elle apparaît |
+| Constant | Role | Where it appears |
 |---|---|---|
-| `BE5_TAG_TO_BE_REPLACED` | Tag HTML du custom element | `[NOM].ts` → `customElements.define` |
-| `BE5_LABEL_TO_BE_REPLACED` | Libellé affiché dans la bibliothèque | `registerEditor` (via le build) |
-| `BE5_GROUP_TO_BE_REPLACED` | Groupe dans la bibliothèque | `registerEditor` (via le build) |
+| `BE5_TAG_TO_BE_REPLACED` | Custom element HTML tag | `[NAME].ts` → `customElements.define` |
+| `BE5_LABEL_TO_BE_REPLACED` | Label shown in the library | `registerEditor` (via build) |
+| `BE5_GROUP_TO_BE_REPLACED` | Group in the library | `registerEditor` (via build) |
 
 ---
 
-## [NOM].ts — Le composant
+## [NAME].ts — The component
 
-**Import exact :**
+**Exact import:**
 ```ts
 import { Component } from 'src/core/Component/core/Component';
 ```
 
-**Règles :**
+**Rules:**
 
-- Étend `Component`
-- Importe `template.html` et `style.css` avec `{ type: 'text' }`
-- Dans le `super()`, toujours caster le template :
+- Extends `Component`
+- Imports `template.html` and `style.css` with `{ type: 'text' }`
+- In `super()`, always cast the template:
   ```ts
   super({ css, template: template as unknown as string });
   ```
-- Enregistre l'élément :
+- Registers the element:
   ```ts
-  customElements.define("BE5_TAG_TO_BE_REPLACED", [NOM]);
+  customElements.define("BE5_TAG_TO_BE_REPLACED", [NAME]);
   ```
-- **`connectedCallback()`** : ne contient que `this.render()` si nécessaire.
-  **Ne jamais appeler `super.connectedCallback()`.**
-- Logique métier (getters, event listeners, méthodes) directement dans la classe.
+- **`connectedCallback()`**: only contains `this.render()` if needed.
+  **Never call `super.connectedCallback()`.**
+- Business logic (getters, event listeners, methods) directly in the class.
 
-### Exemple complet (Button)
+### Full example (Button)
 
 ```ts
 import template from './template.html' with { type: 'text' };
@@ -101,43 +104,42 @@ customElements.define("BE5_TAG_TO_BE_REPLACED", Button);
 
 ---
 
-## [NOM]Editor.ts — L'éditeur
+## [NAME]Editor.ts — The editor
 
-**Imports exacts :**
+**Exact imports:**
 ```ts
 import { Editor } from "src/core/Editor/core/Editor";
 import { registerEditor } from "src/core/Editor/core/registerEditor";
 import configuration from "./configuration.html" with { type: 'text' };
 ```
 
-**Règles :**
+**Rules:**
 
-1. **Classe** : `[NOM]Editor extends Editor`
+1. **Class**: `[NAME]Editor extends Editor`
 
-2. **Constructeur** :
+2. **Constructor**:
    ```ts
    constructor(target: HTMLElement) {
        super(target, "", configuration as unknown as string);
-       // 2e arg = CSS éditeur (string vide si aucun)
-       // 3e arg = configuration HTML
+       // 2nd arg = editor CSS (empty string if none)
+       // 3rd arg = configuration HTML
    }
    ```
-   Si le composant nécessite un style éditeur spécifique (désactiver hover,
-   annuler des effets visuels en mode édition…), passer le CSS en 2e argument :
+   If the component needs editor-specific styles (disable hover effects,
+   cancel visual effects in edit mode…), pass CSS as the 2nd argument:
    ```ts
    const editorStyle = `.card:hover { transform: unset; box-shadow: unset; }`;
-   // ...
    super(target, editorStyle, configuration as unknown as string);
    ```
 
-3. **`init()`** et **`restore()`** : laisser vides sauf besoin spécifique.
+3. **`init()`** and **`restore()`**: leave empty unless specific need.
 
-4. **Enregistrement** via `registerEditor` :
+4. **Registration** via `registerEditor`:
    ```ts
-   registerEditor({ cl: [NOM]Editor });
+   registerEditor({ cl: [NAME]Editor });
    ```
 
-### Exemple complet (Card)
+### Full example (Card)
 
 ```ts
 import { Editor } from "src/core/Editor/core/Editor";
@@ -167,28 +169,38 @@ registerEditor({ cl: CardEditor });
 
 ## style.css
 
-### Règle d'autonomie complète
+### Full self-containment rule
 
-Le fichier `style.css` est **entièrement autosuffisant**. Toutes les
-variables CSS nécessaires au composant sont déclarées dans ce fichier.
-Ne jamais déléguer de variables vers un fichier externe ou un thème à importer.
+The `style.css` file is **entirely self-sufficient**. All CSS variables
+needed by the component are declared in this file.
+Never delegate variables to an external file or theme to import.
 
-### Convention de déclaration
+### Declaration convention
 
-- Dans `:host` : déclarer **toutes** les variables locales `--[component]-*`
-  avec comme valeur par défaut les variables globales du design system
-  et un fallback en dur.
-- **Aucune valeur magique** dans les règles CSS — tout passe par une variable locale.
-- Si le composant a des états visuels (hover, active, disabled…), prévoir
-  les variables correspondantes directement dans `:host`.
-- Utiliser `attr()` CSS pour les propriétés configurables via attributs :
-  ```css
-  --grid-gap: attr(spacing px, 32px);
-  ```
+- In `:host`: declare **all** local variables `--[component]-*`
+  with default values from the design system global variables
+  and a hardcoded fallback.
+- **No magic values** in CSS rules — everything goes through a local variable.
+- If the component has visual states (hover, active, disabled…), include
+  the corresponding variables directly in `:host`.
 
-**Variables globales disponibles :**
+**For numeric attributes** configurable via `<p9r-attr-sync>`, use CSS `attr()`:
+```css
+--card-radius: attr(radius px, 16px);
+--card-padding: attr(padding px, 20px);
+```
 
-| Famille | Variantes |
+**For enum-like attributes** (e.g. background presets, size presets), use
+attribute selector presets — CSS `attr()` cannot resolve CSS variable references:
+```css
+:host([bg="surface"]) .inner { background: var(--bg-surface, #ffffff); }
+:host([gap="sm"]) { --stack-gap: 16px; }
+:host([gap="md"]) { --stack-gap: 24px; }
+```
+
+**Available global variables:**
+
+| Family | Variants |
 |---|---|
 | `--primary` | `-base`, `-muted`, `-contrasted` |
 | `--secondary` | `-base`, `-muted`, `-contrasted` |
@@ -200,9 +212,9 @@ Ne jamais déléguer de variables vers un fichier externe ou un thème à import
 | `--text` | `-main`, `-body`, `-muted` |
 | `--border` | `-default` |
 
-### Slots stylés
+### Styling slotted elements
 
-Pour styler les éléments slotés, utiliser `::slotted()` :
+To style slotted elements, use `::slotted()`:
 ```css
 ::slotted([slot="image"]) {
     width: 100%;
@@ -211,19 +223,26 @@ Pour styler les éléments slotés, utiliser `::slotted()` :
 }
 ```
 
+To hide empty slot wrappers:
+```css
+.card-subtitle:not(:has(::slotted(*))) {
+    display: none;
+}
+```
+
 ---
 
 ## template.html
 
-- Structure HTML sémantique du composant.
-- Utiliser des `<slot name="...">` pour chaque zone de contenu éditable.
-- Les slots peuvent avoir un contenu par défaut (fallback) :
+- Semantic HTML structure of the component.
+- Use `<slot name="...">` for each editable content zone.
+- Slots can have default (fallback) content:
   ```html
-  <slot name="title">Titre par défaut</slot>
+  <slot name="title">Default title</slot>
   ```
-- Le slot par défaut (sans nom) accueille les enfants multiples/répétables.
+- The default slot (unnamed) receives multiple/repeatable children.
 
-### Exemple (Card)
+### Example (Card)
 
 ```html
 <article class="card">
@@ -233,11 +252,11 @@ Pour styler les éléments slotés, utiliser `::slotted()` :
     <div class="card-content">
         <header>
             <h3 class="card-title">
-                <slot name="title">Titre</slot>
+                <slot name="title">Title</slot>
             </h3>
         </header>
-        <div class="card-resume">
-            <slot name="resume"></slot>
+        <div class="card-description">
+            <slot name="description"></slot>
         </div>
         <footer class="card-footer">
             <slot name="footer">Footer</slot>
@@ -248,222 +267,326 @@ Pour styler les éléments slotés, utiliser `::slotted()` :
 
 ---
 
-## configuration.html — Le panneau de configuration déclaratif
+## configuration.html — The declarative configuration panel
 
-Ce fichier définit **de manière déclarative** comment le composant est
-configurable dans l'éditeur. Il utilise trois systèmes de synchronisation :
+This file defines **declaratively** how the component is configurable
+in the editor. It uses three synchronization systems:
 
-### 1. `<p9r-attr-sync>` — Synchronisation d'attributs
+### 1. `<p9r-attr-sync>` — Attribute synchronization
 
-Synchronise des inputs du panneau avec des attributs HTML sur le composant.
-Chaque input doit avoir un `name` qui correspond à l'attribut cible.
+Syncs panel inputs with HTML attributes on the component.
+Each input must have a `name` matching the target attribute.
 
 ```html
 <p9r-attr-sync>
-    <p9r-section data-title="Configuration">
-        <select name="variant">
-            <option selected value="filled">Rempli</option>
+    <p9r-section data-title="Settings">
+        <p9r-select name="variant" label="Variant">
+            <option selected value="filled">Filled</option>
             <option value="outline">Outline</option>
-        </select>
-        <input type="range" name="spacing" min="16" max="64" value="32">
-        <input type="text" name="href" placeholder="https://...">
+        </p9r-select>
+        <p9r-range name="spacing" label="Spacing" min="16" max="64" step="1" value="32" unit="px"></p9r-range>
     </p9r-section>
 </p9r-attr-sync>
 ```
 
-- `<p9r-section data-title="...">` : regroupe visuellement les contrôles avec un titre.
-- Tous les types d'inputs natifs sont supportés (`select`, `input[type=range]`,
-  `input[type=text]`, etc.).
-- La valeur initiale de l'input sert de valeur par défaut si l'attribut
-  n'est pas encore présent sur le composant.
+- `<p9r-section data-title="...">`: visually groups controls with a title.
+- The initial input value serves as default when the attribute
+  is not yet present on the component.
 
-### 2. `<p9r-comp-sync>` — Synchronisation de sous-composants (slots)
+### Available styled inputs
 
-Définit le contenu par défaut de chaque slot et le comportement éditorial
-de ses enfants. **C'est le cœur du système** — il gère automatiquement :
-- La création du contenu par défaut si le slot est vide
-- Les actions autorisées (delete, duplicate, drag, change component…)
-- Le lien parent-identifier pour que l'éditeur du slot connaisse son parent
+Always prefer these over raw native `<select>` or `<input>` elements:
+
+#### `<p9r-select>` — Styled dropdown
 
 ```html
-<!-- Slot simple (texte, image…) — non supprimable, non duplicable -->
+<p9r-select name="variant" label="Variant">
+    <option selected value="elevated">Elevated</option>
+    <option value="outline">Outline</option>
+    <option value="ghost">Ghost</option>
+</p9r-select>
+```
+
+| Attribute | Role |
+|---|---|
+| `name` | Target attribute on the component |
+| `label` | Label displayed above the dropdown |
+
+Options use standard `<option>` elements with `value` and optional `selected`.
+
+#### `<p9r-range>` — Slider with number input
+
+```html
+<p9r-range name="radius" label="Border radius" min="0" max="32" step="1" value="16" unit="px"></p9r-range>
+```
+
+| Attribute | Role |
+|---|---|
+| `name` | Target attribute |
+| `label` | Label displayed above the slider |
+| `min` / `max` | Range bounds |
+| `step` | Increment step |
+| `value` | Default value |
+| `unit` | Unit label displayed next to the number (e.g. `px`, `%`) |
+
+#### `<p9r-sizes-select>` — Size preset selector
+
+Shortcut that generates a `<p9r-select>` with NONE / XS / S / M / L / XL options.
+
+```html
+<p9r-sizes-select name="gap" label="Spacing"></p9r-sizes-select>
+```
+
+| Attribute | Role |
+|---|---|
+| `name` | Target attribute |
+| `label` | Label displayed above the dropdown |
+
+The selected values map to size presets that must be handled in CSS via
+attribute selectors:
+```css
+:host([gap="none"]) { --gap: 0px; }
+:host([gap="xs"])   { --gap: 8px; }
+:host([gap="sm"])   { --gap: 16px; }
+:host([gap="md"])   { --gap: 24px; }
+:host([gap="lg"])   { --gap: 40px; }
+:host([gap="xl"])   { --gap: 64px; }
+```
+
+#### `<p9r-page-link>` — Internal page picker
+
+Fetches available pages from the admin API and lets the user pick one.
+
+```html
+<p9r-page-link name="href" label="Link to page"></p9r-page-link>
+```
+
+| Attribute | Role |
+|---|---|
+| `name` | Target attribute |
+| `label` | Label displayed above the picker |
+
+### 2. `<p9r-comp-sync>` — Sub-component synchronization (slots)
+
+Defines default content for each slot and the editorial behavior
+of its children. **This is the core of the system** — it automatically handles:
+- Creating default content if the slot is empty
+- Allowed actions (delete, duplicate, drag, change component…)
+- The parent-identifier link so the slot's editor knows its parent
+
+```html
+<!-- Fixed slot (text, image…) — not deletable, not duplicable -->
 <p9r-comp-sync>
-    <span slot="title">Titre par défaut</span>
+    <span slot="title">Default title</span>
 </p9r-comp-sync>
 
-<!-- Slot optionnel — l'utilisateur peut supprimer l'élément -->
+<!-- Optional slot — user can delete the element -->
 <p9r-comp-sync optionnal>
-    <span slot="subtitle">Sous-titre optionnel</span>
+    <span slot="subtitle">Optional subtitle</span>
 </p9r-comp-sync>
 
-<!-- Slot avec remplacement de composant autorisé -->
+<!-- Slot with component replacement allowed -->
 <p9r-comp-sync allow-others-components>
     <p slot="footer">Footer</p>
 </p9r-comp-sync>
 
-<!-- Slot multiple — permet d'ajouter, supprimer, dupliquer, réordonner -->
+<!-- Multiple slot — allows add, delete, duplicate, reorder -->
 <p9r-comp-sync allow-multiple>
-    <p>Item par défaut</p>
+    <p>Default item</p>
 </p9r-comp-sync>
 
-<!-- Slot multiple avec ajout inline (boutons +/- sur les côtés) -->
+<!-- Multiple slot with inline adding (+/- buttons on sides) -->
 <p9r-comp-sync allow-multiple inline-adding>
     <p>Item</p>
 </p9r-comp-sync>
 ```
 
-**Attributs de `<p9r-comp-sync>` :**
+**`<p9r-comp-sync>` attributes:**
 
-| Attribut | Effet |
+| Attribute | Effect |
 |---|---|
-| *(aucun)* | Slot fixe : non supprimable, non duplicable, pas de changement de composant |
-| `optionnal` | L'utilisateur peut supprimer l'élément du slot |
-| `allow-others-components` | Autorise le changement de composant (sur slot simple) |
-| `allow-multiple` | Active toutes les actions : ajouter, supprimer, dupliquer, drag, changer composant |
-| `inline-adding` | (avec `allow-multiple`) Boutons d'ajout positionnés inline plutôt qu'au-dessus/dessous |
+| *(none)* | Fixed slot: not deletable, not duplicable, no component change |
+| `optionnal` | User can delete the slot element |
+| `allow-others-components` | Allows component change (on single slot) |
+| `allow-multiple` | Enables all actions: add, delete, duplicate, drag, change component |
+| `inline-adding` | (with `allow-multiple`) Add buttons positioned inline |
 
-**Comportement par défaut de `<p9r-comp-sync>` (sans attribut) :**
-Les enfants du slot sont automatiquement configurés avec :
+**Default behavior of `<p9r-comp-sync>` (no attribute):**
+Slot children are automatically configured with:
 - `disable-duplicate`, `disable-add-after`, `disable-add-before`, `disable-dragging` = true
 - `disable-change-component` = true
 - `disable-delete` = true
 
-### 3. `<p9r-image-sync>` — Sélecteur d'image via MediaCenter
+### 3. `<p9r-image-sync>` — Image picker via MediaCenter
 
-Se place **en dehors** de `<p9r-attr-sync>` et `<p9r-comp-sync>`,
-directement dans une `<p9r-section>`.
+Placed **outside** of `<p9r-attr-sync>` and `<p9r-comp-sync>`,
+directly inside a `<p9r-section>`.
 
 ```html
-<p9r-section data-title="Icônes">
-    <p9r-image-sync slotTarget="icon-left" label="Icône gauche"></p9r-image-sync>
-    <p9r-image-sync slotTarget="icon-right" label="Icône droite"></p9r-image-sync>
+<p9r-section data-title="Media">
+    <p9r-image-sync slotTarget="image" label="Cover image" default="https://placehold.co/800x450"></p9r-image-sync>
 </p9r-section>
 ```
 
-| Attribut | Rôle |
+| Attribute | Role |
 |---|---|
-| `slotTarget` | Nom du slot où l'`<img>` sera inséré/mis à jour |
-| `label` | Label affiché au-dessus de l'aperçu |
-| `accept` | Types de médias acceptés (défaut : `"image"`) |
+| `slotTarget` | Slot name where the `<img>` will be inserted/updated |
+| `label` | Label displayed above the preview |
+| `default` | Default image URL shown when no image is set |
+| `accept` | Accepted media types (default: `"image"`) |
 
-### Exemple complet (Card)
+### Full example (Card)
 
 ```html
 <p9r-attr-sync>
-    <p9r-section data-title="Apparence">
+    <p9r-section data-title="Layout">
+        <p9r-select name="direction" label="Direction">
+            <option selected value="vertical">Vertical</option>
+            <option value="horizontal">Horizontal</option>
+        </p9r-select>
+        <p9r-select name="media" label="Image">
+            <option selected value="visible">Show</option>
+            <option value="none">Hide</option>
+        </p9r-select>
+    </p9r-section>
+    <p9r-section data-title="Style">
+        <p9r-select name="variant" label="Variant">
+            <option selected value="elevated">Elevated</option>
+            <option value="outline">Outline</option>
+            <option value="ghost">Ghost</option>
+        </p9r-select>
+        <p9r-range name="radius" label="Border radius" min="0" max="32" step="1" value="16" unit="px"></p9r-range>
+        <p9r-range name="padding" label="Padding" min="8" max="40" step="2" value="20" unit="px"></p9r-range>
     </p9r-section>
 </p9r-attr-sync>
 
-<p9r-comp-sync>
-    <img slot="image" src="https://placehold.co/600x400" alt="Couverture">
+<p9r-section data-title="Media">
+    <p9r-image-sync slotTarget="image" label="Cover image" default="https://placehold.co/800x450"></p9r-image-sync>
+</p9r-section>
+
+<p9r-comp-sync optionnal>
+    <span slot="tag">New</span>
 </p9r-comp-sync>
 
 <p9r-comp-sync>
-    <span slot="title">Titre de mon super article</span>
+    <span slot="title">Card title</span>
 </p9r-comp-sync>
 
-<p9r-comp-sync>
-    <p slot="resume">Un court résumé...</p>
+<p9r-comp-sync optionnal>
+    <p slot="description">A short description to spark curiosity.</p>
 </p9r-comp-sync>
 
-<p9r-comp-sync allow-others-components>
-    <p slot="footer">Footer</p>
+<p9r-comp-sync allow-others-components optionnal>
+    <p slot="footer">Learn more</p>
 </p9r-comp-sync>
 ```
 
-### Exemple complet (Grid — avec attributs + multiple)
+### Full example (Stack — with sizes + backgrounds)
 
 ```html
 <p9r-attr-sync>
-    <p9r-section data-title="Configuration">
-        <input type="range" name="min-item-width" min="150" max="1500" step="1" value="300">
-        <input type="range" name="fixed-height" min="150" max="1500" step="1" value="350">
-        <select name="spacing">
-            <option selected value="16">Small</option>
-            <option value="32">Medium</option>
-            <option value="64">Large</option>
-        </select>
+    <p9r-section data-title="Dimensions">
+        <p9r-select name="max-width" label="Content width">
+            <option value="680">Article (680px)</option>
+            <option value="1000">Narrow (1000px)</option>
+            <option selected value="1280">Standard (1280px)</option>
+            <option value="1512">Wide (1512px)</option>
+        </p9r-select>
+        <p9r-select name="align" label="Alignment">
+            <option value="flex-start">Left</option>
+            <option selected value="center">Center</option>
+            <option value="flex-end">Right</option>
+        </p9r-select>
+    </p9r-section>
+    <p9r-section data-title="Spacing">
+        <p9r-sizes-select name="padding-y" label="Vertical padding"></p9r-sizes-select>
+        <p9r-sizes-select name="gap" label="Gap between elements"></p9r-sizes-select>
+    </p9r-section>
+    <p9r-section data-title="Background">
+        <p9r-select name="bg" label="Full-width background">
+            <option selected value="none">None</option>
+            <option value="base">Base</option>
+            <option value="surface">Surface</option>
+            <option value="overlay">Overlay</option>
+            <option value="primary">Primary</option>
+        </p9r-select>
     </p9r-section>
 </p9r-attr-sync>
 
-<p9r-comp-sync optionnal>
-    <span slot="title">Contenu de la grille</span>
-</p9r-comp-sync>
-
-<p9r-comp-sync allow-multiple inline-adding>
-    <p>Lorem ipsum...</p>
+<p9r-comp-sync allow-multiple>
+    <p>Stack content...</p>
 </p9r-comp-sync>
 ```
 
 ---
 
-## Composants enfants (sous-composants)
+## Child components (sub-components)
 
-Quand le composant principal a besoin d'un **sous-composant** (ex : une carte
-dans un carrousel, un item dans une liste), appliquer les règles suivantes.
+When the main component needs a **sub-component** (e.g. a card
+in a carousel, an item in a list), follow these rules.
 
 ### Structure
 
 ```
-[NomDuComposant]/
-├── [NomDuComposant].ts
-├── [NomDuComposant]Editor.ts
+[ComponentName]/
+├── [ComponentName].ts
+├── [ComponentName]Editor.ts
 ├── style.css
 ├── template.html
 ├── configuration.html
-└── SousComposant/
-    ├── SousComposant.ts     ← export class, PAS de customElements.define
-    ├── tag.ts               ← define + export de la fonction de registration
+└── SubComponent/
+    ├── SubComponent.ts     ← export class, NO customElements.define
+    ├── tag.ts              ← define + export registration function
     ├── style.css
     └── template.html
 ```
 
-### Règles
+### Rules
 
-1. **Créer le sous-composant** comme un web component à part entière
-   (ses propres fichiers `.ts`, `style.css`, `template.html`).
-2. **Ne pas créer d'éditeur pour le sous-composant.**
-   C'est l'éditeur du **composant parent** qui gère les enfants via
-   `<p9r-comp-sync>` dans son `configuration.html`.
-3. Le sous-composant utilise les mêmes conventions (`Component`, variables
-   CSS autonomes, pas de `super.connectedCallback()`).
+1. **Create the sub-component** as a standalone web component
+   (its own `.ts`, `style.css`, `template.html` files).
+2. **Do NOT create an editor for the sub-component.**
+   The **parent component's editor** manages children via
+   `<p9r-comp-sync>` in its `configuration.html`.
+3. The sub-component follows the same conventions (`Component`, self-contained
+   CSS variables, no `super.connectedCallback()`).
 
-### Tag du sous-composant
+### Sub-component tag
 
-Le tag est **déterministe**, dérivé du tag parent. Le composant parent et
-l'éditeur sont buildés en **bundles séparés** — jamais d'import croisé
-entre le composant et l'éditeur.
+The tag is **deterministic**, derived from the parent tag. The parent component
+and editor are built as **separate bundles** — never cross-import between
+component and editor.
 
-**`SousComposant/SousComposant.ts`** — exporte la classe sans define :
+**`SubComponent/SubComponent.ts`** — exports the class without define:
 ```ts
 import { Component } from 'src/core/Component/core/Component';
-export class SousComposant extends Component { ... }
-// PAS de customElements.define ici
+export class SubComponent extends Component { ... }
+// NO customElements.define here
 ```
 
-**`SousComposant/tag.ts`** — exporte une fonction de registration :
+**`SubComponent/tag.ts`** — exports a registration function:
 ```ts
-import { SousComposant } from "./SousComposant";
+import { SubComponent } from "./SubComponent";
 
-export function registerSousComposant(parentTag: string) {
+export function registerSubComponent(parentTag: string) {
     const childTag = parentTag + "-item";
     if (!customElements.get(childTag)) {
-        customElements.define(childTag, SousComposant);
+        customElements.define(childTag, SubComponent);
     }
 }
 ```
 
-**Le composant parent** appelle la registration :
+**The parent component** calls the registration:
 ```ts
-import { registerSousComposant } from "./SousComposant/tag";
+import { registerSubComponent } from "./SubComponent/tag";
 
 const tag = "BE5_TAG_TO_BE_REPLACED";
-customElements.define(tag, [NOM]);
-registerSousComposant(tag);
+customElements.define(tag, [NAME]);
+registerSubComponent(tag);
 ```
 
-**L'éditeur** reconstruit le tag enfant sans import croisé :
+**The editor** rebuilds the child tag without cross-import:
 ```ts
 const tag = "BE5_TAG_TO_BE_REPLACED";
-const sousComposantTag = tag + "-item";
+const subComponentTag = tag + "-item";
 ```
