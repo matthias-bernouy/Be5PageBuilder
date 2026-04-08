@@ -1,20 +1,39 @@
 <p9r-attr-sync>
+    <p9r-section data-title="Disposition">
+        <select name="direction">
+            <option selected value="vertical">Verticale</option>
+            <option value="horizontal">Horizontale</option>
+        </select>
+        <select name="media">
+            <option selected value="visible">Avec image</option>
+            <option value="none">Sans image</option>
+        </select>
+    </p9r-section>
     <p9r-section data-title="Apparence">
+        <input type="range" name="radius" min="0" max="32" step="1" value="16">
     </p9r-section>
 </p9r-attr-sync>
 
 <p9r-comp-sync>
-    <img slot="image" src="https://placehold.co/600x400" alt="Couverture">
+    <img slot="image" src="https://placehold.co/800x450" alt="Couverture">
+</p9r-comp-sync>
+
+<p9r-comp-sync optionnal>
+    <span slot="tag">Nouveau</span>
 </p9r-comp-sync>
 
 <p9r-comp-sync>
-    <span slot="title">Titre de mon super article</span>
+    <span slot="title">Titre de la carte</span>
+</p9r-comp-sync>
+
+<p9r-comp-sync optionnal>
+    <span slot="subtitle">Catégorie</span>
 </p9r-comp-sync>
 
 <p9r-comp-sync>
-    <p slot="resume">Un court résumé pour donner envie de cliquer sur cet article du blog...</p>
+    <p slot="description">Une description concise qui donne envie d'en savoir plus sur le contenu de cette carte.</p>
 </p9r-comp-sync>
 
-<p9r-comp-sync allow-others-components>
-    <p slot="footer">Footer</p>
+<p9r-comp-sync allow-others-components optionnal>
+    <p slot="footer">En savoir plus</p>
 </p9r-comp-sync>

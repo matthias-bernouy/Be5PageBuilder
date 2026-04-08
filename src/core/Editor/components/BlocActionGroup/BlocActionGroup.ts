@@ -300,7 +300,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._toggle("changeComponent", config.get("changeComponent")!);
         this._toggle("delete", config.get("delete")!);
 
-        this.querySelector('[data-group="delete"]')?.toggleAttribute("hidden", !config.get("delete"));
+        const hasLeftButtons = hasConfig || config.get("duplicate") || config.get("changeComponent");
+        this.querySelector('[data-group="delete"]')?.toggleAttribute("hidden", !config.get("delete") || !hasLeftButtons);
     }
 }
 

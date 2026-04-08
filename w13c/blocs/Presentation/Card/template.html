@@ -1,18 +1,24 @@
 <article class="card">
     <div class="card-media">
         <slot name="image"></slot>
+        <div class="card-tag">
+            <slot name="tag"></slot>
+        </div>
     </div>
-    <div class="card-content">
-        <header>
+    <div class="card-body">
+        <div class="card-header">
             <h3 class="card-title">
                 <slot name="title">Titre</slot>
             </h3>
-        </header>
-        <div class="card-resume">
-            <slot name="resume"></slot>
+            <p class="card-subtitle">
+                <slot name="subtitle"></slot>
+            </p>
+        </div>
+        <div class="card-description">
+            <slot name="description"></slot>
         </div>
         <footer class="card-footer">
-            <slot name="footer">Footer</slot>
+            <slot name="footer"></slot>
         </footer>
     </div>
 </article>

@@ -4,22 +4,20 @@ import configuration from "./configuration.html" with { type: 'text' };
 
 const editorStyle = `
     .card:hover {
-        transform: unset;
         box-shadow: unset;
     }
-`
+    .card:hover .card-media ::slotted(img) {
+        transform: unset;
+    }
+`;
 
 export class CardEditor extends Editor {
     constructor(target: HTMLElement) {
         super(target, editorStyle, configuration as unknown as string);
     }
 
-    init(){
-    }
-
-    restore(){
-
-    }
+    init() {}
+    restore() {}
 }
 
 registerEditor({ cl: CardEditor });
