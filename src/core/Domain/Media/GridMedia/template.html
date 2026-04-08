@@ -1,0 +1,35 @@
+<div class="toolbar">
+    <div class="breadcrumb" id="breadcrumb">
+        <span class="bc-current">Root</span>
+    </div>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="empty" id="empty">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/>
+    </svg>
+    <p>This folder is empty</p>
+</div>
+
+<div class="drop-overlay" id="drop-overlay">
+    <span>Drop files to upload</span>
+</div>
+
+<!-- New folder popover -->
+<div class="nf-backdrop" id="nf-backdrop">
+    <div class="nf-popover">
+        <label class="nf-label">New folder</label>
+        <input type="text" class="nf-input" id="nf-input" placeholder="Folder name…" autocomplete="off">
+        <div class="nf-actions">
+            <button class="nf-cancel" id="nf-cancel">Cancel</button>
+            <button class="nf-confirm" id="nf-confirm">Create</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="file-input" hidden multiple accept="image/*,video/*,audio/*,.pdf,.zip,.svg">
+
+<p9r-detail-media id="detail"></p9r-detail-media>
+<p9r-crop-system id="crop"></p9r-crop-system>

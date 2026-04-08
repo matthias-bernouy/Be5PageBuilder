@@ -23,7 +23,8 @@ export default function MediaEndpoints(runner: IBe5_Runner, system: DefaultMedia
         const castItem = item as MediaDocument;
         let body: Buffer | Uint8Array = castItem.content;
 
-        if (castItem.type === "image" && (w || h)) {
+        const isSvg = castItem.mimetype === "image/svg+xml";
+        if (castItem.type === "image" && !isSvg && (w || h)) {
             body = await sharp(castItem.content)
                 .resize(
                     w ? parseInt(w) : undefined,

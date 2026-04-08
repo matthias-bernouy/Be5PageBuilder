@@ -147,7 +147,9 @@ export class DefaultMediaRepository implements MediaRepository {
 
         let finalDoc: any;
 
-        if (isImage) {
+        const isSvg = file.type === "image/svg+xml";
+
+        if (isImage && !isSvg) {
             const metadata = await sharp(buffer).metadata();
             finalDoc = {
                 ...baseData,
@@ -155,6 +157,14 @@ export class DefaultMediaRepository implements MediaRepository {
                 alt: file.name,
                 width: metadata.width ?? 0,
                 height: metadata.height ?? 0,
+            };
+        } else if (isSvg) {
+            finalDoc = {
+                ...baseData,
+                type: "image" as const,
+                alt: file.name,
+                width: 0,
+                height: 0,
             };
         } else {
             finalDoc = {
@@ -205,7 +215,7 @@ export class DefaultMediaRepository implements MediaRepository {
                 "Cache-Control": "public, max-age=31536000, immutable",
             });
 
-            // Si c'est une image, on gère le redimensionnement
+            // Handle image resizing
             if (media.type === "image") {
                 const w = opts?.w;
                 const h = opts?.h;

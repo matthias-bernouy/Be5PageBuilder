@@ -1,6 +1,6 @@
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { Component } from 'src/core/Component/core/Component';
+import { Component } from 'src/core/Editor/core/Component';
 
 export class Grid extends Component {
     constructor() {

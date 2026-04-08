@@ -1,4 +1,4 @@
-import { Component } from "src/core/Component/core/Component";
+import { Component } from "src/core/Editor/core/Component";
 import "./LateralMenuItem/LateralMenuItem"
 
 import template from './template.html' with { type: 'text' };

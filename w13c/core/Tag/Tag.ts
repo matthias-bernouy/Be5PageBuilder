@@ -1,4 +1,4 @@
-import { Component } from 'src/core/Component/core/Component';
+import { Component } from 'src/core/Editor/core/Component';
 
 import html from './Tag.template.html' with { type: 'text' };
 import css from './Tag.style.css' with { type: 'text' };

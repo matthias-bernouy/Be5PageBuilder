@@ -1,4 +1,4 @@
-import { Component, type ComponentMetadata } from 'src/core/Component/core/Component';
+import { Component, type ComponentMetadata } from 'src/core/Editor/core/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import type { TagElement } from '../core/ObserverManager';

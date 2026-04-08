@@ -1,4 +1,4 @@
-import type { Component } from "src/core/Component/core/Component";
+import type { Component } from "src/core/Editor/core/Component";
 
 export class AttrSync extends HTMLElement {
 

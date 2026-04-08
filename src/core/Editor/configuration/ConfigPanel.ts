@@ -4,7 +4,7 @@ import "w13c/core/Form/Checkbox/Checkbox"
 import "w13c/core/Form/FormSection"
 
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
-import { Component } from "src/core/Component/core/Component";
+import { Component } from "src/core/Editor/core/Component";
 
 import "./Sync/AttrSync";
 import "./Sync/CompSync";

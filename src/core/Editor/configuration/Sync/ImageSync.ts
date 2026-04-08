@@ -1,4 +1,4 @@
-import type { Component } from "src/core/Component/core/Component";
+import type { Component } from "src/core/Editor/core/Component";
 
 const css = `
 p9r-image-sync {

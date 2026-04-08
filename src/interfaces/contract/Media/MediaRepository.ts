@@ -41,6 +41,8 @@ export interface MediaRepository {
 
     upload(file: File, parent?: string): Promise<MediaDocument>;
 
+    getItem(id: string): Promise<MediaItem | null>;
+
     getResponse(id: string, opts?: {
         w?: number,
         h?: number
