@@ -12,7 +12,7 @@ export class LateralMenu extends Component {
         })
     }
 
-    // Exemple de méthode pour basculer le menu (toggle)
+    // Toggle the sidebar menu
     toggle() {
         const sidebar = this.shadowRoot?.querySelector('.sidebar');
         sidebar?.classList.toggle('collapsed');

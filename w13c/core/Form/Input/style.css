@@ -40,13 +40,13 @@ input {
   box-sizing: border-box;
 }
 
-/* Effet au focus */
+/* Focus effect */
 input:focus {
   border-color: var(--input-focus);
   box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
 }
 
-/* État d'erreur */
+/* Error state */
 :host([error]) input {
   border-color: var(--input-error);
 }
@@ -66,7 +66,7 @@ input:focus {
   opacity: 1;
 }
 
-/* Désactivé */
+/* Disabled */
 input:disabled {
   background-color: #f3f4f6;
   cursor: not-allowed;

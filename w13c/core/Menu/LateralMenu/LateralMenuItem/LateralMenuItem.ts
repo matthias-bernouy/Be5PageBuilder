@@ -43,7 +43,7 @@ export class LateralMenuItem extends Component {
     }
 
     /**
-     * La logique magique : compare le href de l'item avec l'URL actuelle
+     * Compares the item's href with the current URL to determine active state
      */
     private checkActiveState = (): void => {
         if (!this.anchor || !this.hasAttribute('href')) return;
@@ -51,15 +51,11 @@ export class LateralMenuItem extends Component {
         const hrefAttr = this.getAttribute('href')!;
 
         try {
-            // 1. On résout le href relatif en URL absolue par rapport à la page actuelle
             const resolvedURL = new URL(hrefAttr, window.location.href);
             const currentURL = new URL(window.location.href);
 
-            // 2. On compare les pathnames (chemins absolus)
             const currentPath = currentURL.pathname;
             const targetPath = resolvedURL.pathname;
-
-            // Logique de correspondance (Exacte pour la racine, sinon "commence par")
             const isActive = targetPath === '/'
                 ? currentPath === '/'
                 : currentPath === targetPath || currentPath.startsWith(targetPath + '/');
@@ -71,7 +67,7 @@ export class LateralMenuItem extends Component {
                 this.anchor.classList.remove('active');
             }
         } catch (e) {
-            // Sécurité si le href est invalide
+            // Invalid href fallback
             console.warn('Invalid href in LateralMenuItem:', hrefAttr);
         }
     }

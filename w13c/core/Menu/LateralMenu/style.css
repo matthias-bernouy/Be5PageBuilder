@@ -59,7 +59,7 @@
     border-top: 1px solid var(--secondary-muted);
 }
 
-/* Styles pour les items à l'intérieur du nav ou footer */
+/* Styles for items inside nav or footer */
 ::slotted(w13c-lateral-menu-item) {
     --item-color: var(--secondary-base);
     --item-color-active: var(--primary-base);

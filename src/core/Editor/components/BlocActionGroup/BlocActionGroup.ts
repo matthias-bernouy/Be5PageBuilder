@@ -262,7 +262,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         if (this.contains(toElement)) return;
         if (toElement === this._btnBefore || toElement === this._btnAfter) return;
 
-        // Si on quitte un enfant mais qu'on reste dans un parent éditeur, ré-ouvrir sur le parent
+        // If leaving a child but staying within a parent editor, re-open on the parent
         const parentEditor = toElement?.closest?.(`[${p9r.attr.EDITOR.IS_EDITOR}]`) as HTMLElement | null;
         if (parentEditor && parentEditor.contains(this._target)) {
             parentEditor.dispatchEvent(new MouseEvent('mouseenter', { clientX: e.clientX, clientY: e.clientY, bubbles: false }));

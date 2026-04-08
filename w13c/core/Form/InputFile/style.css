@@ -48,7 +48,7 @@ label {
     font-family: monospace;
 }
 
-/* On cache l'input mais il reste accessible au clavier via le label */
+/* Hide the input but keep it keyboard-accessible via the label */
 input[type="file"] {
     position: absolute;
     width: 1px;
@@ -67,7 +67,7 @@ input[type="file"] {
     color: var(--text-label, #4b5563);
 }
 
-/* Optionnel : style par défaut si le slot est vide */
+/* Optional: default style when the slot is empty */
 slot[name="title"]::slotted(*) {
     display: block;
 }

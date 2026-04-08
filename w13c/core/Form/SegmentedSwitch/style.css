@@ -7,7 +7,7 @@
 .switch-wrapper {
   position: relative;
   display: grid;
-  /* On crée autant de colonnes que d'options, toutes égales */
+  /* Create as many equal columns as there are options */
   grid-template-columns: repeat(var(--total-options), 1fr);
   background-color: var(--bg-base);
   border: 1px solid var(--border-default);
@@ -20,18 +20,18 @@
   top: 2px;
   bottom: 2px;
   left: 2px;
-  /* Largeur automatique basée sur le nombre de colonnes */
+  /* Automatic width based on the number of columns */
   width: calc(100% / var(--total-options) - 4px);
   background-color: var(--bg-surface);
   border-radius: 6px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  /* Déplacement fluide basé sur l'index */
+  /* Smooth movement based on the index */
   transform: translateX(calc(var(--active-index) * 100%));
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
 }
 
-/* On stylise les éléments du slot directement s'ils sont cochés */
+/* Style the slotted elements directly when they are checked */
 ::slotted([aria-checked="true"]) {
   color: var(--primary-base) !important;
   font-weight: 600;

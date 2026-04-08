@@ -1,34 +1,34 @@
 :host {
   display: inline-block;
 
-  --_btn-padding-y: 8px;       /* Équilibre vertical */
-  --_btn-padding-x: 16px;       /* Équilibre horizontal */
-  --_btn-font-size: 13px;       /* Taille standard interface */
-  --_btn-line-height: 1;        /* Évite les décalages de slots */
+  --_btn-padding-y: 8px;       /* Vertical balance */
+  --_btn-padding-x: 16px;       /* Horizontal balance */
+  --_btn-font-size: 13px;       /* Standard interface size */
+  --_btn-line-height: 1;        /* Prevents slot offset shifts */
 
-  /* 1. Squelette de variables internes (Tokens locaux) */
+  /* 1. Internal variable skeleton (Local tokens) */
   --_btn-bg: var(--bg-surface);
   --_btn-text: var(--text-main);
   --_btn-border: var(--border-default);
   --_btn-hover-bg: var(--bg-base);
   
-  /* 2. Valeurs par défaut des couleurs d'accent (Neutre) */
+  /* 2. Default accent color values (Neutral) */
   --_accent-base: var(--text-main);
   --_accent-muted: var(--bg-base);
-  --_accent-contrast: oklch(100% 0 0); /* Toujours blanc sur fond sombre neutre */
+  --_accent-contrast: oklch(100% 0 0); /* Always white on dark neutral background */
 
-  /* 3. Structure */
+  /* 3. Layout */
   --_btn-radius: 8px;
   --_btn-padding: 0.6rem 1.2rem;
   --_btn-font: inherit;
 }
 
-/* --- LOGIQUE DES COULEURS (On injecte les ingrédients) --- */
+/* --- COLOR LOGIC (Injecting the ingredients) --- */
 
 :host([color="primary"]) {
   --_accent-base: var(--primary-base);
   --_accent-muted: var(--primary-muted);
-  --_accent-contrast: oklch(100% 0 0); /* À adapter si ton jaune/info est trop clair */
+  --_accent-contrast: oklch(100% 0 0); /* Adjust if your yellow/info is too light */
 }
 
 :host([color="danger"]) {
@@ -46,9 +46,9 @@
   --_accent-muted: var(--info-muted);
 }
 
-/* --- LOGIQUE DES VARIANTS (La recette de cuisine) --- */
+/* --- VARIANT LOGIC (The recipe) --- */
 
-/* 1. FILLED : Fond plein, Texte contrasté (Blanc) */
+/* 1. FILLED: Solid background, Contrasted text (White) */
 :host([variant="filled"]) {
   --_btn-bg: var(--_accent-base);
   --_btn-text: var(--_accent-contrast);
@@ -58,7 +58,7 @@
   border-color: transparent;
 }
 
-/* 2. OUTLINED : Fond vide, Bordure colorée, Texte coloré */
+/* 2. OUTLINED: Empty background, Colored border, Colored text */
 :host([variant="outlined"]) {
   --_btn-bg: transparent;
   --_btn-border: var(--_accent-base);
@@ -66,7 +66,7 @@
   --_btn-hover-bg: var(--_accent-muted);
 }
 
-/* 3. GHOST : Tout transparent, seul le texte est coloré */
+/* 3. GHOST: All transparent, only the text is colored */
 :host([variant="ghost"]) {
   --_btn-bg: transparent;
   --_btn-border: transparent;
@@ -74,26 +74,26 @@
   --_btn-hover-bg: var(--_accent-muted);
 }
 
-/* --- RENDU FINAL DU COMPOSANT --- */
+/* --- FINAL COMPONENT RENDERING --- */
 
 .button {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;                    /* Espace entre icône et texte */
+  gap: 12px;                    /* Space between icon and text */
   
-  /* On utilise padding-y et padding-x séparément */
+  /* Use padding-y and padding-x separately */
   padding: var(--_btn-padding-y) var(--_btn-padding-x);
   
   font-family: var(--_btn-font);
   font-size: var(--_btn-font-size);
-  font-weight: 600;             /* "Semibold" pour la clarté */
+  font-weight: 600;             /* "Semibold" for clarity */
   line-height: var(--_btn-line-height);
-  letter-spacing: -0.015em;     /* Le secret du look Apple */
+  letter-spacing: -0.015em;     /* The secret to the Apple look */
   
   border-radius: var(--_btn-radius);
-  border: 1.5px solid var(--_btn-border); /* Bordure légèrement plus épaisse pour les Outlined */
+  border: 1.5px solid var(--_btn-border); /* Slightly thicker border for Outlined variants */
   background-color: var(--_btn-bg);
   color: var(--_btn-text);
   
@@ -117,7 +117,7 @@
 .button:hover {
   background-color: var(--_btn-hover-bg);
   opacity: var(--_btn-hover-opacity, 1);
-    transform: translateY(-1px); /* Soulèvement léger */
+    transform: translateY(-1px); /* Slight lift */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 

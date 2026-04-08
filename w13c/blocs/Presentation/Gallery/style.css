@@ -7,7 +7,7 @@
     width: 100%;
     position: relative;
     border-radius: 12px;
-    overflow: hidden; /* Pour que l'image respecte les arrondis du host */
+    overflow: hidden; /* So the image respects the host's border-radius */
 }
 
 .presentation-root {
@@ -21,7 +21,7 @@
     line-height: 0;
 }
 
-/* On force l'élément sloté dans "image" à remplir le conteneur */
+/* Force the slotted element in "image" to fill the container */
 ::slotted([slot="image"]) {
     width: 100%;
     height: auto;
@@ -32,9 +32,9 @@
 .label-badge {
     position: absolute;
     z-index: 2;
-    pointer-events: none; /* Le label ne doit pas gêner le clic sur l'image */
+    pointer-events: none; /* The label should not interfere with clicking on the image */
     
-    /* Style du conteneur de label */
+    /* Label container style */
     background-color: var(--label-bg);
     color: var(--label-color);
     padding: 4px 12px;
@@ -43,11 +43,11 @@
     font-weight: 600;
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     
-    /* Espacement par rapport aux bords */
+    /* Spacing from the edges */
     --offset: 16px;
 }
 
-/* Logique de positionnement via l'attribut du host */
+/* Positioning logic via the host attribute */
 
 :host([label-position="top-left"]) .label-badge {
     top: var(--offset);
@@ -69,7 +69,7 @@
     right: var(--offset);
 }
 
-/* Si le slot label est vide, on cache le badge */
+/* If the label slot is empty, hide the badge */
 .label-badge:not(:has(slot:not([name]):empty)) {
-    /* Logique complexe : si le slot est vide, on peut masquer */
+    /* Complex logic: if the slot is empty, we can hide it */
 }

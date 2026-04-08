@@ -95,7 +95,6 @@ export class CompSync extends HTMLElement {
                 }
 
             } else {
-                //disableBlocActions(slot);
             }
             slotEditor?.viewEditor();
         })

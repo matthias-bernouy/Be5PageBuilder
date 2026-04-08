@@ -6,9 +6,9 @@
 
   position: fixed;
   top: 100px;
-  right: 20px; /* Position de base à droite */
+  right: 20px; /* Default position on the right */
   z-index: 9999;
-  touch-action: none; /* Empêche le scroll pendant le drag sur mobile */
+  touch-action: none; /* Prevent scrolling during drag on mobile */
 }
 
 #toolbar-container {
@@ -44,7 +44,7 @@
   gap: 4px;
 }
 
-/* Style des boutons injectés via le slot */
+/* Style for buttons injected via slot */
 button {
   display: flex;
   align-items: center;
@@ -66,7 +66,7 @@ button:hover {
   color: var(--accent-color);
 }
 
-/* Cache le texte si la barre est trop étroite (optionnel) */
+/* Hide text if the toolbar is too narrow (optional) */
 button span {
   display: inline-block;
 }

@@ -53,7 +53,7 @@ export class P9rPageLink extends HTMLElement {
                             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
                             <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
                         </svg>
-                        <span class="value">Aucune page</span>
+                        <span class="value">No page</span>
                         <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
                              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                             <path d="m6 9 6 6 6-6"/>
@@ -69,10 +69,10 @@ export class P9rPageLink extends HTMLElement {
                 </div>
                 <div class="panel">
                     <div class="search-wrap">
-                        <input class="search" type="text" placeholder="Rechercher une page...">
+                        <input class="search" type="text" placeholder="Search for a page...">
                     </div>
                     <ul class="list"></ul>
-                    <div class="empty">Aucune page trouvée</div>
+                    <div class="empty">No pages found</div>
                 </div>
             </div>
             <div hidden><slot></slot></div>
@@ -89,7 +89,7 @@ export class P9rPageLink extends HTMLElement {
 
         this._clearBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            this._select("", "Aucune page");
+            this._select("", "No page");
         });
     }
 
@@ -161,7 +161,7 @@ export class P9rPageLink extends HTMLElement {
 
     private _setValue(value: string, label: string) {
         this._value = value;
-        this._display!.textContent = value ? label : "Aucune page";
+        this._display!.textContent = value ? label : "No page";
         this._trigger!.classList.toggle("has-value", !!value);
         this._clearBtn!.style.display = value ? "flex" : "none";
         this._options.forEach(li => {
@@ -194,7 +194,7 @@ export class P9rPageLink extends HTMLElement {
     set value(v: string) {
         const match = this._pages.find(p => p.path === v);
         if (match) this._setValue(match.path, match.title);
-        else this._setValue(v, v || "Aucune page");
+        else this._setValue(v, v || "No page");
     }
 
     get name() { return this.getAttribute("name"); }

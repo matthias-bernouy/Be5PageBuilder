@@ -1,5 +1,5 @@
 :host {
-    /* Variables de Thème */
+    /* Theme Variables */
     --bg-main: rgba(255, 255, 255, 0.95);
     --bg-sidebar: transparent;
     --bg-card: #ffffff;
@@ -12,7 +12,7 @@
     --border: rgba(0, 0, 0, 0.06);
     --shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
     
-    /* Variables de Layout */
+    /* Layout Variables */
     --sidebar-width: 200px;
     --header-height: 70px;
     
@@ -20,14 +20,14 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* --- LE DIALOG NATIF --- */
+/* --- NATIVE DIALOG --- */
 .action-bar-modal {
     padding: 0;
     border: none;
     background: transparent;
-    overflow: visible; /* Pour laisser dépasser l'ombre */
+    overflow: visible; /* Allow shadow to overflow */
     
-    /* Animation d'entrée */
+    /* Entry animation */
     animation: dialogFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -36,20 +36,20 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Le fond flouté */
+/* Blurred backdrop */
 .action-bar-modal::backdrop {
     background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
 
-/* --- LE CONTAINER --- */
+/* --- CONTAINER --- */
 .container {
     width: 90vw;
     max-width: 1000px;
-    height: 70vh; /* Moins haut pour un look plus compact */
+    height: 70vh; /* Shorter for a more compact look */
     background: var(--bg-main);
-    border-radius: 20px; /* Coins plus ronds */
+    border-radius: 20px; /* Rounder corners */
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -57,7 +57,7 @@
     border: 1px solid var(--border);
 }
 
-/* --- LE HEADER --- */
+/* --- HEADER --- */
 .header {
     height: var(--header-height);
     padding: 0 25px;
@@ -75,7 +75,7 @@
     color: var(--text-primary);
 }
 
-/* Le bouton close sémantique dans le template */
+/* Semantic close button in the template */
 form[method="dialog"] {
     display: flex; align-items: center;
 }
@@ -98,14 +98,14 @@ form[method="dialog"] {
     transform: rotate(90deg);
 }
 
-/* --- LE CONTENT (Layout Flex) --- */
+/* --- CONTENT (Flex Layout) --- */
 .content {
     display: flex;
     flex: 1;
     overflow: hidden;
 }
 
-/* --- LE MENU (Slotted Group) --- */
+/* --- MENU (Slotted Group) --- */
 .groups-sidebar {
     width: var(--sidebar-width);
     padding: 20px 10px;
@@ -118,7 +118,7 @@ form[method="dialog"] {
 ::slotted([slot="group"]) {
     all: unset;
     padding: 10px 15px;
-    border-radius: 10px; /* Style "Pilule" */
+    border-radius: 10px; /* Pill style */
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -136,19 +136,19 @@ form[method="dialog"] {
     font-weight: 600;
     box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
 }
-/* --- LA GRILLE (Slotted Bloc) --- */
+/* --- GRID (Slotted Bloc) --- */
 .blocs-grid {
     flex: 1;
     padding: 24px;
     display: grid;
-    /* On augmente légèrement la taille minimale des cards */
+    /* Slightly increase the minimum card size */
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 16px;
     overflow-y: auto;
     align-content: start;
 }
 
-/* Style des cards slottées (Light DOM) */
+/* Slotted card styles (Light DOM) */
 .card {
     all: unset;
     background: #fff;
@@ -159,11 +159,11 @@ form[method="dialog"] {
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* On utilise space-around pour bien séparer l'icône du titre */
+    /* Use space-around to properly separate icon from title */
     justify-content: space-around;
     cursor: pointer;
     transition: 0.1s;
-    /* Pour éviter que le texte ne dépasse */
+    /* Prevent text from overflowing */
     box-sizing: border-box;
     overflow: hidden;
 }

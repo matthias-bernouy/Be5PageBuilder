@@ -2,7 +2,7 @@ import { Component } from "src/core/Editor/core/Component";
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
-// On s'assure que Input est chargé
+// Ensure Input is loaded
 import "../Input/Input"; 
 import "w13c/core/Tag/Tag";
 
@@ -11,7 +11,7 @@ export class InputTags extends Component {
     
     private _internals: ElementInternals;
     private _tags: string[] = [];
-    private _inputComponent: any = null; // Ton composant w13c-input
+    private _inputComponent: any = null;
     private _display: HTMLElement | null = null;
 
     constructor() {
@@ -26,7 +26,7 @@ export class InputTags extends Component {
         this._inputComponent = this.shadowRoot?.querySelector('#main-input');
         this._display = this.shadowRoot?.querySelector('#tags-display') || null;
 
-        // On écoute le "keydown" sur le composant input
+        // Listen for keydown on the input component
         this._inputComponent?.addEventListener('keydown', (e: KeyboardEvent) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -41,7 +41,7 @@ export class InputTags extends Component {
         const val = this._inputComponent.value.trim();
         if (val && !this._tags.includes(val)) {
             this._tags.push(val);
-            this._inputComponent.value = ""; // On vide l'input
+            this._inputComponent.value = "";
             this._update();
         }
     }
@@ -55,7 +55,7 @@ export class InputTags extends Component {
 
     private _update() {
         this._renderTags();
-        // C'est cette valeur qui sera envoyée lors du submit du formulaire
+        // This value will be sent on form submit
         this._internals.setFormValue(this.value);
         
         this.dispatchEvent(new CustomEvent('change', { 
@@ -78,7 +78,7 @@ export class InputTags extends Component {
         });
     }
 
-    // --- API Formulaire ---
+    // --- Form API ---
     get value() { return this._tags.join(','); }
     set value(v: string) {
         this._tags = v ? v.split(',').filter(t => t !== "") : [];

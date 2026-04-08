@@ -9,13 +9,13 @@ export class TableHeaderCell extends HTMLElement {
     }
 
     connectedCallback() {
-        // On écoute le clic sur le :host pour le tri
+        // Listen for click to handle sorting
         this.addEventListener('click', this.handleSort);
         this.render();
     }
 
     private handleSort = (e: Event) => {
-        // Si on clique sur l'input de filtre, on ne trie pas !
+        // Skip sorting if the filter input was clicked
         if (e.composedPath().some(el => el instanceof HTMLInputElement)) return;
 
         const sortKey = this.getAttribute('sort');
@@ -32,21 +32,6 @@ export class TableHeaderCell extends HTMLElement {
         window.location.href = url.toString();
     }
 
-    private handleFilter = (e: Event) => {
-        const input = e.target as HTMLInputElement;
-        const filterName = this.getAttribute('filter-name');
-        if (!filterName) return;
-
-        const url = new URL(window.location.href);
-        if (input.value) {
-            url.searchParams.set(`f_${filterName}`, input.value);
-        } else {
-            url.searchParams.delete(`f_${filterName}`);
-        }
-
-        // On peut ajouter un debounce ici si on veut éviter de recharger à chaque touche
-        window.location.href = url.toString();
-    }
 
     render() {
         const filterName = this.getAttribute('filter-name');
@@ -61,7 +46,7 @@ export class TableHeaderCell extends HTMLElement {
                     display: table-cell;
                     padding: 12px 20px;
                     border-bottom: 2px solid var(--border-light);
-                    position: relative; /* Pour positionner le popover */
+                    position: relative; /* For popover positioning */
                 }
                 .header-wrapper {
                     display: flex;
@@ -83,7 +68,7 @@ export class TableHeaderCell extends HTMLElement {
                 }
                 .filter-trigger:hover { background: #eee; }
 
-                /* Le petit Popover */
+                /* Filter popover */
                 .filter-popover {
                     display: none;
                     position: absolute;
@@ -121,7 +106,7 @@ export class TableHeaderCell extends HTMLElement {
                         </svg>
                     </div>
                     <div class="filter-popover" id="filter-popover">
-                        <input type="text" placeholder="Filtrer..." value="${currentFilterValue}" id="filter-input">
+                        <input type="text" placeholder="Filter..." value="${currentFilterValue}" id="filter-input">
                     </div>
                 ` : ''}
             </div>
@@ -137,21 +122,21 @@ export class TableHeaderCell extends HTMLElement {
         const input = this.shadowRoot?.querySelector('#filter-input') as HTMLInputElement;
         const sortTrigger = this.shadowRoot?.querySelector('#sort-trigger');
 
-        // Toggle du filtre
+        // Toggle filter popover
         filterBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
             popover?.classList.toggle('open');
             if (popover?.classList.contains('open')) input?.focus();
         });
 
-        // Fermer si on clique ailleurs
+        // Close when clicking outside
         window.addEventListener('click', () => popover?.classList.remove('open'));
         popover?.addEventListener('click', (e) => e.stopPropagation());
 
-        // Tri (uniquement sur le label)
+        // Sort (only on label click)
         sortTrigger?.addEventListener('click', (e) => this.handleSort(e));
 
-        // Validation du filtre
+        // Apply filter on Enter
         input?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 this.applyFilter(input.value);

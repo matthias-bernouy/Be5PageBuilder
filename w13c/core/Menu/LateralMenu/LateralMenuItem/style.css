@@ -1,7 +1,7 @@
 :host {
     display: block;
     width: 100%;
-    /* On utilise les variables transmises par le parent, avec des fallbacks oklch au cas où */
+    /* Use variables passed down by the parent, with oklch fallbacks just in case */
     --item-color: var(--secondary-base, oklch(50% 0.02 260));
     --item-color-active: var(--primary-base, oklch(60% 0.15 265));
     --item-bg-active: var(--primary-muted, oklch(95% 0.02 265));
@@ -37,7 +37,7 @@
     font-weight: 600;
 }
 
-/* La petite barre verticale accentuée */
+/* The small accented vertical bar */
 .menu-item.active::before {
     content: "";
     position: absolute;

@@ -14,9 +14,9 @@ export class HorizontalActionGroup extends Component {
     }
 
 connectedCallback() {
-        // On écoute tout ce qui se passe DANS le composant
+        // Listen for all clicks inside the component
         this.addEventListener('click', (e: Event) => {
-            // On cherche si l'élément cliqué (ou l'un de ses parents) est un bouton data-action
+            // Find if the clicked element (or one of its parents) is a data-action button
             const target = e.target as HTMLElement;
             const actionItem = target.closest("[data-action]");
             

@@ -34,7 +34,6 @@ export class EditorToolbar extends Component {
 
         root.addEventListener("click", (e) => this.handleClick(e));
         document.addEventListener("selectionchange", () => this.handleSelection());
-        document.addEventListener("selectionchange", () => this.handleSelection());
 
         this.pageLink = document.createElement("p9r-page-link");
         this.pageLink.setAttribute("label", "");
@@ -182,7 +181,7 @@ export class EditorToolbar extends Component {
             newRange.selectNodeContents(wrapper);
             sel.addRange(newRange);
         } catch (e) {
-            console.warn("La sélection traverse des balises complexes", e);
+            console.warn("Selection spans complex markup", e);
         }
     }
 

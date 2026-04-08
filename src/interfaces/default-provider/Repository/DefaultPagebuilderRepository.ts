@@ -120,12 +120,9 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
 
 
     async createPage(page: TPage, oldIdentifier?: string): Promise<TPage> {
-        // 1. On définit le filtre (comment on retrouve la page ?)
-        // Si tu as un ancien identifiant, on cherche celui-là, sinon on cherche l'ID actuel
         const filter = { identifier: oldIdentifier || page.identifier };
 
         try {
-            // 2. On exécute le remplacement avec { upsert: true }
             const result = await this._pagesCollection.replaceOne(
                 filter,
                 page,
@@ -135,11 +132,11 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
             if (result.acknowledged) {
                 return page;
             } else {
-                throw new Error("Opération non reconnue par MongoDB");
+                throw new Error("Upsert not acknowledged by MongoDB");
             }
         } catch (err) {
-            console.error("Erreur lors du replace/upsert de la page:", err);
-            throw err; // Plus propre que reject() dans un bloc async
+            console.error("Failed to upsert page:", err);
+            throw err;
         }
     }
 

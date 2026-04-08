@@ -29,10 +29,10 @@ export class BlocLibrary extends Component {
     connectedCallback() {
         this.dialog = this.shadowRoot?.querySelector('#action-bar-dialog') as HTMLDialogElement;
         
-        // Gestion de la fermeture native (touche Escape ou bouton close)
+        // Close on native dialog close (Escape key or close button)
         this.dialog.addEventListener('close', () => this.remove());
-        
-        // Fermeture si on clique sur le backdrop (le fond gris)
+
+        // Close on backdrop click
         this.dialog.addEventListener('click', (e) => {
             if (e.target === this.dialog) this.close();
         });
@@ -43,7 +43,7 @@ export class BlocLibrary extends Component {
         if (groups.length > 0) this.activeGroup = groups[0]!;
 
         this.renderExternalElements();
-        this.dialog.showModal(); // Ouvre en mode modal natif
+        this.dialog.showModal();
     }
 
     private renderExternalElements() {
@@ -66,7 +66,7 @@ export class BlocLibrary extends Component {
             this.appendChild(btn);
         });
 
-        // Rendu des blocs
+        // Render blocs
         if (this.activeGroup) {
             const items = observer.getItemsByGroup(this.activeGroup);
             items.forEach((item: TagElement) => {

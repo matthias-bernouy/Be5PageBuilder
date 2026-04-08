@@ -51,12 +51,12 @@ export default async function CLI_importBloc(args: string[]) {
             const entryPath = join(fullParentPath, entry);
             const check = await stat(entryPath);
 
-            // On ne traite que les dossiers
+            // Only process directories
             if (check.isDirectory()) {
                 try {
                     console.log(`\n🔍 Importing bloc from folder: ${entry}...`);
                     console.log(`\n🔍 Importing bloc from parent: ${parentPath}...`);
-                    // On passe 'parentPath' et le nom du dossier 'entry' comme nom de bloc
+                    // Pass 'parentPath' and the folder name 'entry' as bloc name
                     await importSingleBloc(MongoClientDefault, parentPath, entry, group);
                     console.log(`✅ Successfully imported: ${entry}`);
                 } catch (err) {

@@ -5,7 +5,7 @@ import type { PageMode } from "../core/EditorManager";
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote, a):empty::before {
     content: attr(p9r-text-placeholder);
-    //color: #aaa;
+    color: var(--text-muted, #aaa);
     pointer-events: none;
     display: block;
     font-style: italic;
@@ -101,10 +101,6 @@ export class TextEditor extends Editor {
             element.setAttribute(attr.name, attr.value);
         });
         return element;
-    }
-
-    static createPElement(){
-        const p = document.createElement("p");
     }
 
     private handleKeyDown(e: KeyboardEvent) {

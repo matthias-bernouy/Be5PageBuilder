@@ -1,8 +1,8 @@
 /**
- * <p9r-select name="variant" label="Variante">
- *     <option value="elevated" selected>Élevée</option>
- *     <option value="outline">Bordure</option>
- *     <option value="ghost">Transparente</option>
+ * <p9r-select name="variant" label="Variant">
+ *     <option value="elevated" selected>Elevated</option>
+ *     <option value="outline">Outline</option>
+ *     <option value="ghost">Ghost</option>
  * </p9r-select>
  */
 export class P9rSelect extends HTMLElement {
@@ -114,7 +114,7 @@ export class P9rSelect extends HTMLElement {
     }
 
     private _open() {
-        // Fermer tous les autres P9rSelect ouverts
+        // Close all other open P9rSelect dropdowns
         document.querySelectorAll("p9r-select").forEach((el) => {
             if (el !== this) (el as P9rSelect)._close();
         });

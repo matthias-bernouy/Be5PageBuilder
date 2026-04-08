@@ -30,20 +30,20 @@ export class SegmentedSwitch extends Component {
             slot.addEventListener('slotchange', () => this._onSlotChange(slot));
         }
 
-        // On gère le clic sur le wrapper pour déléguer aux options
+        // Handle click on the wrapper to delegate to options
         this.shadowRoot?.querySelector('.switch-wrapper')?.addEventListener('click', (e) => this._handleOptionClick(e));
     }
 
     get value() { return this.getAttribute('value') || ""; }
     set value(v) {
-        if (v === this.value) return; // Pas de changement
+        if (v === this.value) return;
         
         this.setAttribute('value', v);
         this._internals.setFormValue(v);
         this._updateSliderPosition();
         this._updateSlottedSelections(v);
         
-        // Dispatch de l'event natif
+        // Dispatch native event
         this.dispatchEvent(new CustomEvent('change', { detail: { value: v } }));
     }
 
@@ -56,7 +56,7 @@ export class SegmentedSwitch extends Component {
 
         options.forEach((opt, index) => {
             opt.setAttribute('role', 'radio');
-            opt.setAttribute('tabindex', '0'); // Rendre focusable
+            opt.setAttribute('tabindex', '0');
             
             opt.onclick = () => this.value = opt.getAttribute('value') || "";
         });
@@ -66,7 +66,7 @@ export class SegmentedSwitch extends Component {
 
     private _handleOptionClick(e: Event) {
         const target = e.target as HTMLElement;
-        // On vérifie si on a cliqué sur un élément slotted de type <option>
+        // Check if the clicked element is a slotted <option>
         if (target.tagName === 'OPTION' && target.assignedSlot) {
             const newValue = target.getAttribute('value');
             if (newValue) this.value = newValue;

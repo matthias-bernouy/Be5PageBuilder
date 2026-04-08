@@ -12,7 +12,7 @@ export class Grid extends Component {
     }
 
     render() {
-        // Logique de rendu si tu veux manipuler dynamiquement le nombre d'items
+        // Render logic to dynamically manipulate the number of items
     }
 }
 

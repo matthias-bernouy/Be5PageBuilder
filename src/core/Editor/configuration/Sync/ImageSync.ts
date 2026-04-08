@@ -122,7 +122,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 const ICON_UPLOAD = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>`;
 
 /**
- * <p9r-image-sync slotTarget="image" label="Image de couverture" default="https://placehold.co/800x450"></p9r-image-sync>
+ * <p9r-image-sync slotTarget="image" label="Cover image" default="https://placehold.co/800x450"></p9r-image-sync>
  *
  * @attr slotTarget - the slot name where the <img> lives in the component
  * @attr accept     - media types for MediaCenter (default: "image")
@@ -218,7 +218,7 @@ export class ImageSync extends HTMLElement {
         // Empty state
         this._emptyState = document.createElement("div");
         this._emptyState.className = "image-sync-empty";
-        this._emptyState.innerHTML = `${ICON_UPLOAD}<span>Cliquez pour choisir une image</span>`;
+        this._emptyState.innerHTML = `${ICON_UPLOAD}<span>Click to choose an image</span>`;
 
         // Overlay with actions
         this._overlay = document.createElement("div");
@@ -226,12 +226,12 @@ export class ImageSync extends HTMLElement {
 
         const btnChange = document.createElement("button");
         btnChange.className = "btn-change";
-        btnChange.textContent = "Modifier";
+        btnChange.textContent = "Change";
         btnChange.addEventListener("click", (e) => { e.stopPropagation(); this._openMediaCenter(); });
 
         const btnRemove = document.createElement("button");
         btnRemove.className = "btn-remove";
-        btnRemove.textContent = "Supprimer";
+        btnRemove.textContent = "Remove";
         btnRemove.addEventListener("click", (e) => { e.stopPropagation(); this._clear(); });
 
         this._overlay.appendChild(btnChange);
