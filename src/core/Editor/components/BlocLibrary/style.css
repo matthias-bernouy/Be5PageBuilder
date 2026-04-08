@@ -1,33 +1,28 @@
 :host {
-    /* Theme Variables */
     --bg-main: rgba(255, 255, 255, 0.95);
-    --bg-sidebar: transparent;
     --bg-card: #ffffff;
     --bg-card-hover: rgba(0, 122, 255, 0.03);
-    
+
     --text-primary: #1a1a1a;
     --text-secondary: #666;
-    
+
     --accent: #007aff;
     --border: rgba(0, 0, 0, 0.06);
     --shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    
-    /* Layout Variables */
+
     --sidebar-width: 200px;
-    --header-height: 70px;
-    
+
     display: block;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* --- NATIVE DIALOG --- */
+/* ── Dialog ── */
+
 .action-bar-modal {
     padding: 0;
     border: none;
     background: transparent;
-    overflow: visible; /* Allow shadow to overflow */
-    
-    /* Entry animation */
+    overflow: visible;
     animation: dialogFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -36,20 +31,20 @@
     to { opacity: 1; transform: scale(1); }
 }
 
-/* Blurred backdrop */
 .action-bar-modal::backdrop {
     background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
 
-/* --- CONTAINER --- */
+/* ── Container ── */
+
 .container {
     width: 90vw;
     max-width: 1000px;
-    height: 70vh; /* Shorter for a more compact look */
+    height: 70vh;
     background: var(--bg-main);
-    border-radius: 20px; /* Rounder corners */
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -57,36 +52,65 @@
     border: 1px solid var(--border);
 }
 
-/* --- HEADER --- */
+/* ── Header with tabs ── */
+
 .header {
-    height: var(--header-height);
-    padding: 0 25px;
+    padding: 0 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border);
+    height: 54px;
+    flex-shrink: 0;
 }
 
-.header h2 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    letter-spacing: -0.5px;
+.tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.tab {
+    all: unset;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+}
+
+.tab:hover:not(.active):not(.disabled) {
+    background: rgba(0, 0, 0, 0.04);
     color: var(--text-primary);
 }
 
-/* Semantic close button in the template */
+.tab.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+.tab.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
 form[method="dialog"] {
-    display: flex; align-items: center;
+    display: flex;
+    align-items: center;
 }
 
 .default-close {
     all: unset;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
     cursor: pointer;
-    background: rgba(0,0,0,0.03);
+    background: rgba(0, 0, 0, 0.03);
     color: var(--text-secondary);
     font-size: 1.4rem;
     transition: all 0.2s;
@@ -98,96 +122,123 @@ form[method="dialog"] {
     transform: rotate(90deg);
 }
 
-/* --- CONTENT (Flex Layout) --- */
+/* ── Content ── */
+
 .content {
     display: flex;
     flex: 1;
     overflow: hidden;
 }
 
-/* --- MENU (Slotted Group) --- */
+/* ── Sidebar ── */
+
 .groups-sidebar {
     width: var(--sidebar-width);
-    padding: 20px 10px;
+    padding: 16px 10px;
     display: flex;
     flex-direction: column;
     gap: 2px;
     overflow-y: auto;
+    flex-shrink: 0;
 }
 
-::slotted([slot="group"]) {
+.sidebar-item {
     all: unset;
-    padding: 10px 15px;
-    border-radius: 10px; /* Pill style */
+    padding: 8px 14px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 13px;
     color: var(--text-secondary);
-    transition: all 0.15s ease;
+    transition: all 0.15s;
 }
 
-::slotted([slot="group"]:hover:not(.active)) {
-    background: rgba(0,0,0,0.03);
+.sidebar-item:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.03);
     color: var(--text-primary);
 }
 
-::slotted([slot="group"].active) {
-    background: var(--accent);
-    color: white;
+.sidebar-item.active {
+    background: rgba(0, 122, 255, 0.08);
+    color: var(--accent);
     font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0, 122, 255, 0.2);
 }
-/* --- GRID (Slotted Bloc) --- */
+
+/* ── Grid ── */
+
 .blocs-grid {
     flex: 1;
-    padding: 24px;
+    padding: 20px;
     display: grid;
-    /* Slightly increase the minimum card size */
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 16px;
+    gap: 12px;
     overflow-y: auto;
     align-content: start;
 }
 
-/* Slotted card styles (Light DOM) */
+/* ── Cards ── */
+
 .card {
     all: unset;
-    background: #fff;
+    background: var(--bg-card);
     border: 1px solid #eee;
     border-radius: 12px;
-    padding: 20px;
-    aspect-ratio: 1/1;
+    padding: 16px;
+    aspect-ratio: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Use space-around to properly separate icon from title */
     justify-content: space-around;
     cursor: pointer;
-    transition: 0.1s;
-    /* Prevent text from overflowing */
+    transition: 0.15s;
     box-sizing: border-box;
     overflow: hidden;
 }
 
 .card svg {
-    width: 3rem;
+    width: 2.5rem;
 }
 
 .card:hover {
-    border-color: #007aff;
+    border-color: var(--accent);
     background: #f8fbff;
-    transform: translateY(-3px);
-    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
 .card .title {
-    font-size: 0.8rem;
+    font-size: 11px;
     font-weight: 500;
     text-align: center;
-    color: #1a1a1a;
+    color: var(--text-primary);
     line-height: 1.3;
     margin-top: auto;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* ── Empty state ── */
+
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.empty-state svg {
+    width: 40px;
+    height: 40px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 13px;
 }

@@ -1,19 +1,18 @@
 <dialog id="action-bar-dialog" class="action-bar-modal">
     <div class="container">
         <header class="header">
-            <h2>Component Library</h2>
+            <nav class="tabs" id="tabs">
+                <button class="tab active" data-section="blocs">Blocs</button>
+                <button class="tab" data-section="templates">Templates</button>
+                <button class="tab disabled" data-section="snippets" disabled>Snippets</button>
+            </nav>
             <form method="dialog">
-                <slot name="close-button">
-                    <button class="default-close">×</button>
-                </slot>
+                <button class="default-close">&times;</button>
             </form>
         </header>
         <div class="content">
-            <nav class="groups-sidebar">
-                <slot name="group"></slot>
-            </nav>
-            <main class="blocs-grid">
-            </main>
+            <nav class="groups-sidebar" id="sidebar"></nav>
+            <main class="blocs-grid" id="grid"></main>
         </div>
     </div>
 </dialog>
