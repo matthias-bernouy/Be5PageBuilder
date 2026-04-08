@@ -1,6 +1,4 @@
 import type { Component } from "src/core/Component/core/Component";
-import { disableBlocActions } from "../../editors/disableBlocActions";
-import type { Editor } from "../../core/Editor";
 
 /**
  * @param data-multiple        - default: true

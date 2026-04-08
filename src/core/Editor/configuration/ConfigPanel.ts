@@ -1,7 +1,6 @@
 import "w13c/core/Dialog/LateralDialog/LateralDialog"
 import "w13c/core/Form/Input/Input"
 import "w13c/core/Form/Checkbox/Checkbox"
-import "w13c/core/Form/Select/Select"
 import "w13c/core/Form/FormSection"
 
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
@@ -10,6 +9,8 @@ import { Component } from "src/core/Component/core/Component";
 import "./Sync/AttrSync";
 import "./Sync/CompSync";
 import "./Sync/ImageSync";
+import "./Inputs/P9rSelect";
+import "./Inputs/P9rRange";
 
 export class ConfigPanel extends Component {
 

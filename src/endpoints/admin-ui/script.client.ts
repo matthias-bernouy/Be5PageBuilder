@@ -4,7 +4,6 @@ import "w13c/core/Form/Button/Button"
 import "w13c/core/Form/Input/Input"
 import "w13c/core/Form/InputTags/InputTags"
 import "w13c/core/Form/InputFile/InputFile"
-import "w13c/core/Form/Select/Select"
 import "w13c/core/Form/SegmentedSwitch/SegmentedSwitch"
 
 import "w13c/core/Table/Table"

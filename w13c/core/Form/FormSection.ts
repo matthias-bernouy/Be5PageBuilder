@@ -25,7 +25,6 @@ export class FormSection extends Component {
                     border-radius: 10px;
                     background: var(--bg-surface, #fff);
                     border: 1px solid var(--border-default, #e5e7eb);
-                    overflow: hidden;
                 }
 
                 header {
