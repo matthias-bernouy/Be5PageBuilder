@@ -1,6 +1,7 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import type { PageBuilderRepository } from "src/interfaces/contract/Repository/PageBuilderRepository";
-import type { TBloc, TPage, TSystem } from "src/interfaces/contract/Repository/TModels";
+import type { TBloc, TPage, TSystem, TTemplate } from "src/interfaces/contract/Repository/TModels";
+import { ObjectId } from "mongodb";
 import type { TBlocMetadata } from "src/interfaces/contract/Repository/TQueries";
 
 
@@ -21,12 +22,14 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
     private _blocsCollection: Collection<TBloc>;
     private _pagesCollection: Collection<TPage>;
     private _systemCollection: Collection<TSystem>;
+    private _templatesCollection: Collection<TTemplate>;
 
     constructor(client: MongoClient, databaseName: string) {
         this._database = client.db(databaseName);
         this._blocsCollection = this._database.collection<TBloc>("blocs");
         this._pagesCollection = this._database.collection<TPage>("pages");
         this._systemCollection = this._database.collection<TSystem>("system");
+        this._templatesCollection = this._database.collection<TTemplate>("templates");
     }
 
     static create(config: DefaultDatastoreConfig): Promise<DefaultPageBuilderRepository> {
@@ -197,6 +200,37 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
 
         await this._systemCollection.updateOne({}, { $set: flatUpdate }, { upsert: true });
         return this.getSystem();
+    }
+
+    // ── Templates ──
+
+    async createTemplate(template: TTemplate): Promise<TTemplate> {
+        const result = await this._templatesCollection.insertOne(template as any);
+        return { ...template, id: result.insertedId.toString() };
+    }
+
+    async getTemplateById(id: string): Promise<TTemplate | null> {
+        const doc = await this._templatesCollection.findOne({ _id: new ObjectId(id) });
+        if (!doc) return null;
+        return { ...doc, id: (doc as any)._id.toString() } as TTemplate;
+    }
+
+    async getAllTemplates(): Promise<TTemplate[]> {
+        const docs = await this._templatesCollection.find({}).toArray();
+        return docs.map(doc => ({ ...doc, id: (doc as any)._id.toString() }) as TTemplate);
+    }
+
+    async updateTemplate(id: string, data: Partial<TTemplate>): Promise<TTemplate | null> {
+        const { id: _, ...updateData } = data;
+        await this._templatesCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: updateData }
+        );
+        return this.getTemplateById(id);
+    }
+
+    async deleteTemplate(id: string): Promise<void> {
+        await this._templatesCollection.deleteOne({ _id: new ObjectId(id) });
     }
 
 }

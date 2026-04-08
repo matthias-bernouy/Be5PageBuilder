@@ -197,17 +197,22 @@ export class BlocActionGroup extends HorizontalActionGroup {
         if (!this._target) return;
         const library = BlocLibrary.open();
         library.addEventListener('insert', ((e: CustomEvent) => {
-            const newEl = document.createElement(e.detail.id);
+            if (e.detail.type === 'template') {
+                const fragment = document.createRange().createContextualFragment(e.detail.html);
+                this._target!.replaceWith(fragment);
+            } else {
+                const newEl = document.createElement(e.detail.id);
 
-            if (this._target!.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
-                newEl.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this._target!.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!);
+                if (this._target!.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
+                    newEl.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this._target!.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!);
+                }
+
+                if (this._target!.hasAttribute("slot")) {
+                    newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
+                }
+
+                this._target!.replaceWith(newEl);
             }
-
-            if (this._target!.hasAttribute("slot")) {
-                newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
-            }
-
-            this._target!.replaceWith(newEl);
             this.close();
         }) as EventListener);
     }

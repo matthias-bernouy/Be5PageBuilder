@@ -26,9 +26,11 @@ export class EditorManager{
 
     private observer: ObserverManager;
 
+    private backPath?: string;
     publicRoot: string = "/";
 
-    constructor(workingElement: HTMLElement){
+    constructor(workingElement: HTMLElement, backPath?: string) {
+        this.backPath = backPath;
         this.workingElement = workingElement;
         this.editorSystem   = document.getElementById("editor-system")!;
 
@@ -50,6 +52,10 @@ export class EditorManager{
     }
 
     dashboard(){
+        if ( this.backPath ) {
+            window.location.href = this.backPath;
+            return;
+        }
         window.location.href = "./pages"
     }
 
@@ -66,11 +72,16 @@ export class EditorManager{
     }
 
     getConfiguration(){
-        return this.editorSystem.querySelector("w13c-page-information");
+        return this.editorSystem.querySelector("w13c-page-information")
+            || this.editorSystem.querySelector("w13c-template-information");
     }
 
     getMediaCenter(){
         return this.mediaCenter;
+    }
+
+    getApiBasePath(){
+        return window.location.origin + "/page-builder/api/";
     }
 
     switchMode(mode?: PageMode){
@@ -113,13 +124,18 @@ export class EditorManager{
         }
 
         target.searchParams.set("identifier", props.identifier);
-        const res = fetch(target, {
+        fetch(target, {
             method: "POST",
             body: JSON.stringify(body)
         })
-        res.then((a) => {
-        })
         this.switchMode("editor-mode");
+    }
+
+    getContent(): string {
+        this.switchMode("view-mode");
+        const content = this.workingElement.innerHTML;
+        this.switchMode("editor-mode");
+        return content;
     }
 
     getMode(){

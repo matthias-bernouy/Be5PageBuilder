@@ -61,6 +61,15 @@ export type TTheme = {
     
 }
 
+export type TTemplate = {
+    id?: string;
+    name: string;
+    description: string;
+    content: string;
+    category: string;
+    createdAt: Date;
+}
+
 export type TSystem = {
 
     initializationStep: number;

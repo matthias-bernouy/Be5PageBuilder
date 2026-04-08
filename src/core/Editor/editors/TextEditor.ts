@@ -136,8 +136,13 @@ export class TextEditor extends Editor {
             e.stopImmediatePropagation()
             const actionbar = BlocLibrary.open();
             actionbar.addEventListener("insert", (e: any) => {
-                const new_node = this.createElement(e.detail.id);
-                this.target.replaceWith(new_node);
+                if (e.detail.type === 'template') {
+                    const fragment = document.createRange().createContextualFragment(e.detail.html);
+                    this.target.replaceWith(fragment);
+                } else {
+                    const new_node = this.createElement(e.detail.id);
+                    this.target.replaceWith(new_node);
+                }
             }, { once: true });
         }
     }
