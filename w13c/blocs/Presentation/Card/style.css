@@ -1,0 +1,70 @@
+:host {
+    /* Variables locales surchargeables via attributs ou CSS externe */
+    --card-bg: var(--bg-surface);
+    --card-radius: 12px;
+    --card-border: 1px solid var(--border-default);
+    --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    
+    display: block;
+    width: 100%;
+    height: 100%; /* Important pour s'aligner dans ta Grid */
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: var(--card-bg);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.card-media {
+    aspect-ratio: 16 / 9;
+    background: var(--secondary-muted);
+}
+
+.card-media ::slotted(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex-grow: 1;
+}
+
+.card-title {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.25rem;
+    line-height: 1.4;
+}
+
+.card-resume {
+    margin: 0;
+    color: var(--text-body);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.card-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-default);
+    color: var(--primary-base);
+    font-weight: 600;
+    font-size: 0.85rem;
+}

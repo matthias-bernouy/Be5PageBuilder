@@ -56,35 +56,28 @@ export class CompSync extends HTMLElement {
 
         let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
 
-        // if ( !this._component?.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER) ){
-        //     this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
-        //     this._component?.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
-        //     this._component?.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
-        // }
-
         slots.forEach((slot) => {
             const slotEditor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
             slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+
+            if ( !this.allowOthersComponents ) {
+                slot.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
+            } else {
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
+            }
+
             if ( this.optionnal ) {
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
             } else {
                 slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
             }
-            let subElements = Array.from(slot.querySelectorAll('*')) as Component[];
-
-            // Si le slot est un editeur, on le laissera désactiver les enfants
-            // if ( !slotEditor ){
-            //     subElements.forEach(sub => {
-            //         disableBlocActions(sub);
-            //         const editor = document.compIdentifierToEditor.get(sub.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
-            //         editor?.viewEditor();
-            //     })
-            // }
 
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
+
+                slot.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
 
                 if (this.inlineAdding){
                      slot.setAttribute(p9r.attr.ACTION.INLINE_ADDING, "true");
@@ -126,6 +119,10 @@ export class CompSync extends HTMLElement {
 
     get inlineAdding(){
         return this.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
+    }
+
+    get allowOthersComponents(){
+        return this.hasAttribute("allow-others-components");
     }
 
 }

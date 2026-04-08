@@ -3,12 +3,11 @@ import { ConfigPanel } from "../configuration/ConfigPanel";
 export abstract class Editor {
 
     private targetIdentifier: string;
-    private static styleElement: Map<string, HTMLStyleElement>;
     public         target:       HTMLElement;
+    private styleElement: HTMLStyleElement;
     public         _panelConfig: ConfigPanel | null = null;
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
-        ["edit", true],
         ["duplicate", true],
         ["addBefore", false],
         ["addAfter", false],
@@ -18,6 +17,8 @@ export abstract class Editor {
 
     constructor(target: HTMLElement, styles: string, editor?: string) {
         this.target = target;
+        this.styleElement = document.createElement("style");
+        this.styleElement.innerHTML = styles;
 
         this.targetIdentifier = crypto.randomUUID();
         this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier);
@@ -44,13 +45,6 @@ export abstract class Editor {
             }
         })
 
-        if (Editor.styleElement == null) Editor.styleElement = new Map()
-        if (!Editor.styleElement.has(this.target.tagName)) {
-            const styleElem = document.createElement("style")
-            styleElem.innerHTML = styles;
-            Editor.styleElement.set(this.target.tagName, styleElem);
-        }
-
         if (document.EditorManager?.getBlocActionGroup()){
             document.EditorManager.getBlocActionGroup().close();
         }
@@ -73,9 +67,8 @@ export abstract class Editor {
         this.restore();
         this.target.removeEventListener("mouseenter", this.handleHover);
 
-        Editor.styleElement.forEach((v, k) => {
-            v.remove();
-        })
+        this.styleElement.remove();
+
         this.target.removeAttribute(p9r.attr.EDITOR.IS_EDITOR)
         this.target.classList.remove("editor-block")
         this.target.removeAttribute("draggable")
@@ -84,7 +77,6 @@ export abstract class Editor {
         }
 
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
-        this.target.removeAttribute(p9r.attr.ACTION.DISABLE_EDIT);
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
@@ -107,9 +99,13 @@ export abstract class Editor {
         this._panelConfig?.init();
         this.init();
 
-        Editor.styleElement.forEach((v, k) => {
-            document.body.append(v)
-        })
+
+        if (!this.target.shadowRoot) {
+            document.body.append(this.styleElement);
+        } else {
+            this.target.shadowRoot?.append(this.styleElement);
+        }
+
 
 
         this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
@@ -123,7 +119,6 @@ export abstract class Editor {
         }
 
         this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
-        this._actionBarFeatures.set("edit", this.target.getAttribute(p9r.attr.ACTION.DISABLE_EDIT) !== "true");
         this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
         this._actionBarFeatures.set("addBefore", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
         this._actionBarFeatures.set("addAfter", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
