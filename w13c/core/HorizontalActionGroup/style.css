@@ -21,7 +21,6 @@
   border-radius: 12px;
   box-shadow: var(--toolbar-shadow);
   overflow: hidden;
-  min-width: 48px;
   width: fit-content;
   padding: 6px;
   gap: 4px;
