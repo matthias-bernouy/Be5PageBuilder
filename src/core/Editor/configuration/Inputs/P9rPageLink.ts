@@ -39,13 +39,13 @@ export class P9rPageLink extends HTMLElement {
     }
 
     private _render() {
-        const label = this.getAttribute("label") || "Page";
+        const label = this.getAttribute("label");
 
         const shadow = this.attachShadow({ mode: "open" });
         shadow.innerHTML = `
             <style>${P9rPageLink._css}</style>
             <div class="field">
-                <span class="label">${label}</span>
+                ${label ? `<span class="label">${label}</span>` : ""}
                 <div class="input-row">
                     <button class="trigger" type="button" tabindex="0">
                         <svg class="link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
