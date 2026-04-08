@@ -5,6 +5,7 @@ export abstract class Editor {
     private targetIdentifier: string;
     public         target:       HTMLElement;
     private styleElement: HTMLStyleElement;
+    private static bodyStyle: Map<string, boolean> = new Map();
     public         _panelConfig: ConfigPanel | null = null;
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
@@ -69,6 +70,8 @@ export abstract class Editor {
 
         this.styleElement.remove();
 
+        Editor.bodyStyle.delete(this.target.tagName);
+
         this.target.removeAttribute(p9r.attr.EDITOR.IS_EDITOR)
         this.target.classList.remove("editor-block")
         this.target.removeAttribute("draggable")
@@ -101,7 +104,10 @@ export abstract class Editor {
 
 
         if (!this.target.shadowRoot) {
-            document.body.append(this.styleElement);
+            if (!Editor.bodyStyle.has(this.target.tagName)){
+                Editor.bodyStyle.set(this.target.tagName, true)
+                document.body.append(this.styleElement);
+            };
         } else {
             this.target.shadowRoot?.append(this.styleElement);
         }

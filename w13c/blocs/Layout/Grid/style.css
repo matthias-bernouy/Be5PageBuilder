@@ -54,5 +54,4 @@
 
 .grid-content ::slotted(*) {
     height: var(--grid-item-fixed-height);
-    overflow: hidden;
 }
