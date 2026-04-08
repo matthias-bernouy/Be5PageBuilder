@@ -85,6 +85,22 @@
 :host([inner-bg="surface"]) .stack-inner { background: var(--bg-surface, #ffffff); }
 :host([inner-bg="overlay"]) .stack-inner { background: var(--bg-overlay, #0f172a); }
 
+/* ── Text color presets ── */
+
+:host([text-color="light"]) .stack-inner {
+    --text-main: #ffffff;
+    --text-body: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-default: rgb(255 255 255 / 0.12);
+}
+
+:host([text-color="dark"]) .stack-inner {
+    --text-main: #0f172a;
+    --text-body: #475569;
+    --text-muted: #94a3b8;
+    --border-default: #e2e8f0;
+}
+
 /* ── Size presets: inner-padding ── */
 
 :host([inner-padding="none"]) { --stack-inner-padding: 0px; }
