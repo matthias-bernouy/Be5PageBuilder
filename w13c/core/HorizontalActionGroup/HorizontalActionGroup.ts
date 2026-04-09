@@ -13,7 +13,7 @@ export class HorizontalActionGroup extends Component {
         });
     }
 
-connectedCallback() {
+    override connectedCallback() {
         // Listen for all clicks inside the component
         this.addEventListener('click', (e: Event) => {
             // Find if the clicked element (or one of its parents) is a data-action button

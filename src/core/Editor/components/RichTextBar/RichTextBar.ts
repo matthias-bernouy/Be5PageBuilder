@@ -36,7 +36,7 @@ export class EditorToolbar extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const root = this.shadowRoot!;
         root.addEventListener("mousedown", (e) => {
             const target = e.target as HTMLElement;
@@ -51,7 +51,7 @@ export class EditorToolbar extends Component {
             setTimeout(() => { this.interacting = false; }, 50);
         });
 
-        root.addEventListener("click", (e) => this.handleClick(e));
+        root.addEventListener("click", (e) => this.handleClick(e as MouseEvent));
         document.addEventListener("selectionchange", () => this.handleSelection());
 
         this.pageLink = document.createElement("p9r-page-link");

@@ -17,7 +17,7 @@ export class SnippetConfiguration extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const form = this.shadowRoot?.querySelector("form");
         const errorEl = this.shadowRoot?.querySelector(".error-message") as HTMLElement;
 

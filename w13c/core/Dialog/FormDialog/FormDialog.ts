@@ -29,7 +29,7 @@ export class FormDialog extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this.dialog.addEventListener('click', (event) => {
             const rect = this.dialog.getBoundingClientRect();
             const isInDialog = (

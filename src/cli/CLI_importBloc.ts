@@ -60,7 +60,7 @@ export default async function CLI_importBloc(args: string[]) {
                     await importSingleBloc(MongoClientDefault, parentPath, entry, group);
                     console.log(`✅ Successfully imported: ${entry}`);
                 } catch (err) {
-                    console.error(`❌ Failed to import bloc "${entry}":`, err.message);
+                    console.error(`❌ Failed to import bloc "${entry}":`, err instanceof Error ? err.message : String(err));
                 }
             }
         }

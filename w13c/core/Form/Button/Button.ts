@@ -18,7 +18,7 @@ export class Button extends Component {
         return ['type', 'disabled', 'variant', 'color'];
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this._btn = this.shadowRoot?.querySelector('button') || null;
         this._upgradeProperty('disabled');
         

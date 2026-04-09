@@ -32,8 +32,11 @@
 		"src/**/*.ts",
 		"w13c/**/*.ts",
         "App.ts",
+        "index.ts",
+        "build.ts",
         "src/cli/CLI_importBloc.ts",
-		"types/**/*.d.ts"
-, "types/editor-attributs.ts"	]
+		"types/**/*.d.ts",
+		"types/editor-attributs.ts"
+	]
 
 }

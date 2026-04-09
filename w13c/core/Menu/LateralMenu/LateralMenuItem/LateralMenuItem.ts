@@ -19,7 +19,7 @@ export class LateralMenuItem extends Component {
         return this.shadowRoot?.querySelector('a') || null;
     }
 
-    connectedCallback(): void {
+    override connectedCallback(): void {
         const href = this.getAttribute('href');
         this.updateHref(href);
 

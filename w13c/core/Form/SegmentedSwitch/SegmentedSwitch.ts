@@ -21,7 +21,7 @@ export class SegmentedSwitch extends Component {
         this._internals = this.attachInternals();
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this._slider = this.shadowRoot?.querySelector('.selection-slider') || null;
         this._optionsContainer = this.shadowRoot?.querySelector('.options-container') || null;
 
@@ -54,11 +54,11 @@ export class SegmentedSwitch extends Component {
         this._optionCount = options.length;
         this.style.setProperty('--total-options', this._optionCount.toString());
 
-        options.forEach((opt, index) => {
+        options.forEach((opt) => {
             opt.setAttribute('role', 'radio');
             opt.setAttribute('tabindex', '0');
-            
-            opt.onclick = () => this.value = opt.getAttribute('value') || "";
+
+            (opt as HTMLElement).onclick = () => this.value = opt.getAttribute('value') || "";
         });
 
         this._updateSliderPosition();

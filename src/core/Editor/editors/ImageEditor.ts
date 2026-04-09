@@ -12,7 +12,7 @@ export class ImageEditor extends Editor {
 
     private resizeInstance: ResizeInstance;
 
-    private onClick = (e) => this.handleClick(e);
+    private onClick = (e: MouseEvent) => this.handleClick(e);
     private onSelectMedia = (e: any) => this.handleSelectMedia(e);
 
     constructor(target: HTMLElement) {

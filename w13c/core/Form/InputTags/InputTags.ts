@@ -22,7 +22,7 @@ export class InputTags extends Component {
         this._internals = this.attachInternals();
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this._inputComponent = this.shadowRoot?.querySelector('#main-input');
         this._display = this.shadowRoot?.querySelector('#tags-display') || null;
 

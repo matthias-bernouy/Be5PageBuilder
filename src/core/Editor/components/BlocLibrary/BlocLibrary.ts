@@ -50,7 +50,7 @@ export class BlocLibrary extends Component {
         this._locked = !!options?.locked;
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const s = this.shadowRoot!;
         this._dialog = s.querySelector('#action-bar-dialog') as HTMLDialogElement;
 

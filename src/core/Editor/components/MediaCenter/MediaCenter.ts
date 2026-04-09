@@ -26,7 +26,7 @@ export class MediaCenter extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const s = this.shadowRoot!;
         this._dialog = s.querySelector("dialog");
         this._grid = s.getElementById("grid");

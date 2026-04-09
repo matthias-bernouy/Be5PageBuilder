@@ -3,15 +3,10 @@ import type { Editor } from "src/core/Editor/core/Editor";
 import { P9R_ATTR } from "./editor-attributs";
 import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "./p9r-constants";
 
-declare module "*.css" {
-    const content: string;
-    export default content;
-}
-
-declare module "*.html" {
-    const content: string;
-    export default content;
-}
+// NOTE: wildcard module declarations for `*.css` / `*.html` live in
+// `./assets.d.ts`, NOT here. This file has top-level imports and is
+// therefore a module — wildcard `declare module` entries would be
+// scoped instead of reaching global scope.
 
 declare global {
 

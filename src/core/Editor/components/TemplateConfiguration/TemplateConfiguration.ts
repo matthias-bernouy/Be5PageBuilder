@@ -17,7 +17,7 @@ export class TemplateConfiguration extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const form = this.shadowRoot?.querySelector("form");
         form?.addEventListener("submit", async (e) => {
             e.preventDefault();

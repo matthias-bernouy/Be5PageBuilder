@@ -17,7 +17,7 @@ export class Checkbox extends Component {
         this._internals = this.attachInternals();
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this._input = this.shadowRoot?.querySelector('input') || null;
 
         if (this._input) {

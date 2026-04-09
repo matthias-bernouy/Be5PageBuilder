@@ -13,13 +13,13 @@ export class InputFile extends Component {
         this._internals = this.attachInternals();
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this._input = this.shadowRoot?.querySelector('input') || null;
         this._preview = this.shadowRoot?.querySelector('.file-info') || null;
 
         this.shadowRoot?.addEventListener('dragover', (e) => this._handleDrag(e, true));
         this.shadowRoot?.addEventListener('dragleave', (e) => this._handleDrag(e, false));
-        this.shadowRoot?.addEventListener('drop', (e) => this._handleDrop(e));
+        this.shadowRoot?.addEventListener('drop', (e) => this._handleDrop(e as DragEvent));
 
         this._input?.addEventListener('change', () => this._updateValue());
     }

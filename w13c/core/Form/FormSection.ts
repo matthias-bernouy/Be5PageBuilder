@@ -8,7 +8,7 @@ export class FormSection extends Component {
         super();
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this._collapsed = this.hasAttribute("data-collapsed");
         this.render();
     }

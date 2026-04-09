@@ -26,7 +26,7 @@ export class PageConfiguration extends Component {
         return ['type', 'disabled', 'variant', 'color'];
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const form = this.shadowRoot?.querySelector("form");
         form?.addEventListener("submit", (e) => {
             e.preventDefault();

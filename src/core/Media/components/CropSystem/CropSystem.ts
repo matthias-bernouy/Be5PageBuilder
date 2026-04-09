@@ -10,7 +10,7 @@ export class CropSystem extends Component {
         });
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const backdrop = this.shadowRoot!.getElementById("backdrop")!;
         const closeBtn = this.shadowRoot!.getElementById("close-btn")!;
         const cancelBtn = this.shadowRoot!.getElementById("btn-cancel")!;

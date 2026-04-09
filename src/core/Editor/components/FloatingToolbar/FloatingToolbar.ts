@@ -19,7 +19,7 @@ export class FloatingToolbar extends Component {
         this._onPointerUp = this._onPointerUp.bind(this);
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         const handle = this.shadowRoot?.getElementById('drag-handle');
         handle?.addEventListener('pointerdown', this._onPointerDown.bind(this));
     }

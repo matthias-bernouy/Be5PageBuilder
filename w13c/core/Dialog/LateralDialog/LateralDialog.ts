@@ -16,7 +16,7 @@ export class LateralDialog extends Component {
         this.dialog = this.shadowRoot?.querySelector("dialog")!;
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         this.dialog.addEventListener('click', (event) => {
             if (event.target === this.dialog) {
                 this.close();
