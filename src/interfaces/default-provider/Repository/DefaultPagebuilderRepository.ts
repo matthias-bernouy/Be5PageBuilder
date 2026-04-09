@@ -1,8 +1,11 @@
-import { Collection, Db, MongoClient } from "mongodb";
+import { MongoClient, type Db } from "mongodb";
 import type { PageBuilderRepository } from "src/interfaces/contract/Repository/PageBuilderRepository";
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/interfaces/contract/Repository/TModels";
-import { ObjectId } from "mongodb";
-
+import { BlocsRepository } from "./collections/BlocsRepository";
+import { PagesRepository } from "./collections/PagesRepository";
+import { SystemRepository } from "./collections/SystemRepository";
+import { TemplatesRepository } from "./collections/TemplatesRepository";
+import { SnippetsRepository } from "./collections/SnippetsRepository";
 
 type DefaultDatastoreConfig = {
     uri: string;
@@ -10,45 +13,33 @@ type DefaultDatastoreConfig = {
 }
 
 /**
- * @description This is a default implementation of the IDatastore interface.
- * @description It can be used for the production or for development.
- * @description This default implementation use mongodb as database.
- * 
- **/
+ * Default MongoDB-backed implementation of PageBuilderRepository. Acts as a
+ * composition root over one sub-repository per collection — all persistence
+ * logic lives in `./collections/*`. This class just delegates and owns the
+ * Mongo connection lifecycle.
+ */
 export class DefaultPageBuilderRepository implements PageBuilderRepository {
 
     private _database: Db;
-    private _blocsCollection: Collection<TBloc>;
-    private _pagesCollection: Collection<TPage>;
-    private _systemCollection: Collection<TSystem>;
-    private _templatesCollection: Collection<TTemplate>;
-    private _snippetsCollection: Collection<TSnippet>;
+    private _blocs:     BlocsRepository;
+    private _pages:     PagesRepository;
+    private _system:    SystemRepository;
+    private _templates: TemplatesRepository;
+    private _snippets:  SnippetsRepository;
 
     constructor(client: MongoClient, databaseName: string) {
-        this._database = client.db(databaseName);
-        this._blocsCollection = this._database.collection<TBloc>("blocs");
-        this._pagesCollection = this._database.collection<TPage>("pages");
-        this._systemCollection = this._database.collection<TSystem>("system");
-        this._templatesCollection = this._database.collection<TTemplate>("templates");
-        this._snippetsCollection = this._database.collection<TSnippet>("snippets");
-        this._snippetsCollection.createIndex({ identifier: 1 }, { unique: true }).catch(err => {
-            console.error("Failed to create unique index on snippets.identifier", err);
-        });
-
-        // Migration: drop legacy unique index on identifier alone, then create
-        // the compound unique index on (path, identifier). The legacy index may
-        // not exist (fresh DB) — ignore NamespaceNotFound errors.
-        this._pagesCollection.dropIndex("identifier_1").catch(() => { /* ignore */ });
-        this._pagesCollection.createIndex({ path: 1, identifier: 1 }, { unique: true }).catch(err => {
-            console.error("Failed to create unique index on pages.(path, identifier)", err);
-        });
+        this._database  = client.db(databaseName);
+        this._blocs     = new BlocsRepository(this._database);
+        this._pages     = new PagesRepository(this._database);
+        this._system    = new SystemRepository(this._database);
+        this._templates = new TemplatesRepository(this._database);
+        this._snippets  = new SnippetsRepository(this._database);
     }
 
     static create(config: DefaultDatastoreConfig): Promise<DefaultPageBuilderRepository> {
         return new Promise((resolve, reject) => {
             new MongoClient(config.uri).connect().then(client => {
-                const instance = new DefaultPageBuilderRepository(client, config.databaseName);
-                resolve(instance);
+                resolve(new DefaultPageBuilderRepository(client, config.databaseName));
             }).catch(err => {
                 console.error("Failed to connect to the database", err);
                 reject(err);
@@ -56,261 +47,107 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         });
     }
 
-    reset(): Promise<void> {
-        return new Promise((resolve, reject) => {
-            Promise.all([
-                this._blocsCollection.deleteMany({}),
-                this._pagesCollection.deleteMany({}),
-                this._systemCollection.deleteMany({})
-            ]).then(() => {
-                resolve();
-            }).catch(err => {
-                console.error("Failed to reset the database", err);
-                reject(err);
-            });
-        });
-    }
-
-    createBloc(bloc: TBloc): Promise<TBloc> {
-        return new Promise((resolve, reject) => {
-            this._blocsCollection.insertOne(bloc).then(result => {
-                if (result.acknowledged) {
-                    resolve(bloc);
-                } else {
-                    reject(new Error("Failed to create bloc"));
-                }
-            }).catch(err => {
-                console.error("Failed to create bloc", err);
-                reject(err);
-            });
-        });
-    }
-
-
-    getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]> {
-        return new Promise((resolve, reject) => {
-            this._blocsCollection.find({}, { projection: { id: 1, editorJS: 1, _id: 0 } }).toArray().then(blocs => {
-                const editorJS = blocs.map(bloc => ({
-                    id: bloc.id,
-                    editorJS: bloc.editorJS
-                }));
-                resolve(editorJS);
-            }).catch(err => {
-                console.error("Failed to get blocs editor JS", err);
-                reject(err);
-            });
-        });
-    }
-
-    getBlocViewJS(id: string): Promise<string | null> {
-        return new Promise((resolve, reject) => {
-            this._blocsCollection.findOne({ id }, { projection: { viewJS: 1, _id: 0 } }).then(bloc => {
-                if (bloc) {
-                    resolve(bloc.viewJS);
-                } else {
-                    resolve(null);
-                }
-            }).catch(err => {
-                console.error("Failed to get bloc view JS", err);
-                reject(err);
-            });
-        });
-    }
-
-
-    async createPage(page: TPage, oldKey?: { path: string; identifier: string }): Promise<TPage> {
-        const filter = oldKey
-            ? { path: oldKey.path, identifier: oldKey.identifier }
-            : { path: page.path, identifier: page.identifier };
-
+    async reset(): Promise<void> {
         try {
-            const result = await this._pagesCollection.replaceOne(
-                filter,
-                page,
-                { upsert: true }
-            );
-
-            if (result.acknowledged) {
-                return page;
-            } else {
-                throw new Error("Upsert not acknowledged by MongoDB");
-            }
+            await Promise.all([
+                this._blocs.clear(),
+                this._pages.clear(),
+                this._system.clear(),
+            ]);
         } catch (err) {
-            console.error("Failed to upsert page:", err);
+            console.error("Failed to reset the database", err);
             throw err;
         }
     }
 
+    // ── Blocs ──
 
-    async getPage(path: string, identifier: string): Promise<TPage | null> {
-        const page = await this._pagesCollection.findOne({ path, identifier });
-        return page as TPage | null;
+    createBloc(bloc: TBloc): Promise<TBloc> {
+        return this._blocs.create(bloc);
     }
 
+    getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]> {
+        return this._blocs.getEditorJS();
+    }
+
+    getBlocViewJS(id: string): Promise<string | null> {
+        return this._blocs.getViewJS(id);
+    }
+
+    // ── Pages ──
+
+    createPage(page: TPage, oldKey?: { path: string; identifier: string }): Promise<TPage> {
+        return this._pages.upsert(page, oldKey);
+    }
+
+    getPage(path: string, identifier: string): Promise<TPage | null> {
+        return this._pages.getByKey(path, identifier);
+    }
 
     getAllPages(): Promise<TPage[]> {
-        return new Promise((resolve, reject) => {
-            this._pagesCollection.find({}).toArray().then(pages => {
-                resolve(pages);
-            }).catch(err => {
-                console.error("Failed to get all pages", err);
-                reject(err);
-            });
-        });
+        return this._pages.getAll();
     }
 
+    // ── System ──
 
-    async getSystem(): Promise<TSystem> {
-        const defaults: TSystem = {
-            initializationStep: 0,
-            site: {
-                name: "",
-                favicon: "",
-                visible: true,
-                theme: "",
-                home: null,
-                notFound: null,
-                serverError: null,
-            },
-            seo: { titleTemplate: "%s", defaultDescription: "", defaultOgImage: "" },
-            editor: { layoutCategory: "" },
-        };
-
-        const doc = await this._systemCollection.findOne({}) as any;
-        if (!doc) {
-            await this._systemCollection.insertOne(defaults);
-            return defaults;
-        }
-
-        // In-place migration: strip legacy fields (homePage/page404/page500 as
-        // strings, blocAtPageCreation) and merge with current defaults so any
-        // newly-added fields are populated. Dev DBs only — we're pre-v1.
-        const legacy = doc.site || {};
-        const hasLegacySite = "homePage" in legacy || "page404" in legacy || "page500" in legacy;
-        const hasLegacyEditor = doc.editor && "blocAtPageCreation" in doc.editor;
-
-        const merged: TSystem = {
-            initializationStep: doc.initializationStep ?? 0,
-            site: {
-                name: legacy.name ?? "",
-                favicon: legacy.favicon ?? "",
-                visible: legacy.visible ?? true,
-                theme: legacy.theme ?? "",
-                home: legacy.home ?? null,
-                notFound: legacy.notFound ?? null,
-                serverError: legacy.serverError ?? null,
-            },
-            seo: {
-                titleTemplate: doc.seo?.titleTemplate ?? "%s",
-                defaultDescription: doc.seo?.defaultDescription ?? "",
-                defaultOgImage: doc.seo?.defaultOgImage ?? "",
-            },
-            editor: {
-                layoutCategory: doc.editor?.layoutCategory ?? "",
-            },
-        };
-
-        if (hasLegacySite || hasLegacyEditor) {
-            // Replace entire `site` and `editor` subdocs so legacy fields
-            // (homePage/page404/page500, blocAtPageCreation) are dropped.
-            await this._systemCollection.updateOne(
-                {},
-                { $set: { site: merged.site, editor: merged.editor } }
-            );
-        }
-
-        return merged;
+    getSystem(): Promise<TSystem> {
+        return this._system.get();
     }
 
-    async updateSystem(update: Partial<TSystem>): Promise<TSystem> {
-        const flatUpdate: Record<string, any> = {};
-        for (const [section, value] of Object.entries(update)) {
-            if (section === "initializationStep") {
-                flatUpdate[section] = value;
-            } else if (typeof value === "object" && value !== null) {
-                for (const [key, val] of Object.entries(value)) {
-                    flatUpdate[`${section}.${key}`] = val;
-                }
-            }
-        }
-
-        await this._systemCollection.updateOne({}, { $set: flatUpdate }, { upsert: true });
-        return this.getSystem();
+    updateSystem(update: Partial<TSystem>): Promise<TSystem> {
+        return this._system.update(update);
     }
 
     // ── Templates ──
 
-    async createTemplate(template: TTemplate): Promise<TTemplate> {
-        const result = await this._templatesCollection.insertOne(template as any);
-        return { ...template, id: result.insertedId.toString() };
+    createTemplate(template: TTemplate): Promise<TTemplate> {
+        return this._templates.create(template);
     }
 
-    async getTemplateById(id: string): Promise<TTemplate | null> {
-        const doc = await this._templatesCollection.findOne({ _id: new ObjectId(id) });
-        if (!doc) return null;
-        return { ...doc, id: (doc as any)._id.toString() } as TTemplate;
+    getTemplateById(id: string): Promise<TTemplate | null> {
+        return this._templates.getById(id);
     }
 
-    async getAllTemplates(): Promise<TTemplate[]> {
-        const docs = await this._templatesCollection.find({}).toArray();
-        return docs.map(doc => ({ ...doc, id: (doc as any)._id.toString() }) as TTemplate);
+    getAllTemplates(): Promise<TTemplate[]> {
+        return this._templates.getAll();
     }
 
-    async updateTemplate(id: string, data: Partial<TTemplate>): Promise<TTemplate | null> {
-        const { id: _, ...updateData } = data;
-        await this._templatesCollection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: updateData }
-        );
-        return this.getTemplateById(id);
+    updateTemplate(id: string, data: Partial<TTemplate>): Promise<TTemplate | null> {
+        return this._templates.update(id, data);
     }
 
-    async deleteTemplate(id: string): Promise<void> {
-        await this._templatesCollection.deleteOne({ _id: new ObjectId(id) });
+    deleteTemplate(id: string): Promise<void> {
+        return this._templates.delete(id);
     }
 
     // ── Snippets ──
 
-    async createSnippet(snippet: TSnippet): Promise<TSnippet> {
-        const result = await this._snippetsCollection.insertOne(snippet as any);
-        return { ...snippet, id: result.insertedId.toString() };
+    createSnippet(snippet: TSnippet): Promise<TSnippet> {
+        return this._snippets.create(snippet);
     }
 
-    async getSnippetById(id: string): Promise<TSnippet | null> {
-        const doc = await this._snippetsCollection.findOne({ _id: new ObjectId(id) });
-        if (!doc) return null;
-        return { ...doc, id: (doc as any)._id.toString() } as TSnippet;
+    getSnippetById(id: string): Promise<TSnippet | null> {
+        return this._snippets.getById(id);
     }
 
-    async getSnippetByIdentifier(identifier: string): Promise<TSnippet | null> {
-        const doc = await this._snippetsCollection.findOne({ identifier });
-        if (!doc) return null;
-        return { ...doc, id: (doc as any)._id.toString() } as TSnippet;
+    getSnippetByIdentifier(identifier: string): Promise<TSnippet | null> {
+        return this._snippets.getByIdentifier(identifier);
     }
 
-    async getAllSnippets(): Promise<TSnippet[]> {
-        const docs = await this._snippetsCollection.find({}).toArray();
-        return docs.map(doc => ({ ...doc, id: (doc as any)._id.toString() }) as TSnippet);
+    getAllSnippets(): Promise<TSnippet[]> {
+        return this._snippets.getAll();
     }
 
-    async updateSnippet(id: string, data: Partial<TSnippet>): Promise<TSnippet | null> {
-        const { id: _, identifier: __, createdAt: ___, ...updateData } = data;
-        await this._snippetsCollection.updateOne(
-            { _id: new ObjectId(id) },
-            { $set: { ...updateData, updatedAt: new Date() } }
-        );
-        return this.getSnippetById(id);
+    updateSnippet(id: string, data: Partial<TSnippet>): Promise<TSnippet | null> {
+        return this._snippets.update(id, data);
     }
 
-    async deleteSnippet(id: string): Promise<void> {
-        await this._snippetsCollection.deleteOne({ _id: new ObjectId(id) });
+    deleteSnippet(id: string): Promise<void> {
+        return this._snippets.delete(id);
     }
 
-    async findPagesUsingSnippet(identifier: string): Promise<TPage[]> {
-        const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const regex = new RegExp(`<w13c-snippet[^>]*\\bidentifier\\s*=\\s*["']${escaped}["']`, "i");
-        const docs = await this._pagesCollection.find({ content: { $regex: regex } }).toArray();
-        return docs as TPage[];
+    findPagesUsingSnippet(identifier: string): Promise<TPage[]> {
+        return this._pages.findUsingSnippet(identifier);
     }
 
 }
