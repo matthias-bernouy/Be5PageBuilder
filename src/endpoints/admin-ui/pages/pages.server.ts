@@ -15,12 +15,19 @@ for (const page of pageList) {
     const statusLabel = page.visible ? 'Published' : 'Draft';
     page.tags = JSON.parse(page.tags as unknown as string || "[]")
 
+    const editorQuery = page.identifier
+        ? `path=${encodeURIComponent(page.path)}&identifier=${encodeURIComponent(page.identifier)}`
+        : `path=${encodeURIComponent(page.path)}`;
+    const publicUrl = page.identifier
+        ? `${page.path}?identifier=${page.identifier}`
+        : page.path;
+
     tableBody.innerHTML += `
-        <p9r-row href="./editor?identifier=${page.identifier}">
+        <p9r-row href="./editor?${editorQuery}">
             <p9r-cell><strong>${page.title || 'Untitled'}</strong></p9r-cell>
-            
+
             <p9r-cell>
-                <p9r-tag>${page.path}?identifier=${page.identifier}</p9r-tag>
+                <p9r-tag>${publicUrl}</p9r-tag>
             </p9r-cell>
 
             <p9r-cell>

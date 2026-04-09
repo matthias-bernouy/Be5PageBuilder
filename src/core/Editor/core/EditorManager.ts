@@ -112,9 +112,12 @@ export class EditorManager{
 
         const target = new URL("../api/page", window.location.href);
 
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        const currentIdentifier = urlParams.get('identifier');
+        // The current URL identifies the page being edited via (?path, ?identifier).
+        // Those become the "old key" we send to the API so the upsert can find
+        // the existing document even if the user just renamed its path/identifier.
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentPath = urlParams.get("path") || props.path;
+        const currentIdentifier = urlParams.get("identifier") || "";
 
         const body = {
             content: article,
@@ -123,14 +126,15 @@ export class EditorManager{
             description: props.description,
             visible: props.visible,
             tags: props.tags,
-            identifier: currentIdentifier
-        }
+            identifier: props.identifier
+        };
 
-        target.searchParams.set("identifier", props.identifier);
+        target.searchParams.set("path", currentPath);
+        target.searchParams.set("identifier", currentIdentifier);
         fetch(target, {
             method: "POST",
             body: JSON.stringify(body)
-        })
+        });
         this.switchMode("editor-mode");
     }
 

@@ -27,7 +27,7 @@ export class PageConfiguration extends Component {
     }
 
     connectedCallback() {
-        const form = this.shadowRoot?.querySelector("form");  
+        const form = this.shadowRoot?.querySelector("form");
         form?.addEventListener("submit", (e) => {
             e.preventDefault();
             const formData = new FormData(form);
@@ -39,10 +39,17 @@ export class PageConfiguration extends Component {
                 identifier: data.identifier || "",
                 path: data.path || "",
                 tags: JSON.stringify(data.tags?.split(",") || [])
-            })
+            });
+            // Keep the admin URL in sync with the new (path, identifier) key
+            // so a refresh re-opens the same page even after a rename.
             const url = new URL(window.location.href);
-            url.searchParams.set('identifier', data.identifier || "");
-            window.history.pushState({}, '', url);
+            url.searchParams.set("path", (data.path as string) || "");
+            if (data.identifier) {
+                url.searchParams.set("identifier", data.identifier as string);
+            } else {
+                url.searchParams.delete("identifier");
+            }
+            window.history.pushState({}, "", url);
         });
 
         Array.from(this.attributes)

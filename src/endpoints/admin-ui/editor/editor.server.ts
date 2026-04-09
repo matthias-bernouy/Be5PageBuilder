@@ -10,7 +10,10 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     const { document } = parseHTML(html);
 
     const url = new URL(req.url);
-    const identifier = url.searchParams.get("identifier");
+    // New URL scheme: (path, identifier) as the key, both overridable via query.
+    // `identifier` is optional (empty string = default variant for a path).
+    const path = url.searchParams.get("path");
+    const identifier = url.searchParams.get("identifier") || "";
 
     const blocs = await system.repository.getBlocsEditorJS();
 
@@ -51,28 +54,28 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
 
     document.head.append(...scripts);
 
-    if (identifier) {
-        const page = await system.repository.getPageByIdentifier(identifier);
-        const editorSystem = document.getElementById("editor-system")!;
-        const editor = document.getElementById("editor")!;
-
-        const config = document.createElement("w13c-page-information");
-
-        config.setAttribute("default-title", page?.title || url.searchParams.get("title") || "Default Title")
-        config.setAttribute("default-description", page?.description || "Default Description")
-        config.setAttribute("default-identifier", page?.identifier || identifier)
-        config.setAttribute("default-path", page?.path || url.searchParams.get("path") || "/article")
-        config.setAttribute("default-visible", page?.visible ? "on" : "off")
-        config.setAttribute("default-tags", JSON.parse(page?.tags as unknown as string || "[]").join(','))
-
-        editorSystem.append(config);
-        // SSR-expand snippet references so the ObserverManager picks up the
-        // current content on load, without a client-side fetch race.
-        const content = page?.content || "<p></p>";
-        editor.innerHTML = await expandSnippets(content, system);
-    } else {
+    if (!path) {
         return Response.redirect("/page-builder/admin/pages", 302);
     }
+
+    const page = await system.repository.getPage(path, identifier);
+    const editorSystem = document.getElementById("editor-system")!;
+    const editor = document.getElementById("editor")!;
+
+    const config = document.createElement("w13c-page-information");
+
+    config.setAttribute("default-title", page?.title || url.searchParams.get("title") || "Default Title");
+    config.setAttribute("default-description", page?.description || "Default Description");
+    config.setAttribute("default-identifier", page?.identifier ?? identifier);
+    config.setAttribute("default-path", page?.path || path);
+    config.setAttribute("default-visible", page?.visible ? "on" : "off");
+    config.setAttribute("default-tags", JSON.parse(page?.tags as unknown as string || "[]").join(','));
+
+    editorSystem.append(config);
+    // SSR-expand snippet references so the ObserverManager picks up the
+    // current content on load, without a client-side fetch race.
+    const content = page?.content || "<p></p>";
+    editor.innerHTML = await expandSnippets(content, system);
 
     return send_html(document.toString());
 }

@@ -1,4 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
+import { pageCacheKey } from "src/server/renderPage";
 
 export default async function deleteSnippet(req: Request, system: PageBuilder) {
     const url = new URL(req.url);
@@ -24,9 +25,9 @@ export default async function deleteSnippet(req: Request, system: PageBuilder) {
 
     await system.repository.deleteSnippet(id);
 
-    // Invalidate article cache for every page that referenced this snippet
+    // Invalidate rendered-page cache for every page that referenced this snippet
     for (const page of usages) {
-        system.cache.delete(`article:${page.identifier}`);
+        system.cache.delete(pageCacheKey(page.path, page.identifier));
     }
 
     return new Response("Deleted", { status: 200 });

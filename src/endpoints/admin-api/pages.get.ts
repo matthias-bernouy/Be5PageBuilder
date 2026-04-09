@@ -7,7 +7,9 @@ export default async function getPages(_req: Request, system: PageBuilder) {
         .filter(page => page.visible)
         .map(page => ({
             title: page.title,
-            path: page.path + "?identifier=" + page.identifier
+            path: page.identifier
+                ? `${page.path}?identifier=${page.identifier}`
+                : page.path
         }));
 
     return new Response(JSON.stringify(links), {

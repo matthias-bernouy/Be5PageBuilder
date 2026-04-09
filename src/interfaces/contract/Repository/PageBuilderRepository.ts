@@ -13,8 +13,8 @@ export interface PageBuilderRepository {
 
 
     // PAGE
-    createPage(page: TPage, oldIdentifier?: string): Promise<TPage>;
-    getPageByIdentifier(identifier: string): Promise<TPage | null>;
+    createPage(page: TPage, oldKey?: { path: string; identifier: string }): Promise<TPage>;
+    getPage(path: string, identifier: string): Promise<TPage | null>;
     getAllPages(): Promise<TPage[]>;
 
 

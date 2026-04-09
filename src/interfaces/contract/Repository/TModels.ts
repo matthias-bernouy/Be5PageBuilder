@@ -7,6 +7,12 @@ export type TBloc = {
 
 export type TPage = {
   id?: string;
+  /**
+   * Optional discriminator within a path. Pages are uniquely identified by
+   * (path, identifier). When empty, the page is the default for its path
+   * and is served without any query parameter: e.g. `/article`. When set,
+   * the page is served as `/article?identifier=foo`.
+   */
   identifier: string;
   path: string;
   content: string;

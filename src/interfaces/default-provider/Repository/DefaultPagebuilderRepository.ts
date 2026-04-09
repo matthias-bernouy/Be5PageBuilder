@@ -35,6 +35,14 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         this._snippetsCollection.createIndex({ identifier: 1 }, { unique: true }).catch(err => {
             console.error("Failed to create unique index on snippets.identifier", err);
         });
+
+        // Migration: drop legacy unique index on identifier alone, then create
+        // the compound unique index on (path, identifier). The legacy index may
+        // not exist (fresh DB) — ignore NamespaceNotFound errors.
+        this._pagesCollection.dropIndex("identifier_1").catch(() => { /* ignore */ });
+        this._pagesCollection.createIndex({ path: 1, identifier: 1 }, { unique: true }).catch(err => {
+            console.error("Failed to create unique index on pages.(path, identifier)", err);
+        });
     }
 
     static create(config: DefaultDatastoreConfig): Promise<DefaultPageBuilderRepository> {
@@ -127,8 +135,10 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
     }
 
 
-    async createPage(page: TPage, oldIdentifier?: string): Promise<TPage> {
-        const filter = { identifier: oldIdentifier || page.identifier };
+    async createPage(page: TPage, oldKey?: { path: string; identifier: string }): Promise<TPage> {
+        const filter = oldKey
+            ? { path: oldKey.path, identifier: oldKey.identifier }
+            : { path: page.path, identifier: page.identifier };
 
         try {
             const result = await this._pagesCollection.replaceOne(
@@ -149,19 +159,9 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
     }
 
 
-    getPageByIdentifier(identifier: string): Promise<TPage | null> {
-        return new Promise((resolve, reject) => {
-            this._pagesCollection.findOne({ identifier }).then(page => {
-                if (page) {
-                    resolve(page);
-                } else {
-                    resolve(null);
-                }
-            }).catch(err => {
-                console.error("Failed to get page by identifier", err);
-                reject(err);
-            });
-        });
+    async getPage(path: string, identifier: string): Promise<TPage | null> {
+        const page = await this._pagesCollection.findOne({ path, identifier });
+        return page as TPage | null;
     }
 
 

@@ -1,5 +1,6 @@
 import type { PageBuilder } from "src/PageBuilder";
 import type { TSnippet } from "src/interfaces/contract/Repository/TModels";
+import { pageCacheKey } from "src/server/renderPage";
 
 const IDENTIFIER_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -13,10 +14,10 @@ export default async function postSnippet(req: Request, system: PageBuilder) {
         const updated = await system.repository.updateSnippet(id, body);
         if (!updated) return new Response("Not found", { status: 404 });
 
-        // Invalidate article cache for every page that references this snippet
+        // Invalidate rendered-page cache for every page that references this snippet
         const usages = await system.repository.findPagesUsingSnippet(updated.identifier);
         for (const page of usages) {
-            system.cache.delete(`article:${page.identifier}`);
+            system.cache.delete(pageCacheKey(page.path, page.identifier));
         }
 
         return new Response(JSON.stringify(updated), {
