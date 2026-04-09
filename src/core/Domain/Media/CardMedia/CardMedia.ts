@@ -11,4 +11,6 @@ export class CardMedia extends Component {
     }
 }
 
-customElements.define("p9r-card-media", CardMedia);
+if ( !customElements.get("p9r-card-media") ) {
+    customElements.define("p9r-card-media", CardMedia);
+}

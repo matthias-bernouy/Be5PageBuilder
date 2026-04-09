@@ -160,4 +160,6 @@ export class GridMedia extends Component {
     }
 }
 
-customElements.define("p9r-grid-media", GridMedia);
+if ( !customElements.get("p9r-grid-media") ) { 
+    customElements.define("p9r-grid-media", GridMedia);
+}

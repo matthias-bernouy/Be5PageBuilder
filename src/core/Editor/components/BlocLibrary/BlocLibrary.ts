@@ -11,6 +11,14 @@ const TEMPLATE_SVG = `
 </svg>
 `;
 
+const SNIPPET_SVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 16 4-4-4-4"/>
+    <path d="m6 8-4 4 4 4"/>
+    <path d="m14.5 4-5 16"/>
+</svg>
+`;
+
 const DEFAULT_COMPONENT_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
     <rect x="2" y="2" width="20" height="20" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -22,6 +30,7 @@ const DEFAULT_COMPONENT_SVG = `
 
 type Section = 'blocs' | 'templates' | 'snippets';
 type TemplateItem = { id: string; name: string; content: string; category: string };
+type SnippetItem = { id: string; identifier: string; name: string; category: string };
 
 export const ActionBarMetadata: ComponentMetadata = {
     css: css,
@@ -34,6 +43,7 @@ export class BlocLibrary extends Component {
     private _section: Section = 'blocs';
     private _activeGroup: string | null = null;
     private _templates: TemplateItem[] = [];
+    private _snippets: SnippetItem[] = [];
 
     constructor() {
         super(ActionBarMetadata);
@@ -70,7 +80,7 @@ export class BlocLibrary extends Component {
         const groups = Array.from(observer.getGroups());
         if (groups.length > 0) this._activeGroup = groups[0]!;
 
-        this._fetchTemplates().then(() => {
+        Promise.all([this._fetchTemplates(), this._fetchSnippets()]).then(() => {
             this._render();
             this._dialog!.showModal();
         });
@@ -80,6 +90,13 @@ export class BlocLibrary extends Component {
         try {
             const res = await fetch(new URL("templates", document.EditorManager.getApiBasePath()));
             if (res.ok) this._templates = await res.json();
+        } catch { /* ignore */ }
+    }
+
+    private async _fetchSnippets() {
+        try {
+            const res = await fetch(new URL("snippets", document.EditorManager.getApiBasePath()));
+            if (res.ok) this._snippets = await res.json();
         } catch { /* ignore */ }
     }
 
@@ -124,6 +141,8 @@ export class BlocLibrary extends Component {
             this._renderBlocCards(grid);
         } else if (this._section === 'templates') {
             this._renderTemplateCards(grid);
+        } else if (this._section === 'snippets') {
+            this._renderSnippetCards(grid);
         }
     }
 
@@ -133,6 +152,10 @@ export class BlocLibrary extends Component {
         }
         if (this._section === 'templates') {
             const cats = new Set(this._templates.map(t => t.category || 'Default'));
+            return Array.from(cats);
+        }
+        if (this._section === 'snippets') {
+            const cats = new Set(this._snippets.map(s => s.category || 'Default'));
             return Array.from(cats);
         }
         return [];
@@ -175,6 +198,34 @@ export class BlocLibrary extends Component {
             const card = this._createCard(TEMPLATE_SVG, tpl.name, () => {
                 this.dispatchEvent(new CustomEvent('insert', {
                     detail: { type: 'template', html: tpl.content },
+                    bubbles: true,
+                    composed: true
+                }));
+                this.close();
+            });
+            grid.appendChild(card);
+        });
+    }
+
+    private _renderSnippetCards(grid: HTMLElement) {
+        const filtered = this._snippets.filter(s =>
+            (s.category || 'Default') === this._activeGroup
+        );
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
+                    <p>No snippets in this category</p>
+                </div>
+            `;
+            return;
+        }
+
+        filtered.forEach(snippet => {
+            const card = this._createCard(SNIPPET_SVG, snippet.name, () => {
+                this.dispatchEvent(new CustomEvent('insert', {
+                    detail: { type: 'snippet', identifier: snippet.identifier },
                     bubbles: true,
                     composed: true
                 }));

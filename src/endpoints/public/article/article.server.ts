@@ -2,6 +2,7 @@ import { parseHTML } from "linkedom";
 import type { PageBuilder } from "src/PageBuilder";
 import { join } from "node:path";
 import { cachedResponseAsync, compress } from "src/server/compression";
+import { expandSnippets } from "src/server/expandSnippets";
 
 export default async function ViewPageServer(req: Request, system: PageBuilder) {
     const url = new URL(req.url);
@@ -40,11 +41,14 @@ export default async function ViewPageServer(req: Request, system: PageBuilder) 
         themeLink.setAttribute("href", "/style");
         document.head.appendChild(themeLink);
 
-        // Page content
-        document.body.innerHTML = page.content;
+        // Expand snippet references before rendering (SSR)
+        const expandedContent = await expandSnippets(page.content, system);
 
-        // Find be5-* tags used in content and add their scripts
-        const usedTags = extractBlocTags(page.content);
+        // Page content
+        document.body.innerHTML = expandedContent;
+
+        // Find be5-* tags used in the expanded content and add their scripts
+        const usedTags = extractBlocTags(expandedContent);
 
         for (const tag of usedTags) {
             const script = document.createElement("script");
@@ -67,3 +71,4 @@ function extractBlocTags(content: string): string[] {
 
     return [...tags];
 }
+

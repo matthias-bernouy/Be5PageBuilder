@@ -139,6 +139,10 @@ export class TextEditor extends Editor {
                 if (e.detail.type === 'template') {
                     const fragment = document.createRange().createContextualFragment(e.detail.html);
                     this.target.replaceWith(fragment);
+                } else if (e.detail.type === 'snippet') {
+                    const new_node = document.createElement('w13c-snippet');
+                    new_node.setAttribute('identifier', e.detail.identifier);
+                    this.target.replaceWith(new_node);
                 } else {
                     const new_node = this.createElement(e.detail.id);
                     this.target.replaceWith(new_node);

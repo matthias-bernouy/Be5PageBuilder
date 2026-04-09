@@ -2,14 +2,14 @@ import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path";
 import type { PageBuilder } from 'src/PageBuilder';
-import { expandSnippets } from 'src/server/expandSnippets';
 
-export default async function TemplateEditorServer(req: Request, system: PageBuilder) {
+export default async function SnippetEditorServer(req: Request, system: PageBuilder) {
     const html = await Bun.file(join(__dirname, "./editor.html")).text();
     const { document } = parseHTML(html);
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
+    const identifier = url.searchParams.get("identifier");
 
     // Load bloc scripts (same as page editor)
     const blocs = await system.repository.getBlocsEditorJS();
@@ -44,21 +44,23 @@ export default async function TemplateEditorServer(req: Request, system: PageBui
         document.head.appendChild(s);
     });
 
-    // Create template configuration element
+    // Create snippet configuration element
     const editorSystem = document.getElementById("editor-system")!;
     const editor = document.getElementById("editor")!;
-    const config = document.createElement("w13c-template-information");
+    const config = document.createElement("w13c-snippet-information");
 
-    if (id) {
-        const template = await system.repository.getTemplateById(id);
-        if (template) {
-            config.setAttribute("default-name", template.name);
-            config.setAttribute("default-description", template.description || "");
-            config.setAttribute("default-category", template.category || "");
-            editor.innerHTML = await expandSnippets(template.content || "<p></p>", system);
-        } else {
-            editor.innerHTML = "<p></p>";
-        }
+    const snippet = id
+        ? await system.repository.getSnippetById(id)
+        : identifier
+            ? await system.repository.getSnippetByIdentifier(identifier)
+            : null;
+
+    if (snippet) {
+        config.setAttribute("default-identifier", snippet.identifier);
+        config.setAttribute("default-name", snippet.name);
+        config.setAttribute("default-description", snippet.description || "");
+        config.setAttribute("default-category", snippet.category || "");
+        editor.innerHTML = snippet.content || "<p></p>";
     } else {
         editor.innerHTML = "<p></p>";
     }

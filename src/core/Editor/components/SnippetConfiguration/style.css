@@ -1,0 +1,55 @@
+:host {
+    display: block;
+}
+
+.error-message {
+    color: var(--danger-base, #ef4444);
+    font-size: 0.875rem;
+    margin: 0.5rem 0 0;
+}
+
+.error-message[hidden] {
+    display: none;
+}
+
+.usages[hidden] {
+    display: none;
+}
+
+.usages {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg-surface, #f8fafc);
+    border-radius: 8px;
+}
+
+.usages h3 {
+    margin: 0 0 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted, #64748b);
+}
+
+.usages-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    max-height: 160px;
+    overflow-y: auto;
+}
+
+.usages-list li {
+    font-size: 0.875rem;
+    color: var(--text-main, #0f172a);
+}
+
+.usages-empty {
+    font-size: 0.875rem;
+    color: var(--text-muted, #64748b);
+    font-style: italic;
+}

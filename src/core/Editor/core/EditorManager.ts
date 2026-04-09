@@ -1,3 +1,5 @@
+
+import "src/core/Editor/components/Snippet/SnippetElement"
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "../components/MediaCenter/MediaCenter";
@@ -73,7 +75,8 @@ export class EditorManager{
 
     getConfiguration(){
         return this.editorSystem.querySelector("w13c-page-information")
-            || this.editorSystem.querySelector("w13c-template-information");
+            || this.editorSystem.querySelector("w13c-template-information")
+            || this.editorSystem.querySelector("w13c-snippet-information");
     }
 
     getMediaCenter(){

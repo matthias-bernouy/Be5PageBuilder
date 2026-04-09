@@ -3,6 +3,7 @@ import "src/core/Editor/components/MediaCenter/MediaCenter"
 import { ImageEditor } from "../editors/ImageEditor";
 import { TextEditor, textTags } from "../editors/TextEditor";
 import { ListEditor } from "../editors/ListEditor";
+import { SnippetEditor } from "../editors/SnippetEditor";
 import type { Editor } from "./Editor";
 import { EmptyEditor } from "./registerEditor";
 
@@ -26,7 +27,7 @@ export class ObserverManager {
 
         this.workingElement = workingElement;
         textTags.forEach((tag) => {
-            if (["p", "span", "a"].includes(tag)) {
+            if (["span", "a"].includes(tag)) {
                 this.register_editor({
                     tag,
                     cl: TextEditor,
@@ -58,6 +59,13 @@ export class ObserverManager {
             tag: "ol",
             cl: ListEditor,
             label: "ol"
+        });
+
+        this.register_editor({
+            tag: "w13c-snippet",
+            cl: SnippetEditor,
+            label: "snippet",
+            visible: false
         });
 
         const existingElements = workingElement.querySelectorAll('*');
@@ -112,7 +120,7 @@ export class ObserverManager {
         this.editors.set(element.tag, {
             ...element,
             group: element.group || "default",
-            visible: element.visible || true // BADDDDDD
+            visible: element.visible ?? true
         });
         this.groups.add(element.group || "default")
         const existingElements = this.workingElement.querySelectorAll(element.tag);

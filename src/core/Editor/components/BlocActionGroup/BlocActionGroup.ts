@@ -58,7 +58,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     setEditor(editor: Editor) {
         const allDisabled = Array.from(editor.actionBarConfiguration.values()).every(v => v === false);
-        if (allDisabled) {
+        const hasCustomActions = editor.customActions.length > 0;
+        if (allDisabled && !hasCustomActions) {
             this.close();
             return;
         }
@@ -200,6 +201,19 @@ export class BlocActionGroup extends HorizontalActionGroup {
             if (e.detail.type === 'template') {
                 const fragment = document.createRange().createContextualFragment(e.detail.html);
                 this._target!.replaceWith(fragment);
+            } else if (e.detail.type === 'snippet') {
+                const newEl = document.createElement('w13c-snippet');
+                newEl.setAttribute('identifier', e.detail.identifier);
+
+                if (this._target!.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
+                    newEl.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this._target!.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!);
+                }
+
+                if (this._target!.hasAttribute("slot")) {
+                    newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
+                }
+
+                this._target!.replaceWith(newEl);
             } else {
                 const newEl = document.createElement(e.detail.id);
 
@@ -283,6 +297,10 @@ export class BlocActionGroup extends HorizontalActionGroup {
             case "edit":         this._editor?.showConfigPanel(); break;
             case "duplicate":    this._insertClone('after'); break;
             case "changeComponent": this._changeComponent(); break;
+            default: {
+                const custom = this._editor?.customActions.find(a => a.action === e.detail.action);
+                custom?.handler();
+            }
         }
     }
 
@@ -293,11 +311,15 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private smartRender(): void {
         const config = this._editor!.actionBarConfiguration;
         const hasConfig = this._editor!._panelConfig != null;
+        const variant = this._editor!.variant;
+        const customActions = this._editor!.customActions;
 
-        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig;
+        const customKey = customActions.map(a => a.action).join(",");
+        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey;
         if (this._lastConfigKey === currentConfigKey) return;
         this._lastConfigKey = currentConfigKey;
 
+        this.setAttribute("data-variant", variant);
         this.innerHTML = template as unknown as string;
 
         this._toggle("edit", hasConfig);
@@ -305,7 +327,22 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._toggle("changeComponent", config.get("changeComponent")!);
         this._toggle("delete", config.get("delete")!);
 
-        const hasLeftButtons = hasConfig || config.get("duplicate") || config.get("changeComponent");
+        // Insert custom action buttons before the "delete" separator
+        if (customActions.length > 0) {
+            const separator = this.querySelector('[data-group="delete"]');
+            for (const action of customActions) {
+                const btn = document.createElement("button");
+                btn.setAttribute("data-action", action.action);
+                btn.setAttribute("title", action.title);
+                btn.innerHTML = action.icon;
+                this.insertBefore(btn, separator);
+            }
+        }
+
+        const hasLeftButtons = hasConfig
+            || config.get("duplicate")
+            || config.get("changeComponent")
+            || customActions.length > 0;
         this.querySelector('[data-group="delete"]')?.toggleAttribute("hidden", !config.get("delete") || !hasLeftButtons);
     }
 }

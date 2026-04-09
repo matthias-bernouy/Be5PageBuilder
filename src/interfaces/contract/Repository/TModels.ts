@@ -70,6 +70,17 @@ export type TTemplate = {
     createdAt: Date;
 }
 
+export type TSnippet = {
+    id?: string;
+    identifier: string;
+    name: string;
+    description: string;
+    content: string;
+    category: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export type TSystem = {
 
     initializationStep: number;

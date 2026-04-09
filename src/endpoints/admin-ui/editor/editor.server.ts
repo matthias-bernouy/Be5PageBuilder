@@ -2,6 +2,7 @@ import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path"
 import type { PageBuilder } from 'src/PageBuilder';
+import { expandSnippets } from 'src/server/expandSnippets';
 
 export default async function ArticleServerAdmin(req: Request, system: PageBuilder) {
 
@@ -65,7 +66,10 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
         config.setAttribute("default-tags", JSON.parse(page?.tags as unknown as string || "[]").join(','))
 
         editorSystem.append(config);
-        editor.innerHTML = page?.content || "<p></p>";
+        // SSR-expand snippet references so the ObserverManager picks up the
+        // current content on load, without a client-side fetch race.
+        const content = page?.content || "<p></p>";
+        editor.innerHTML = await expandSnippets(content, system);
     } else {
         return Response.redirect("/page-builder/admin/pages", 302);
     }

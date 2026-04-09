@@ -1,0 +1,29 @@
+<w13c-lateral-dialog>
+  <form action="">
+    <w13c-input placeholder="hero-v1" name="identifier" required>
+      <span slot="label">Identifier</span>
+      <span slot="hint">Kebab-case. Immutable after creation.</span>
+    </w13c-input>
+    <w13c-input placeholder="My hero section" name="name">
+      <span slot="label">Name</span>
+    </w13c-input>
+    <w13c-input placeholder="A short description" name="description">
+      <span slot="label">Description</span>
+    </w13c-input>
+    <w13c-input placeholder="hero, layout, cta…" name="category">
+      <span slot="label">Category</span>
+    </w13c-input>
+
+    <section class="usages" hidden>
+      <h3>Used on</h3>
+      <ul class="usages-list"></ul>
+    </section>
+
+    <div></div>
+    <p9r-button fullwidth type="submit" variant="filled" color="primary">
+      Save
+    </p9r-button>
+    <p class="error-message" hidden></p>
+  </form>
+  <span slot="title">Snippet configuration</span>
+</w13c-lateral-dialog>

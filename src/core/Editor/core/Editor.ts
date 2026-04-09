@@ -1,5 +1,12 @@
 import { ConfigPanel } from "../configuration/ConfigPanel";
 
+export type CustomAction = {
+    action: string;
+    title: string;
+    icon: string;
+    handler: () => void;
+};
+
 export abstract class Editor {
 
     private targetIdentifier: string;
@@ -7,6 +14,8 @@ export abstract class Editor {
     private styleElement: HTMLStyleElement;
     private static bodyStyle: Map<string, boolean> = new Map();
     public         _panelConfig: ConfigPanel | null = null;
+    public         variant: string = "default";
+    public         customActions: CustomAction[] = [];
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["duplicate", true],
@@ -152,6 +161,10 @@ export abstract class Editor {
     showConfigPanel() {
         this._panelConfig?.show();
     };
+
+    protected addCustomAction(action: CustomAction) {
+        this.customActions.push(action);
+    }
 
     abstract init(): void;
     abstract restore(): void;

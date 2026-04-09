@@ -1,6 +1,6 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import type { PageBuilderRepository } from "src/interfaces/contract/Repository/PageBuilderRepository";
-import type { TBloc, TPage, TSystem, TTemplate } from "src/interfaces/contract/Repository/TModels";
+import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/interfaces/contract/Repository/TModels";
 import { ObjectId } from "mongodb";
 import type { TBlocMetadata } from "src/interfaces/contract/Repository/TQueries";
 
@@ -23,6 +23,7 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
     private _pagesCollection: Collection<TPage>;
     private _systemCollection: Collection<TSystem>;
     private _templatesCollection: Collection<TTemplate>;
+    private _snippetsCollection: Collection<TSnippet>;
 
     constructor(client: MongoClient, databaseName: string) {
         this._database = client.db(databaseName);
@@ -30,6 +31,10 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         this._pagesCollection = this._database.collection<TPage>("pages");
         this._systemCollection = this._database.collection<TSystem>("system");
         this._templatesCollection = this._database.collection<TTemplate>("templates");
+        this._snippetsCollection = this._database.collection<TSnippet>("snippets");
+        this._snippetsCollection.createIndex({ identifier: 1 }, { unique: true }).catch(err => {
+            console.error("Failed to create unique index on snippets.identifier", err);
+        });
     }
 
     static create(config: DefaultDatastoreConfig): Promise<DefaultPageBuilderRepository> {
@@ -231,6 +236,50 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
 
     async deleteTemplate(id: string): Promise<void> {
         await this._templatesCollection.deleteOne({ _id: new ObjectId(id) });
+    }
+
+    // ── Snippets ──
+
+    async createSnippet(snippet: TSnippet): Promise<TSnippet> {
+        const result = await this._snippetsCollection.insertOne(snippet as any);
+        return { ...snippet, id: result.insertedId.toString() };
+    }
+
+    async getSnippetById(id: string): Promise<TSnippet | null> {
+        const doc = await this._snippetsCollection.findOne({ _id: new ObjectId(id) });
+        if (!doc) return null;
+        return { ...doc, id: (doc as any)._id.toString() } as TSnippet;
+    }
+
+    async getSnippetByIdentifier(identifier: string): Promise<TSnippet | null> {
+        const doc = await this._snippetsCollection.findOne({ identifier });
+        if (!doc) return null;
+        return { ...doc, id: (doc as any)._id.toString() } as TSnippet;
+    }
+
+    async getAllSnippets(): Promise<TSnippet[]> {
+        const docs = await this._snippetsCollection.find({}).toArray();
+        return docs.map(doc => ({ ...doc, id: (doc as any)._id.toString() }) as TSnippet);
+    }
+
+    async updateSnippet(id: string, data: Partial<TSnippet>): Promise<TSnippet | null> {
+        const { id: _, identifier: __, createdAt: ___, ...updateData } = data;
+        await this._snippetsCollection.updateOne(
+            { _id: new ObjectId(id) },
+            { $set: { ...updateData, updatedAt: new Date() } }
+        );
+        return this.getSnippetById(id);
+    }
+
+    async deleteSnippet(id: string): Promise<void> {
+        await this._snippetsCollection.deleteOne({ _id: new ObjectId(id) });
+    }
+
+    async findPagesUsingSnippet(identifier: string): Promise<TPage[]> {
+        const escaped = identifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp(`<w13c-snippet[^>]*\\bidentifier\\s*=\\s*["']${escaped}["']`, "i");
+        const docs = await this._pagesCollection.find({ content: { $regex: regex } }).toArray();
+        return docs as TPage[];
     }
 
 }

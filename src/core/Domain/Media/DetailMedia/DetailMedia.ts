@@ -38,4 +38,6 @@ export class DetailMedia extends Component {
     }
 }
 
-customElements.define("p9r-detail-media", DetailMedia);
+if ( !customElements.get("p9r-detail-media") ) {
+    customElements.define("p9r-detail-media", DetailMedia);
+}

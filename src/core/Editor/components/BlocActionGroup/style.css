@@ -10,3 +10,16 @@
     will-change: transform, opacity;
     transition: opacity 0.1s ease-out;
 }
+
+/* Snippet variant — blue accent to signal this bar is acting on a reference,
+   not a regular bloc. We override the HorizontalActionGroup CSS variables so
+   its existing ::slotted button styles pick up the new palette. */
+:host([data-variant="snippet"]) {
+    --_color: #007aff;
+    --_hover-color: #005bb5;
+    --_bg-color: #f0f7ff;
+    --_bg-hover-color: rgba(0, 122, 255, 0.15);
+    --_border-color: rgba(0, 122, 255, 0.3);
+    --toolbar-bg: #f0f7ff;
+    --toolbar-border: rgba(0, 122, 255, 0.3);
+}
