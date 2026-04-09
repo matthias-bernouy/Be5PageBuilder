@@ -1,5 +1,5 @@
 
-import "src/core/Editor/components/Snippet/SnippetElement"
+import "src/core/Editor/components/Snippet/Snippet"
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "../components/MediaCenter/MediaCenter";
@@ -7,6 +7,7 @@ import { FloatingToolbar } from "../components/FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../components/RichTextBar/RichTextBar";
 import "../configuration/ConfigPanel";
 import { BlocActionGroup } from "../components/BlocActionGroup/BlocActionGroup";
+import { EDITOR_MANAGER_READY_EVENT } from "./editorManagerReady";
 import type { P9RMode } from "types/p9r-constants";
 
 export type PageMode = P9RMode;
@@ -47,6 +48,9 @@ export class EditorManager{
 
         this.observer = new ObserverManager(workingElement);
 
+        // Unblock any custom elements that upgraded before us and are
+        // waiting for `document.EditorManager` via `whenEditorManagerReady`.
+        document.dispatchEvent(new CustomEvent(EDITOR_MANAGER_READY_EVENT));
     }
 
     dashboard(){
@@ -79,8 +83,19 @@ export class EditorManager{
         return this.mediaCenter;
     }
 
+    /**
+     * Absolute API base URL for this editor.
+     *
+     * PageBuilder is a plugin mounted under a host-configurable prefix, so
+     * the client cannot hardcode `/page-builder/api/`. The server bakes the
+     * resolved prefix into a `<meta name="p9r-api-base">` tag in the editor
+     * shell (see `src/server/editorShell.ts`); we read it here and resolve
+     * it against the current document URL so the result is always absolute.
+     */
     getApiBasePath(){
-        return window.location.origin + "/page-builder/api/";
+        const meta = document.querySelector('meta[name="p9r-api-base"]') as HTMLMetaElement | null;
+        const base = meta?.content || "/page-builder/api/";
+        return new URL(base, window.location.href).href;
     }
 
     switchMode(mode?: PageMode){
@@ -106,7 +121,7 @@ export class EditorManager{
         this.switchMode(p9r.mode.VIEW);
         const article = this.workingElement.innerHTML;
 
-        const target = new URL("../api/page", window.location.href);
+        const target = new URL("page", this.getApiBasePath());
 
         // The current URL identifies the page being edited via (?path, ?identifier).
         // Those become the "old key" we send to the API so the upsert can find

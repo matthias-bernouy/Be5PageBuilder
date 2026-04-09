@@ -1,6 +1,13 @@
+import { Component, type ComponentMetadata } from 'src/core/Editor/core/Component';
+import { whenEditorManagerReady } from 'src/core/Editor/core/editorManagerReady';
+import { ICON_SNIPPET } from 'src/core/Editor/icons';
+import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
-const SNIPPET_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>`;
+const SnippetMetadata: ComponentMetadata = {
+    css: css,
+    template: template as unknown as string,
+};
 
 /**
  * Custom element that renders a synchronized snippet.
@@ -19,16 +26,17 @@ const SNIPPET_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
  * In public mode this file is not bundled — the browser treats `<w13c-snippet>`
  * as a generic unknown element and renders the SSR-expanded inner HTML directly.
  */
-export class SnippetElement extends HTMLElement {
+export class Snippet extends Component {
 
-    private _shadow: ShadowRoot;
+    private _root!: HTMLElement;
 
     constructor() {
-        super();
-        this._shadow = this.attachShadow({ mode: 'open' });
+        super(SnippetMetadata);
     }
 
-    connectedCallback() {
+    override connectedCallback() {
+        this._root = this.shadowRoot!.querySelector('.snippet-root') as HTMLElement;
+
         const identifier = this.getAttribute('identifier');
         if (!identifier) {
             this._renderError('Missing identifier attribute');
@@ -43,15 +51,12 @@ export class SnippetElement extends HTMLElement {
         }
 
         this._renderLoading();
-        this._fetch(identifier);
+        whenEditorManagerReady(() => this._fetch(identifier));
     }
 
     private async _fetch(identifier: string) {
         try {
-            const base = document.EditorManager?.getApiBasePath?.();
-            if (!base) throw new Error('EditorManager not available');
-
-            const url = new URL('snippets', base);
+            const url = new URL('snippets', document.EditorManager.getApiBasePath());
             url.searchParams.set('identifier', identifier);
 
             const res = await fetch(url);
@@ -67,10 +72,9 @@ export class SnippetElement extends HTMLElement {
     }
 
     private _render(content: string, identifier: string) {
-        this._shadow.innerHTML = `
-            <style>${css}</style>
+        this._root.innerHTML = `
             <div class="snippet-label">
-                ${SNIPPET_ICON}
+                ${ICON_SNIPPET}
                 <code>${identifier}</code>
             </div>
             <div class="snippet-content">${content}</div>
@@ -78,20 +82,14 @@ export class SnippetElement extends HTMLElement {
     }
 
     private _renderLoading() {
-        this._shadow.innerHTML = `
-            <style>${css}</style>
-            <div class="snippet-loading">Loading snippet…</div>
-        `;
+        this._root.innerHTML = `<div class="snippet-loading">Loading snippet…</div>`;
     }
 
     private _renderError(msg: string) {
-        this._shadow.innerHTML = `
-            <style>${css}</style>
-            <div class="snippet-error">⚠ ${msg}</div>
-        `;
+        this._root.innerHTML = `<div class="snippet-error">⚠ ${msg}</div>`;
     }
 }
 
 if (!customElements.get('w13c-snippet')) {
-    customElements.define('w13c-snippet', SnippetElement);
+    customElements.define('w13c-snippet', Snippet);
 }

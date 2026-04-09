@@ -36,6 +36,16 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     const html = await Bun.file(options.htmlFilePath).text();
     const { document } = parseHTML(html);
 
+    // ── API base path meta tag ──────────────────────────────────────────
+    // PageBuilder is mounted under a host-configurable prefix, so the client
+    // cannot hardcode `/page-builder/api/`. We bake the resolved prefix into
+    // a <meta> tag that `EditorManager.getApiBasePath()` reads at runtime.
+    const adminPrefix = options.system.config.adminPathPrefix || "/page-builder";
+    const apiBaseMeta = document.createElement("meta");
+    apiBaseMeta.setAttribute("name", "p9r-api-base");
+    apiBaseMeta.setAttribute("content", `${adminPrefix}/api/`);
+    document.head.appendChild(apiBaseMeta);
+
     // ── Bloc editor scripts ─────────────────────────────────────────────
     // Each bloc ships an editorJS snippet that must run once `document.EditorManager`
     // is ready. We wrap every snippet in a retry loop and append the combined

@@ -1,5 +1,6 @@
 import css from "./P9rPageLink.style.css" with { type: "text" };
 import { buildOptionList, filterPages, type PageRef } from "./P9rPageLink.picker";
+import { whenEditorManagerReady } from "src/core/Editor/core/editorManagerReady";
 
 /**
  * <p9r-page-link name="href" label="Link to a page"></p9r-page-link>
@@ -22,7 +23,7 @@ export class P9rPageLink extends HTMLElement {
 
     connectedCallback() {
         this._render();
-        this._fetchPages();
+        whenEditorManagerReady(() => this._fetchPages());
 
         this._trigger!.addEventListener("click", (e) => {
             e.stopPropagation();
@@ -99,8 +100,7 @@ export class P9rPageLink extends HTMLElement {
 
     private async _fetchPages() {
         try {
-            const prefix = (document as any).EditorManager?._system?.config?.adminPathPrefix || "/page-builder";
-            const res = await fetch(`${prefix}/api/pages`);
+            const res = await fetch(new URL("pages", document.EditorManager.getApiBasePath()));
             this._pages = await res.json();
             this._refreshOptions(this._pages);
 
