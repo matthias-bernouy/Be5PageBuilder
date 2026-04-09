@@ -3,6 +3,7 @@ import { parseHTML } from 'linkedom';
 import { join } from "node:path"
 import type { PageBuilder } from 'src/PageBuilder';
 import { expandSnippets } from 'src/server/expandSnippets';
+import { P9R_ID } from 'types/p9r-constants';
 
 export default async function ArticleServerAdmin(req: Request, system: PageBuilder) {
 
@@ -59,8 +60,8 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     }
 
     const page = await system.repository.getPage(path, identifier);
-    const editorSystem = document.getElementById("editor-system")!;
-    const editor = document.getElementById("editor")!;
+    const editorSystem = document.getElementById(P9R_ID.EDITOR_SYSTEM)!;
+    const editor = document.getElementById(P9R_ID.EDITOR)!;
 
     // Brand-new page (no document in DB yet) + a configured layout category
     // → signal the client to pop the BlocLibrary in locked "pick a layout"

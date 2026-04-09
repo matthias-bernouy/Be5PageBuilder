@@ -67,11 +67,3 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
 
     return compress(document.toString(), "text/html");
 }
-
-/**
- * Build the cache key for a rendered page. Keyed on (path, identifier) so
- * variants of the same path don't collide.
- */
-export function pageCacheKey(path: string, identifier: string): string {
-    return `page:${path}:${identifier}`;
-}

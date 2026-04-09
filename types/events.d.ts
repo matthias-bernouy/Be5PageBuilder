@@ -1,7 +1,7 @@
+import type { P9RMode } from "./p9r-constants";
+
 export interface SwitchModeEvent extends CustomEvent {
-    readonly detail: {
-        mode: "editor" | "view"
-    };
+    readonly detail: P9RMode;
 }
 
 export interface BlocSelected extends CustomEvent {
@@ -27,7 +27,7 @@ declare global {
 
 
 	interface DocumentEventMap {
-        "p9r-switch-mode": SwitchModeEvent;
+        "switch-mode": SwitchModeEvent;
     }
 
 }

@@ -1,5 +1,6 @@
 import type { PageBuilder } from "src/PageBuilder";
 import { prepare_bloc } from "src/server/blocs/prepare_bloc";
+import { P9R_CACHE } from "types/p9r-constants";
 
 export default async function importBloc(req: Request, system: PageBuilder) {
 
@@ -19,7 +20,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
     await system.repository.createBloc(bloc);
 
     // Invalidate the bloc cache
-    system.cache.delete(`bloc:${bloc.id}`);
+    system.cache.delete(P9R_CACHE.bloc(bloc.id));
 
     return new Response("Bloc imported");
 }

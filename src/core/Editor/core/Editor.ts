@@ -47,8 +47,8 @@ export abstract class Editor {
             document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig)
         }
 
-        document.addEventListener("switch-mode", (e: CustomEventInit) => {
-            if (e.detail === "editor-mode") {
+        document.addEventListener(p9r.event.SWITCH_MODE, (e) => {
+            if (e.detail === p9r.mode.EDITOR) {
                 this.viewEditor();
             } else {
                 this.viewClient();

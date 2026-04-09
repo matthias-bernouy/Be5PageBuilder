@@ -2,6 +2,7 @@ import type { IBe5_Runner } from "be5-interfaces";
 import { basename, dirname, join } from "node:path";
 import type { PageBuilder } from "src/PageBuilder";
 import { cachedResponseAsync, compress } from "src/server/compression";
+import { P9R_CACHE } from "types/p9r-constants";
 
 export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: IBe5_Runner) {
     type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
@@ -32,7 +33,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
                 return await serverHandler(req, system);
             });
         } else if (htmlFile) {
-            const cacheKey = `html:${urlPath}`;
+            const cacheKey = P9R_CACHE.html(urlPath);
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
                 return cachedResponseAsync(req, cacheKey, system.cache, async () => {
                     const content = await Bun.file(htmlFile).text();
@@ -42,7 +43,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
         }
 
         if (clientFile) {
-            const cacheKey = `js:${urlPath}`;
+            const cacheKey = P9R_CACHE.js(urlPath);
             runner.addEndpoint("GET", urlPath + ".js", async (req: Request) => {
                 return cachedResponseAsync(req, cacheKey, system.cache, async () => {
                     const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
@@ -70,7 +71,7 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        const cacheKey = `css:${endpointUrl}`;
+        const cacheKey = P9R_CACHE.css(endpointUrl);
         runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
             return cachedResponseAsync(req, cacheKey, system.cache, async () => {
                 const content = await Bun.file(fullPath).text();

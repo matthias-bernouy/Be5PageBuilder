@@ -7,17 +7,13 @@ import { FloatingToolbar } from "../components/FloatingToolbar/FloatingToolbar";
 import { EditorToolbar } from "../components/RichTextBar/RichTextBar";
 import "../configuration/ConfigPanel";
 import { BlocActionGroup } from "../components/BlocActionGroup/BlocActionGroup";
+import type { P9RMode } from "types/p9r-constants";
 
-export type PageModeEnum = [
-    "editor-mode",
-    "view-mode"
-];
-
-export type PageMode = PageModeEnum[number];
+export type PageMode = P9RMode;
 
 export class EditorManager{
 
-    private mode: PageMode = "editor-mode";
+    private mode: PageMode = p9r.mode.EDITOR;
 
     private workingElement: HTMLElement;
     private editorSystem: HTMLElement;
@@ -34,7 +30,7 @@ export class EditorManager{
     constructor(workingElement: HTMLElement, backPath?: string) {
         this.backPath = backPath;
         this.workingElement = workingElement;
-        this.editorSystem   = document.getElementById("editor-system")!;
+        this.editorSystem   = document.getElementById(p9r.id.EDITOR_SYSTEM)!;
 
         this.mediaCenter        = new MediaCenter();
         this.toolbar            = new FloatingToolbar();
@@ -88,13 +84,13 @@ export class EditorManager{
     }
 
     switchMode(mode?: PageMode){
-        if ( this.mode === "editor-mode" ){
-            this.mode = "view-mode";
+        if ( this.mode === p9r.mode.EDITOR ){
+            this.mode = p9r.mode.VIEW;
         } else {
-            this.mode = "editor-mode";
+            this.mode = p9r.mode.EDITOR;
         }
         if ( mode ) this.mode = mode;
-        document.dispatchEvent(new CustomEvent("switch-mode", {
+        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, {
             detail: this.mode
         }))
     }
@@ -107,7 +103,7 @@ export class EditorManager{
         identifier: string;
         tags: string;
     }){
-        this.switchMode("view-mode");
+        this.switchMode(p9r.mode.VIEW);
         const article = this.workingElement.innerHTML;
 
         const target = new URL("../api/page", window.location.href);
@@ -135,13 +131,13 @@ export class EditorManager{
             method: "POST",
             body: JSON.stringify(body)
         });
-        this.switchMode("editor-mode");
+        this.switchMode(p9r.mode.EDITOR);
     }
 
     getContent(): string {
-        this.switchMode("view-mode");
+        this.switchMode(p9r.mode.VIEW);
         const content = this.workingElement.innerHTML;
-        this.switchMode("editor-mode");
+        this.switchMode(p9r.mode.EDITOR);
         return content;
     }
 

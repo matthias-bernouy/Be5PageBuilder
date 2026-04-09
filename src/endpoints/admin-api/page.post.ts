@@ -2,7 +2,7 @@ import type { PageBuilder } from "src/PageBuilder";
 import contains from "src/server/helpers";
 import type { TPage } from "src/interfaces/contract/Repository/TModels";
 import { isReservedPath, isValidPathFormat } from "src/server/reservedPaths";
-import { pageCacheKey } from "src/server/renderPage";
+import { P9R_CACHE } from "types/p9r-constants";
 
 export default async function updatePage(req: Request, system: PageBuilder) {
 
@@ -45,8 +45,8 @@ export default async function updatePage(req: Request, system: PageBuilder) {
 
     // Invalidate cache for both the old and the new (path, identifier) in case
     // the user renamed the page — either key could be stale
-    system.cache.delete(pageCacheKey(oldPath, oldIdentifier));
-    system.cache.delete(pageCacheKey(newPath, newIdentifier));
+    system.cache.delete(P9R_CACHE.page(oldPath, oldIdentifier));
+    system.cache.delete(P9R_CACHE.page(newPath, newIdentifier));
 
     // If this page is the current home ref, the `/` cache also holds a stale
     // render of its previous content. Invalidate it so the next visit to `/`
@@ -55,7 +55,7 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     const home = settings.site?.home;
     if (home && ((home.path === oldPath && home.identifier === oldIdentifier) ||
                  (home.path === newPath && home.identifier === newIdentifier))) {
-        system.cache.delete(pageCacheKey("/", ""));
+        system.cache.delete(P9R_CACHE.page("/", ""));
     }
 
     return new Response("Page updated");

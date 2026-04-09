@@ -1,5 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
-import { pageCacheKey } from "src/server/renderPage";
+import { P9R_CACHE } from "types/p9r-constants";
 
 export default async function deleteSnippet(req: Request, system: PageBuilder) {
     const url = new URL(req.url);
@@ -27,7 +27,7 @@ export default async function deleteSnippet(req: Request, system: PageBuilder) {
 
     // Invalidate rendered-page cache for every page that referenced this snippet
     for (const page of usages) {
-        system.cache.delete(pageCacheKey(page.path, page.identifier));
+        system.cache.delete(P9R_CACHE.page(page.path, page.identifier));
     }
 
     return new Response("Deleted", { status: 200 });

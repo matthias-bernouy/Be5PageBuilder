@@ -2,6 +2,7 @@ import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path";
 import type { PageBuilder } from 'src/PageBuilder';
+import { P9R_ID } from 'types/p9r-constants';
 
 export default async function SnippetEditorServer(req: Request, system: PageBuilder) {
     const html = await Bun.file(join(__dirname, "./editor.html")).text();
@@ -45,8 +46,8 @@ export default async function SnippetEditorServer(req: Request, system: PageBuil
     });
 
     // Create snippet configuration element
-    const editorSystem = document.getElementById("editor-system")!;
-    const editor = document.getElementById("editor")!;
+    const editorSystem = document.getElementById(P9R_ID.EDITOR_SYSTEM)!;
+    const editor = document.getElementById(P9R_ID.EDITOR)!;
     const config = document.createElement("w13c-snippet-information");
 
     const snippet = id

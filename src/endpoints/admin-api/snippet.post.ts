@@ -1,6 +1,6 @@
 import type { PageBuilder } from "src/PageBuilder";
 import type { TSnippet } from "src/interfaces/contract/Repository/TModels";
-import { pageCacheKey } from "src/server/renderPage";
+import { P9R_CACHE } from "types/p9r-constants";
 
 const IDENTIFIER_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -17,7 +17,7 @@ export default async function postSnippet(req: Request, system: PageBuilder) {
         // Invalidate rendered-page cache for every page that references this snippet
         const usages = await system.repository.findPagesUsingSnippet(updated.identifier);
         for (const page of usages) {
-            system.cache.delete(pageCacheKey(page.path, page.identifier));
+            system.cache.delete(P9R_CACHE.page(page.path, page.identifier));
         }
 
         return new Response(JSON.stringify(updated), {

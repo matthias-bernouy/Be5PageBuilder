@@ -1,6 +1,5 @@
 import { BlocLibrary } from "../components/BlocLibrary/BlocLibrary";
 import { Editor } from "../core/Editor";
-import type { PageMode } from "../core/EditorManager";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote, a):empty::before {
@@ -44,7 +43,7 @@ export class TextEditor extends Editor {
         const observer = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
                 if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
-                    if ( document.EditorManager.getMode() === "editor-mode" ){
+                    if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
                         if ( !this.isInitializing ){
                             this.isInitializing = true;
                             this.init();
@@ -54,9 +53,8 @@ export class TextEditor extends Editor {
             }
         });
 
-        document.addEventListener("switch-mode", (e: any) => {
-            const mode: PageMode = e.detail;
-            if ( mode === "editor-mode" ) {
+        document.addEventListener(p9r.event.SWITCH_MODE, (e) => {
+            if ( e.detail === p9r.mode.EDITOR ) {
                 observer.observe(this.target, {
                     attributes: true,
                     attributeFilter: [p9r.attr.TEXT.BLOC_MANAGEMENT, p9r.attr.TEXT.EDITABLE]

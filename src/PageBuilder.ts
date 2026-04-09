@@ -6,8 +6,9 @@ import type { Cache } from "./interfaces/contract/Cache/Cache";
 import type { TPage, TPageRef } from "./interfaces/contract/Repository/TModels";
 import { InMemoryCache } from "./interfaces/default-provider/Cache/InMemoryCache";
 import { cachedResponseAsync } from "./server/compression";
-import { pageCacheKey, renderPage } from "./server/renderPage";
+import { renderPage } from "./server/renderPage";
 import { isReservedPath, isValidPathFormat } from "./server/reservedPaths";
+import { P9R_CACHE } from "types/p9r-constants";
 
 type Configuration = {
     adminPathPrefix?: string;
@@ -158,7 +159,7 @@ export class PageBuilder{
         try {
             return await cachedResponseAsync(
                 req,
-                pageCacheKey(cachePath, cacheIdentifier),
+                P9R_CACHE.page(cachePath, cacheIdentifier),
                 this._cache,
                 () => renderPage(page, this)
             );
