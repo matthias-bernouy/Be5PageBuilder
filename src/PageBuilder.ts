@@ -3,6 +3,7 @@ import type { IBe5_Authentication, IBe5_Runner } from "be5-interfaces";
 import type { PageBuilderRepository } from "./interfaces/contract/Repository/PageBuilderRepository";
 import type { MediaRepository } from "./interfaces/contract/Media/MediaRepository";
 import type { Cache } from "./interfaces/contract/Cache/Cache";
+import type { TPage, TPageRef } from "./interfaces/contract/Repository/TModels";
 import { InMemoryCache } from "./interfaces/default-provider/Cache/InMemoryCache";
 import { cachedResponseAsync } from "./server/compression";
 import { pageCacheKey, renderPage } from "./server/renderPage";
@@ -45,6 +46,7 @@ export class PageBuilder{
         this._mediaRepository = mediaRepository;
         this._cache = cache || new InMemoryCache();
         registerEndpoints(this);
+        this.registerHomeRoute();
         this.hydratePageRoutes().catch(err => {
             console.error("Failed to hydrate page routes from DB:", err);
         });
@@ -89,19 +91,141 @@ export class PageBuilder{
 
         this._registeredPagePaths.add(path);
 
-        this._runner.addEndpoint("GET", path, async (req: Request) => {
+        this._runner.addEndpoint("GET", path, (req: Request) => this.handlePageRequest(req));
+    }
+
+    /**
+     * Register `GET /` so the home page can be picked in settings. Prefers a
+     * real page with literal path `/` if one exists; otherwise resolves the
+     * `site.home` reference. Always registered so the user can configure a
+     * home without creating a page at `/`.
+     */
+    private registerHomeRoute(): void {
+        if (this._registeredPagePaths.has("/")) return;
+        this._registeredPagePaths.add("/");
+
+        this._runner.addEndpoint("GET", "/", async (req: Request) => {
             const url = new URL(req.url);
             const identifier = url.searchParams.get("identifier") || "";
-            const page = await this._repository.getPage(url.pathname, identifier);
-            if (!page) return new Response("Page not found", { status: 404 });
 
-            return cachedResponseAsync(
+            // A literal page at `/` always wins over the home ref.
+            const direct = await this._repository.getPage("/", identifier);
+            if (direct) {
+                return this.renderWithFallbacks(req, direct, "/", identifier);
+            }
+
+            const settings = await this._repository.getSystem();
+            const homeRef = settings.site?.home;
+            if (homeRef) {
+                const target = await this._repository.getPage(homeRef.path, homeRef.identifier);
+                if (target) {
+                    // Cache under `/` so edits to the referenced page don't
+                    // poison the home cache — its own route invalidates its
+                    // own key, and editing settings invalidates `/`.
+                    return this.renderWithFallbacks(req, target, "/", "");
+                }
+            }
+
+            return this.renderNotFound(req);
+        });
+    }
+
+    /**
+     * Shared entry point for every dynamic page GET. Looks up the (path,
+     * identifier) pair and either renders it through the cache, falls back to
+     * the configured 404 page, or falls back to the configured 500 page on
+     * render failure.
+     */
+    private async handlePageRequest(req: Request): Promise<Response> {
+        const url = new URL(req.url);
+        const identifier = url.searchParams.get("identifier") || "";
+        const page = await this._repository.getPage(url.pathname, identifier);
+        if (!page) return this.renderNotFound(req);
+
+        return this.renderWithFallbacks(req, page, url.pathname, identifier);
+    }
+
+    /**
+     * Renders a page through the cache and catches render errors so the
+     * configured 500 fallback (or a plain text fallback) takes over.
+     */
+    private async renderWithFallbacks(
+        req: Request,
+        page: TPage,
+        cachePath: string,
+        cacheIdentifier: string
+    ): Promise<Response> {
+        try {
+            return await cachedResponseAsync(
                 req,
-                pageCacheKey(url.pathname, identifier),
+                pageCacheKey(cachePath, cacheIdentifier),
                 this._cache,
                 () => renderPage(page, this)
             );
-        });
+        } catch (err) {
+            console.error(`Failed to render page ${cachePath}?${cacheIdentifier}:`, err);
+            return this.renderServerError(req);
+        }
+    }
+
+    /**
+     * Resolve `site.notFound` and render it, or fall back to plain text. The
+     * fallback page itself is rendered through `renderPage` without its own
+     * error wrapper — if it throws, we return plain text to avoid recursion.
+     */
+    private async renderNotFound(req: Request): Promise<Response> {
+        return this.renderRef(req, "notFound", 404, "Page not found");
+    }
+
+    private async renderServerError(req: Request): Promise<Response> {
+        return this.renderRef(req, "serverError", 500, "Internal server error");
+    }
+
+    private async renderRef(
+        req: Request,
+        field: "notFound" | "serverError",
+        status: number,
+        fallbackText: string
+    ): Promise<Response> {
+        try {
+            const settings = await this._repository.getSystem();
+            const ref: TPageRef = settings.site?.[field] ?? null;
+            if (ref) {
+                const page = await this._repository.getPage(ref.path, ref.identifier);
+                if (page) {
+                    // renderPage returns a CacheEntry (pre-compressed). Build
+                    // a Response honoring the client's accept-encoding, and
+                    // override the status so the client sees a real 404/500.
+                    const entry = await renderPage(page, this);
+                    const accept = req.headers.get("accept-encoding") || "";
+                    if (accept.includes("br")) {
+                        return new Response(entry.brotli as BodyInit, {
+                            status,
+                            headers: {
+                                "Content-Type": entry.contentType,
+                                "Content-Encoding": "br",
+                            },
+                        });
+                    }
+                    if (accept.includes("gzip")) {
+                        return new Response(entry.gzip as BodyInit, {
+                            status,
+                            headers: {
+                                "Content-Type": entry.contentType,
+                                "Content-Encoding": "gzip",
+                            },
+                        });
+                    }
+                    return new Response(entry.raw as BodyInit, {
+                        status,
+                        headers: { "Content-Type": entry.contentType },
+                    });
+                }
+            }
+        } catch (err) {
+            console.error(`Failed to render ${field} fallback:`, err);
+        }
+        return new Response(fallbackText, { status });
     }
 
     /**

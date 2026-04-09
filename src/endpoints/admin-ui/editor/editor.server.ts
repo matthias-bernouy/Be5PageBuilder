@@ -62,6 +62,17 @@ export default async function ArticleServerAdmin(req: Request, system: PageBuild
     const editorSystem = document.getElementById("editor-system")!;
     const editor = document.getElementById("editor")!;
 
+    // Brand-new page (no document in DB yet) + a configured layout category
+    // → signal the client to pop the BlocLibrary in locked "pick a layout"
+    // mode. Empty attribute = feature disabled.
+    if (!page) {
+        const settings = await system.repository.getSystem();
+        const layoutCategory = settings.editor?.layoutCategory;
+        if (layoutCategory) {
+            editorSystem.setAttribute("data-layout-category", layoutCategory);
+        }
+    }
+
     const config = document.createElement("w13c-page-information");
 
     config.setAttribute("default-title", page?.title || url.searchParams.get("title") || "Default Title");

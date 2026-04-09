@@ -178,17 +178,65 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
 
 
     async getSystem(): Promise<TSystem> {
-        const doc = await this._systemCollection.findOne({});
-        if (doc) return doc as TSystem;
-
         const defaults: TSystem = {
             initializationStep: 0,
-            site: { name: "", theme: "", favicon: "", visible: true, homePage: "", page404: "", page500: "" },
+            site: {
+                name: "",
+                favicon: "",
+                visible: true,
+                theme: "",
+                home: null,
+                notFound: null,
+                serverError: null,
+            },
             seo: { titleTemplate: "%s", defaultDescription: "", defaultOgImage: "" },
-            editor: { blocAtPageCreation: "" },
+            editor: { layoutCategory: "" },
         };
-        await this._systemCollection.insertOne(defaults);
-        return defaults;
+
+        const doc = await this._systemCollection.findOne({}) as any;
+        if (!doc) {
+            await this._systemCollection.insertOne(defaults);
+            return defaults;
+        }
+
+        // In-place migration: strip legacy fields (homePage/page404/page500 as
+        // strings, blocAtPageCreation) and merge with current defaults so any
+        // newly-added fields are populated. Dev DBs only — we're pre-v1.
+        const legacy = doc.site || {};
+        const hasLegacySite = "homePage" in legacy || "page404" in legacy || "page500" in legacy;
+        const hasLegacyEditor = doc.editor && "blocAtPageCreation" in doc.editor;
+
+        const merged: TSystem = {
+            initializationStep: doc.initializationStep ?? 0,
+            site: {
+                name: legacy.name ?? "",
+                favicon: legacy.favicon ?? "",
+                visible: legacy.visible ?? true,
+                theme: legacy.theme ?? "",
+                home: legacy.home ?? null,
+                notFound: legacy.notFound ?? null,
+                serverError: legacy.serverError ?? null,
+            },
+            seo: {
+                titleTemplate: doc.seo?.titleTemplate ?? "%s",
+                defaultDescription: doc.seo?.defaultDescription ?? "",
+                defaultOgImage: doc.seo?.defaultOgImage ?? "",
+            },
+            editor: {
+                layoutCategory: doc.editor?.layoutCategory ?? "",
+            },
+        };
+
+        if (hasLegacySite || hasLegacyEditor) {
+            // Replace entire `site` and `editor` subdocs so legacy fields
+            // (homePage/page404/page500, blocAtPageCreation) are dropped.
+            await this._systemCollection.updateOne(
+                {},
+                { $set: { site: merged.site, editor: merged.editor } }
+            );
+        }
+
+        return merged;
     }
 
     async updateSystem(update: Partial<TSystem>): Promise<TSystem> {

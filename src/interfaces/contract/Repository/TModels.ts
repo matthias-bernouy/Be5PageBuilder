@@ -87,18 +87,28 @@ export type TSnippet = {
     updatedAt: Date;
 }
 
+/**
+ * Reference to a specific page by its compound key. `null` means "not set";
+ * `identifier: ""` is valid and targets the default variant for that path.
+ */
+export type TPageRef = { path: string; identifier: string } | null;
+
 export type TSystem = {
 
     initializationStep: number;
 
     site: {
         name: string;
-        theme: string;
         favicon: string;
         visible: boolean;
-        homePage: string;
-        page404: string;
-        page500: string;
+        /** Raw CSS served at `/style` and linked by every rendered public page. */
+        theme: string;
+        /** Page served at `/` (unless a page exists with literal path `/`). */
+        home: TPageRef;
+        /** Page rendered when a dynamic route matches but the page is missing. */
+        notFound: TPageRef;
+        /** Page rendered when `renderPage` throws. */
+        serverError: TPageRef;
     },
 
     seo: {
@@ -108,7 +118,12 @@ export type TSystem = {
     },
 
     editor: {
-        blocAtPageCreation: string;
+        /**
+         * Name of the template category used as "layouts". When set, opening
+         * the editor for a brand-new page auto-opens the BlocLibrary locked
+         * on the Templates tab, filtered to this category.
+         */
+        layoutCategory: string;
     }
 
 }

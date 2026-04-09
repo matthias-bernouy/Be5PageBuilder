@@ -48,5 +48,15 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     system.cache.delete(pageCacheKey(oldPath, oldIdentifier));
     system.cache.delete(pageCacheKey(newPath, newIdentifier));
 
+    // If this page is the current home ref, the `/` cache also holds a stale
+    // render of its previous content. Invalidate it so the next visit to `/`
+    // re-renders with the fresh body.
+    const settings = await system.repository.getSystem();
+    const home = settings.site?.home;
+    if (home && ((home.path === oldPath && home.identifier === oldIdentifier) ||
+                 (home.path === newPath && home.identifier === newIdentifier))) {
+        system.cache.delete(pageCacheKey("/", ""));
+    }
+
     return new Response("Page updated");
 }

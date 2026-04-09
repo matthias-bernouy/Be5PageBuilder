@@ -1,38 +1,67 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - Be5 Page Builder</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
     <script src="./script.js"></script>
+    <script src="./settings.js" defer></script>
     <style>
         .settings-grid {
             display: grid;
             gap: 2rem;
-            max-width: 720px;
+            max-width: 760px;
         }
         .settings-section {
-            border: 1px solid var(--border-base);
+            border: 1px solid var(--border-default, #e2e8f0);
             border-radius: var(--radius-m, 8px);
             padding: 1.5rem;
             background: var(--bg-surface, #fff);
         }
         .settings-section h2 {
-            margin: 0 0 1rem;
-            font-size: 1.1rem;
+            margin: 0 0 0.35rem;
+            font-size: 1.05rem;
             font-weight: 600;
         }
-        .settings-section p {
+        .settings-section p.section-hint {
             margin: 0 0 1.25rem;
-            font-size: 0.85rem;
-            color: var(--text-muted, #666);
+            font-size: 0.8rem;
+            color: var(--text-muted, #94a3b8);
         }
         .fields {
             display: grid;
             gap: 1rem;
+        }
+        textarea[name="site.theme"] {
+            width: 100%;
+            min-height: 280px;
+            padding: 12px;
+            border: 1px solid var(--border-default, #e2e8f0);
+            border-radius: 8px;
+            background: var(--bg-base, #f8fafc);
+            color: var(--text-main, #1e293b);
+            font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 12px;
+            line-height: 1.55;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        textarea[name="site.theme"]:focus {
+            border-color: var(--primary-base, #4361ee);
+            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+        }
+        .theme-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted, #94a3b8);
+            margin-bottom: 6px;
         }
         .save-bar {
             position: sticky;
@@ -41,9 +70,10 @@
             justify-content: flex-end;
             padding: 1rem;
             background: var(--bg-surface, #fff);
-            border: 1px solid var(--border-base);
+            border: 1px solid var(--border-default, #e2e8f0);
             border-radius: var(--radius-m, 8px);
-            max-width: 720px;
+            max-width: 760px;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -58,7 +88,7 @@
             <!-- Site -->
             <div class="settings-section">
                 <h2>Site</h2>
-                <p>General site configuration</p>
+                <p class="section-hint">General site configuration</p>
                 <div class="fields">
                     <w13c-input name="site.name" id="site-name">
                         <span slot="label">Site name</span>
@@ -66,22 +96,36 @@
                     <w13c-input name="site.favicon" id="site-favicon">
                         <span slot="label">Favicon URL</span>
                     </w13c-input>
-                    <w13c-select name="site.homePage" id="site-homePage">
-                        <span slot="label">Home page</span>
-                    </w13c-select>
-                    <w13c-select name="site.page404" id="site-page404">
-                        <span slot="label">404 Page</span>
-                    </w13c-select>
-                    <w13c-select name="site.page500" id="site-page500">
-                        <span slot="label">500 Page</span>
-                    </w13c-select>
+                </div>
+            </div>
+
+            <!-- Pages -->
+            <div class="settings-section">
+                <h2>System pages</h2>
+                <p class="section-hint">Pick which page is served at <code>/</code> and which pages handle 404 / 500 errors. Option values are composite <code>path::identifier</code>.</p>
+                <div class="fields">
+                    <p9r-select name="site.home" id="site-home" label="Home page (served at /)"></p9r-select>
+                    <p9r-select name="site.notFound" id="site-notFound" label="Not Found (404)"></p9r-select>
+                    <p9r-select name="site.serverError" id="site-serverError" label="Server Error (500)"></p9r-select>
+                </div>
+            </div>
+
+            <!-- Theme -->
+            <div class="settings-section">
+                <h2>Theme</h2>
+                <p class="section-hint">Raw CSS served at <code>/style</code> and linked by every public page. Use CSS variables or selectors freely.</p>
+                <div class="fields">
+                    <div>
+                        <label class="theme-label" for="site-theme">Theme CSS</label>
+                        <textarea name="site.theme" id="site-theme" spellcheck="false"></textarea>
+                    </div>
                 </div>
             </div>
 
             <!-- SEO -->
             <div class="settings-section">
                 <h2>SEO</h2>
-                <p>Default SEO values for pages that don't override them</p>
+                <p class="section-hint">Default SEO values for pages that don't override them</p>
                 <div class="fields">
                     <w13c-input name="seo.titleTemplate" id="seo-titleTemplate">
                         <span slot="label">Title template (use %s for page title)</span>
@@ -98,11 +142,9 @@
             <!-- Editor -->
             <div class="settings-section">
                 <h2>Editor</h2>
-                <p>Editor behavior configuration</p>
+                <p class="section-hint">Behavior of the page editor</p>
                 <div class="fields">
-                    <w13c-input name="editor.blocAtPageCreation" id="editor-blocAtPageCreation">
-                        <span slot="label">Default bloc at page creation (tag name)</span>
-                    </w13c-input>
+                    <p9r-select name="editor.layoutCategory" id="editor-layoutCategory" label="Layout category (shown at page creation)"></p9r-select>
                 </div>
             </div>
 
@@ -113,34 +155,6 @@
         </div>
 
     </w13c-fixed-admin-layout>
-
-    <script>
-        document.getElementById('save-btn').addEventListener('click', async () => {
-            const form = document.getElementById('settings-form');
-            const inputs = form.querySelectorAll('w13c-input, w13c-select');
-            const body = {};
-
-            inputs.forEach(input => {
-                const name = input.getAttribute('name');
-                if (!name) return;
-                const [section, key] = name.split('.');
-                if (!body[section]) body[section] = {};
-                body[section][key] = input.value ?? '';
-            });
-
-            const res = await fetch('../api/system', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-
-            if (res.ok) {
-                alert('Settings saved');
-            } else {
-                alert('Error saving settings');
-            }
-        });
-    </script>
 
 </body>
 

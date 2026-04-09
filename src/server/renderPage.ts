@@ -1,16 +1,20 @@
 import { parseHTML } from "linkedom";
 import type { PageBuilder } from "src/PageBuilder";
 import type { TPage } from "src/interfaces/contract/Repository/TModels";
+import type { CacheEntry } from "src/interfaces/contract/Cache/Cache";
 import { compress } from "src/server/compression";
 import { expandSnippets } from "src/server/expandSnippets";
 
 /**
- * Render a page to a compressed HTML Response. Shared between every page
+ * Render a page to a compressed CacheEntry. Shared between every page
  * route registered dynamically by `PageBuilder.registerPageRoute()`. Handles
  * snippet expansion and bloc script injection identically to how the old
  * file-based `/article` endpoint did.
+ *
+ * Returns a CacheEntry (not a Response) because `cachedResponseAsync` is the
+ * only caller and it expects the pre-compressed bytes.
  */
-export async function renderPage(page: TPage, system: PageBuilder): Promise<Response> {
+export async function renderPage(page: TPage, system: PageBuilder): Promise<CacheEntry> {
     const { document } = parseHTML("<!DOCTYPE html><html><head></head><body></body></html>");
 
     // Meta

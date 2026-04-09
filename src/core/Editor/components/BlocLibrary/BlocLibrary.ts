@@ -32,6 +32,19 @@ type Section = 'blocs' | 'templates' | 'snippets';
 type TemplateItem = { id: string; name: string; content: string; category: string };
 type SnippetItem = { id: string; identifier: string; name: string; category: string };
 
+export type BlocLibraryOptions = {
+    /** Tab to open on. Defaults to 'blocs'. */
+    section?: Section;
+    /** Sidebar group/category to pre-select. */
+    category?: string;
+    /**
+     * When true, hides the tab bar and the sidebar, forcing the user to pick
+     * from a single category in the given section. Used by the "pick a
+     * layout" flow on new-page creation.
+     */
+    locked?: boolean;
+};
+
 export const ActionBarMetadata: ComponentMetadata = {
     css: css,
     template: html as unknown as string
@@ -44,9 +57,17 @@ export class BlocLibrary extends Component {
     private _activeGroup: string | null = null;
     private _templates: TemplateItem[] = [];
     private _snippets: SnippetItem[] = [];
+    private _locked: boolean = false;
+    private _forcedCategory: string | null = null;
 
-    constructor() {
+    constructor(options?: BlocLibraryOptions) {
         super(ActionBarMetadata);
+        if (options?.section) this._section = options.section;
+        if (options?.category) {
+            this._forcedCategory = options.category;
+            this._activeGroup = options.category;
+        }
+        this._locked = !!options?.locked;
     }
 
     connectedCallback() {
@@ -58,8 +79,9 @@ export class BlocLibrary extends Component {
             if (e.target === this._dialog) this.close();
         });
 
-        // Tab clicks
+        // Tab clicks (disabled when locked)
         s.getElementById('tabs')!.addEventListener('click', (e) => {
+            if (this._locked) return;
             const tab = (e.target as HTMLElement).closest('.tab:not(.disabled)') as HTMLElement;
             if (!tab) return;
             this._section = tab.dataset.section as Section;
@@ -67,20 +89,36 @@ export class BlocLibrary extends Component {
             this._render();
         });
 
-        // Sidebar clicks
+        // Sidebar clicks (disabled when locked)
         s.getElementById('sidebar')!.addEventListener('click', (e) => {
+            if (this._locked) return;
             const item = (e.target as HTMLElement).closest('.sidebar-item') as HTMLElement;
             if (!item) return;
             this._activeGroup = item.dataset.group || null;
             this._render();
         });
 
-        // Set initial group
-        const observer = document.EditorManager.getObserver();
-        const groups = Array.from(observer.getGroups());
-        if (groups.length > 0) this._activeGroup = groups[0]!;
+        // Hide chrome when locked so the user focuses on a single grid
+        if (this._locked) {
+            (s.getElementById('tabs') as HTMLElement).style.display = 'none';
+            (s.querySelector('.groups-sidebar') as HTMLElement).style.display = 'none';
+        }
+
+        // Set initial group — respect a forced category, otherwise pick the
+        // first group of the current section.
+        if (!this._activeGroup) {
+            if (this._section === 'blocs') {
+                const groups = Array.from(document.EditorManager.getObserver().getGroups());
+                if (groups.length > 0) this._activeGroup = groups[0]!;
+            }
+            // For templates/snippets we'll pick the first group after fetch.
+        }
 
         Promise.all([this._fetchTemplates(), this._fetchSnippets()]).then(() => {
+            // If a forced category is set but we're in a section whose groups
+            // come from the fetched data, ensure we still target it even if
+            // no template in that category exists yet (empty state handles it).
+            if (this._forcedCategory) this._activeGroup = this._forcedCategory;
             this._render();
             this._dialog!.showModal();
         });
@@ -251,8 +289,8 @@ export class BlocLibrary extends Component {
         BlocLibrary.instance = null;
     }
 
-    static open() {
-        const menu = new BlocLibrary();
+    static open(options?: BlocLibraryOptions) {
+        const menu = new BlocLibrary(options);
         document.body.appendChild(menu);
         BlocLibrary.instance = menu;
         return menu;

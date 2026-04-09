@@ -1,42 +1,94 @@
 import { send_html } from 'be5-system';
 import { parseHTML } from 'linkedom';
 import type { PageBuilder } from 'src/PageBuilder';
+import type { TPageRef } from 'src/interfaces/contract/Repository/TModels';
 import template from "./settings.html";
 
-export default async function Server(req: Request, system: PageBuilder) {
+/** Composite value used in option[value] for page selects. */
+function encodeRef(ref: TPageRef): string {
+    if (!ref) return "";
+    return `${ref.path}::${ref.identifier}`;
+}
+
+export default async function Server(_req: Request, system: PageBuilder) {
     const { document } = parseHTML(await Bun.file(template.index).text());
 
     const settings = await system.repository.getSystem();
     const pages = await system.repository.getAllPages();
+    const templates = await system.repository.getAllTemplates();
 
-    // Populate page selects with options
-    const pageSelects = ["site-homePage", "site-page404", "site-page500"];
-    for (const selectId of pageSelects) {
-        const select = document.getElementById(selectId);
+    // ── Page-reference selects (home / notFound / serverError) ──────────
+    const pageSelects: { id: string; current: TPageRef }[] = [
+        { id: "site-home",        current: settings.site?.home ?? null },
+        { id: "site-notFound",    current: settings.site?.notFound ?? null },
+        { id: "site-serverError", current: settings.site?.serverError ?? null },
+    ];
+
+    const sortedPages = [...pages].sort((a, b) =>
+        (a.title || a.path).localeCompare(b.title || b.path)
+    );
+
+    for (const { id, current } of pageSelects) {
+        const select = document.getElementById(id);
         if (!select) continue;
-        select.innerHTML += `<option value="">-- None --</option>`;
-        for (const page of pages) {
-            select.innerHTML += `<option value="${page.identifier}">${page.title || page.identifier}</option>`;
+
+        const currentValue = encodeRef(current);
+
+        // "-- None --" first
+        select.innerHTML += `<option value=""${currentValue === "" ? " selected" : ""}>-- None --</option>`;
+
+        for (const page of sortedPages) {
+            const value = encodeRef({ path: page.path, identifier: page.identifier });
+            const label = page.identifier
+                ? `${page.title || "(untitled)"} — ${page.path}?identifier=${page.identifier}`
+                : `${page.title || "(untitled)"} — ${page.path}`;
+            const selected = value === currentValue ? " selected" : "";
+            select.innerHTML += `<option value="${value}"${selected}>${label}</option>`;
         }
     }
 
-    // Set current values
-    const values: Record<string, string> = {
-        "site-name":                  settings.site?.name ?? "",
-        "site-favicon":               settings.site?.favicon ?? "",
-        "site-homePage":              settings.site?.homePage ?? "",
-        "site-page404":               settings.site?.page404 ?? "",
-        "site-page500":               settings.site?.page500 ?? "",
-        "seo-titleTemplate":          settings.seo?.titleTemplate ?? "%s",
-        "seo-defaultDescription":     settings.seo?.defaultDescription ?? "",
-        "seo-defaultOgImage":         settings.seo?.defaultOgImage ?? "",
-        "editor-blocAtPageCreation":  settings.editor?.blocAtPageCreation ?? "",
+    // ── Layout category select ──────────────────────────────────────────
+    const layoutSelect = document.getElementById("editor-layoutCategory");
+    if (layoutSelect) {
+        const categories = Array.from(
+            new Set(templates.map(t => (t.category || "").trim()).filter(Boolean))
+        ).sort();
+
+        const currentLayout = settings.editor?.layoutCategory ?? "";
+
+        layoutSelect.innerHTML += `<option value=""${currentLayout === "" ? " selected" : ""}>-- None --</option>`;
+
+        for (const cat of categories) {
+            const selected = cat === currentLayout ? " selected" : "";
+            layoutSelect.innerHTML += `<option value="${cat}"${selected}>${cat}</option>`;
+        }
+
+        // If the saved value is a category that no longer exists (template
+        // renamed), still expose it so the user sees/can clear it.
+        if (currentLayout && !categories.includes(currentLayout)) {
+            layoutSelect.innerHTML += `<option value="${currentLayout}" selected>${currentLayout} (missing)</option>`;
+        }
+    }
+
+    // ── Plain string values ─────────────────────────────────────────────
+    const stringValues: Record<string, string> = {
+        "site-name":               settings.site?.name ?? "",
+        "site-favicon":            settings.site?.favicon ?? "",
+        "seo-titleTemplate":       settings.seo?.titleTemplate ?? "%s",
+        "seo-defaultDescription":  settings.seo?.defaultDescription ?? "",
+        "seo-defaultOgImage":      settings.seo?.defaultOgImage ?? "",
     };
 
-    for (const [id, value] of Object.entries(values)) {
+    for (const [id, value] of Object.entries(stringValues)) {
         const el = document.getElementById(id);
         if (!el) continue;
         el.setAttribute("value", value);
+    }
+
+    // Theme CSS goes into the <textarea> body, not a `value` attribute.
+    const themeArea = document.getElementById("site-theme");
+    if (themeArea) {
+        themeArea.textContent = settings.site?.theme ?? "";
     }
 
     return send_html(document.toString());
