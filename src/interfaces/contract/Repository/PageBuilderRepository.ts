@@ -1,5 +1,4 @@
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "./TModels";
-import type { TBlocMetadata } from "./TQueries";
 
 
 export interface PageBuilderRepository {
@@ -7,7 +6,6 @@ export interface PageBuilderRepository {
     // BLOC
     createBloc(bloc: TBloc): Promise<TBloc>;
 
-    getBlocsMetadata(): Promise<TBlocMetadata[]>;
     getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
     getBlocViewJS(htmlTag: string): Promise<string | null>;
 

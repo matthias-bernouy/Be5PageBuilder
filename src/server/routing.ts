@@ -80,22 +80,6 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     }
 }
 
-export async function registerJSFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
-    const glob = new Bun.Glob("**/*.js");
-
-    for await (const file of glob.scan(absoluteFolderPath)) {
-        const fullPath = join(absoluteFolderPath, file);
-        const endpointUrl = join(url, file).replace(/\\/g, '/');
-        const cacheKey = `js:${endpointUrl}`;
-        runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
-            return cachedResponseAsync(req, cacheKey, system.cache, async () => {
-                const content = await Bun.file(fullPath).text();
-                return compress(content, "text/javascript");
-            });
-        });
-    }
-}
-
 export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
     const glob = new Bun.Glob("**/*.ts");
 

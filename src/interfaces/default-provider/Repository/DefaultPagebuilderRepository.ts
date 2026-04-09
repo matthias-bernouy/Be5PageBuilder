@@ -2,7 +2,6 @@ import { Collection, Db, MongoClient } from "mongodb";
 import type { PageBuilderRepository } from "src/interfaces/contract/Repository/PageBuilderRepository";
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/interfaces/contract/Repository/TModels";
 import { ObjectId } from "mongodb";
-import type { TBlocMetadata } from "src/interfaces/contract/Repository/TQueries";
 
 
 type DefaultDatastoreConfig = {
@@ -82,22 +81,6 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
                 }
             }).catch(err => {
                 console.error("Failed to create bloc", err);
-                reject(err);
-            });
-        });
-    }
-
-
-    getBlocsMetadata(): Promise<TBlocMetadata[]> {
-        return new Promise((resolve, reject) => {
-            this._blocsCollection.find({}, { projection: { id: 1, name: 1, _id: 0 } }).toArray().then(blocs => {
-                const metadata = blocs.map(bloc => ({
-                    id: bloc.id,
-                    name: bloc.name
-                }));
-                resolve(metadata);
-            }).catch(err => {
-                console.error("Failed to get blocs metadata", err);
                 reject(err);
             });
         });
