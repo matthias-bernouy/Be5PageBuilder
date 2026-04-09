@@ -1,36 +1,16 @@
 import { Component, type ComponentMetadata } from 'src/core/Editor/core/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { TagElement } from '../../core/ObserverManager';
-
-const TEMPLATE_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
-    <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-    <path d="M3 9h18" stroke="currentColor" stroke-width="1.5" fill="none"/>
-    <path d="M9 21V9" stroke="currentColor" stroke-width="1.5" fill="none"/>
-</svg>
-`;
-
-const SNIPPET_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="m18 16 4-4-4-4"/>
-    <path d="m6 8-4 4 4 4"/>
-    <path d="m14.5 4-5 16"/>
-</svg>
-`;
-
-const DEFAULT_COMPONENT_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
-    <rect x="2" y="2" width="20" height="20" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-    <rect x="6" y="6" width="12" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <rect x="6" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
-    <rect x="13" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
-</svg>
-`;
+import {
+    renderBlocSection,
+    renderSnippetSection,
+    renderTemplateSection,
+    type InsertDetail,
+    type SnippetItem,
+    type TemplateItem,
+} from './sections';
 
 type Section = 'blocs' | 'templates' | 'snippets';
-type TemplateItem = { id: string; name: string; content: string; category: string };
-type SnippetItem = { id: string; identifier: string; name: string; category: string };
 
 export type BlocLibraryOptions = {
     /** Tab to open on. Defaults to 'blocs'. */
@@ -175,13 +155,26 @@ export class BlocLibrary extends Component {
         const grid = this.shadowRoot!.getElementById('grid')!;
         grid.innerHTML = '';
 
+        const deps = { onInsert: (detail: InsertDetail) => this._emitInsert(detail) };
+
         if (this._section === 'blocs') {
-            this._renderBlocCards(grid);
+            if (!this._activeGroup) return;
+            const items = Array.from(document.EditorManager.getObserver().getItemsByGroup(this._activeGroup));
+            renderBlocSection(grid, items, deps);
         } else if (this._section === 'templates') {
-            this._renderTemplateCards(grid);
+            renderTemplateSection(grid, this._templates, this._activeGroup, deps);
         } else if (this._section === 'snippets') {
-            this._renderSnippetCards(grid);
+            renderSnippetSection(grid, this._snippets, this._activeGroup, deps);
         }
+    }
+
+    private _emitInsert(detail: InsertDetail) {
+        this.dispatchEvent(new CustomEvent('insert', {
+            detail,
+            bubbles: true,
+            composed: true,
+        }));
+        this.close();
     }
 
     private _getGroups(): string[] {
@@ -189,99 +182,12 @@ export class BlocLibrary extends Component {
             return Array.from(document.EditorManager.getObserver().getGroups());
         }
         if (this._section === 'templates') {
-            const cats = new Set(this._templates.map(t => t.category || 'Default'));
-            return Array.from(cats);
+            return Array.from(new Set(this._templates.map(t => t.category || 'Default')));
         }
         if (this._section === 'snippets') {
-            const cats = new Set(this._snippets.map(s => s.category || 'Default'));
-            return Array.from(cats);
+            return Array.from(new Set(this._snippets.map(s => s.category || 'Default')));
         }
         return [];
-    }
-
-    private _renderBlocCards(grid: HTMLElement) {
-        if (!this._activeGroup) return;
-        const observer = document.EditorManager.getObserver();
-        const items = observer.getItemsByGroup(this._activeGroup);
-
-        items.forEach((item: TagElement) => {
-            const card = this._createCard(DEFAULT_COMPONENT_SVG, item.label, () => {
-                this.dispatchEvent(new CustomEvent('insert', {
-                    detail: { id: item.tag, type: 'bloc' },
-                    bubbles: true,
-                    composed: true
-                }));
-                this.close();
-            });
-            grid.appendChild(card);
-        });
-    }
-
-    private _renderTemplateCards(grid: HTMLElement) {
-        const filtered = this._templates.filter(t =>
-            (t.category || 'Default') === this._activeGroup
-        );
-
-        if (filtered.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
-                    <p>No templates in this category</p>
-                </div>
-            `;
-            return;
-        }
-
-        filtered.forEach(tpl => {
-            const card = this._createCard(TEMPLATE_SVG, tpl.name, () => {
-                this.dispatchEvent(new CustomEvent('insert', {
-                    detail: { type: 'template', html: tpl.content },
-                    bubbles: true,
-                    composed: true
-                }));
-                this.close();
-            });
-            grid.appendChild(card);
-        });
-    }
-
-    private _renderSnippetCards(grid: HTMLElement) {
-        const filtered = this._snippets.filter(s =>
-            (s.category || 'Default') === this._activeGroup
-        );
-
-        if (filtered.length === 0) {
-            grid.innerHTML = `
-                <div class="empty-state">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg>
-                    <p>No snippets in this category</p>
-                </div>
-            `;
-            return;
-        }
-
-        filtered.forEach(snippet => {
-            const card = this._createCard(SNIPPET_SVG, snippet.name, () => {
-                this.dispatchEvent(new CustomEvent('insert', {
-                    detail: { type: 'snippet', identifier: snippet.identifier },
-                    bubbles: true,
-                    composed: true
-                }));
-                this.close();
-            });
-            grid.appendChild(card);
-        });
-    }
-
-    private _createCard(icon: string, label: string, onClick: () => void): HTMLButtonElement {
-        const card = document.createElement('button');
-        card.className = 'card';
-        card.innerHTML = `
-            <span class="icon">${icon}</span>
-            <span class="title">${label}</span>
-        `;
-        card.onclick = onClick;
-        return card;
     }
 
     public close() {

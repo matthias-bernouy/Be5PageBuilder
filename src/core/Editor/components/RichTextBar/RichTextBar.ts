@@ -4,9 +4,28 @@ import "src/core/Editor/configuration/Inputs/P9rPageLink";
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
+import {
+    applyBlockAlignment,
+    applyInlineStyle,
+    applyLinkUrl,
+    getCurrentColor,
+    getCurrentFontSize,
+    getExistingLink,
+    insertList,
+    queryCommandState,
+    removeInlineStyle,
+    removeLinkAtSelection,
+    toggleFormat,
+} from "./commands";
+import { SelectionTracker } from "./selection";
+
+const FORMAT_COMMANDS = ["bold", "italic", "underline", "strikeThrough"] as const;
+const ALIGN_COMMANDS = ["justifyLeft", "justifyCenter", "justifyRight"] as const;
+const ACTIVE_COMMANDS = [...FORMAT_COMMANDS, ...ALIGN_COMMANDS];
+
 export class EditorToolbar extends Component {
 
-    private savedRange: Range | null = null;
+    private selection = new SelectionTracker();
     private interacting = false;
     private pageLink: HTMLElement | null = null;
 
@@ -41,6 +60,8 @@ export class EditorToolbar extends Component {
         root.querySelector(".link-pages-wrap")!.appendChild(this.pageLink);
     }
 
+    // ── Event routing ───────────────────────────────────────────────────
+
     private handleClick(e: MouseEvent) {
         const target = e.target as HTMLElement;
         const btn = target.closest("button") as HTMLElement | null;
@@ -48,9 +69,9 @@ export class EditorToolbar extends Component {
 
         const command = btn.dataset.command;
         if (command) {
-            this.restoreSelection();
-            this.handleCommand(command);
-            this.saveSelection();
+            this.selection.restore();
+            this.runCommand(command);
+            this.selection.save();
             this.updateState();
             return;
         }
@@ -60,8 +81,8 @@ export class EditorToolbar extends Component {
         if (action === "size-down") return this.changeSize(-2);
         if (action === "color") return this.toggleColorPanel();
         if (action === "link") return this.toggleLinkBar();
-        if (action === "list-ul") return this.insertList("ul");
-        if (action === "list-ol") return this.insertList("ol");
+        if (action === "list-ul") return this.insertListAction("ul");
+        if (action === "list-ol") return this.insertListAction("ol");
 
         const color = btn.dataset.color;
         if (color !== undefined) return this.applyColor(color);
@@ -73,135 +94,15 @@ export class EditorToolbar extends Component {
         if (btn.classList.contains("link-unlink")) return this.removeLink();
     }
 
-    private handleCommand(cmd: string) {
+    private runCommand(cmd: string) {
         switch (cmd) {
-            case "bold": return this.toggleFormat("b");
-            case "italic": return this.toggleFormat("i");
-            case "underline": return this.toggleFormat("u");
-            case "strikeThrough": return this.toggleFormat("s");
-            case "justifyLeft": return this.applyBlockAlignment("left");
-            case "justifyCenter": return this.applyBlockAlignment("center");
-            case "justifyRight": return this.applyBlockAlignment("right");
-        }
-    }
-
-    private toggleFormat(tag: string) {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return;
-
-        const node = sel.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-        const existingTag = el?.closest(tag);
-
-        if (existingTag) {
-            const parent = existingTag.parentNode;
-            const frag = document.createDocumentFragment();
-            while (existingTag.firstChild) {
-                frag.appendChild(existingTag.firstChild);
-            }
-
-            const firstNode = frag.firstChild;
-            const lastNode = frag.lastChild;
-            parent?.replaceChild(frag, existingTag);
-
-            if (firstNode && lastNode) {
-                const newRange = document.createRange();
-                newRange.setStartBefore(firstNode);
-                newRange.setEndAfter(lastNode);
-                sel.removeAllRanges();
-                sel.addRange(newRange);
-            }
-        } else {
-            const newEl = document.createElement(tag);
-            this.wrapWithElement(newEl);
-        }
-    }
-
-    private applyBlockAlignment(align: string) {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return;
-        const node = sel.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-
-        const block = el?.closest("p, div, h1, h2, h3, h4, h5, h6, li") as HTMLElement;
-        if (block) {
-            block.style.textAlign = align;
-        }
-    }
-
-    private applyInlineStyle(prop: string, value: string) {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
-
-        const node = sel.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-
-        if (el && el.tagName === "SPAN" && el.textContent === sel.toString()) {
-            (el.style as any)[prop] = value;
-            return;
-        }
-
-        const span = document.createElement("span");
-        (span.style as any)[prop] = value;
-        this.wrapWithElement(span);
-    }
-
-    private removeInlineStyle(prop: string) {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return;
-
-        const node = sel.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-        const span = el?.closest("span");
-
-        if (span) {
-            (span.style as any)[prop] = "";
-            if (span.style.length === 0) {
-                const parent = span.parentNode;
-                while (span.firstChild) parent?.insertBefore(span.firstChild, span);
-                parent?.removeChild(span);
-            }
-        }
-    }
-
-    private wrapWithElement(wrapper: HTMLElement) {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return;
-        const range = sel.getRangeAt(0);
-
-        if (range.collapsed) return;
-
-        try {
-            const contents = range.extractContents();
-            wrapper.appendChild(contents);
-            range.insertNode(wrapper);
-
-            sel.removeAllRanges();
-            const newRange = document.createRange();
-            newRange.selectNodeContents(wrapper);
-            sel.addRange(newRange);
-        } catch (e) {
-            console.warn("Selection spans complex markup", e);
-        }
-    }
-
-    private queryCommandStateCompat(cmd: string): boolean {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return false;
-        const node = sel.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-        if (!el) return false;
-
-        const style = window.getComputedStyle(el);
-        switch (cmd) {
-            case 'bold': return style.fontWeight === 'bold' || parseInt(style.fontWeight) >= 700 || !!el.closest('b, strong');
-            case 'italic': return style.fontStyle === 'italic' || !!el.closest('i, em');
-            case 'underline': return style.textDecorationLine.includes('underline') || !!el.closest('u');
-            case 'strikeThrough': return style.textDecorationLine.includes('line-through') || !!el.closest('s, strike');
-            case 'justifyLeft': return style.textAlign === 'left' || style.textAlign === 'start';
-            case 'justifyCenter': return style.textAlign === 'center';
-            case 'justifyRight': return style.textAlign === 'right';
-            default: return false;
+            case "bold": return toggleFormat("b");
+            case "italic": return toggleFormat("i");
+            case "underline": return toggleFormat("u");
+            case "strikeThrough": return toggleFormat("s");
+            case "justifyLeft": return applyBlockAlignment("left");
+            case "justifyCenter": return applyBlockAlignment("center");
+            case "justifyRight": return applyBlockAlignment("right");
         }
     }
 
@@ -213,108 +114,79 @@ export class EditorToolbar extends Component {
             return;
         }
 
-        const selection = window.getSelection();
-
-        if (!selection || selection.isCollapsed || selection.toString().trim() === "") {
+        const sel = window.getSelection();
+        if (!sel || sel.isCollapsed || sel.toString().trim() === "") {
             this.hide();
             return;
         }
 
-        const range = selection.getRangeAt(0);
-        const rect = range.getBoundingClientRect();
-
-        this.saveSelection();
+        const rect = sel.getRangeAt(0).getBoundingClientRect();
+        this.selection.save();
         this.show(rect);
         this.updateState();
     }
 
+    // ── Size / color / list / link actions ──────────────────────────────
 
     private changeSize(delta: number) {
-        this.restoreSelection();
-
-        const current = this.getCurrentFontSize();
-        const next = Math.max(8, Math.min(96, current + delta));
-
-        this.applyInlineStyle("fontSize", `${next}px`);
-
-        this.saveSelection();
+        this.selection.restore();
+        const next = Math.max(8, Math.min(96, getCurrentFontSize() + delta));
+        applyInlineStyle("fontSize", `${next}px`);
+        this.selection.save();
         this.updateSizeDisplay(next);
     }
 
-    private getCurrentFontSize(): number {
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0) return 16;
-
-        const node = selection.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-        if (!el) return 16;
-
-        return Math.round(parseFloat(window.getComputedStyle(el).fontSize));
-    }
-
-    private updateSizeDisplay(size?: number) {
-        const display = this.shadowRoot!.querySelector(".size-display");
-        if (display) display.textContent = String(size ?? this.getCurrentFontSize());
-    }
-
-    private toggleColorPanel() {
-        const panel = this.shadowRoot!.querySelector(".color-panel")!;
-        panel.classList.toggle("open");
-        this.closeLinkBar();
-    }
-
     private applyColor(color: string) {
-        this.restoreSelection();
-
+        this.selection.restore();
         if (color === "inherit") {
-            this.removeInlineStyle("color");
+            removeInlineStyle("color");
         } else {
-            this.applyInlineStyle("color", color);
+            applyInlineStyle("color", color);
         }
-
-        this.saveSelection();
+        this.selection.save();
         this.shadowRoot!.querySelector(".color-panel")!.classList.remove("open");
         this.updateColorState();
     }
 
-    private updateColorState() {
-        const trigger = this.shadowRoot!.querySelector(".color-swatch-current") as HTMLElement;
-        if (!trigger) return;
-
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0) return;
-
-        const node = selection.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-        if (!el) return;
-
-        trigger.style.background = window.getComputedStyle(el).color;
+    private insertListAction(tag: "ul" | "ol") {
+        this.selection.restore();
+        insertList(tag);
+        this.hide();
     }
 
-    private insertList(tag: "ul" | "ol") {
-        this.restoreSelection();
+    private applyLink() {
+        this.selection.restore();
 
-        const selection = window.getSelection();
-        if (!selection || selection.rangeCount === 0) return;
+        const activeType = this.shadowRoot!.querySelector(".link-type-btn.active") as HTMLElement;
+        const type = activeType?.dataset.linkType || "external";
 
-        const node = selection.focusNode;
-        const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-        if (!el) return;
+        let url = "";
+        if (type === "external") {
+            url = (this.shadowRoot!.querySelector(".link-input") as HTMLInputElement).value.trim();
+        } else if (type === "internal" && this.pageLink) {
+            url = (this.pageLink as any).value || "";
+        }
 
-        const editable = el.closest("[contenteditable]") as HTMLElement;
+        applyLinkUrl(url);
 
-        const list = document.createElement(tag);
-        const li = document.createElement("li");
+        this.selection.save();
+        this.closeLinkBar();
+        this.updateState();
+    }
 
-        list.appendChild(li);
-        editable.replaceWith(list);
+    private removeLink() {
+        this.selection.restore();
+        removeLinkAtSelection();
+        this.selection.save();
+        this.closeLinkBar();
+        this.updateState();
+    }
 
-        selection.removeAllRanges();
-        const newRange = document.createRange();
-        newRange.selectNodeContents(li);
-        selection.addRange(newRange);
+    // ── Panels ──────────────────────────────────────────────────────────
 
-        this.hide();
+    private toggleColorPanel() {
+        this.shadowRoot!.querySelector(".color-panel")!.classList.toggle("open");
+        this.closeLinkBar();
     }
 
     private toggleLinkBar() {
@@ -328,7 +200,7 @@ export class EditorToolbar extends Component {
             return;
         }
 
-        const existing = this.getExistingLink();
+        const existing = getExistingLink(this.selection.range);
         const input = this.shadowRoot!.querySelector(".link-input") as HTMLInputElement;
         input.value = existing || "";
 
@@ -353,91 +225,34 @@ export class EditorToolbar extends Component {
         });
     }
 
-    private applyLink() {
-        this.restoreSelection();
-
-        const activeType = this.shadowRoot!.querySelector(".link-type-btn.active") as HTMLElement;
-        const type = activeType?.dataset.linkType || "external";
-
-        let url = "";
-        if (type === "external") {
-            url = (this.shadowRoot!.querySelector(".link-input") as HTMLInputElement).value.trim();
-        } else if (type === "internal" && this.pageLink) {
-            url = (this.pageLink as any).value || "";
-        }
-
-        if (url) {
-            const a = document.createElement("a");
-            a.href = url;
-            this.wrapWithElement(a);
-        }
-
-        this.saveSelection();
-        this.closeLinkBar();
-        this.updateState();
-    }
-
-    private removeLink() {
-        this.restoreSelection();
-
-        const sel = window.getSelection();
-        if (sel && sel.rangeCount > 0) {
-            const node = sel.focusNode;
-            const el = node?.nodeType === 1 ? node as HTMLElement : node?.parentElement;
-            const a = el?.closest("a");
-
-            if (a) {
-                const parent = a.parentNode;
-                while (a.firstChild) parent?.insertBefore(a.firstChild, a);
-                parent?.removeChild(a);
-            }
-        }
-
-        this.saveSelection();
-        this.closeLinkBar();
-        this.updateState();
-    }
-
-    private getExistingLink(): string | null {
-        const sel = this.savedRange || window.getSelection()?.getRangeAt(0);
-        if (!sel) return null;
-
-        const node = sel.startContainer;
-        const el = node.nodeType === 1 ? node as HTMLElement : node.parentElement;
-        return el?.closest("a")?.getAttribute("href") || null;
-    }
-
-    private saveSelection() {
-        const sel = window.getSelection();
-        if (sel && sel.rangeCount > 0) {
-            this.savedRange = sel.getRangeAt(0).cloneRange();
-        }
-    }
-
-    private restoreSelection() {
-        if (!this.savedRange) return;
-        const sel = window.getSelection();
-        if (sel) {
-            sel.removeAllRanges();
-            sel.addRange(this.savedRange);
-        }
-    }
+    // ── UI state refresh ────────────────────────────────────────────────
 
     private updateState() {
-        const commands = ["bold", "italic", "underline", "strikeThrough",
-            "justifyLeft", "justifyCenter", "justifyRight"];
-
-        for (const cmd of commands) {
+        for (const cmd of ACTIVE_COMMANDS) {
             const btn = this.shadowRoot!.querySelector(`button[data-command="${cmd}"]`);
-            if (btn) btn.classList.toggle("active", this.queryCommandStateCompat(cmd));
+            if (btn) btn.classList.toggle("active", queryCommandState(cmd));
         }
 
         const linkBtn = this.shadowRoot!.querySelector('[data-action="link"]');
-        if (linkBtn) linkBtn.classList.toggle("active", !!this.getExistingLink());
+        if (linkBtn) linkBtn.classList.toggle("active", !!getExistingLink(this.selection.range));
 
         this.updateSizeDisplay();
         this.updateColorState();
     }
+
+    private updateSizeDisplay(size?: number) {
+        const display = this.shadowRoot!.querySelector(".size-display");
+        if (display) display.textContent = String(size ?? getCurrentFontSize());
+    }
+
+    private updateColorState() {
+        const trigger = this.shadowRoot!.querySelector(".color-swatch-current") as HTMLElement | null;
+        if (!trigger) return;
+        const color = getCurrentColor();
+        if (color) trigger.style.background = color;
+    }
+
+    // ── Positioning ─────────────────────────────────────────────────────
 
     private show(rect: DOMRect) {
         this.classList.add("visible");

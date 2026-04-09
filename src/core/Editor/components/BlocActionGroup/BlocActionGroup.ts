@@ -1,10 +1,11 @@
 import { HorizontalActionGroup } from 'w13c/core/HorizontalActionGroup/HorizontalActionGroup';
 import type { Editor } from '../../core/Editor';
-import { BlocLibrary } from '../BlocLibrary/BlocLibrary';
 import css from './style.css' with { type: 'text' };
 import template from './template.html' with { type: 'text' };
 import insertBtnCss from './insert-btn.css' with { type: 'text' };
 import insertBtnHtml from './insert-btn.html' with { type: 'text' };
+import { computeGroupPosition, positionInsertButtons, type VAnchor } from './positioning';
+import { insertClone, openChangeComponentPicker } from './actions';
 
 export class BlocActionGroup extends HorizontalActionGroup {
 
@@ -74,7 +75,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.smartRender();
 
         const rect = this._target!.getBoundingClientRect();
-        const { x, y } = this._computePosition(rect, mouseX, mouseY);
+        const mx = mouseX ?? this._lastMouseX;
+        const my = mouseY ?? (this._lastVAnchor === "top" ? rect.top : rect.bottom);
+        const { x, y, vAnchor } = computeGroupPosition({
+            rect,
+            barWidth: this.offsetWidth,
+            barHeight: this.offsetHeight,
+            mouseX: mx,
+            mouseY: my,
+        });
+        this._lastMouseX = mx;
+        this._lastVAnchor = vAnchor;
 
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         this.style.visibility = "visible";
@@ -99,37 +110,18 @@ export class BlocActionGroup extends HorizontalActionGroup {
     }
 
     private _lastMouseX: number = 0;
-    private _lastVAnchor: 'top' | 'bottom' = 'bottom';
-
-    private _computePosition(rect: DOMRect, mouseX?: number, mouseY?: number): { x: number; y: number } {
-        const centerY = rect.top + rect.height / 2;
-        const anchorTop = mouseY != null && mouseY < centerY;
-        this._lastVAnchor = anchorTop ? 'top' : 'bottom';
-
-        const mx = mouseX ?? this._lastMouseX;
-        this._lastMouseX = mx;
-
-        const halfWidth = this.offsetWidth / 2;
-        let x = mx + window.scrollX - halfWidth;
-        const minX = rect.left + window.scrollX;
-        const maxX = rect.right + window.scrollX - this.offsetWidth;
-        x = Math.max(minX, Math.min(maxX, x));
-
-        const y = anchorTop
-            ? rect.top + window.scrollY - this.offsetHeight
-            : rect.bottom + window.scrollY;
-
-        return { x, y };
-    }
+    private _lastVAnchor: VAnchor = "bottom";
 
     private _reflow() {
         if (!this._target) return;
         const rect = this._target.getBoundingClientRect();
-        const { x, y } = this._computePosition(
+        const { x, y } = computeGroupPosition({
             rect,
-            this._lastMouseX,
-            this._lastVAnchor === 'top' ? rect.top : rect.bottom,
-        );
+            barWidth: this.offsetWidth,
+            barHeight: this.offsetHeight,
+            mouseX: this._lastMouseX,
+            mouseY: this._lastVAnchor === "top" ? rect.top : rect.bottom,
+        });
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
@@ -138,57 +130,16 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private _positionInsertButtons(rect: DOMRect) {
         const config = this._editor!.actionBarConfiguration;
-        const showBefore = config.get("addBefore");
-        const showAfter = config.get("addAfter");
-
-        if (!showBefore && !showAfter) return;
-
         const isInline = this._target!.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
-        const scrollX = window.scrollX;
-        const scrollY = window.scrollY;
-
-        this._btnBefore.classList.toggle('p9r-insert-btn--inline', isInline);
-        this._btnAfter.classList.toggle('p9r-insert-btn--inline', isInline);
-
-        if (isInline) {
-            const centerY = rect.top + scrollY + rect.height / 2 - 12;
-            if (showBefore) {
-                this._btnBefore.style.left = `${rect.left + scrollX - 12}px`;
-                this._btnBefore.style.top = `${centerY}px`;
-                this._btnBefore.style.display = "flex";
-            }
-            if (showAfter) {
-                this._btnAfter.style.left = `${rect.right + scrollX - 12}px`;
-                this._btnAfter.style.top = `${centerY}px`;
-                this._btnAfter.style.display = "flex";
-            }
-        } else {
-            const centerX = rect.left + scrollX + rect.width / 2 - 12;
-            if (showBefore) {
-                this._btnBefore.style.left = `${centerX}px`;
-                this._btnBefore.style.top = `${rect.top + scrollY - 12}px`;
-                this._btnBefore.style.display = "flex";
-            }
-            if (showAfter) {
-                this._btnAfter.style.left = `${centerX}px`;
-                this._btnAfter.style.top = `${rect.bottom + scrollY - 12}px`;
-                this._btnAfter.style.display = "flex";
-            }
-        }
+        positionInsertButtons(this._btnBefore, this._btnAfter, rect, isInline, {
+            before: !!config.get("addBefore"),
+            after: !!config.get("addAfter"),
+        });
     }
 
     private _insertClone(position: 'before' | 'after') {
         if (!this._target) return;
-        const clone = this._target.cloneNode(true) as HTMLElement;
-        clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-        clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach(el => {
-            el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-        });
-        if (position === 'before') {
-            this._target.before(clone);
-        } else {
-            this._target.after(clone);
-        }
+        insertClone(this._target, position);
         this.close();
         this._cooldown = true;
         requestAnimationFrame(() => { this._cooldown = false; });
@@ -196,39 +147,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private _changeComponent() {
         if (!this._target) return;
-        const library = BlocLibrary.open();
-        library.addEventListener('insert', ((e: CustomEvent) => {
-            if (e.detail.type === 'template') {
-                const fragment = document.createRange().createContextualFragment(e.detail.html);
-                this._target!.replaceWith(fragment);
-            } else if (e.detail.type === 'snippet') {
-                const newEl = document.createElement('w13c-snippet');
-                newEl.setAttribute('identifier', e.detail.identifier);
-
-                if (this._target!.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
-                    newEl.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this._target!.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!);
-                }
-
-                if (this._target!.hasAttribute("slot")) {
-                    newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
-                }
-
-                this._target!.replaceWith(newEl);
-            } else {
-                const newEl = document.createElement(e.detail.id);
-
-                if (this._target!.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
-                    newEl.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this._target!.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!);
-                }
-
-                if (this._target!.hasAttribute("slot")) {
-                    newEl.setAttribute("slot", this._target!.getAttribute("slot")!);
-                }
-
-                this._target!.replaceWith(newEl);
-            }
-            this.close();
-        }) as EventListener);
+        openChangeComponentPicker(this._target, () => this.close());
     }
 
     // ── Event listeners ──
