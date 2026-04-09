@@ -1,9 +1,9 @@
-import "src/core/Editor/components/AdminLayout/AdminLayout"
+import "src/core/Admin/components/AdminLayout/AdminLayout"
 
-import "src/core/Domain/Media/CardMedia/CardMedia"
-import "src/core/Domain/Media/CropSystem/CropSystem"
-import "src/core/Domain/Media/DetailMedia/DetailMedia"
-import "src/core/Domain/Media/GridMedia/GridMedia"
+import "src/core/Media/components/CardMedia/CardMedia"
+import "src/core/Media/components/CropSystem/CropSystem"
+import "src/core/Media/components/DetailMedia/DetailMedia"
+import "src/core/Media/components/GridMedia/GridMedia"
 
 import "w13c/core/Form/Button/Button"
 import "w13c/core/Form/Input/Input"
