@@ -2,7 +2,7 @@
  *  The bloc is registered as opaque: it still gets the default parent-level
  *  action bar, but its subtree is sealed at runtime. */
 const OPAQUE_EDITOR_SRC = `
-import { registerEditor_opaque } from "@bernouy/pagebuilder/client";
+import { registerEditor_opaque } from "@bernouy/pagebuilder/editor";
 registerEditor_opaque();
 `;
 

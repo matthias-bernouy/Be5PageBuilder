@@ -182,6 +182,7 @@ Pass the custom implementations into the `PageBuilder` constructor as you would 
 The package ships a CLI (`p9r`) for iterating on blocs outside the host app. The bin is wired in `package.json`, so once the package is installed you can run:
 
 ```bash
+bunx p9r init <folder> [--force]
 bunx p9r dev
 bunx p9r import [flags]
 bunx p9r help
@@ -193,6 +194,24 @@ Both commands read their credentials from the environment (or a `.env` file in t
 |---|---|
 | `P9R_URL` | Base URL of the remote CMS, including the admin path prefix — e.g. `http://localhost:4999/page-builder` |
 | `P9R_TOKEN` | Bearer token used to authenticate as an admin against that CMS |
+
+`p9r init` does not need either variable — it only touches the local filesystem.
+
+### `p9r init` — scaffold a new bloc
+
+`p9r init <folder>` copies the base bloc template into `<folder>` so you can start writing a new bloc from a working skeleton instead of an empty directory.
+
+The scaffold contains everything the CLI expects: `manifest.json`, `Bloc.ts`, `BlocEditor.ts`, `template.html`, `style.css`, `configuration.html`, plus an `assets/` folder with a placeholder thumbnail and image and a `README.md` documenting the `<p9r-*>` configuration tags.
+
+After scaffolding, edit `manifest.json` to set `default-tag` (the custom-element tag — must be globally unique) and `default-group`, then run `p9r dev` from the parent folder to preview it.
+
+Flags:
+
+| Flag | Purpose |
+|---|---|
+| `--force`, `-f` | Overwrite an existing non-empty folder (disabled by default to protect in-progress work) |
+
+To create an opaque bloc (no editor, sealed subtree, parent-level action bar only), delete `BlocEditor.ts` and `configuration.html` from the scaffold and drop the `"editor"` field from `manifest.json`.
 
 ### `p9r dev` — local editor with hot-reload
 
@@ -238,12 +257,14 @@ A bloc lives in its own folder and is described by a `manifest.json` at its root
 ```
 MyBloc/
 ├── manifest.json       // declares tag, group, entry files
-├── Bloc.ts             // extends Component — the view bundle
-├── BlocEditor.ts       // extends Editor — the editor bundle (optional: omit for opaque blocs)
+├── Bloc.ts             // imports Component from @bernouy/pagebuilder/component
+├── BlocEditor.ts       // imports Editor  from @bernouy/pagebuilder/editor    (optional: omit for opaque blocs)
 ├── template.html       // semantic HTML with <slot>, imported by Bloc.ts
 ├── style.css           // self-contained, uses global design tokens
 └── configuration.html  // declarative config panel, imported by BlocEditor.ts
 ```
+
+The two sub-entries are isolated on purpose: `@bernouy/pagebuilder/component` reaches none of the editor code, so the view bundle that site visitors download never contains `Editor`, `ObserverManager`, `ConfigPanel`, or anything from the admin surface. Keep `Bloc.ts` strictly on `/component` and `BlocEditor.ts` strictly on `/editor`.
 
 `manifest.json` is the single source of truth for the bloc's identity:
 
@@ -331,7 +352,17 @@ import type {
 } from "@bernouy/pagebuilder";
 ```
 
-For bloc authoring, the browser-safe entry point `@bernouy/pagebuilder/client` exposes `Component`, `Editor` and `registerEditor` — see [Writing your own bloc](#writing-your-own-bloc).
+Bloc authoring symbols live in two **separate sub-entries** so the view bundle visitors download never contains editor code:
+
+```ts
+// View side — imported by Bloc.ts
+import { Component } from "@bernouy/pagebuilder/component";
+
+// Editor side — imported by BlocEditor.ts
+import { Editor, registerEditor, registerEditor_opaque } from "@bernouy/pagebuilder/editor";
+```
+
+See [Writing your own bloc](#writing-your-own-bloc).
 
 ---
 

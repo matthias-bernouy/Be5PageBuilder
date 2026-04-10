@@ -33,7 +33,7 @@ if (__Cls && !customElements.get("BE5_TAG_TO_BE_REPLACED")) {
 
 const editorWrapperSrc = (importSpec: string) => `
 import * as __mod from ${JSON.stringify(importSpec)};
-import { registerEditor } from "@bernouy/pagebuilder/client";
+import { registerEditor } from "@bernouy/pagebuilder/editor";
 const __Cls = Object.values(__mod).find((v) => typeof v === "function");
 if (__Cls) registerEditor({ cl: __Cls as any });
 `;
@@ -42,7 +42,7 @@ if (__Cls) registerEditor({ cl: __Cls as any });
  *  bloc gets a default (empty) editor for parent-level actions but is marked
  *  opaque so its subtree is sealed. */
 const opaqueEditorWrapperSrc = () => `
-import { registerEditor_opaque } from "@bernouy/pagebuilder/client";
+import { registerEditor_opaque } from "@bernouy/pagebuilder/editor";
 registerEditor_opaque();
 `;
 

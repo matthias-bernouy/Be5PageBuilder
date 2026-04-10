@@ -15,14 +15,19 @@
             "bun": "./index.ts",
             "default": "./index.ts"
         },
-        "./client": {
-            "bun": "./client.ts",
-            "default": "./client.ts"
+        "./component": {
+            "bun": "./component.ts",
+            "default": "./component.ts"
+        },
+        "./editor": {
+            "bun": "./editor.ts",
+            "default": "./editor.ts"
         }
     },
     "files": [
         "index.ts",
-        "client.ts",
+        "component.ts",
+        "editor.ts",
         "build.ts",
         "src/",
         "w13c/",

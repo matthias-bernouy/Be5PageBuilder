@@ -16,11 +16,18 @@ export { DefaultPageBuilderRepository } from "./src/interfaces/default-provider/
 export { DefaultMediaRepository } from "./src/interfaces/default-provider/Media/DefaultMediaRepository";
 export { InMemoryCache } from "./src/interfaces/default-provider/Cache/InMemoryCache";
 
-// Browser-safe bloc authoring symbols (Component, Editor, registerEditor)
-// live at `@bernouy/pagebuilder/client`. They are intentionally NOT
-// re-exported from this barrel — importing them alongside PageBuilder
-// would force consumers to pull the whole MongoDB runtime into every
-// browser bundle.
+// Browser-safe bloc authoring symbols are deliberately split into two
+// sub-entries:
+//   • `@bernouy/pagebuilder/component` — exposes only `Component`.
+//     Imported by `Bloc.ts` and included in the view bundle visitors download.
+//   • `@bernouy/pagebuilder/editor`    — exposes `Editor`, `registerEditor`,
+//     `registerEditor_opaque`. Imported by `BlocEditor.ts` and included in
+//     the editor bundle that only the admin loads.
+// Keeping the two entries isolated guarantees the view bundle never drags
+// editor-side code (ObserverManager, ConfigPanel, …) into what visitors see.
+// Neither entry is re-exported from this barrel — importing them alongside
+// `PageBuilder` would force consumers to pull the whole MongoDB runtime into
+// every browser bundle.
 
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
 export type { PageBuilderRepository } from "./src/interfaces/contract/Repository/PageBuilderRepository";

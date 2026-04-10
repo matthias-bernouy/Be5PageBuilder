@@ -15,6 +15,7 @@
 ## Bloc authoring & deployment
 
 - A bloc is a folder with a `manifest.json` at its root (discovered recursively by the CLI). The manifest declares `bloc` (view entry, default `./Bloc.ts`), `editor` (optional editor entry), `default-tag`, `default-group`, and `meta.title`. The `default-tag` is the custom element tag AND the DB primary key — it must be globally unique.
+- **Import contract — never cross the boundary:** `Bloc.ts` imports `Component` from `@bernouy/pagebuilder/component`, `BlocEditor.ts` imports from `@bernouy/pagebuilder/editor`. The two sub-entries are deliberately isolated so the view bundle visitors download cannot transitively reach `Editor`, `ObserverManager`, `ConfigPanel`, etc. The CLI's generated editor wrapper and `prepare_bloc`'s opaque-editor wrapper both import from `@bernouy/pagebuilder/editor` for the same reason. There is no `@bernouy/pagebuilder/client` entry — it used to exist as a unified barrel and was split on purpose.
 - When `manifest.editor` is absent the bloc is **opaque**: the CLI synthesizes a default editor bundle that calls `registerEditor_opaque()`. At runtime `ObserverManager` marks the element with `p9r-opaque="true"` after editorizing it, so the bloc keeps its parent-level action bar (move/delete/duplicate) but `make_it_editor` refuses to descend into the subtree — nothing inside can be edited.
 - The dev CLI and the server-side `prepare_bloc` both wrap the user's entry in a tiny synthetic file before `Bun.build` so the source only needs to export a class. Tag/label/group come from the manifest, never from the user's source.
 - `prepare_bloc(fileView, fileEditor, label, group, blocId)` requires `blocId` — there is no UUID fallback. Every bloc is keyed by its manifest tag end to end.
@@ -22,11 +23,12 @@
 
 ## CLI (`p9r`)
 
-- Two commands wired in `package.json` bin: `p9r dev` (local editor against a remote CMS with hot-reload) and `p9r import` (deploy blocs via `POST {P9R_URL}/api/bloc`).
-- Both commands read `P9R_URL` (admin base, must include the path prefix, e.g. `http://localhost:4999/page-builder`) and `P9R_TOKEN` (admin bearer) from env or `.env`.
+- Three commands wired in `package.json` bin: `p9r init <folder>` (scaffold a new bloc locally), `p9r dev` (local editor against a remote CMS with hot-reload) and `p9r import` (deploy blocs via `POST {P9R_URL}/api/bloc`).
+- `dev` and `import` read `P9R_URL` (admin base, must include the path prefix, e.g. `http://localhost:4999/page-builder`) and `P9R_TOKEN` (admin bearer) from env or `.env`. `init` is offline — filesystem only.
+- `p9r init` copies `src/resources/bloc-template/` verbatim into the target folder via `node:fs/promises.cp`. Refuses to overwrite a non-empty existing folder unless `--force` / `-f` is passed. The template ships with the package because `src/` is in `package.json.files`.
 - `p9r dev` proxies everything to the remote CMS except `/admin/editor` (assembled locally), `/bloc?tag=X` (served from local dev bundles when present), and `POST /api/page` (persisted to `.p9r-dev/scratch.json` — all other writes are blocked by the write guard). Watches bloc folders via `fs.watch` + a 1s polling rescan for folder-level events Linux `fs.watch` misses, and pushes reloads over `GET /dev/reload` (SSE).
 - `p9r import` fetches `GET /api/blocs` first (fail-fast on auth/connectivity), splits local blocs into fresh/collision sets, only builds the fresh ones, and uploads them. Flags: `--dry-run`, `--only=tag1,tag2`. Collisions are warned and skipped — never overwritten.
-- CLI source lives in `src/cli/`. `scan.ts` → `build.ts` → `server.ts`/`watch.ts` for dev, `CLI_importBloc.ts` for import.
+- CLI source lives in `src/cli/`. `scan.ts` → `build.ts` → `server.ts`/`watch.ts` for dev, `CLI_importBloc.ts` for import, `CLI_init.ts` for init.
 
 ## Data layer
 

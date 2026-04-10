@@ -1,6 +1,6 @@
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { Component } from '@bernouy/pagebuilder/client';
+import { Component } from '@bernouy/pagebuilder/component';
 
 export class Bloc extends Component {
 

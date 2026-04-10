@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import CLI_importBloc from "./CLI_importBloc";
 import CLI_dev from "./CLI_dev";
+import CLI_init from "./CLI_init";
 
 const [command, ...rest] = process.argv.slice(2);
 
@@ -8,6 +9,10 @@ function printHelp() {
     console.log(`p9r — PageBuilder CLI
 
 Usage:
+  p9r init <folder> [--force]      Scaffold a new bloc in <folder> from the
+                                   base template (manifest.json, Bloc.ts,
+                                   BlocEditor.ts, template.html, style.css,
+                                   configuration.html, assets/)
   p9r dev                          Run the local editor against a remote CMS
   p9r import [flags]               Scan the current folder and push new blocs
                                    to the remote CMS via its admin API
@@ -31,6 +36,9 @@ Env (loaded from .env or the environment):
 
 try {
     switch (command) {
+        case "init":
+            await CLI_init(rest);
+            break;
         case "dev":
             await CLI_dev(rest);
             break;
