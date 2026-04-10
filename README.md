@@ -177,23 +177,105 @@ Pass the custom implementations into the `PageBuilder` constructor as you would 
 
 ---
 
+## Developing blocs with the `p9r` CLI
+
+The package ships a CLI (`p9r`) for iterating on blocs outside the host app. The bin is wired in `package.json`, so once the package is installed you can run:
+
+```bash
+bunx p9r dev
+bunx p9r import [flags]
+bunx p9r help
+```
+
+Both commands read their credentials from the environment (or a `.env` file in the current directory):
+
+| Var | Purpose |
+|---|---|
+| `P9R_URL` | Base URL of the remote CMS, including the admin path prefix — e.g. `http://localhost:4999/page-builder` |
+| `P9R_TOKEN` | Bearer token used to authenticate as an admin against that CMS |
+
+### `p9r dev` — local editor with hot-reload
+
+`p9r dev` boots a local web server that mirrors the remote editor shell but substitutes your locally-built blocs for their remote counterparts. It is the fastest way to iterate on a bloc without publishing anything.
+
+- Walks the cwd looking for folders containing `manifest.json` and builds each one (view + editor bundle; synthesizes an opaque editor if `manifest.editor` is absent).
+- Serves `/admin/editor` locally, injecting the dev bundles and shadowing any remote bloc that shares the same tag.
+- Proxies everything else (admin UI assets, CSS, API reads) to the remote CMS — so templates, pages, media and system config behave exactly as production.
+- **Writes are blocked** except for `POST /api/page`, which is intercepted and persisted to `.p9r-dev/scratch.json` instead of hitting the CMS. That lets you save your edit state across reloads without touching the live database.
+- Watches every bloc folder with `fs.watch` and rebuilds on change (150ms debounce). A 1s polling loop also rescans the cwd to catch new folders, renames, copies and deletions that `fs.watch` cannot observe on Linux.
+- A server-sent events endpoint (`/dev/reload`) notifies the open browser to reload as soon as a rebuild lands.
+
+Flags:
+
+| Flag | Default | Purpose |
+|---|---|---|
+| `--port=<n>` | `5000` | Local port for the dev server |
+| `--host=<h>` | `localhost` | Host interface to bind |
+
+### `p9r import` — deploy blocs to the CMS
+
+`p9r import` scans the cwd the same way `p9r dev` does, then pushes every freshly-built bloc to `{P9R_URL}/api/bloc` over HTTPS with the admin bearer token.
+
+- Fetches `GET {P9R_URL}/api/blocs` **first** to build a snapshot of the tags already registered. If the CMS is unreachable or the token is refused, the CLI aborts before doing any work.
+- Splits the local blocs into `fresh` and `collisions` against that snapshot. **Existing tags are never overwritten** — they are reported with a warning and skipped. To re-import a bloc, delete it from the admin UI first.
+- Only `fresh` blocs are built (saves time when most blocs are already in the CMS).
+- Uploads each one as `multipart/form-data` with `tag`, `name`, `group`, `viewJS`, `editorJS` (absent for opaque blocs). The server stores the bloc under its manifest `default-tag`.
+- Final summary: `N imported, M skipped, K failed`. Non-zero exit code on any failure.
+
+Flags:
+
+| Flag | Purpose |
+|---|---|
+| `--dry-run` | Scan, build, and show what would be pushed — no network writes |
+| `--only=tag1,tag2` | Restrict the run to the listed manifest tags |
+
+---
+
 ### Writing your own bloc
 
-Each bloc is a folder with exactly **5 files** — this layout is non-negotiable, the build pipeline depends on it:
+A bloc lives in its own folder and is described by a `manifest.json` at its root. The CLI discovers blocs by walking the current working directory looking for that manifest.
 
 ```
 MyBloc/
-├── MyBloc.ts           // extends Component (src/core/Component/core/Component)
-├── MyBlocEditor.ts     // extends Editor (src/core/Editor/core/Editor) + registerEditor
-├── template.html       // semantic HTML with <slot>
+├── manifest.json       // declares tag, group, entry files
+├── Bloc.ts             // extends Component — the view bundle
+├── BlocEditor.ts       // extends Editor — the editor bundle (optional: omit for opaque blocs)
+├── template.html       // semantic HTML with <slot>, imported by Bloc.ts
 ├── style.css           // self-contained, uses global design tokens
-└── configuration.html  // declarative config panel
+└── configuration.html  // declarative config panel, imported by BlocEditor.ts
 ```
+
+`manifest.json` is the single source of truth for the bloc's identity:
+
+```json
+{
+    "runtime": "0.0.1",
+    "bloc":    "./Bloc.ts",
+    "editor":  "./BlocEditor.ts",
+
+    "default-tag":   "my-bloc",
+    "default-group": "Layout",
+
+    "meta": {
+        "author":      "Jane Doe",
+        "title":       "My bloc",
+        "description": "What it does",
+        "categories":  ["layout"],
+        "thumbnail":   "./assets/thumbnail.svg"
+    }
+}
+```
+
+- `bloc` — path to the view entry (defaults to `./Bloc.ts`).
+- `editor` — path to the editor entry. **Omit this field to deploy an opaque bloc**: the CLI builds a default editor that exposes only parent-level actions (add/move/delete/duplicate) and seals the entire subtree. Nothing inside an opaque bloc can be edited in the inline editor.
+- `default-tag` — the custom element tag. This is what ends up in the HTML (`<my-bloc>…</my-bloc>`), and also the primary key in the database. It must be unique across your deployment.
+- `default-group` — which section of the BlocLibrary the bloc appears in.
+- `meta.title` — label shown in the BlocLibrary; defaults to the folder name if absent.
 
 Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 
-- The component bundle and the editor bundle are built **separately**. Never cross-import between `MyBloc.ts` and `MyBlocEditor.ts`.
-- Placeholders `BE5_TAG_TO_BE_REPLACED`, `BE5_LABEL_TO_BE_REPLACED`, `BE5_GROUP_TO_BE_REPLACED` are substituted at build time — leave them as-is.
+- The component bundle and the editor bundle are built **separately**. Never cross-import between `Bloc.ts` and `BlocEditor.ts`.
+- Placeholders `BE5_TAG_TO_BE_REPLACED`, `BE5_LABEL_TO_BE_REPLACED`, `BE5_GROUP_TO_BE_REPLACED` are substituted at build time by the wrapper the CLI injects — your own source does **not** need to reference them (the CLI wraps your entry file with a tiny synthetic file that calls `customElements.define` and `registerEditor` for you).
 - Do **not** call `super.connectedCallback()` in components.
 - Sub-components never own their own editor — their parent editor drives them via `<p9r-comp-sync>`.
 - Use `:host([attr="value"])` selectors for enum-like configuration; CSS `attr()` only works for numeric values with a `px` fallback.
@@ -239,9 +321,6 @@ import {
     DefaultPageBuilderRepository,
     DefaultMediaRepository,
     InMemoryCache,
-
-    // CLI
-    importBlocs,
 } from "@bernouy/pagebuilder";
 
 import type {
@@ -251,6 +330,8 @@ import type {
     TPage, TBloc, TTemplate, TSnippet, TSystem,
 } from "@bernouy/pagebuilder";
 ```
+
+For bloc authoring, the browser-safe entry point `@bernouy/pagebuilder/client` exposes `Component`, `Editor` and `registerEditor` — see [Writing your own bloc](#writing-your-own-bloc).
 
 ---
 
