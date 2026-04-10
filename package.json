@@ -6,15 +6,23 @@
     "type": "module",
     "main": "./index.ts",
     "types": "./dist/index.d.ts",
+    "bin": {
+        "p9r": "./src/cli/index.ts"
+    },
     "exports": {
         ".": {
             "types": "./dist/index.d.ts",
             "bun": "./index.ts",
             "default": "./index.ts"
+        },
+        "./client": {
+            "bun": "./client.ts",
+            "default": "./client.ts"
         }
     },
     "files": [
         "index.ts",
+        "client.ts",
         "build.ts",
         "src/",
         "w13c/",
