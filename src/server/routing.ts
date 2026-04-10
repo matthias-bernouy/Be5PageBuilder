@@ -1,10 +1,10 @@
-import type { IBe5_Runner } from "@bernouy/socle";
+import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { PageBuilder } from "src/PageBuilder";
 import { cachedResponseAsync, compress } from "src/server/compression";
 import { P9R_CACHE } from "types/p9r-constants";
 
-export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: IBe5_Runner) {
+export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: Runner) {
     type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
     const pages = new Map<string, PageEntry>();
 
@@ -65,7 +65,7 @@ function toRouteKey(filePath: string, suffix: string): string {
 }
 
 
-export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
+export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
     const glob = new Bun.Glob("**/*.css");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -81,7 +81,7 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     }
 }
 
-export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: IBe5_Runner) {
+export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
     const glob = new Bun.Glob("**/*.ts");
 
     for await (const file of glob.scan(absoluteFolderPath)) {

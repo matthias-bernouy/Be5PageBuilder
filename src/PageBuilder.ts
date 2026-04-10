@@ -1,5 +1,5 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
-import type { Authentication, Runner, TokenAuthentication } from "@bernouy/socle";
+import type { Authentication, PasswordAuthentication, Runner, TokenAuthentication } from "@bernouy/socle";
 import type { PageBuilderRepository } from "./interfaces/contract/Repository/PageBuilderRepository";
 import type { MediaRepository } from "./interfaces/contract/Media/MediaRepository";
 import type { Cache } from "./interfaces/contract/Cache/Cache";
@@ -20,7 +20,7 @@ export class PageBuilder{
     private configuration: Configuration;
     private _repository: PageBuilderRepository;
     private _runner:     Runner;
-    private _auth:       Authentication & TokenAuthentication;
+    private _auth:       Authentication & TokenAuthentication & PasswordAuthentication;
     private _mediaRepository: MediaRepository;
     private _cache:      Cache;
 
@@ -35,7 +35,7 @@ export class PageBuilder{
     constructor(
         runner: Runner,
         repository: PageBuilderRepository,
-        auth: Authentication & TokenAuthentication,
+        auth: Authentication & TokenAuthentication & PasswordAuthentication,
         mediaRepository: MediaRepository,
         configuration: Configuration,
         cache?: Cache

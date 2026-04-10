@@ -1,4 +1,4 @@
-import type { IBe5_Runner } from "@bernouy/socle";
+import type { Be5_Runner } from "@bernouy/socle";
 import { MongoClient, type Collection, type Db, ObjectId, Binary } from "mongodb";
 import sharp from "sharp";
 import type {
@@ -22,14 +22,14 @@ export class DefaultMediaRepository implements MediaRepository {
 
     label: string;
 
-    constructor(label: string, client: MongoClient, databaseName: string, runner: IBe5_Runner) {
+    constructor(label: string, client: MongoClient, databaseName: string, runner: Be5_Runner) {
         this.label = label;
         this._database = client.db(databaseName);
         this._mediaCollection = this._database.collection("mediacenter");
         MediaEndpoints(runner, this);
     }
 
-    static async create(label: string, config: Config, runner: IBe5_Runner): Promise<DefaultMediaRepository> {
+    static async create(label: string, config: Config, runner: Be5_Runner): Promise<DefaultMediaRepository> {
         const client = await new MongoClient(config.uri).connect();
         return new DefaultMediaRepository(label, client, config.databaseName, runner);
     }
