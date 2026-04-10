@@ -8,17 +8,34 @@ export default async function importBloc(req: Request, system: PageBuilder) {
 
     const name = formData.get("name") as string;
     const group = formData.get("group") as string;
+    const tag = formData.get("tag") as string | null;
     const viewFile = formData.get("viewJS") as File;
     const editorEntry = formData.get("editorJS");
     const editorFile = editorEntry instanceof File ? editorEntry : null;
 
-    if (!name || !viewFile) {
-        return new Response("Missing argument", { status: 400 });
+    if (!name || !viewFile || !tag) {
+        return new Response("Missing argument (name, tag, viewJS required)", { status: 400 });
     }
 
-    const bloc = await prepare_bloc(viewFile, editorFile, name, group);
+    // Refuse to overwrite an existing bloc. Clients must explicitly delete the
+    // old bloc (via the admin UI) before re-importing with the same tag.
+    const existing = await system.repository.getBlocViewJS(tag);
+    if (existing !== null) {
+        return new Response(`Bloc with tag "${tag}" already exists`, { status: 409 });
+    }
 
-    await system.repository.createBloc(bloc);
+    const bloc = await prepare_bloc(viewFile, editorFile, name, group, tag);
+
+    try {
+        await system.repository.createBloc(bloc);
+    } catch (e) {
+        // Mongo duplicate-key — the unique index on `id` caught a race between
+        // the pre-check above and the insert. Same outcome as the pre-check.
+        if ((e as { code?: number }).code === 11000) {
+            return new Response(`Bloc with tag "${bloc.id}" already exists`, { status: 409 });
+        }
+        throw e;
+    }
 
     // Invalidate the bloc cache
     system.cache.delete(P9R_CACHE.bloc(bloc.id));

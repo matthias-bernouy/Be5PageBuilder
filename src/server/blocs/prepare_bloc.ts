@@ -1,5 +1,3 @@
-import { randomUUIDv7 } from "bun";
-
 /** Synthetic editor source for blocs deployed without their own Editor module.
  *  The bloc is registered as opaque: it still gets the default parent-level
  *  action bar, but its subtree is sealed at runtime. */
@@ -8,9 +6,13 @@ import { registerEditor_opaque } from "@bernouy/pagebuilder/client";
 registerEditor_opaque();
 `;
 
-export async function prepare_bloc(fileView: File, fileEditor: File | null, label: string, group: string, _blocId?: string) {
-    const blocId = _blocId || `be5-${randomUUIDv7()}`;
-
+/**
+ * Builds a bloc's view + editor bundles from the uploaded files and stamps
+ * the manifest tag into both via the `BE5_TAG_TO_BE_REPLACED` placeholder.
+ * The caller must provide the tag — blocs are always keyed by their manifest
+ * tag, never by a generated UUID.
+ */
+export async function prepare_bloc(fileView: File, fileEditor: File | null, label: string, group: string, blocId: string) {
     const buildOptions = (entry: string) => ({
         entrypoints: [entry],
         target: "browser" as const,

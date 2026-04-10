@@ -11,6 +11,14 @@ export class BlocsRepository {
 
     constructor(database: Db) {
         this._collection = database.collection<TBloc>("blocs");
+        // Enforce tag uniqueness at the storage layer. Idempotent: MongoDB is
+        // a no-op when the index already exists with the same spec. Fails loud
+        // if pre-existing duplicates prevent index creation, but the server
+        // stays up.
+        this._collection.createIndex({ id: 1 }, { unique: true })
+            .catch(err => {
+                console.error(`[blocs] Failed to ensure unique index on "id": ${err instanceof Error ? err.message : err}`);
+            });
     }
 
     clear(): Promise<unknown> {
