@@ -2,7 +2,7 @@ import { relative, join } from "node:path";
 import { scanDevBlocs } from "./dev-server/scan";
 import { buildAllDevBlocs } from "./dev-server/build";
 import { startDevServer } from "./dev-server/server";
-import { createReloadEmitter, startWatchers } from "./dev-server/watch";
+import { createReloadEmitter, createBlocRegistry } from "./dev-server/watch";
 import { fetchRemoteBlocs } from "./dev-server/shell";
 
 function parseFlags(args: string[]): { port: number; host: string } {
@@ -101,11 +101,7 @@ export default async function CLI_dev(args: string[]) {
     }
 
     const reload = createReloadEmitter();
-    const watchers = startWatchers(
-        blocs.filter(b => built.has(b.tag)),
-        built,
-        reload,
-    );
+    const registry = createBlocRegistry(cwd, blocs, built, reload);
 
     const handle = startDevServer({
         port,
@@ -128,12 +124,13 @@ export default async function CLI_dev(args: string[]) {
     console.log(`  Scratch  : ${join(cwd, ".p9r-dev", "scratch.json")}`);
     console.log(`  Writes   : blocked except page save → scratch`);
     console.log(`  Watching : ${blocs.length} bloc folder(s) — edit to hot-reload`);
+    console.log(`  Polling  : ${cwd} every 1s for new/renamed/deleted blocs`);
     console.log("");
     console.log("Press Ctrl+C to stop.");
 
     const shutdown = (signal: string) => {
         console.log(`\n→ Stopping dev server (${signal})...`);
-        watchers.stop();
+        registry.stop();
         handle.stop();
         process.exit(0);
     };
