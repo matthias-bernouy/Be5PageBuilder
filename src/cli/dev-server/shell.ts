@@ -3,29 +3,27 @@ import { readFile } from "node:fs/promises";
 import type { BuiltBloc } from "./build";
 import type { ScratchPage } from "./scratch";
 
+export type RemoteBloc = { id: string; editorJS: string };
+
 export type ShellContext = {
     editorHtmlPath: string;
     adminPrefix: string;
-    adminBase: URL;
-    token: string;
     devBlocs: Map<string, BuiltBloc>;
+    remoteBlocs: RemoteBloc[];
     scratch: ScratchPage;
 };
-
-type RemoteBloc = { id: string; editorJS: string };
 
 /**
  * Assembles the editor HTML for local dev. Mirrors `renderEditorShell` on the
  * server side: injects the API-base meta tag, the inline bloc bootstrap script
  * (one retry-loop IIFE per bloc) and one `<script src="/bloc?tag=X">` per bloc.
- * The bloc list is the union of remote CMS blocs and locally-built dev blocs,
- * with dev blocs shadowing CMS ones that share the same tag.
+ * The bloc list is the union of remote CMS blocs (snapshot at startup) and
+ * locally-built dev blocs, with dev blocs shadowing CMS ones that share the
+ * same tag.
  */
 export async function buildShell(ctx: ShellContext): Promise<string> {
-    const remote = await fetchRemoteBlocs(ctx);
-
     const merged = new Map<string, RemoteBloc>();
-    for (const r of remote) merged.set(r.id, r);
+    for (const r of ctx.remoteBlocs) merged.set(r.id, r);
     for (const [tag, b] of ctx.devBlocs) {
         if (b.editorJS) merged.set(tag, { id: tag, editorJS: b.editorJS });
         else merged.delete(tag);
@@ -108,24 +106,30 @@ const LIVE_RELOAD_SCRIPT = `
 })();
 `;
 
-async function fetchRemoteBlocs(ctx: ShellContext): Promise<RemoteBloc[]> {
-    const url = new URL("api/blocs", ctx.adminBase).href;
+/**
+ * Fetched once at startup instead of per-request so a flaky or offline CMS
+ * doesn't spam the logs on every editor reload (hot reload reopens the shell
+ * many times in a short window).
+ */
+export async function fetchRemoteBlocs(adminBase: URL, token: string): Promise<RemoteBloc[]> {
+    const url = new URL("api/blocs", adminBase).href;
     try {
         const res = await fetch(url, {
-            headers: { "Authorization": `Bearer ${ctx.token}` },
+            headers: { "Authorization": `Bearer ${token}` },
         });
         if (!res.ok) {
-            console.warn(`[shell] Remote GET ${url} returned ${res.status} — continuing with dev blocs only`);
+            console.warn(`[remote] GET ${url} → ${res.status} — continuing with dev blocs only`);
             return [];
         }
         const data = await res.json();
         if (!Array.isArray(data)) {
-            console.warn(`[shell] Remote GET ${url} did not return an array — ignoring`);
+            console.warn(`[remote] GET ${url} did not return an array — ignoring`);
             return [];
         }
         return data as RemoteBloc[];
     } catch (e) {
-        console.warn(`[shell] Failed to fetch remote blocs: ${e instanceof Error ? e.message : e}`);
+        console.warn(`[remote] Failed to reach CMS at ${url}: ${e instanceof Error ? e.message : e}`);
+        console.warn(`[remote] Continuing with dev blocs only. Fix P9R_URL or start the CMS and restart \`p9r dev\`.`);
         return [];
     }
 }

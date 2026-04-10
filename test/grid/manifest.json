@@ -3,7 +3,7 @@
     "editor": "./BlocEditor.ts",
     "bloc": "./Bloc.ts",
 
-    "default-tag": "super-tag",
+    "default-tag": "w13c-grid",
     "default-group": "Group name",
 
     "meta": {

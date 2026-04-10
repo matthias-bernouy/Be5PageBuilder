@@ -3,6 +3,7 @@ import { scanDevBlocs } from "./dev-server/scan";
 import { buildAllDevBlocs } from "./dev-server/build";
 import { startDevServer } from "./dev-server/server";
 import { createReloadEmitter, startWatchers } from "./dev-server/watch";
+import { fetchRemoteBlocs } from "./dev-server/shell";
 
 function parseFlags(args: string[]): { port: number; host: string } {
     let port = 5000;
@@ -89,6 +90,16 @@ export default async function CLI_dev(args: string[]) {
     const { port, host } = parseFlags(args);
     const packageRoot = join(import.meta.dir, "..", "..");
 
+    console.log("→ Fetching remote bloc list...");
+    const remoteBlocs = await fetchRemoteBlocs(adminBase, token);
+    if (remoteBlocs.length > 0) {
+        console.log(`→ Remote : ${remoteBlocs.length} bloc(s) available`);
+        const shadowed = remoteBlocs.filter(r => built.has(r.id)).map(r => r.id);
+        if (shadowed.length > 0) {
+            console.log(`→ Shadow : dev blocs override ${shadowed.length} remote bloc(s): ${shadowed.join(", ")}`);
+        }
+    }
+
     const reload = createReloadEmitter();
     const watchers = startWatchers(
         blocs.filter(b => built.has(b.tag)),
@@ -103,6 +114,7 @@ export default async function CLI_dev(args: string[]) {
         publicOrigin,
         token,
         devBlocs: built,
+        remoteBlocs,
         packageRoot,
         cwd,
         reload,
@@ -119,10 +131,12 @@ export default async function CLI_dev(args: string[]) {
     console.log("");
     console.log("Press Ctrl+C to stop.");
 
-    process.on("SIGINT", () => {
-        console.log("\n→ Stopping dev server...");
+    const shutdown = (signal: string) => {
+        console.log(`\n→ Stopping dev server (${signal})...`);
         watchers.stop();
         handle.stop();
         process.exit(0);
-    });
+    };
+    process.on("SIGINT",  () => shutdown("SIGINT"));
+    process.on("SIGTERM", () => shutdown("SIGTERM"));
 }

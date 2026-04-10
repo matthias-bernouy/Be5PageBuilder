@@ -5,6 +5,7 @@ import { findBlockingRule, blockedResponse } from "./write-guard";
 import { proxyRequest } from "./proxy";
 import { loadScratch, saveScratch, type ScratchPage } from "./scratch";
 import type { ReloadEmitter } from "./watch";
+import type { RemoteBloc } from "./shell";
 
 export type ServerConfig = {
     port: number;
@@ -13,6 +14,7 @@ export type ServerConfig = {
     publicOrigin: string;
     token: string;
     devBlocs: Map<string, BuiltBloc>;
+    remoteBlocs: RemoteBloc[];
     packageRoot: string;
     cwd: string;
     reload: ReloadEmitter;
@@ -53,9 +55,8 @@ export function startDevServer(config: ServerConfig): ServerHandle {
                     const html = await buildShell({
                         editorHtmlPath,
                         adminPrefix,
-                        adminBase: config.adminBase,
-                        token: config.token,
                         devBlocs: config.devBlocs,
+                        remoteBlocs: config.remoteBlocs,
                         scratch,
                     });
                     return new Response(html, {
