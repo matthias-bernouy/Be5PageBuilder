@@ -1,5 +1,5 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
-import type { IBe5_Authentication, IBe5_Runner } from "@bernouy/socle";
+import type { Authentication, Runner, TokenAuthentication } from "@bernouy/socle";
 import type { PageBuilderRepository } from "./interfaces/contract/Repository/PageBuilderRepository";
 import type { MediaRepository } from "./interfaces/contract/Media/MediaRepository";
 import type { Cache } from "./interfaces/contract/Cache/Cache";
@@ -19,8 +19,8 @@ export class PageBuilder{
 
     private configuration: Configuration;
     private _repository: PageBuilderRepository;
-    private _runner:     IBe5_Runner;
-    private _auth:       IBe5_Authentication;
+    private _runner:     Runner;
+    private _auth:       Authentication & TokenAuthentication;
     private _mediaRepository: MediaRepository;
     private _cache:      Cache;
 
@@ -33,9 +33,9 @@ export class PageBuilder{
     private _registeredPagePaths: Set<string> = new Set();
 
     constructor(
-        runner: IBe5_Runner,
+        runner: Runner,
         repository: PageBuilderRepository,
-        auth: IBe5_Authentication,
+        auth: Authentication & TokenAuthentication,
         mediaRepository: MediaRepository,
         configuration: Configuration,
         cache?: Cache

@@ -1,4 +1,4 @@
-import { Authentication, AuthRepositoryProvider, Be5_Runner } from "@bernouy/socle";
+import { AuthRepositoryProvider, Be5_Authentication, Be5_Runner, type CreateTokenOptions, type TokenAuthentication } from "@bernouy/socle";
 import { MongoClient } from "mongodb";
 import { PageBuilder } from "src/PageBuilder";
 import { DefaultPageBuilderRepository } from "src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
@@ -15,11 +15,11 @@ const repository = new DefaultPageBuilderRepository(mongoClient, dbName);
 const authRepository = new AuthRepositoryProvider(mongoClient, dbName);
 const mediaRepository = new DefaultMediaRepository("default", mongoClient, dbName, runner);
 
-const auth = new Authentication(authRepository, runner, {
+const auth = new Be5_Authentication(authRepository, runner, {
     basePath: "/auth",
     defaultRedirection: "/page-builder/admin/pages",
+    registerDisabled: true,
 });
-auth.registerDisabled = true;
 
 new PageBuilder(runner, repository, auth, mediaRepository, {
     adminPathPrefix: "/page-builder",

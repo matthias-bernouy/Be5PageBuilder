@@ -42,7 +42,7 @@
     "devDependencies": {
         "@types/bun": "latest",
         "bun-types": "^1.3.11",
-        "@bernouy/socle": "0.0.1",
+        "@bernouy/socle": "1.0.1",
         "typescript": "^5.9.3"
     },
 

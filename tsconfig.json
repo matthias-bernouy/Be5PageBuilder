@@ -27,7 +27,7 @@
 		"baseUrl": ".",
 
 		"paths": {
-			"@bernouy/pagebuilder": ["index.ts"]
+			"@bernouy/pagebuilder": ["client.ts", "index.ts"]
 		}
 
 	},
