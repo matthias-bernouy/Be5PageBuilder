@@ -9,9 +9,10 @@ export default async function importBloc(req: Request, system: PageBuilder) {
     const name = formData.get("name") as string;
     const group = formData.get("group") as string;
     const viewFile = formData.get("viewJS") as File;
-    const editorFile = formData.get("editorJS") as File;
+    const editorEntry = formData.get("editorJS");
+    const editorFile = editorEntry instanceof File ? editorEntry : null;
 
-    if (!name || !viewFile || !editorFile) {
+    if (!name || !viewFile) {
         return new Response("Missing argument", { status: 400 });
     }
 

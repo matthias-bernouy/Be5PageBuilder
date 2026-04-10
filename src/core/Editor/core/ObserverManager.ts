@@ -23,6 +23,11 @@ export class ObserverManager {
 
     private groups: Set<string> = new Set(["default"])
 
+    /** Tags registered as opaque via `register_editor_opaque`. Nodes of these
+     *  tags still receive their (default) editor for parent-level actions, but
+     *  are marked with `p9r-opaque` so the walker never descends into them. */
+    private opaqueTags: Set<string> = new Set();
+
     constructor(workingElement: HTMLElement) {
 
         this.workingElement = workingElement;
@@ -127,6 +132,29 @@ export class ObserverManager {
         existingElements.forEach((el: any) => this.make_it_editor(el));
     }
 
+    register_editor_opaque(element: TagElement): void {
+        this.opaqueTags.add(element.tag);
+        this.register_editor(element);
+        // Opaque registration usually fires *after* the initial walk, so any
+        // descendants of an opaque root may already have been editorized. Walk
+        // each matching root and strip editor decorations from its subtree.
+        const roots = this.workingElement.querySelectorAll(element.tag);
+        roots.forEach((root) => this._sealOpaqueSubtree(root as HTMLElement));
+    }
+
+    private _sealOpaqueSubtree(root: HTMLElement): void {
+        const descendants = root.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
+        descendants.forEach((node) => {
+            const id = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+            if (!id) return;
+            const editor = document.compIdentifierToEditor?.get(id);
+            if (editor) {
+                editor.viewClient();
+                document.compIdentifierToEditor.delete(id);
+            }
+        });
+    }
+
     register_sub_components(tag: string[]) {
         tag.forEach(t => {
             this.editors.set(t, {
@@ -143,12 +171,20 @@ export class ObserverManager {
 
     make_it_editor(node: HTMLElement) {
         if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) return;
+        // If any ancestor is an opaque bloc, the entire subtree is sealed.
+        if (node.parentElement?.closest(`[${p9r.attr.EDITOR.OPAQUE}]`)) return;
         const tag = node.tagName.toLowerCase();
         if (!this.editors.keys().toArray().includes(tag)) return
         const cl = this.editors.get(tag)?.cl;
         if (cl) {
             const editor = new cl(node);
             editor.viewEditor();
+        }
+        // Mark opaque roots *after* editorizing so the bloc itself still gets
+        // its parent-level action bar. The walker / mutation observer visits
+        // parents before children, so descendants see the marker and bail.
+        if (this.opaqueTags.has(tag)) {
+            node.setAttribute(p9r.attr.EDITOR.OPAQUE, "true");
         }
         const parentComponent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if ( parentComponent ){

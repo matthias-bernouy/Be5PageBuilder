@@ -27,6 +27,7 @@ export const P9R_ATTR = {
         IDENTIFIER:        "p9r-identifier",
         PARENT_IDENTIFIER: "p9r-parent-identifier",
         IS_EDITOR:         "p9r-is-editor",
+        OPAQUE:            "p9r-opaque",
     }
 
 } as const;

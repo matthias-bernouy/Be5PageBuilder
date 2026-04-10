@@ -1,6 +1,5 @@
 {
     "runtime": "0.0.1",
-    "editor": "./BlocEditor.ts",
     "bloc": "./Bloc.ts",
 
     "default-tag": "w13c-grid",

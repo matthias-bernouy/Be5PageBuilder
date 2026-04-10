@@ -38,6 +38,14 @@ const __Cls = Object.values(__mod).find((v) => typeof v === "function");
 if (__Cls) registerEditor({ cl: __Cls as any });
 `;
 
+/** Synthetic editor bundle for blocs deployed without an Editor module. The
+ *  bloc gets a default (empty) editor for parent-level actions but is marked
+ *  opaque so its subtree is sealed. */
+const opaqueEditorWrapperSrc = () => `
+import { registerEditor_opaque } from "@bernouy/pagebuilder/client";
+registerEditor_opaque();
+`;
+
 export async function buildDevBloc(bloc: DevBloc): Promise<BuiltBloc> {
     let viewJS = await buildWithWrapper(
         bloc.folder, bloc.entry, viewWrapperSrc, `view_${bloc.tag}`,
@@ -45,17 +53,22 @@ export async function buildDevBloc(bloc: DevBloc): Promise<BuiltBloc> {
     );
     viewJS = viewJS.replaceAll("BE5_TAG_TO_BE_REPLACED", bloc.tag);
 
-    let editorJS: string | null = null;
+    let editorJS: string | null;
     if (bloc.editorEntry) {
         editorJS = await buildWithWrapper(
             bloc.folder, bloc.editorEntry, editorWrapperSrc, `editor_${bloc.tag}`,
             `editor for ${bloc.tag}`,
         );
-        editorJS = editorJS
-            .replaceAll("BE5_TAG_TO_BE_REPLACED",   bloc.tag)
-            .replaceAll("BE5_LABEL_TO_BE_REPLACED", bloc.label)
-            .replaceAll("BE5_GROUP_TO_BE_REPLACED", bloc.group);
+    } else {
+        editorJS = await buildWithWrapper(
+            bloc.folder, bloc.entry, (_spec) => opaqueEditorWrapperSrc(),
+            `opaque_${bloc.tag}`, `opaque editor for ${bloc.tag}`,
+        );
     }
+    editorJS = editorJS
+        .replaceAll("BE5_TAG_TO_BE_REPLACED",   bloc.tag)
+        .replaceAll("BE5_LABEL_TO_BE_REPLACED", bloc.label)
+        .replaceAll("BE5_GROUP_TO_BE_REPLACED", bloc.group);
 
     return {
         tag:      bloc.tag,

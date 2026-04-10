@@ -9,4 +9,4 @@
  */
 export { Component } from "./src/core/Editor/core/Component";
 export { Editor } from "./src/core/Editor/core/Editor";
-export { registerEditor } from "./src/core/Editor/core/registerEditor";
+export { registerEditor, registerEditor_opaque } from "./src/core/Editor/core/registerEditor";
