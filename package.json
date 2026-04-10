@@ -1,6 +1,6 @@
 {
-    "name": "be5-pagebuilder",
-    "version": "0.0.1",
+    "name": "@bernouy/pagebuilder",
+    "version": "0.0.2",
     "description": "Modular CMS built on Web Components with an inline visual editing system. Bun + MongoDB.",
     "license": "UNLICENSED",
     "type": "module",
@@ -30,16 +30,15 @@
         "typecheck": "bun x tsc --noEmit",
         "prepublishOnly": "bun run build"
     },
-    
+
     "devDependencies": {
         "@types/bun": "latest",
         "bun-types": "^1.3.11",
-        "be5-interfaces": "link:be5-interfaces",
+        "@bernouy/socle": "0.0.1",
         "typescript": "^5.9.3"
     },
 
     "peerDependencies": {
-        "be5-interfaces": "*",
         "typescript": "^5.9.3"
     },
 

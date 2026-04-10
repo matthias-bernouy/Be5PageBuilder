@@ -1,4 +1,4 @@
-import type { IBe5_Runner } from "be5-interfaces";
+import type { IBe5_Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { PageBuilder } from "src/PageBuilder";
 import { cachedResponseAsync, compress } from "src/server/compression";

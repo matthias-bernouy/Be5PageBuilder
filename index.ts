@@ -3,7 +3,7 @@
  *
  * Consumers import from `be5-pagebuilder` and get the `PageBuilder` class
  * plus the default MongoDB-backed providers. Host apps wire their own
- * `Be5_Runner` + `Authentication` (from `be5-interfaces`) and pass them in.
+ * `Be5_Runner` + `Authentication` (from `@bernouy/socle`) and pass them in.
  *
  * See `App.ts` at the root of this repo for a reference wiring.
  */

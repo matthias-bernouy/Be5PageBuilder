@@ -1,4 +1,4 @@
-import type { IBe5_Runner } from "be5-interfaces";
+import type { IBe5_Runner } from "@bernouy/socle";
 import type { DefaultMediaRepository } from "./DefaultMediaRepository";
 import type { MediaDocument } from "src/interfaces/contract/Media/MediaRepository";
 import sharp from "sharp";

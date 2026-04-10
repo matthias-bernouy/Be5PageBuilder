@@ -1,4 +1,4 @@
-import type { IBe5_Runner } from "be5-interfaces";
+import type { IBe5_Runner } from "@bernouy/socle";
 import { MongoClient, type Collection, type Db, ObjectId, Binary } from "mongodb";
 import sharp from "sharp";
 import type {

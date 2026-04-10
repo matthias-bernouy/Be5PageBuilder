@@ -1,4 +1,4 @@
-import { send_html } from 'be5-system';
+import { send_html } from 'src/server/send_html';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path";
 import type { PageBuilder } from 'src/PageBuilder';

@@ -1,5 +1,5 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
-import type { IBe5_Authentication, IBe5_Runner } from "be5-interfaces";
+import type { IBe5_Authentication, IBe5_Runner } from "@bernouy/socle";
 import type { PageBuilderRepository } from "./interfaces/contract/Repository/PageBuilderRepository";
 import type { MediaRepository } from "./interfaces/contract/Media/MediaRepository";
 import type { Cache } from "./interfaces/contract/Cache/Cache";

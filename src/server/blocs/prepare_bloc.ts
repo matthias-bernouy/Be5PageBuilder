@@ -1,8 +1,8 @@
 import { randomUUIDv7 } from "bun";
 import { rmSync } from "node:fs";
 
-export async function prepare_bloc(fileView: File, fileEditor: File, label: string, group: string) {
-    const blocId = `be5-${randomUUIDv7()}`;
+export async function prepare_bloc(fileView: File, fileEditor: File, label: string, group: string, _blocId?: string) {
+    const blocId = _blocId || `be5-${randomUUIDv7()}`;
 
     const buildOptions = (entry: string) => ({
         entrypoints: [entry],

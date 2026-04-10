@@ -1,7 +1,7 @@
 import { registerUIFolder, registerCSSFolder, registerAPIFolder } from "src/server/routing";
 import { join } from "node:path"
 import type { PageBuilder } from "src/PageBuilder";
-import type { Middleware } from "be5-interfaces";
+import type { Middleware } from "@bernouy/socle";
 
 const root = process.cwd();
 function res(str: string){

@@ -1,7 +1,7 @@
-import { send_html } from "be5-system";
 import { parseHTML } from "linkedom";
 import type { PageBuilder } from "src/PageBuilder";
 import { P9R_ID } from "types/p9r-constants";
+import { send_html } from "./send_html";
 
 /**
  * Shared logic for the three editor flavors (page / template / snippet).
