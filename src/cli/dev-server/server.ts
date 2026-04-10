@@ -3,6 +3,8 @@ import type { BuiltBloc } from "./build";
 import { buildShell } from "./shell";
 import { findBlockingRule, blockedResponse } from "./write-guard";
 import { proxyRequest } from "./proxy";
+import { loadScratch, saveScratch, type ScratchPage } from "./scratch";
+import type { ReloadEmitter } from "./watch";
 
 export type ServerConfig = {
     port: number;
@@ -12,6 +14,8 @@ export type ServerConfig = {
     token: string;
     devBlocs: Map<string, BuiltBloc>;
     packageRoot: string;
+    cwd: string;
+    reload: ReloadEmitter;
 };
 
 export type ServerHandle = {
@@ -37,22 +41,53 @@ export function startDevServer(config: ServerConfig): ServerHandle {
                 return Response.redirect(editorPath, 302);
             }
 
+            // SSE reload channel — one message per rebuilt bloc
+            if (req.method === "GET" && path === "/dev/reload") {
+                return sseResponse(req, config.reload);
+            }
+
             // Editor shell — assembled locally
             if (req.method === "GET" && path === editorPath) {
                 try {
+                    const scratch = await loadScratch(config.cwd);
                     const html = await buildShell({
                         editorHtmlPath,
                         adminPrefix,
                         adminBase: config.adminBase,
                         token: config.token,
                         devBlocs: config.devBlocs,
+                        scratch,
                     });
                     return new Response(html, {
-                        headers: { "Content-Type": "text/html; charset=utf-8" },
+                        headers: {
+                            "Content-Type": "text/html; charset=utf-8",
+                            "Cache-Control": "no-store",
+                        },
                     });
                 } catch (e) {
                     console.error(`[shell] ${e instanceof Error ? e.message : e}`);
                     return new Response("Failed to assemble editor shell", { status: 500 });
+                }
+            }
+
+            // POST /api/page → write to scratch.json instead of the remote CMS
+            if (req.method === "POST" && path === `${adminPrefix}/api/page`) {
+                try {
+                    const body = await req.json() as Partial<ScratchPage>;
+                    const saved = await saveScratch(config.cwd, {
+                        content: body.content ?? "",
+                        path: body.path ?? "/dev",
+                        identifier: body.identifier ?? "",
+                        title: body.title ?? "Dev page",
+                        description: body.description ?? "",
+                        visible: body.visible ?? true,
+                        tags: typeof body.tags === "string" ? body.tags : "",
+                    });
+                    console.log(`[scratch] Saved ${saved.content.length} bytes → ${saved.path}`);
+                    return new Response("Scratch saved", { status: 200 });
+                } catch (e) {
+                    console.error(`[scratch] Save failed: ${e instanceof Error ? e.message : e}`);
+                    return new Response("Scratch save failed", { status: 500 });
                 }
             }
 
@@ -62,7 +97,10 @@ export function startDevServer(config: ServerConfig): ServerHandle {
                 const dev = config.devBlocs.get(tag);
                 if (dev) {
                     return new Response(dev.viewJS, {
-                        headers: { "Content-Type": "application/javascript; charset=utf-8" },
+                        headers: {
+                            "Content-Type": "application/javascript; charset=utf-8",
+                            "Cache-Control": "no-store",
+                        },
                     });
                 }
                 return proxyRequest(req, `${config.publicOrigin}/bloc?tag=${encodeURIComponent(tag)}`, config);
@@ -88,4 +126,41 @@ export function startDevServer(config: ServerConfig): ServerHandle {
         editorUrl: `http://${config.host}:${server.port}${editorPath}`,
         stop: () => server.stop(),
     };
+}
+
+function sseResponse(req: Request, reload: ReloadEmitter): Response {
+    const encoder = new TextEncoder();
+
+    const stream = new ReadableStream({
+        start(controller) {
+            const enqueue = (chunk: string) => {
+                try { controller.enqueue(encoder.encode(chunk)); }
+                catch { /* stream already closed */ }
+            };
+
+            enqueue(": connected\n\n");
+
+            const unsubscribe = reload.subscribe((tag) => {
+                enqueue(`event: reload\ndata: ${tag}\n\n`);
+            });
+
+            const keepAlive = setInterval(() => enqueue(": ping\n\n"), 25_000);
+
+            const cleanup = () => {
+                clearInterval(keepAlive);
+                unsubscribe();
+                try { controller.close(); } catch {}
+            };
+
+            req.signal.addEventListener("abort", cleanup, { once: true });
+        },
+    });
+
+    return new Response(stream, {
+        headers: {
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache, no-transform",
+            "Connection": "keep-alive",
+        },
+    });
 }

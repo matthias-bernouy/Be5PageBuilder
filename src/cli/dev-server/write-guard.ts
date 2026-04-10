@@ -2,11 +2,12 @@ type BlockRule = { method: string; pattern: RegExp; label: string };
 
 /**
  * Routes that would mutate the remote CMS. In `p9r dev` these are blocked with
- * a 403 so the local editor can never corrupt prod content. Phase 4 will
- * intercept `POST /api/page` specifically to route it to a local scratch file.
+ * a 403 so the local editor can never corrupt prod content.
+ *
+ * `POST /api/page` is deliberately absent: it's intercepted earlier in the
+ * server and routed to `scratch.json` instead of hitting the guard.
  */
 const BLOCKED: BlockRule[] = [
-    { method: "POST",   pattern: /\/api\/page$/,      label: "page save" },
     { method: "POST",   pattern: /\/api\/template$/,  label: "template write" },
     { method: "DELETE", pattern: /\/api\/template$/,  label: "template delete" },
     { method: "POST",   pattern: /\/api\/snippet$/,   label: "snippet write" },

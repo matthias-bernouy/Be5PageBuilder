@@ -2,6 +2,7 @@ import { relative, join } from "node:path";
 import { scanDevBlocs } from "./dev-server/scan";
 import { buildAllDevBlocs } from "./dev-server/build";
 import { startDevServer } from "./dev-server/server";
+import { createReloadEmitter, startWatchers } from "./dev-server/watch";
 
 function parseFlags(args: string[]): { port: number; host: string } {
     let port = 5000;
@@ -88,6 +89,13 @@ export default async function CLI_dev(args: string[]) {
     const { port, host } = parseFlags(args);
     const packageRoot = join(import.meta.dir, "..", "..");
 
+    const reload = createReloadEmitter();
+    const watchers = startWatchers(
+        blocs.filter(b => built.has(b.tag)),
+        built,
+        reload,
+    );
+
     const handle = startDevServer({
         port,
         host,
@@ -96,6 +104,8 @@ export default async function CLI_dev(args: string[]) {
         token,
         devBlocs: built,
         packageRoot,
+        cwd,
+        reload,
     });
 
     console.log("");
@@ -103,12 +113,15 @@ export default async function CLI_dev(args: string[]) {
     console.log(`  Local    : ${handle.url}`);
     console.log(`  Editor   : ${handle.editorUrl}`);
     console.log(`  Proxying : ${adminBase.href.replace(/\/$/, "")}`);
-    console.log(`  Writes   : blocked (read-only)`);
+    console.log(`  Scratch  : ${join(cwd, ".p9r-dev", "scratch.json")}`);
+    console.log(`  Writes   : blocked except page save → scratch`);
+    console.log(`  Watching : ${blocs.length} bloc folder(s) — edit to hot-reload`);
     console.log("");
     console.log("Press Ctrl+C to stop.");
 
     process.on("SIGINT", () => {
         console.log("\n→ Stopping dev server...");
+        watchers.stop();
         handle.stop();
         process.exit(0);
     });

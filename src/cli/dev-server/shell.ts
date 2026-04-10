@@ -1,6 +1,7 @@
 import { parseHTML } from "linkedom";
 import { readFile } from "node:fs/promises";
 import type { BuiltBloc } from "./build";
+import type { ScratchPage } from "./scratch";
 
 export type ShellContext = {
     editorHtmlPath: string;
@@ -8,6 +9,7 @@ export type ShellContext = {
     adminBase: URL;
     token: string;
     devBlocs: Map<string, BuiltBloc>;
+    scratch: ScratchPage;
 };
 
 type RemoteBloc = { id: string; editorJS: string };
@@ -68,19 +70,43 @@ export async function buildShell(ctx: ShellContext): Promise<string> {
     const editorSystem = document.getElementById("editor-system");
     const editor = document.getElementById("editor");
 
+    const scratch = ctx.scratch;
     const pageInfo = document.createElement("w13c-page-information");
-    pageInfo.setAttribute("default-title",       "Dev page");
-    pageInfo.setAttribute("default-description", "Local dev mode — writes disabled");
-    pageInfo.setAttribute("default-identifier",  "");
-    pageInfo.setAttribute("default-path",        "/dev");
-    pageInfo.setAttribute("default-visible",     "on");
-    pageInfo.setAttribute("default-tags",        "");
+    pageInfo.setAttribute("default-title",       scratch.title);
+    pageInfo.setAttribute("default-description", scratch.description);
+    pageInfo.setAttribute("default-identifier",  scratch.identifier);
+    pageInfo.setAttribute("default-path",        scratch.path);
+    pageInfo.setAttribute("default-visible",     scratch.visible ? "on" : "off");
+    pageInfo.setAttribute("default-tags",        scratch.tags);
     editorSystem?.append(pageInfo);
 
-    if (editor) editor.innerHTML = "<p></p>";
+    if (editor) editor.innerHTML = scratch.content || "<p></p>";
+
+    const liveReload = document.createElement("script");
+    liveReload.textContent = LIVE_RELOAD_SCRIPT;
+    document.head.appendChild(liveReload);
 
     return document.toString();
 }
+
+const LIVE_RELOAD_SCRIPT = `
+(function() {
+    if (window.__p9rLiveReload) return;
+    window.__p9rLiveReload = true;
+    const connect = () => {
+        const es = new EventSource("/dev/reload");
+        es.addEventListener("reload", (ev) => {
+            console.log("[p9r-dev] Rebuilt " + ev.data + " — reloading");
+            location.reload();
+        });
+        es.addEventListener("error", () => {
+            es.close();
+            setTimeout(connect, 1000);
+        });
+    };
+    connect();
+})();
+`;
 
 async function fetchRemoteBlocs(ctx: ShellContext): Promise<RemoteBloc[]> {
     const url = new URL("api/blocs", ctx.adminBase).href;
