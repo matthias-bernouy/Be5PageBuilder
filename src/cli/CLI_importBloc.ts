@@ -82,11 +82,3 @@ export default async function CLI_importBloc(args: string[]) {
             rmSync("./dist", { recursive: true, force: true });
     }
 }
-
-try {
-    await CLI_importBloc(process.argv.slice(2));
-    console.log("Done.");
-} catch (e) {
-    console.error("Global Error:", e);
-    process.exit(1);
-}
