@@ -26,6 +26,10 @@
 		"rootDir": ".",
 		"baseUrl": ".",
 
+		"paths": {
+			"@bernouy/pagebuilder": ["index.ts"]
+		}
+
 	},
 
 	"include": [

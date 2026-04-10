@@ -16,6 +16,12 @@ export { DefaultPageBuilderRepository } from "./src/interfaces/default-provider/
 export { DefaultMediaRepository } from "./src/interfaces/default-provider/Media/DefaultMediaRepository";
 export { InMemoryCache } from "./src/interfaces/default-provider/Cache/InMemoryCache";
 
+// Browser-safe bloc authoring symbols (Component, Editor, registerEditor)
+// live at `@bernouy/pagebuilder/client`. They are intentionally NOT
+// re-exported from this barrel — importing them alongside PageBuilder
+// would force consumers to pull the whole MongoDB runtime into every
+// browser bundle.
+
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
 export type { PageBuilderRepository } from "./src/interfaces/contract/Repository/PageBuilderRepository";
 export type { MediaRepository } from "./src/interfaces/contract/Media/MediaRepository";
