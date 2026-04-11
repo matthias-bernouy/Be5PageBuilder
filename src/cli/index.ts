@@ -2,6 +2,7 @@
 import CLI_importBloc from "./CLI_importBloc";
 import CLI_dev from "./CLI_dev";
 import CLI_init from "./CLI_init";
+import CLI_installSkill from "./CLI_installSkill";
 
 const [command, ...rest] = process.argv.slice(2);
 
@@ -13,6 +14,9 @@ Usage:
                                    base template (manifest.json, Bloc.ts,
                                    BlocEditor.ts, template.html, style.css,
                                    configuration.html, assets/)
+  p9r install-skill [--force]      Install the bloc-creator Claude Code skill
+                                   into ./.claude/skills/ so Claude can scaffold
+                                   blocs on request in this project
   p9r dev                          Run the local editor against a remote CMS
   p9r import [flags]               Scan the current folder and push new blocs
                                    to the remote CMS via its admin API
@@ -38,6 +42,9 @@ try {
     switch (command) {
         case "init":
             await CLI_init(rest);
+            break;
+        case "install-skill":
+            await CLI_installSkill(rest);
             break;
         case "dev":
             await CLI_dev(rest);

@@ -33,6 +33,7 @@
         "w13c/",
         "types/",
         "dist/",
+        ".claude/skills/",
         "tsconfig.json",
         "README.md",
         "CLAUDE.md"
