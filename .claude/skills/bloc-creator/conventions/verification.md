@@ -9,6 +9,39 @@ they prove nothing about whether the bloc actually works.
 and report the result explicitly. Never say "it should work" — run it, see
 it, report it.
 
+## Hard prerequisites for this step
+
+Verification is impossible without the right tools. If any of the following
+is missing, **abort verification and report it as a blocker** — do not
+substitute type-checks, do not hand-wave, do not say "you can test it".
+
+### 1. A browser MCP server must be available
+
+List your available tools. Look for entries matching:
+
+- `mcp__playwright__*`
+- `mcp__chrome-devtools__*`
+- `mcp__puppeteer__*`
+
+If **none** of those are present, stop immediately with:
+
+> BLOCKED: no browser MCP server is installed, so I cannot verify the
+> bloc in a real browser. Install one (e.g. `claude mcp add playwright
+> -- npx @playwright/mcp@latest`) and re-run the verification. The
+> bloc is **not** ready.
+
+Never skip this check. Never fake a "verified in Chromium" report when
+you had no browser tool.
+
+### 2. `P9R_URL` and `P9R_TOKEN` must be set
+
+`p9r dev` reads them from `.env` or the environment. Without them the
+dev server exits at startup with
+`P9R_TOKEN and P9R_URL must be set`. If so, stop with:
+
+> BLOCKED: `P9R_URL` / `P9R_TOKEN` missing — `p9r dev` cannot start,
+> so verification is impossible. Add them to `.env` and re-run.
+
 ## Smoke test setup
 
 Reproducible procedure to get a fresh bloc in front of your eyes in under

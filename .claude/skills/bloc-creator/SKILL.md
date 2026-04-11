@@ -14,6 +14,56 @@ Generates a BE5 PageBuilder bloc. A bloc is a **folder** with a `manifest.json`
 at its root; the PageBuilder CLI (`p9r`) discovers it recursively and builds
 its view and editor as **two isolated bundles**.
 
+## Prerequisites — check before doing anything
+
+These are hard requirements. If either is missing, **stop immediately**, tell
+the user what is missing and how to fix it, and do not scaffold anything. A
+bloc written without the means to verify it is worthless — the skill would
+rather abort than produce unchecked work.
+
+### 1. A browser MCP server must be available
+
+Verification (cardinal rule 7) is done by actually driving a browser. That
+requires an MCP server exposing browser-automation tools — typically one of:
+
+- `playwright` (Microsoft) — tools like `mcp__playwright__browser_navigate`, `mcp__playwright__browser_click`…
+- `chrome-devtools` — tools like `mcp__chrome-devtools__*`
+- `puppeteer` — tools like `mcp__puppeteer__*`
+
+**Before anything else**, inspect your available tool list. If you see **no**
+tool matching `mcp__*` for a browser, abort:
+
+> BLOCKED: this skill requires a browser MCP server to verify the bloc in a
+> real browser. Install one (e.g. `claude mcp add playwright -- npx
+> @playwright/mcp@latest`) and re-run `/bloc-creator`.
+
+Do **not** proceed with "I'll scaffold and you can test it yourself". The
+skill's contract is scaffold **and** verify.
+
+### 2. `P9R_URL` and `P9R_TOKEN` must be set
+
+The CLI (`bunx p9r list-blocs`, `bunx p9r dev`, `bunx p9r import`) needs both
+variables to talk to the CMS. They are read from `.env` in the project root
+or from the environment.
+
+**Before anything else**, run `bunx p9r list-blocs`. If it errors with
+"P9R_TOKEN and P9R_URL must be set", abort:
+
+> BLOCKED: `P9R_URL` and `P9R_TOKEN` are not set. Add them to `.env` (or
+> export them) and re-run `/bloc-creator`. Example:
+> ```
+> P9R_URL=http://localhost:4999/page-builder
+> P9R_TOKEN=your-admin-bearer-token
+> ```
+
+Without them you cannot:
+- list deployed blocs (→ you'd have to guess tags, which violates cardinal rule 8),
+- run `p9r dev` to verify in a browser (→ you cannot satisfy cardinal rule 7),
+- deploy with `p9r import`.
+
+Both prerequisites are strict. Check them **in the same turn you start the
+task**, before reading any other skill file.
+
 ## Cardinal rules — non-negotiable
 
 1. **English only.** Code, comments, labels, placeholders, CSS class names,
@@ -152,12 +202,17 @@ Read the matching one before you write a non-trivial version of that file.
 
 ## Typical flow when the user asks for a new bloc
 
-1. **Discover what's already deployed on the CMS.** Run
-   `bunx p9r list-blocs` in the project directory. Read the output —
-   this is the authoritative list of tags you may reference from inside
-   the new bloc. If the CMS is unreachable or the token is missing,
-   stop and ask the user to fix the credentials instead of guessing.
-   Remember: a fresh CMS has **zero** blocs, so don't assume anything.
+0. **Check prerequisites.** Inspect your tool list for a browser MCP
+   server (`mcp__playwright__*` / `mcp__chrome-devtools__*` /
+   `mcp__puppeteer__*`). If none is present, abort with the BLOCKED
+   message from the *Prerequisites* section. Then run
+   `bunx p9r list-blocs`: if it errors on missing `P9R_URL` /
+   `P9R_TOKEN`, abort with the second BLOCKED message. Only continue
+   past this step when both checks pass.
+1. **Discover what's already deployed on the CMS.** The output of
+   `bunx p9r list-blocs` from step 0 is the authoritative list of tags
+   you may reference from inside the new bloc. Remember: a fresh CMS
+   has **zero** blocs, so don't assume anything.
 2. Ask the user (or infer) the bloc's **name**, **tag**, **group** and what
    slots / configuration it needs. The tag must **not** start with
    `w13c-` or `p9r-` (reserved), and must not collide with any tag you
