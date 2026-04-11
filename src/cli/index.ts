@@ -3,6 +3,7 @@ import CLI_importBloc from "./CLI_importBloc";
 import CLI_dev from "./CLI_dev";
 import CLI_init from "./CLI_init";
 import CLI_installSkill from "./CLI_installSkill";
+import CLI_listBlocs from "./CLI_listBlocs";
 
 const [command, ...rest] = process.argv.slice(2);
 
@@ -22,6 +23,9 @@ Usage:
                                    to the remote CMS via its admin API
       --dry-run                    Scan, build, and show what would be pushed
       --only=tag1,tag2             Only consider the listed manifest tags
+  p9r list-blocs [--json]          List blocs registered on the remote CMS
+                                   (id, name, group, description) so agents
+                                   know what tags already exist
   p9r help                         Show this help
 
 Behaviour of 'p9r import':
@@ -52,6 +56,9 @@ try {
         case "import":
             await CLI_importBloc(rest);
             console.log("Done.");
+            break;
+        case "list-blocs":
+            await CLI_listBlocs(rest);
             break;
         case undefined:
         case "help":

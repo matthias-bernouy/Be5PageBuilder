@@ -1,6 +1,8 @@
 export type TBloc = {
     id: string;
-    name: string; 
+    name: string;
+    group: string;
+    description: string;
     viewJS: string;
     editorJS: string;
 }

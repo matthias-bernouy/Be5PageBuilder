@@ -7,6 +7,7 @@ export interface PageBuilderRepository {
     createBloc(bloc: TBloc): Promise<TBloc>;
 
     getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
+    getBlocsList(): Promise<{ id: string, name: string, group: string, description: string }[]>;
     getBlocViewJS(htmlTag: string): Promise<string | null>;
 
 

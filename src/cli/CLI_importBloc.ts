@@ -180,9 +180,10 @@ async function pushBloc(adminBase: URL, token: string, bloc: BuiltBloc): Promise
     const url = new URL("api/bloc", adminBase).href;
 
     const form = new FormData();
-    form.append("name",  bloc.label);
-    form.append("group", bloc.group);
-    form.append("tag",   bloc.tag);
+    form.append("name",        bloc.label);
+    form.append("group",       bloc.group);
+    form.append("description", bloc.description);
+    form.append("tag",         bloc.tag);
     form.append(
         "viewJS",
         new File([bloc.viewJS], `${bloc.tag}.js`, { type: "application/javascript" }),

@@ -22,6 +22,7 @@ export type DevBloc = {
     tag: string;
     label: string;
     group: string;
+    description: string;
     entry: string;
     editorEntry?: string;
 };
@@ -96,6 +97,7 @@ function toDevBloc(folder: string, manifest: BlocManifest, options: ScanOptions)
         tag,
         label: manifest.meta?.title || basename(folder),
         group: manifest["default-group"] || "Uncategorized",
+        description: manifest.meta?.description || "",
         entry: join(folder, blocRel),
         editorEntry: editorRel ? join(folder, editorRel) : undefined,
     };

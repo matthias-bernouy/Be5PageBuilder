@@ -40,6 +40,24 @@ export class BlocsRepository {
         return blocs.map(bloc => ({ id: bloc.id, editorJS: bloc.editorJS }));
     }
 
+    /**
+     * Light projection used by `p9r list-blocs` and any consumer that needs
+     * to know what blocs exist without downloading the compiled JS payloads.
+     * Missing `group` / `description` fall back to an empty string so older
+     * records inserted before those columns existed still display cleanly.
+     */
+    async getList(): Promise<{ id: string, name: string, group: string, description: string }[]> {
+        const blocs = await this._collection
+            .find({}, { projection: { id: 1, name: 1, group: 1, description: 1, _id: 0 } })
+            .toArray();
+        return blocs.map(bloc => ({
+            id:          bloc.id,
+            name:        bloc.name,
+            group:       bloc.group       || "",
+            description: bloc.description || "",
+        }));
+    }
+
     async getViewJS(id: string): Promise<string | null> {
         const bloc = await this._collection.findOne({ id }, { projection: { viewJS: 1, _id: 0 } });
         return bloc ? bloc.viewJS : null;

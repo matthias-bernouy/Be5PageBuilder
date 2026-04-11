@@ -61,6 +61,28 @@ its view and editor as **two isolated bundles**.
    not say "it should work". If you cannot open a browser, say so
    explicitly and list the checks that remain unverified.
 
+8. **Never invent a tag for another bloc.** Before referencing *any*
+   external bloc tag — inside `template.html`, inside a `<p9r-comp-sync>`
+   default, anywhere — run `bunx p9r list-blocs` to see what is actually
+   registered on the CMS. Only use tags that appear in that output. If
+   the tag you want is missing, either scaffold + deploy it first or
+   fall back to a plain editable HTML element and tell the user. A
+   freshly-deployed CMS has zero blocs; do not assume `w13c-*`,
+   `acme-*`, or any other prefix exists. Reserved prefixes `w13c-*` and
+   `p9r-*` are system-only and must **never** be used as the
+   `default-tag` of a new bloc. See `conventions/composition.md`.
+
+9. **Default slot content must be editable.** The element you put inside
+   a `<p9r-comp-sync>` is what the user will see and interact with in
+   the editor. Only use elements that have an editor mode: text-bearing
+   tags (`<p>`, `<h1>`–`<h6>`, `<span>`…), images via `<p9r-image-sync>`,
+   or another deployed bloc tag. **Never** default-slot a raw `<li>`,
+   `<td>`, `<tr>`, `<option>` or any element that has no standalone
+   editor mode — the user won't be able to modify, move, or delete it
+   from the inline editor. If the bloc conceptually renders a list,
+   expose editable `<p>` (or similar) items and let the user or the
+   bloc's `template.html` wrap them in `<ul>` / `<li>` internally.
+
 ## File layout of a bloc
 
 ```
@@ -130,25 +152,37 @@ Read the matching one before you write a non-trivial version of that file.
 
 ## Typical flow when the user asks for a new bloc
 
-1. Ask the user (or infer) the bloc's **name**, **tag**, **group** and what
-   slots / configuration it needs.
-2. Create the folder.
-3. Write `manifest.json` from `templates/manifest.md`, check
+1. **Discover what's already deployed on the CMS.** Run
+   `bunx p9r list-blocs` in the project directory. Read the output —
+   this is the authoritative list of tags you may reference from inside
+   the new bloc. If the CMS is unreachable or the token is missing,
+   stop and ask the user to fix the credentials instead of guessing.
+   Remember: a fresh CMS has **zero** blocs, so don't assume anything.
+2. Ask the user (or infer) the bloc's **name**, **tag**, **group** and what
+   slots / configuration it needs. The tag must **not** start with
+   `w13c-` or `p9r-` (reserved), and must not collide with any tag you
+   saw in step 1.
+3. Create the folder.
+4. Write `manifest.json` from `templates/manifest.md`, check
    `conventions/manifest.md` for field requirements.
-4. Write `template.html` and `style.css` — these shape the bloc's visual
+5. Write `template.html` and `style.css` — these shape the bloc's visual
    structure and are the best starting point once you know the slots.
-5. Write `configuration.html` — this is where `conventions/configuration.md`
+6. Write `configuration.html` — this is where `conventions/configuration.md`
    matters most, because the three sync systems are easy to mis-wire.
-6. Write `Bloc.ts` — often minimal (just the class + constructor). Add
+   When a `<p9r-comp-sync>` needs a default child, use an editable HTML
+   element (`<p>`, `<h2>`, `<span>`, …) or a tag you confirmed in step 1.
+   Never default-slot a raw `<li>`, `<td>`, `<tr>` or `<option>` — they
+   have no editor mode and become un-editable dead weight.
+7. Write `Bloc.ts` — often minimal (just the class + constructor). Add
    `attributeChangedCallback` only if attributes drive runtime behavior that
    CSS cannot express.
-7. Write `BlocEditor.ts` — usually a near-empty class (constructor + empty
+8. Write `BlocEditor.ts` — usually a near-empty class (constructor + empty
    `init` / `restore`). Pass editor-mode CSS as the second arg of `super(...)`
    only if the bloc needs visual tweaks during editing (disable hover, cancel
    transforms, etc.). Add logic in `init()` / `restore()` only if declarative
    sync systems cannot express it — and then make sure `restore()` fully
    undoes everything `init()` did.
-8. **Verify in a real browser.** Follow the smoke test and run the full
+9. **Verify in a real browser.** Follow the smoke test and run the full
    checklist in `conventions/verification.md`. Report to the user exactly
    what you opened, clicked, and observed. The bloc is not done before
    this step is complete.

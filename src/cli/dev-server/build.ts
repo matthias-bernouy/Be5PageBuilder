@@ -6,6 +6,7 @@ export type BuiltBloc = {
     tag: string;
     label: string;
     group: string;
+    description: string;
     folder: string;
     viewJS: string;
     editorJS: string | null;
@@ -71,10 +72,11 @@ export async function buildDevBloc(bloc: DevBloc): Promise<BuiltBloc> {
         .replaceAll("BE5_GROUP_TO_BE_REPLACED", bloc.group);
 
     return {
-        tag:      bloc.tag,
-        label:    bloc.label,
-        group:    bloc.group,
-        folder:   bloc.folder,
+        tag:         bloc.tag,
+        label:       bloc.label,
+        group:       bloc.group,
+        description: bloc.description,
+        folder:      bloc.folder,
         viewJS,
         editorJS,
     };

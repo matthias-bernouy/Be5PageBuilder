@@ -8,6 +8,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
 
     const name = formData.get("name") as string;
     const group = formData.get("group") as string;
+    const description = (formData.get("description") as string | null) || "";
     const tag = formData.get("tag") as string | null;
     const viewFile = formData.get("viewJS") as File;
     const editorEntry = formData.get("editorJS");
@@ -24,7 +25,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
         return new Response(`Bloc with tag "${tag}" already exists`, { status: 409 });
     }
 
-    const bloc = await prepare_bloc(viewFile, editorFile, name, group, tag);
+    const bloc = await prepare_bloc(viewFile, editorFile, name, group, description, tag);
 
     try {
         await system.repository.createBloc(bloc);

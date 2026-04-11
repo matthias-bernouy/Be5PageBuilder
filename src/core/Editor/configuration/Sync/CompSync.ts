@@ -1,18 +1,65 @@
 import type { Component } from "src/core/Editor/core/Component";
 
 /**
- * @param data-multiple        - default: true
- * @param data-number-creation - default: 1
- * @param data-minimum         - default: 1
- * 
+ * `<p9r-comp-sync>` is both a **slot content manager** (clones its light-DOM
+ * template into the bloc's slot when empty, and editorizes existing children)
+ * AND a **panel control** that lets the user quickly reach every element
+ * currently in that slot.
+ *
+ * The light-DOM first child is the *template* used for defaulting / cloning;
+ * it is hidden from the user. The rendered UI lives in the shadow root so it
+ * does not interfere with slot matching or cloning.
+ *
+ * Supported attributes:
+ *   - `allow-multiple`          — list mode (add / delete / duplicate / drag)
+ *   - `optionnal`               — deletable (one-n spelling, kept deliberately)
+ *   - `allow-others-components` — user can swap the element via action bar
+ *   - `inline-adding`           — surfaces add buttons inline on each child
+ *   - `label`                   — optional header label; defaults to slot name
+ *   - `data-min` / `data-max`   — bounds for list mode (default 1 / Infinity)
  */
 export class CompSync extends HTMLElement {
 
     private _component: Component | null = null;
+    private _root: ShadowRoot;
+    private _listEl: HTMLElement;
+    private _titleEl: HTMLElement;
+    private _countEl: HTMLElement;
+    private _addBtn: HTMLButtonElement;
 
+    constructor() {
+        super();
+        this._root = this.attachShadow({ mode: "open" });
+        this._root.innerHTML = `
+            <style>${CompSync._css}</style>
+            <div class="panel">
+                <div class="header">
+                    <span class="title"></span>
+                    <span class="count"></span>
+                </div>
+                <ul class="items"></ul>
+                <button class="add" type="button" hidden>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    <span>Add</span>
+                </button>
+            </div>
+        `;
+        this._listEl  = this._root.querySelector(".items")!  as HTMLElement;
+        this._titleEl = this._root.querySelector(".title")!  as HTMLElement;
+        this._countEl = this._root.querySelector(".count")!  as HTMLElement;
+        this._addBtn  = this._root.querySelector(".add")!    as HTMLButtonElement;
+
+        this._addBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this._add();
+        });
+    }
 
     connectedCallback() {
-        this.style.display = "none";
         const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if (componentIdentifier) {
             this._component = document.querySelector(`[${p9r.attr.EDITOR.IDENTIFIER}="${componentIdentifier}"]`);
@@ -20,7 +67,7 @@ export class CompSync extends HTMLElement {
         requestAnimationFrame(() => {
             this._sync();
             this.init();
-            this._component?.connectedCallback();    
+            this._component?.connectedCallback();
         });
     }
 
@@ -31,7 +78,7 @@ export class CompSync extends HTMLElement {
         }
 
         const slotName = child.getAttribute("slot");
-        
+
         const selector = slotName ? `[slot="${slotName}"]` : ':not([slot])';
 
         if (!this._component?.querySelector(selector)) {
@@ -48,8 +95,8 @@ export class CompSync extends HTMLElement {
             throw new Error("p9r-comp-sync require a child with attribute 'slot'");
         }
 
-        const selector = slotName 
-                ? `:scope > [slot="${slotName}"]` 
+        const selector = slotName
+                ? `:scope > [slot="${slotName}"]`
                 : `:scope > :not([slot])`;
 
         let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
@@ -98,7 +145,100 @@ export class CompSync extends HTMLElement {
             }
             slotEditor?.viewEditor();
         })
+
+        this._renderPanel(slots);
     }
+
+    // ── Rendered UI ──────────────────────────────────────────────────────
+
+    private _renderPanel(slots: HTMLElement[]) {
+        this._titleEl.textContent = this._titleLabel();
+
+        if (this.isMultiple) {
+            const max = this.max === Infinity ? "∞" : String(this.max);
+            this._countEl.textContent = `${slots.length} / ${max}`;
+            this._countEl.hidden = false;
+        } else {
+            this._countEl.textContent = "";
+            this._countEl.hidden = true;
+        }
+
+        this._listEl.innerHTML = "";
+        slots.forEach((slot, index) => {
+            const li = document.createElement("li");
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "item";
+            btn.innerHTML = `
+                <span class="item-index">#${index + 1}</span>
+                <span class="item-label"></span>
+            `;
+            btn.querySelector(".item-label")!.textContent = this._slotLabel(slot);
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this._focus(slot);
+            });
+            li.append(btn);
+            this._listEl.append(li);
+        });
+
+        const canAdd = this.isMultiple && slots.length < this.max;
+        this._addBtn.hidden = !this.isMultiple;
+        this._addBtn.disabled = !canAdd;
+    }
+
+    private _titleLabel(): string {
+        const custom = this.getAttribute("label");
+        if (custom) return custom;
+        const child = this.firstElementChild;
+        const slotName = child?.getAttribute("slot");
+        return slotName || "Default slot";
+    }
+
+    private _slotLabel(slot: HTMLElement): string {
+        const text = (slot.textContent || "").trim().replace(/\s+/g, " ");
+        if (text.length > 0) {
+            return text.length > 40 ? text.slice(0, 40) + "…" : text;
+        }
+        return `<${slot.tagName.toLowerCase()}>`;
+    }
+
+    private _focus(slot: HTMLElement) {
+        slot.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (!slot.hasAttribute("tabindex")) slot.setAttribute("tabindex", "-1");
+        try {
+            slot.focus({ preventScroll: true });
+        } catch {
+            // focus() can throw on some element types; scrollIntoView already ran.
+        }
+    }
+
+    private _add() {
+        if (!this.isMultiple) return;
+        if (!this._component) return;
+
+        const template = this.firstElementChild;
+        if (!template) return;
+
+        const current = this._countSlots();
+        if (current >= this.max) return;
+
+        const clone = template.cloneNode(true) as HTMLElement;
+        this._component.append(clone);
+        // The ObserverManager picks up the mutation, creates an Editor for the
+        // new child, and calls `onChildrenAdded` on the parent editor — which
+        // re-runs `ConfigPanel.init()` and therefore our `init()` → re-render.
+    }
+
+    private _countSlots(): number {
+        if (!this._component) return 0;
+        const child = this.firstElementChild;
+        const slotName = child?.getAttribute("slot");
+        const selector = slotName ? `:scope > [slot="${slotName}"]` : `:scope > :not([slot])`;
+        return this._component.querySelectorAll(selector).length;
+    }
+
+    // ── Attribute-backed config ─────────────────────────────────────────
 
     get isMultiple(){
         return this.hasAttribute("allow-multiple");
@@ -108,12 +248,16 @@ export class CompSync extends HTMLElement {
         return this.hasAttribute("optionnal");
     }
 
-    get min(){
-        return 1;
+    get min(): number {
+        const raw = this.getAttribute("data-min") ?? this.getAttribute("min");
+        const n = raw != null ? parseInt(raw, 10) : NaN;
+        return Number.isFinite(n) && n >= 0 ? n : 1;
     }
 
-    get max(){
-        return 999;
+    get max(): number {
+        const raw = this.getAttribute("data-max") ?? this.getAttribute("max");
+        const n = raw != null ? parseInt(raw, 10) : NaN;
+        return Number.isFinite(n) && n >= 1 ? n : Infinity;
     }
 
     get inlineAdding(){
@@ -123,6 +267,137 @@ export class CompSync extends HTMLElement {
     get allowOthersComponents(){
         return this.hasAttribute("allow-others-components");
     }
+
+    private static _css = `
+        :host {
+            display: block;
+            margin: 8px 0;
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-default, #e2e8f0);
+            border-radius: 10px;
+            background: var(--bg-surface, #fff);
+        }
+
+        .header {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .title {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted, #94a3b8);
+        }
+
+        .count {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted, #94a3b8);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .items {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .items:empty {
+            display: none;
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid var(--border-default, #e2e8f0);
+            border-radius: 8px;
+            background: var(--bg-surface, #fff);
+            color: var(--text-main, #1e293b);
+            font-size: 12px;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+            outline: none;
+        }
+
+        .item:hover {
+            border-color: var(--primary-base, #4361ee);
+            background: var(--primary-muted, rgb(67 97 238 / 0.08));
+        }
+
+        .item:focus-visible {
+            border-color: var(--primary-base, #4361ee);
+            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+        }
+
+        .item-index {
+            flex-shrink: 0;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted, #94a3b8);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .item-label {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .add {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            padding: 7px 10px;
+            margin-top: 2px;
+            border: 1px dashed var(--border-default, #e2e8f0);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-muted, #94a3b8);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+            outline: none;
+        }
+
+        .add:hover:not(:disabled) {
+            border-color: var(--primary-base, #4361ee);
+            color: var(--primary-base, #4361ee);
+            background: var(--primary-muted, rgb(67 97 238 / 0.08));
+        }
+
+        .add:focus-visible {
+            border-color: var(--primary-base, #4361ee);
+            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+        }
+
+        .add:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    `;
 
 }
 

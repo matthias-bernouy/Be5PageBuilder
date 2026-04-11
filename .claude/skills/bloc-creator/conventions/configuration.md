@@ -63,12 +63,23 @@ Attributes combine. A typical editable list:
 
 ```html
 <p9r-comp-sync allow-multiple optionnal allow-others-components inline-adding>
-    <w13c-button slot="actions">Action</w13c-button>
+    <p slot="actions">Action label</p>
 </p9r-comp-sync>
 ```
 
 This says: the `actions` slot holds multiple items, each deletable,
 user can swap components, with inline add buttons.
+
+> **Default content must be editable.** The child element of a
+> `<p9r-comp-sync>` is what the user will see and edit. Only use elements
+> that have an editor mode in the PageBuilder runtime (text-bearing
+> elements such as `<p>`, `<h1>`–`<h6>`, `<span>`, images via
+> `<p9r-image-sync>`, or another deployed bloc tag). **Do not** use raw
+> `<li>`, `<td>`, `<tr>`, `<option>` or other elements that have no
+> standalone editor mode — the user will not be able to modify, move, or
+> delete them from the inline editor. If you need a list, put an editable
+> element (e.g. `<p>`) inside and let the user decide whether to wrap it
+> in `<ul>` / `<li>` themselves.
 
 #### How the default is applied
 
@@ -76,6 +87,30 @@ If the host bloc has no element in the target slot when the editor mounts,
 `<p9r-comp-sync>` clones its child and appends it to the bloc. The bloc's
 `connectedCallback` is then re-triggered — which is why bloc
 `connectedCallback` must be idempotent (see `conventions/component.md`).
+
+#### Rendered UI in the config panel
+
+`<p9r-comp-sync>` renders a visible control inside the config panel:
+
+- A header (the value of `label`, or the slot name, or "Default slot").
+- A count badge in multiple mode: `N / max`.
+- One focus button per slotted child — clicking it scrolls the element
+  into view and focuses it (without opening its own config panel). The
+  button shows a trimmed preview of the child's text content, or the
+  tag name if the element has no text.
+- In multiple mode, an "Add" button that clones the `<p9r-comp-sync>`'s
+  first light-DOM child and appends it to the bloc. The button is
+  disabled when the current count reaches `max`. `data-min` / `data-max`
+  attributes constrain the bounds (`data-min` default 1, `data-max`
+  default ∞).
+
+Optional attributes for the UI:
+
+| Attribute | Purpose |
+|---|---|
+| `label` | Header text shown above the focus buttons. Defaults to the slot name, then `"Default slot"`. |
+| `data-min` | Minimum number of items in multiple mode. Default `1`. |
+| `data-max` | Maximum number of items in multiple mode. Default unlimited. |
 
 ### 3. `<p9r-image-sync>` — MediaCenter-backed image slot
 

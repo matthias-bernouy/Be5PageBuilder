@@ -198,7 +198,32 @@ be.
 
 **Cause.** The parent references another bloc's tag (e.g.
 `<my-card-item>`) that isn't deployed on the target CMS instance. Custom
-elements that are not registered render as inline empty elements.
+elements that are not registered render as inline empty elements. This
+is also the #1 source of "Claude made up a tag" bugs — the model
+assumes a `w13c-button` or `acme-card` exists without checking.
 
-**Fix.** Deploy the child bloc first (`p9r import`), or use a plain
-HTML element as the default content until the child bloc is available.
+**Fix.** Run `bunx p9r list-blocs` before writing any bloc that
+references another tag, and *only* use tags from that output. Reserved
+prefixes `w13c-*` and `p9r-*` are system-only and will never appear in
+that list as deployable children. If the tag you need is missing,
+deploy it first (`p9r import`) or use a plain editable HTML element
+(`<p>`, `<h2>`, …) as the default content until the child bloc is
+available.
+
+## The uneditable `<li>` in a slot
+
+**Symptom.** The user can see the text of a list item in the bloc but
+cannot click to edit, delete, or drag it in the inline editor.
+
+**Cause.** A raw `<li>` was used as the default child of
+`<p9r-comp-sync>`, either directly or as a slot target. `<li>` has no
+registered editor mode, so the editor's observer skips it — the only
+thing the user can interact with is the surrounding `<ul>`, if that
+has an editor mode itself.
+
+**Fix.** Default-slot an element that *does* have an editor mode
+(`<p>`, `<h1>`–`<h6>`, `<span>`, an `<img>` through `<p9r-image-sync>`,
+or another deployed bloc). If you genuinely need list semantics, wrap
+the editable elements in `<ul>`/`<li>` **inside the bloc's own
+`template.html`**, not in the slot default. Same rule for `<td>`,
+`<tr>`, `<option>` — none of these are independently editable.

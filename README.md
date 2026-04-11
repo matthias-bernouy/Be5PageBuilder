@@ -186,10 +186,11 @@ bunx p9r init <folder> [--force]
 bunx p9r install-skill [--force]
 bunx p9r dev
 bunx p9r import [flags]
+bunx p9r list-blocs [--json]
 bunx p9r help
 ```
 
-`p9r dev` and `p9r import` read their credentials from the environment (or a `.env` file in the current directory):
+`p9r dev`, `p9r import` and `p9r list-blocs` read their credentials from the environment (or a `.env` file in the current directory):
 
 | Var | Purpose |
 |---|---|
@@ -260,6 +261,20 @@ Flags:
 |---|---|
 | `--dry-run` | Scan, build, and show what would be pushed — no network writes |
 | `--only=tag1,tag2` | Restrict the run to the listed manifest tags |
+
+### `p9r list-blocs` — discover what's already on the CMS
+
+`p9r list-blocs` queries the remote CMS and prints every registered bloc with its `id`, `name`, `group` and `description`. Use it before scaffolding a new bloc to see what tags already exist — this is the hook the `bloc-creator` Claude Code skill uses to avoid hallucinating components.
+
+The command calls `GET {P9R_URL}/api/blocs-list`, a lightweight endpoint that projects bloc metadata only (no `viewJS` / `editorJS` payloads), so it is cheap to call repeatedly. Output is grouped by `group` and sorted by tag.
+
+Reserved prefixes `w13c-*` and `p9r-*` are system-only — do **not** create blocs with those prefixes, they are reserved for internal PageBuilder components to avoid tag collisions.
+
+Flags:
+
+| Flag | Purpose |
+|---|---|
+| `--json` | Emit the raw JSON array instead of the human-readable listing (useful for piping into tools) |
 
 ---
 

@@ -12,7 +12,7 @@ registerEditor_opaque();
  * The caller must provide the tag — blocs are always keyed by their manifest
  * tag, never by a generated UUID.
  */
-export async function prepare_bloc(fileView: File, fileEditor: File | null, label: string, group: string, blocId: string) {
+export async function prepare_bloc(fileView: File, fileEditor: File | null, label: string, group: string, description: string, blocId: string) {
     const buildOptions = (entry: string) => ({
         entrypoints: [entry],
         target: "browser" as const,
@@ -45,7 +45,9 @@ export async function prepare_bloc(fileView: File, fileEditor: File | null, labe
         id: blocId,
         editorJS: editorJS,
         viewJS: viewJS,
-        name: label
+        name: label,
+        group: group,
+        description: description,
     };
 
 }

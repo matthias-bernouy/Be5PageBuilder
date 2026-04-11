@@ -70,6 +70,10 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         return this._blocs.getEditorJS();
     }
 
+    getBlocsList(): Promise<{ id: string, name: string, group: string, description: string }[]> {
+        return this._blocs.getList();
+    }
+
     getBlocViewJS(id: string): Promise<string | null> {
         return this._blocs.getViewJS(id);
     }
