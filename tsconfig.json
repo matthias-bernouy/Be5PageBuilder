@@ -42,7 +42,8 @@
         "build.ts",
         "src/cli/CLI_importBloc.ts",
 		"types/**/*.d.ts",
-		"types/editor-attributs.ts"
+		"types/editor-attributs.ts",
+		"tests/**/*.ts"
 	]
 
 }
