@@ -280,7 +280,7 @@ export class BlocEditor extends Editor {
     <p9r-comp-sync optionnal>
         <p slot="body">Write a short description of this card...</p>
     </p9r-comp-sync>
-    <p9r-comp-sync allow-multiple optionnal allow-others-components inline-adding>
+    <p9r-comp-sync allow-multiple optionnal inline-adding>
         <acme-button slot="actions">Action</acme-button>
     </p9r-comp-sync>
 </p9r-section>

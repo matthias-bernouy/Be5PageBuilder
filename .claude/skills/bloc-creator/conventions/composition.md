@@ -75,7 +75,7 @@ the default content of a `<p9r-comp-sync>`:
 ```html
 <!-- my-menu/configuration.html -->
 <p9r-section data-title="Call to action">
-    <p9r-comp-sync optionnal allow-others-components>
+    <p9r-comp-sync optionnal>
         <my-cta-button slot="cta">Learn more</my-cta-button>
     </p9r-comp-sync>
 </p9r-section>

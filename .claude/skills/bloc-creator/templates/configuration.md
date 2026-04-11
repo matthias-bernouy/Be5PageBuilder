@@ -55,7 +55,7 @@ The declarative editor panel. Combines three sync systems inside
     <p9r-comp-sync optionnal>
         <p slot="description">A short description.</p>
     </p9r-comp-sync>
-    <p9r-comp-sync allow-multiple optionnal inline-adding>
+    <p9r-comp-sync allow-multiple optionnal>
         <p slot="items">Item</p>
     </p9r-comp-sync>
 </p9r-section>

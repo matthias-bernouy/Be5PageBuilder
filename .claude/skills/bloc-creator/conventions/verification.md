@@ -146,10 +146,13 @@ From here, the bloc is instantiated on a clean page. Run the checklist.
 - [ ] **F1. Every `<p9r-comp-sync>` slot is reachable.** Click it, the
   action bar appears on hover. Text is editable.
 - [ ] **F2. Permission flags are enforced.** A slot without flags has
-  no delete / duplicate / drag handle. A slot with `optionnal` shows
+  no delete / duplicate / drag handle, but the component-switch action
+  is shown by default. A slot with `optionnal` additionally shows
   delete. A slot with `allow-multiple` shows add / duplicate / drag.
-  A slot with `allow-others-components` shows the component-switch
-  action. A slot with `inline-adding` has `+` buttons inline.
+  A slot with `disable-others-components` hides the component-switch
+  action (opt-out). A slot with `inline-adding` has the `+ before` /
+  `+ after` buttons on the **left/right** of each item instead of
+  above/below — meant for horizontal lists.
 - [ ] **F3. `allow-multiple` behaviors.** Add an item, duplicate it,
   drag to reorder, delete. Each operation leaves the bloc in a clean
   state.

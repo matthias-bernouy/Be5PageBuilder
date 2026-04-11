@@ -171,7 +171,7 @@ export class BlocEditor extends Editor {
 </p9r-attr-sync>
 
 <p9r-section data-title="Content">
-    <p9r-comp-sync allow-multiple allow-others-components inline-adding>
+    <p9r-comp-sync allow-multiple>
         <p>Stack content...</p>
     </p9r-comp-sync>
 </p9r-section>

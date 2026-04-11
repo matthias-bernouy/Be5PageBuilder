@@ -11,12 +11,18 @@ import type { Component } from "src/core/Editor/core/Component";
  * does not interfere with slot matching or cloning.
  *
  * Supported attributes:
- *   - `allow-multiple`          — list mode (add / delete / duplicate / drag)
- *   - `optionnal`               — deletable (one-n spelling, kept deliberately)
- *   - `allow-others-components` — user can swap the element via action bar
- *   - `inline-adding`           — surfaces add buttons inline on each child
- *   - `label`                   — optional header label; defaults to slot name
- *   - `data-min` / `data-max`   — bounds for list mode (default 1 / Infinity)
+ *   - `allow-multiple`            — list mode (add / delete / duplicate / drag)
+ *   - `optionnal`                 — deletable (one-n spelling, kept deliberately)
+ *   - `disable-others-components` — opt-out: forbid swapping the element. By
+ *                                   default the user CAN swap the slot element
+ *                                   for a different component via the action
+ *                                   bar; set this attribute to lock the tag.
+ *   - `inline-adding`             — *(with `allow-multiple`)* places the
+ *                                   `+ before` / `+ after` buttons to the
+ *                                   left/right of each item instead of
+ *                                   above/below — for horizontal lists.
+ *   - `label`                     — optional header label; defaults to slot name
+ *   - `data-min` / `data-max`     — bounds for list mode (default 1 / Infinity)
  */
 export class CompSync extends HTMLElement {
 
@@ -108,7 +114,7 @@ export class CompSync extends HTMLElement {
             slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
 
-            if ( !this.allowOthersComponents ) {
+            if ( this.disableOthersComponents ) {
                 slot.setAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT, "true");
             } else {
                 slot.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
@@ -122,8 +128,6 @@ export class CompSync extends HTMLElement {
 
             slot.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)!)
             if (this.isMultiple){
-
-                slot.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
 
                 if (this.inlineAdding){
                      slot.setAttribute(p9r.attr.ACTION.INLINE_ADDING, "true");
@@ -264,8 +268,8 @@ export class CompSync extends HTMLElement {
         return this.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
     }
 
-    get allowOthersComponents(){
-        return this.hasAttribute("allow-others-components");
+    get disableOthersComponents(){
+        return this.hasAttribute("disable-others-components");
     }
 
     private static _css = `

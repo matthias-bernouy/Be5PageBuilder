@@ -38,19 +38,20 @@ Declares a slot of child components inside the current bloc. The single child el
     <span>Button</span>
 </p9r-comp-sync>
 
-<p9r-comp-sync allow-multiple optionnal allow-others-components>
+<p9r-comp-sync allow-multiple optionnal>
     <w13c-card slot="cards"></w13c-card>
 </p9r-comp-sync>
 ```
 
 Attributes:
 
-| Attribute                  | Effect                                                                 |
-| -------------------------- | ---------------------------------------------------------------------- |
-| `allow-multiple`           | User can add, duplicate, reorder and delete items.                     |
-| `optionnal`                | User can delete the item (ignored when `allow-multiple` is set).       |
-| `allow-others-components`  | User can swap the child for a different bloc type.                     |
-| `inline-adding`            | Adding a new item happens inline instead of via the library.           |
+| Attribute                     | Effect                                                                          |
+| ----------------------------- | ------------------------------------------------------------------------------- |
+| *(none)*                      | User can swap the child for a different bloc type (default).                    |
+| `allow-multiple`              | User can add, duplicate, reorder and delete items.                              |
+| `optionnal`                   | User can delete the item (ignored when `allow-multiple` is set).                |
+| `disable-others-components`   | Opt-out: forbid swapping the child. Use to lock the slot to its current tag.    |
+| `inline-adding`               | *(with `allow-multiple`)* Places `+ before` / `+ after` on the left/right of each item instead of above/below — for horizontal lists. |
 
 Sub-components never get their own editor — their parent manages them through `p9r-comp-sync`.
 

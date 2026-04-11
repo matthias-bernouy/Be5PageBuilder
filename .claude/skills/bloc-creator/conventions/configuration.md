@@ -53,22 +53,25 @@ on that content. The first child of `<p9r-comp-sync>` is the template; its
 
 | Attribute | Effect |
 |---|---|
-| *(none)* | Fixed: not deletable, not duplicable, not draggable, no add-before/after, no component change. The user can only edit the text inside. |
+| *(none)* | The slot element is swappable (user can change the component) but not deletable, not duplicable, not draggable, no add-before/after. |
 | `optionnal` | The slot element becomes deletable. *(Yes, the attribute is spelled `optionnal` — keep it that way, it is the real attribute name.)* |
-| `allow-others-components` | The user can swap the slot element for a different component via the action bar. |
+| `disable-others-components` | Opt-out: forbid swapping the slot element for a different component. Use when the slot must stay a specific tag (e.g. the default child is a text node the user only edits in place). |
 | `allow-multiple` | List mode: enables add, delete, duplicate, drag, and component change. Use for collections (items, slides, cards…). |
-| `inline-adding` | *(with `allow-multiple`)* Shows `+` buttons inline between items instead of only in the action bar. |
+| `inline-adding` | *(with `allow-multiple`)* Places the `+ before` / `+ after` buttons to the **left and right** of each item instead of above and below. Use it for horizontal lists (flex-row, grid-col, inline items). |
+
+Component swapping is **on by default** — if you want to lock the slot to
+its current tag, add `disable-others-components` explicitly.
 
 Attributes combine. A typical editable list:
 
 ```html
-<p9r-comp-sync allow-multiple optionnal allow-others-components inline-adding>
+<p9r-comp-sync allow-multiple optionnal inline-adding>
     <p slot="actions">Action label</p>
 </p9r-comp-sync>
 ```
 
 This says: the `actions` slot holds multiple items, each deletable,
-user can swap components, with inline add buttons.
+with inline add buttons. Component swapping is implicit.
 
 > **Default content must be editable.** The child element of a
 > `<p9r-comp-sync>` is what the user will see and edit. Only use elements
