@@ -51,15 +51,17 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
 
     document.body.innerHTML = expandedContent;
 
-    // Inject scripts for every be5-* bloc used in the expanded content
-    const tags = new Set<string>();
-    const regex = /<(be5-[a-z0-9-]+)/gi;
-    let match;
-    while ((match = regex.exec(expandedContent)) !== null) {
-        tags.add(match[1]!);
+    // Inject a script for every registered bloc whose tag appears in the
+    // expanded content. The set of valid tags comes from the repository so
+    // arbitrary prefixes (e.g. `acme-card`, `ta-hero`) work — not just `be5-*`.
+    const blocList = await system.repository.getBlocsList();
+    const usedTags = new Set<string>();
+    for (const bloc of blocList) {
+        const re = new RegExp(`<${bloc.id}(\\s|>|/)`, "i");
+        if (re.test(expandedContent)) usedTags.add(bloc.id);
     }
 
-    for (const tag of tags) {
+    for (const tag of usedTags) {
         const script = document.createElement("script");
         script.setAttribute("src", `/bloc?tag=${tag}`);
         document.body.appendChild(script);
