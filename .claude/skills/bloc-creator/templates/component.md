@@ -1,0 +1,60 @@
+# Template — `Bloc.ts`
+
+The minimal shape of a bloc's view class. Export **only** the class — no
+`customElements.define`, no tag constant.
+
+```ts
+import template from './template.html' with { type: 'text' };
+import css from './style.css' with { type: 'text' };
+import { Component } from '@bernouy/pagebuilder/component';
+
+export class Bloc extends Component {
+
+    constructor() {
+        super({ css, template: template as unknown as string });
+    }
+
+    override connectedCallback(): void {
+        // Idempotent. May be called several times by the editor.
+    }
+
+}
+```
+
+## With attribute-driven behavior
+
+When a configuration attribute must trigger JS (not just CSS), declare
+`observedAttributes` and implement `attributeChangedCallback`. Keep the logic
+idempotent.
+
+```ts
+import template from './template.html' with { type: 'text' };
+import css from './style.css' with { type: 'text' };
+import { Component } from '@bernouy/pagebuilder/component';
+
+export class Bloc extends Component {
+
+    static observedAttributes = ["href"];
+
+    constructor() {
+        super({ css, template: template as unknown as string });
+    }
+
+    override connectedCallback(): void {
+        this._syncHref();
+    }
+
+    attributeChangedCallback(name: string) {
+        if (name === "href") this._syncHref();
+    }
+
+    private _syncHref() {
+        const anchor = this.shadowRoot!.querySelector("a");
+        anchor?.setAttribute("href", this.getAttribute("href") || "#");
+    }
+
+}
+```
+
+See `conventions/component.md` for rules (idempotency, shadow DOM access,
+never call `super.connectedCallback()`).

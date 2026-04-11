@@ -183,19 +183,20 @@ The package ships a CLI (`p9r`) for iterating on blocs outside the host app. The
 
 ```bash
 bunx p9r init <folder> [--force]
+bunx p9r install-skill [--force]
 bunx p9r dev
 bunx p9r import [flags]
 bunx p9r help
 ```
 
-Both commands read their credentials from the environment (or a `.env` file in the current directory):
+`p9r dev` and `p9r import` read their credentials from the environment (or a `.env` file in the current directory):
 
 | Var | Purpose |
 |---|---|
 | `P9R_URL` | Base URL of the remote CMS, including the admin path prefix — e.g. `http://localhost:4999/page-builder` |
 | `P9R_TOKEN` | Bearer token used to authenticate as an admin against that CMS |
 
-`p9r init` does not need either variable — it only touches the local filesystem.
+`p9r init` and `p9r install-skill` do not need either variable — they only touch the local filesystem.
 
 ### `p9r init` — scaffold a new bloc
 
@@ -212,6 +213,18 @@ Flags:
 | `--force`, `-f` | Overwrite an existing non-empty folder (disabled by default to protect in-progress work) |
 
 To create an opaque bloc (no editor, sealed subtree, parent-level action bar only), delete `BlocEditor.ts` and `configuration.html` from the scaffold and drop the `"editor"` field from `manifest.json`.
+
+### `p9r install-skill` — install the bloc-creator Claude Code skill
+
+`p9r install-skill` copies the `bloc-creator` Claude Code skill that ships inside the package into `./.claude/skills/bloc-creator/` in the current project. Once installed, Claude Code discovers it automatically and triggers it whenever you ask Claude to "create a bloc" (or component, widget, card, section…) inside a `@bernouy/pagebuilder` project — Claude will scaffold the manifest, the view and editor entries, the template, the stylesheet and the configuration panel in one go, following the project's conventions.
+
+The skill is a self-contained folder of instructions and templates; it has no runtime footprint and is only read by Claude Code on demand.
+
+Flags:
+
+| Flag | Purpose |
+|---|---|
+| `--force`, `-f` | Overwrite an existing non-empty `./.claude/skills/bloc-creator/` (disabled by default to protect local edits to the skill) |
 
 ### `p9r dev` — local editor with hot-reload
 

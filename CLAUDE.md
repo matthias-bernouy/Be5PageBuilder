@@ -23,12 +23,13 @@
 
 ## CLI (`p9r`)
 
-- Three commands wired in `package.json` bin: `p9r init <folder>` (scaffold a new bloc locally), `p9r dev` (local editor against a remote CMS with hot-reload) and `p9r import` (deploy blocs via `POST {P9R_URL}/api/bloc`).
-- `dev` and `import` read `P9R_URL` (admin base, must include the path prefix, e.g. `http://localhost:4999/page-builder`) and `P9R_TOKEN` (admin bearer) from env or `.env`. `init` is offline — filesystem only.
+- Four commands wired in `package.json` bin: `p9r init <folder>` (scaffold a new bloc locally), `p9r install-skill` (install the bloc-creator Claude Code skill in the current project), `p9r dev` (local editor against a remote CMS with hot-reload) and `p9r import` (deploy blocs via `POST {P9R_URL}/api/bloc`).
+- `dev` and `import` read `P9R_URL` (admin base, must include the path prefix, e.g. `http://localhost:4999/page-builder`) and `P9R_TOKEN` (admin bearer) from env or `.env`. `init` and `install-skill` are offline — filesystem only.
 - `p9r init` copies `src/resources/bloc-template/` verbatim into the target folder via `node:fs/promises.cp`. Refuses to overwrite a non-empty existing folder unless `--force` / `-f` is passed. The template ships with the package because `src/` is in `package.json.files`.
+- `p9r install-skill` copies `.claude/skills/bloc-creator/` from the installed package into `./.claude/skills/bloc-creator/` in the consumer project, so Claude Code can discover the bloc-scaffolding skill locally. Refuses to overwrite a non-empty target unless `--force` / `-f` is passed. The skill folder ships with the package because `.claude/` is listed in `package.json.files`.
 - `p9r dev` proxies everything to the remote CMS except `/admin/editor` (assembled locally), `/bloc?tag=X` (served from local dev bundles when present), and `POST /api/page` (persisted to `.p9r-dev/scratch.json` — all other writes are blocked by the write guard). Watches bloc folders via `fs.watch` + a 1s polling rescan for folder-level events Linux `fs.watch` misses, and pushes reloads over `GET /dev/reload` (SSE).
 - `p9r import` fetches `GET /api/blocs` first (fail-fast on auth/connectivity), splits local blocs into fresh/collision sets, only builds the fresh ones, and uploads them. Flags: `--dry-run`, `--only=tag1,tag2`. Collisions are warned and skipped — never overwritten.
-- CLI source lives in `src/cli/`. `scan.ts` → `build.ts` → `server.ts`/`watch.ts` for dev, `CLI_importBloc.ts` for import, `CLI_init.ts` for init.
+- CLI source lives in `src/cli/`. `scan.ts` → `build.ts` → `server.ts`/`watch.ts` for dev, `CLI_importBloc.ts` for import, `CLI_init.ts` for init, `CLI_installSkill.ts` for install-skill.
 
 ## Data layer
 
