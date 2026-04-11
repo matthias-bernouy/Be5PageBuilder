@@ -39,6 +39,9 @@ export class PageConfiguration extends Component {
                 identifier: data.identifier || "",
                 path: data.path || "",
                 tags: JSON.stringify(data.tags?.split(",") || [])
+            }).catch((err) => {
+                console.error(err);
+                alert("Failed to save page: " + (err?.message || err));
             });
             // Keep the admin URL in sync with the new (path, identifier) key
             // so a refresh re-opens the same page even after a rename.

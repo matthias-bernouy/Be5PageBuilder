@@ -47,16 +47,18 @@ export abstract class Editor {
             document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig)
         }
 
-        document.addEventListener(p9r.event.SWITCH_MODE, (e) => {
-            if (e.detail === p9r.mode.EDITOR) {
-                this.viewEditor();
-            } else {
-                this.viewClient();
-            }
-        })
+        document.addEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);
 
         if (document.EditorManager?.getBlocActionGroup()){
             document.EditorManager.getBlocActionGroup().close();
+        }
+    }
+
+    private handleModeSwitch = (e: CustomEvent) => {
+        if (e.detail === p9r.mode.EDITOR) {
+            this.viewEditor();
+        } else {
+            this.viewClient();
         }
     }
 
@@ -144,6 +146,13 @@ export abstract class Editor {
             this.target.addEventListener("mouseenter", this.handleHover);
         }
 
+    }
+
+    public dispose() {
+        document.removeEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);
+        this.target.removeEventListener("mouseenter", this.handleHover);
+        this._panelConfig?.remove();
+        this.styleElement.remove();
     }
 
     onChildrenRemoved(){

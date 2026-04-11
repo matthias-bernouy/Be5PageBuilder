@@ -82,11 +82,12 @@ export class ObserverManager {
 
                 for (const removeNode of Array.from(mutation.removedNodes)) {
                     const node = removeNode as any;
-                    if (!node.getAttribute) return;
+                    if (!node.getAttribute) continue;
                     const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
-                    if (!identifier) return;
+                    if (!identifier) continue;
                     const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
                     document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
+                    document.compIdentifierToEditor.get(identifier)?.dispose();
                     document.compIdentifierToEditor.delete(identifier);
                 }
 
@@ -150,6 +151,7 @@ export class ObserverManager {
             const editor = document.compIdentifierToEditor?.get(id);
             if (editor) {
                 editor.viewClient();
+                editor.dispose();
                 document.compIdentifierToEditor.delete(id);
             }
         });
@@ -174,7 +176,7 @@ export class ObserverManager {
         // If any ancestor is an opaque bloc, the entire subtree is sealed.
         if (node.parentElement?.closest(`[${p9r.attr.EDITOR.OPAQUE}]`)) return;
         const tag = node.tagName.toLowerCase();
-        if (!this.editors.keys().toArray().includes(tag)) return
+        if (!this.editors.has(tag)) return
         const cl = this.editors.get(tag)?.cl;
         if (cl) {
             const editor = new cl(node);

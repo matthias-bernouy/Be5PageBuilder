@@ -110,7 +110,7 @@ export class EditorManager{
         }))
     }
 
-    save(props: {
+    async save(props: {
         path: string,
         title: string;
         description: string;
@@ -142,11 +142,17 @@ export class EditorManager{
 
         target.searchParams.set("path", currentPath);
         target.searchParams.set("identifier", currentIdentifier);
-        fetch(target, {
-            method: "POST",
-            body: JSON.stringify(body)
-        });
-        this.switchMode(p9r.mode.EDITOR);
+        try {
+            const res = await fetch(target, {
+                method: "POST",
+                body: JSON.stringify(body)
+            });
+            if (!res.ok) {
+                throw new Error(`Save failed: ${res.status} ${await res.text()}`);
+            }
+        } finally {
+            this.switchMode(p9r.mode.EDITOR);
+        }
     }
 
     getContent(): string {
