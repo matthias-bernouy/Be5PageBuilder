@@ -1,6 +1,6 @@
 {
     "name": "@bernouy/pagebuilder",
-    "version": "0.0.2",
+    "version": "1.0.2",
     "description": "Modular CMS built on Web Components with an inline visual editing system. Bun + MongoDB.",
     "license": "UNLICENSED",
     "type": "module",

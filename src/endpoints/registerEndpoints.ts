@@ -3,9 +3,8 @@ import { join } from "node:path"
 import type { PageBuilder } from "src/PageBuilder";
 import type { Middleware } from "@bernouy/socle";
 
-const root = process.cwd();
 function res(str: string){
-    return join(root, "src/endpoints", str);
+    return join(import.meta.dir, str);
 }
 
 export const createAuthGuard = (system: PageBuilder): Middleware => {
