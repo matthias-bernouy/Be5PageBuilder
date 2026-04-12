@@ -56,6 +56,10 @@ export class ImageSync extends HTMLElement {
         const slot = this._slotName;
         if (slot) img.setAttribute("slot", slot);
         img.setAttribute("src", defaultSrc);
+        if ( !this.isMultiSelect ) {
+            img.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
+            img.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
+        }
         this._component?.appendChild(img);
     }
 
