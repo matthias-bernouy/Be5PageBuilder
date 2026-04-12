@@ -1,5 +1,22 @@
 # Conventions — composing blocs
 
+## One folder = one custom element — absolute rule
+
+A bloc folder contains **exactly one** custom element. If your design
+requires two elements (e.g. `be5-navbar` and `be5-nav-dropdown`), you
+create **two separate folders**, each with its own `manifest.json`,
+`Bloc.ts`, etc. Never define a second class in a helper file, never call
+`customElements.define()` yourself, never import a sibling component
+that self-registers. The CLI builds each folder independently — a child
+element inlined in a parent's bundle won't get its own
+`<script src="/bloc?tag=...">` and won't register when loaded on its own.
+
+After creating both folders, the parent can reference the child's tag in
+its `configuration.html` (e.g. as a `<p9r-comp-sync>` default) just like
+any other deployed bloc.
+
+---
+
 Sub-components no longer exist as a special structure inside a parent bloc.
 Instead, any bloc can be used inside any other bloc, just by referring to
 its tag. A single bloc can be the child of many parents, or a top-level

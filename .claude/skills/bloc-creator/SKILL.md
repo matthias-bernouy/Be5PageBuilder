@@ -77,7 +77,19 @@ task**, before reading any other skill file.
    - Never cross the boundary. The two bundles are deliberately separated so
      visitors downloading the view bundle cannot transitively reach editor code.
 
-3. **Source files only export a class.** Never write in `Bloc.ts` or
+3. **One folder = one custom element. No exceptions.** A bloc folder
+   contains exactly one component (one `Bloc.ts`, one tag, one
+   `manifest.json`). If you need a second custom element — even one that
+   is tightly related (e.g. `be5-nav-dropdown` for `be5-navbar`) — it
+   **must** live in its own separate folder with its own manifest. Never
+   define a second class, never call `customElements.define()` from
+   inside a bloc's source, never create a helper file that registers
+   another element. Each element is built independently by the CLI;
+   inlining one inside another's bundle means the child won't have its
+   own `<script src="/bloc?tag=...">` and won't be registered when
+   loaded independently.
+
+4. **Source files only export a class.** Never write in `Bloc.ts` or
    `BlocEditor.ts`:
    - `customElements.define(...)`
    - `registerEditor(...)` / `registerEditor_opaque(...)`
@@ -89,15 +101,15 @@ task**, before reading any other skill file.
    you write any of the above in the source, the build will conflict or the
    bloc will never register.
 
-4. **`manifest.json` is the source of truth** for tag, group, title, entries,
+5. **`manifest.json` is the source of truth** for tag, group, title, entries,
    thumbnails. Not the source files.
 
-5. **Never call `super.connectedCallback()`** in a bloc. And remember:
+6. **Never call `super.connectedCallback()`** in a bloc. And remember:
    `connectedCallback()` on a bloc **can be called multiple times** — the
    editor re-triggers it after inserting default slot content, so everything
    inside must be idempotent.
 
-6. **Prefer declarative over imperative.** The sync systems
+7. **Prefer declarative over imperative.** The sync systems
    (`<p9r-attr-sync>`, `<p9r-comp-sync>`, `<p9r-image-sync>`) exist so
    authors don't have to write JS for standard concerns. Add code in
    `BlocEditor.init()` / `restore()` only when no declarative path exists
@@ -105,13 +117,13 @@ task**, before reading any other skill file.
    undo whatever `init()` did — the editor ↔ client round-trip has to be
    idempotent. See `conventions/editor.md`.
 
-7. **A bloc is not done until verified in a real browser.** Run the full
+8. **A bloc is not done until verified in a real browser.** Run the full
    checklist in `conventions/verification.md` before telling the user the
    bloc is ready. Report what you actually opened, clicked, and saw — do
    not say "it should work". If you cannot open a browser, say so
    explicitly and list the checks that remain unverified.
 
-8. **Never invent a tag for another bloc.** Before referencing *any*
+9. **Never invent a tag for another bloc.** Before referencing *any*
    external bloc tag — inside `template.html`, inside a `<p9r-comp-sync>`
    default, anywhere — run `bunx p9r list-blocs` to see what is actually
    registered on the CMS. Only use tags that appear in that output. If
@@ -122,16 +134,38 @@ task**, before reading any other skill file.
    `p9r-*` are system-only and must **never** be used as the
    `default-tag` of a new bloc. See `conventions/composition.md`.
 
-9. **Default slot content must be editable.** The element you put inside
-   a `<p9r-comp-sync>` is what the user will see and interact with in
-   the editor. Only use elements that have an editor mode: text-bearing
-   tags (`<p>`, `<h1>`–`<h6>`, `<span>`…), images via `<p9r-image-sync>`,
-   or another deployed bloc tag. **Never** default-slot a raw `<li>`,
-   `<td>`, `<tr>`, `<option>` or any element that has no standalone
-   editor mode — the user won't be able to modify, move, or delete it
-   from the inline editor. If the bloc conceptually renders a list,
-   expose editable `<p>` (or similar) items and let the user or the
-   bloc's `template.html` wrap them in `<ul>` / `<li>` internally.
+10. **Default slot content must be editable.** The element you put inside
+    a `<p9r-comp-sync>` is what the user will see and interact with in
+    the editor. Only use elements that have an editor mode: text-bearing
+    tags (`<p>`, `<h1>`–`<h6>`, `<span>`…), images via `<p9r-image-sync>`,
+    or another deployed bloc tag. **Never** default-slot a raw `<li>`,
+    `<td>`, `<tr>`, `<option>` or any element that has no standalone
+    editor mode — the user won't be able to modify, move, or delete it
+    from the inline editor. If the bloc conceptually renders a list,
+    expose editable `<p>` (or similar) items and let the user or the
+    bloc's `template.html` wrap them in `<ul>` / `<li>` internally.
+
+11. **Pick the smartest default for each slot.** Don't default to a bare
+    `<p>` or `<span>` when a more appropriate deployed bloc exists. Check
+    `bunx p9r list-blocs` — if a suitable child bloc is deployed, use it
+    as the `<p9r-comp-sync>` default so the user starts with something
+    useful instead of a placeholder they'll immediately swap out.
+
+12. **Never use `disable-others-components` unless structurally required.**
+    Component swapping is one of the editor's most powerful features.
+    Locking it down traps the user with whatever default you chose. Only
+    add `disable-others-components` when the parent's JS or CSS
+    **structurally depends** on a specific child tag. A `<span>` with
+    `disable-others-components` inside a button slot is a textbook
+    anti-pattern.
+
+13. **Expose every attribute the element needs to function.** If a host
+    or slotted element requires attributes for basic behavior (`name` on
+    form fields, `href` on links, `action`/`method` on forms,
+    `placeholder` on inputs…), they **must** be configurable from the
+    editor panel. Inner content that defines behavior (options in a
+    select, items in a list) must also be editable — never ship an
+    element whose functional content is frozen.
 
 ## File layout of a bloc
 
@@ -224,10 +258,14 @@ Read the matching one before you write a non-trivial version of that file.
    structure and are the best starting point once you know the slots.
 6. Write `configuration.html` — this is where `conventions/configuration.md`
    matters most, because the three sync systems are easy to mis-wire.
-   When a `<p9r-comp-sync>` needs a default child, use an editable HTML
-   element (`<p>`, `<h2>`, `<span>`, …) or a tag you confirmed in step 1.
-   Never default-slot a raw `<li>`, `<td>`, `<tr>` or `<option>` — they
-   have no editor mode and become un-editable dead weight.
+   When a `<p9r-comp-sync>` needs a default child, prefer a deployed bloc
+   tag from step 1 if one fits the slot's purpose; otherwise fall back to
+   an editable HTML element (`<p>`, `<h2>`, `<span>`, …). Never
+   default-slot a raw `<li>`, `<td>`, `<tr>` or `<option>` — they have
+   no editor mode and become un-editable dead weight. Do not add
+   `disable-others-components` unless the parent structurally depends on
+   the child tag. Ensure every functional attribute (`name`, `href`,
+   `placeholder`…) is exposed in the panel.
 7. Write `Bloc.ts` — often minimal (just the class + constructor). Add
    `attributeChangedCallback` only if attributes drive runtime behavior that
    CSS cannot express.

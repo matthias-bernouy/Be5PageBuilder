@@ -62,6 +62,25 @@ on that content. The first child of `<p9r-comp-sync>` is the template; its
 Component swapping is **on by default** — if you want to lock the slot to
 its current tag, add `disable-others-components` explicitly.
 
+> **`disable-others-components` is almost never the right choice.** Component
+> swapping is one of the PageBuilder editor's most powerful features — it lets
+> the user replace a child element with any other deployed bloc or HTML tag.
+> Locking a slot down removes that flexibility for no benefit in the vast
+> majority of cases.
+>
+> **Only** use `disable-others-components` when the parent bloc's code
+> (JS or CSS) relies on a specific tag name so tightly that swapping would
+> break it (e.g. the `connectedCallback` calls methods on the child, or the
+> CSS uses `::slotted(specific-tag)` selectors that cannot be generalized).
+> If you are merely providing a default and the user could reasonably want
+> a different component there, leave swapping enabled.
+>
+> A `<span>` with `disable-others-components` inside a button slot is a
+> **textbook anti-pattern**: the user can't change the button style, can't
+> swap it for a deployed button bloc, and often can't even edit the text.
+> Prefer a deployed button bloc as the default, or a plain `<p>` / `<span>`
+> **without** `disable-others-components`.
+
 Attributes combine. A typical editable list:
 
 ```html
@@ -83,6 +102,33 @@ with inline add buttons. Component swapping is implicit.
 > delete them from the inline editor. If you need a list, put an editable
 > element (e.g. `<p>`) inside and let the user decide whether to wrap it
 > in `<ul>` / `<li>` themselves.
+
+> **Default content should be the most useful starting point.** When
+> choosing the default child for a `<p9r-comp-sync>`, don't default to a
+> bare `<p>` or `<span>` if a more appropriate deployed bloc exists. For
+> example, a navbar's link list should default to the nav-dropdown bloc
+> (if deployed), not a plain `<a>` the user will have to swap out anyway.
+> Run `bunx p9r list-blocs` and pick the default that gives the user the
+> closest starting point to what they'll actually need. If no suitable
+> bloc is deployed, fall back to a plain editable HTML element — but make
+> it the most semantically appropriate one (e.g. `<a href="#">` for a
+> navigation link, not `<span>`).
+
+> **Expose every attribute the element needs to function.** If a slotted
+> or host element requires attributes for its basic behavior — `name` on
+> form inputs, `href` on links, `action`/`method` on forms, `type` on
+> inputs, `value`/`placeholder` on fields — those attributes **must** be
+> configurable from the editor panel (via `<p9r-attr-sync>` or a custom
+> `init()`/`restore()` flow). Think about what the user would naturally
+> need to set for the element to work: if they can see it in the rendered
+> output but can't change it from the config panel, that's a gap.
+>
+> This also applies to **inner content that defines behavior**: a
+> `<select>` must let the user edit its `<option>` list, a `<ul>` must
+> let the user add/remove `<li>` items, a `<table>` must let the user
+> manage rows. If the editor's declarative sync systems can't express
+> it, write the logic in `init()` / `restore()` — but never ship an
+> element whose functional content is frozen.
 
 #### How the default is applied
 

@@ -3,6 +3,24 @@
 A cheat sheet of traps that humans AND models fall into when writing blocs.
 If a bloc is misbehaving, scan this list first — the bug is probably here.
 
+## Two custom elements in one folder
+
+**Symptom.** A child element (e.g. `be5-nav-dropdown`) renders correctly
+in development when loaded alongside its parent, but fails to register
+when loaded independently, or doesn't appear in the bloc library.
+
+**Cause.** The child element was defined in a helper file inside the
+parent's folder (e.g. `NavDropdown.ts` next to `Bloc.ts`) with a manual
+`customElements.define()`. The CLI only builds what `manifest.json`
+points to — the helper gets bundled into the parent's view JS but never
+gets its own `<script src="/bloc?tag=...">` tag, its own editor
+registration, or its own entry in the bloc library.
+
+**Fix.** Move the child to its own folder with its own `manifest.json`,
+`Bloc.ts`, `BlocEditor.ts`, etc. One folder = one custom element,
+always. The parent can then reference the child's tag in its
+`configuration.html` like any other deployed bloc.
+
 ## The invisible bloc
 
 **Symptom.** The bloc is present in the DOM but nothing is visible.
@@ -209,6 +227,64 @@ that list as deployable children. If the tag you need is missing,
 deploy it first (`p9r import`) or use a plain editable HTML element
 (`<p>`, `<h2>`, …) as the default content until the child bloc is
 available.
+
+## The `disable-others-components` trap
+
+**Symptom.** The user drops a bloc containing a button (or any slotted
+element) but cannot swap it for a different button style, nor even edit
+the text inside it.
+
+**Cause.** The `<p9r-comp-sync>` was written with
+`disable-others-components` on a bare `<span>` or similar element. This
+locks the slot to a single tag and removes the component-swap feature
+entirely.
+
+**Fix.** Remove `disable-others-components`. It should almost never be
+used — only when the parent's JS or CSS structurally depends on a
+specific child tag. In every other case, leave component swapping
+enabled so the user can pick the deployed bloc that fits best.
+
+## The lazy default that the user always has to swap
+
+**Symptom.** Every new instance of a bloc starts with a bare `<p>` or
+`<span>` that the user immediately swaps for a deployed bloc every
+single time.
+
+**Cause.** The `<p9r-comp-sync>` default child is a generic placeholder
+instead of the most logical deployed bloc for that slot.
+
+**Fix.** Before choosing a default, run `bunx p9r list-blocs`. If a
+deployed bloc fits the slot's purpose (e.g. a nav-dropdown inside a
+navbar, a button bloc inside a CTA area), use it as the default. Only
+fall back to plain HTML when no suitable bloc is deployed.
+
+## The frozen functional attribute
+
+**Symptom.** A form input renders but its `name` attribute is hardcoded,
+or a link's `href` cannot be changed from the config panel.
+
+**Cause.** The bloc author forgot to expose functional attributes in
+`<p9r-attr-sync>`. The element looks right but is useless because the
+user cannot configure its behavior.
+
+**Fix.** Every attribute an element needs to function (`name`, `href`,
+`action`, `method`, `type`, `placeholder`, `value`…) must be exposed
+in the editor panel. Think: "what would the user need to set for this
+element to actually work?" If they can't set it, it's a bug.
+
+## The select with frozen options
+
+**Symptom.** A `<select>` element renders inside the bloc but the user
+cannot add, remove, or change its `<option>` children.
+
+**Cause.** The `<option>` list is baked into `template.html` with no
+way to edit it from the configuration panel. Options are functional
+content — they define the element's behavior.
+
+**Fix.** Expose option management through `init()` / `restore()` in
+`BlocEditor.ts`, or restructure the bloc so options come from editable
+slot content. Never ship a select whose choices are frozen at build
+time.
 
 ## The uneditable `<li>` in a slot
 
