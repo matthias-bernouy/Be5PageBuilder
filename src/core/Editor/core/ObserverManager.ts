@@ -78,6 +78,15 @@ export class ObserverManager {
 
         const callback = (mutationsList: MutationRecord[]) => {
 
+            // Collect every node added in this batch so we can recognise
+            // DOM moves (node in both removedNodes AND addedNodes).
+            const allAdded = new Set<Node>();
+            for (const mutation of mutationsList) {
+                for (const node of Array.from(mutation.addedNodes)) {
+                    allAdded.add(node);
+                }
+            }
+
             for (const mutation of mutationsList) {
 
                 for (const removeNode of Array.from(mutation.removedNodes)) {
@@ -86,6 +95,13 @@ export class ObserverManager {
                     const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
                     if (!identifier) continue;
                     const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+
+                    if (allAdded.has(node)) {
+                        // DOM move — notify old parent but keep the editor alive
+                        document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
+                        continue;
+                    }
+
                     document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
                     document.compIdentifierToEditor.get(identifier)?.dispose();
                     document.compIdentifierToEditor.delete(identifier);
@@ -94,6 +110,15 @@ export class ObserverManager {
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node: Node) => {
                         if (node instanceof HTMLElement) {
+
+                            // Moved node (already editorized) — notify new parent
+                            if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
+                                const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+                                if (newParentId) {
+                                    document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded();
+                                }
+                                return;
+                            }
 
                             this.make_it_editor(node);
 
