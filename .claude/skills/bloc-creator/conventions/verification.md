@@ -111,12 +111,69 @@ From here, the bloc is instantiated on a clean page. Run the checklist.
 
 ### D. Responsiveness
 
-- [ ] **D1. 360 px viewport.** Use DevTools responsive mode. The bloc
-  fits without horizontal scroll, text wraps correctly.
-- [ ] **D2. 768 px viewport.** Tablet layout still coherent.
-- [ ] **D3. 1280 px viewport.** Desktop layout as intended.
-- [ ] **D4. Browser zoom at 200 %.** Still readable, nothing truncated.
-  This is the test that catches pixel-fixed layouts.
+Run this matrix at **every** width below. Each check must pass
+independently — a bloc that looks good at 1280 px and overflows at
+360 px is **broken**, not "to be improved later". See
+`conventions/responsive.md` for the design rules these checks enforce.
+
+The test seed must include at least one realistic long label (≥ 20
+characters, e.g. "Advanced integrations") in every editable slot, and
+every composable child (items, columns, actions) populated to its
+likely maximum — testing with "Menu / Item / Btn" hides R3 / R7 bugs.
+
+- [ ] **D1. 360 px, panels closed.** Assert
+  `document.documentElement.scrollWidth === document.documentElement.clientWidth`.
+  No horizontal scrollbar on the document. Text wraps. Every CTA
+  reachable by scroll-free interaction.
+- [ ] **D2. 360 px, every pinnable panel open.** Pin each
+  `<p9r-state-sync>` state in turn (dropdowns, mega-menus,
+  disclosures). For each open panel, assert
+  `panel.getBoundingClientRect().right <= window.innerWidth` **and**
+  `panel.getBoundingClientRect().left >= 0`. A panel that pokes past
+  either edge fails R4. Repeat with the trigger placed near the right
+  edge of its parent — this is where overflow bugs actually appear.
+- [ ] **D3. 480 px.** Mobile behavior (stack / burger / wrap) has
+  visibly kicked in for any horizontal composition of 3+ children.
+  A bloc still showing a desktop row of nav items at 480 px fails R7.
+- [ ] **D4. 720 px.** Tablet breakpoint applied where needed. Columns
+  that were 3-up collapse to 2-up or 1-up as planned. No content
+  clipped.
+- [ ] **D5. 1024 px.** Small-desktop coherent — hero paddings, max-width
+  containers sized reasonably.
+- [ ] **D6. 1280 px.** Canonical desktop baseline. No content looking
+  lost in white space (if so, add a `max-width` container).
+- [ ] **D7. Browser zoom at 200 %.** Use DevTools zoom. Everything
+  readable, no truncation, no overlap. This catches pixel-fixed
+  layouts.
+- [ ] **D8. Long-label stress test.** Replace one slot's text with
+  ~300 characters of unbreakable content (`"a".repeat(60)` or a raw
+  URL). Re-run D1 / D2 at 360 px. No flex child pushes the container
+  wider than the viewport (R3 — `min-width: 0` missing is the usual
+  culprit).
+- [ ] **D9. Realistic cardinality.** For every `allow-multiple` slot,
+  insert enough children to cross the 1280 px threshold (7+ nav
+  items, 4+ mega-menu columns). Re-run D1 and D3. Rows wrap, stack,
+  or scroll per R2 — never overflow silently.
+
+**Assertion snippet** to paste into DevTools for D1/D2:
+
+```js
+(() => {
+    const docOverflow =
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth;
+    const panels = [...document.querySelectorAll('*')]
+        .flatMap(el => el.shadowRoot ? [...el.shadowRoot.querySelectorAll('.panel, [data-panel]')] : [])
+        .map(p => {
+            const r = p.getBoundingClientRect();
+            return { visible: r.width > 0, left: r.left, right: r.right, vw: innerWidth };
+        });
+    return { docOverflowPx: docOverflow, panels };
+})();
+```
+
+`docOverflowPx` must be `0` or negative. Every visible panel must satisfy
+`left >= 0` and `right <= vw`.
 
 ### E. Editor integration — configuration panel
 

@@ -286,6 +286,98 @@ content — they define the element's behavior.
 slot content. Never ship a select whose choices are frozen at build
 time.
 
+## The overflowing positioned panel
+
+**Symptom.** A dropdown or mega-menu panel is partly (or fully) off the
+right edge of the viewport when the trigger button sits near the right
+side of its container. On narrow screens the whole panel pokes past the
+window and creates a horizontal scrollbar on the document.
+
+**Cause.** The panel is `position: absolute` with `left: 0` (or no
+horizontal anchor at all) and an unconditional `min-width: 200px` (or
+similar). When the trigger is near the right edge, `left: 0` relative to
+the trigger lands outside the viewport; when the viewport is narrower
+than `min-width`, the panel's intrinsic width itself causes overflow.
+
+**Fix.** Two constraints are required, both mandatory:
+
+```css
+.panel {
+    position: absolute;
+    top: calc(100% + 6px);
+
+    /* 1. width is bounded by the viewport */
+    max-width: min(100vw - 16px, 720px);
+    width: max-content;
+
+    /* 2. horizontal position is clamped to stay on-screen */
+    left: clamp(8px, 0px, calc(100vw - 100% - 8px));
+}
+```
+
+Or, if the panel should center under the trigger:
+
+```css
+.panel {
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: min(100vw - 16px, 720px);
+}
+```
+
+Verify by opening the panel on a 360 px viewport with the trigger near
+the right edge. `panel.getBoundingClientRect().right` must be `<=
+window.innerWidth`. See `conventions/responsive.md` rule R4.
+
+## The flex row that refuses to shrink
+
+**Symptom.** A navbar or toolbar overflows horizontally as soon as a
+child contains a long word, a long URL, or a longer-than-expected label.
+The row looks fine in the agent's test seed with short labels, then
+breaks the moment a real user types something realistic.
+
+**Cause.** Flex children default to `min-width: auto`, which is the
+intrinsic content width. A long unbreakable token pins the child wider
+than the container, and the whole row overflows. A container with a bare
+`display: flex` row and no wrap / stack / scroll plan has no escape
+hatch.
+
+**Fix.** Two things:
+
+1. Every flex child that holds text or user-provided content gets
+   `min-width: 0`:
+   ```css
+   .item { min-width: 0; flex: 1 1 auto; }
+   ```
+
+2. The row itself picks a strategy — wrap, stack at 720 px, or
+   `overflow-x: auto`. See `conventions/responsive.md` rules R2 and R3.
+
+## The bloc that has no mobile behavior
+
+**Symptom.** A navbar / toolbar / hero looks good at 1280 px, acceptable
+at 768 px, and spectacularly broken at 360 px (items overlap, the right
+side is cut off, the document scrolls horizontally).
+
+**Cause.** The bloc was styled for desktop only. No `@media (max-width:
+720px)` rule, no `flex-wrap`, no burger. The agent tested at 1280 px
+(which passes) and stopped.
+
+**Fix.** A horizontal composition of 3+ children is a structural
+responsive problem. Pick one of:
+
+- Wrap: `flex-wrap: wrap; gap: 0.5rem;` — fine for chips, badges,
+  small CTAs.
+- Stack: `@media (max-width: 720px) { .navbar { flex-direction:
+  column; align-items: stretch; } }` — default for navbars and
+  toolbars.
+- Disclosure: a burger button that toggles a state consumed via
+  `p9r-state-sync`, with the items collapsing into a vertical panel
+  below the trigger.
+
+"Desktop only" is not an acceptable default in the PageBuilder. See
+`conventions/responsive.md` rule R7.
+
 ## The uneditable `<li>` in a slot
 
 **Symptom.** The user can see the text of a list item in the bloc but

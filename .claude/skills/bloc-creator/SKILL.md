@@ -196,6 +196,22 @@ task**, before reading any other skill file.
     select, items in a list) must also be editable — never ship an
     element whose functional content is frozen.
 
+16. **Responsive-by-default.** A bloc that overflows horizontally at
+    360 px is **broken**, not "to be improved later". Every horizontal
+    flex row must pick a wrap / stack / scroll plan before being
+    written. Every `position: absolute` panel (dropdown, mega-menu,
+    tooltip) must be **clamped to the viewport** on both width
+    (`max-width: min(100vw - 16px, Xpx)`) and horizontal position
+    (`left: clamp(...)` or centered with `transform`). Never ship
+    `min-width: 240px` on a panel with no `max-width`, never ship
+    `left: 0` with no right-edge guard, never ship a naked horizontal
+    flex row with no wrap / stack / scroll. Verification section D
+    tests this at 360 / 480 / 720 / 1024 / 1280 px **with panels
+    open** — and asserts `panel.getBoundingClientRect().right <=
+    window.innerWidth` and
+    `document.documentElement.scrollWidth === clientWidth`. See
+    `conventions/responsive.md`.
+
 ## File layout of a bloc
 
 ```
@@ -244,6 +260,11 @@ Read the matching one before you write a non-trivial version of that file.
 - `conventions/style.md` — self-containment, CSS variables, `attr()` limits,
   enum presets via `:host([attr="value"])`, `::slotted()`, hiding empty slot
   wrappers, global design tokens
+- `conventions/responsive.md` — **mandatory** responsive rulebook: no
+  overflow at 360 px, flex rows must pick a wrap / stack / scroll plan,
+  positioned panels must be clamped to the viewport, canonical
+  breakpoints. Read this before writing `style.css` for anything
+  horizontal (navbars, toolbars, heros, popups).
 - `conventions/configuration.md` — the four sync systems (`<p9r-attr-sync>`,
   `<p9r-comp-sync>`, `<p9r-state-sync>`, `<p9r-image-sync>`), all styled
   inputs (`<p9r-select>`, `<p9r-range>`, `<p9r-sizes-select>`,

@@ -123,6 +123,70 @@ Hide it with `:not(:has(::slotted(*)))`:
 
 This is the canonical pattern for optional slots.
 
+## Responsive-by-default (mandatory patterns)
+
+A bloc that overflows at 360 px is broken. The full responsive rulebook
+lives in `conventions/responsive.md`; the mandatory patterns summarized
+here must be in every `style.css` from the first draft — not added later.
+
+### Flex rows need a wrap / stack / scroll plan
+
+A bare `display: flex` row (direction `row`) is forbidden. Pick one:
+
+```css
+/* Wrap — small CTAs, badges, pills */
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+/* Stack at 720 px — navbars, toolbars, heros */
+.navbar { display: flex; gap: 2rem; }
+@media (max-width: 720px) {
+    .navbar { flex-direction: column; align-items: stretch; }
+}
+
+/* Scroll — horizontal carousels */
+.track { display: flex; gap: 1rem; overflow-x: auto; }
+```
+
+### Flex children need `min-width: 0`
+
+Otherwise long words, URLs or labels force the row wider than its
+container.
+
+```css
+.item { min-width: 0; flex: 1 1 auto; }
+```
+
+### Positioned panels need two constraints
+
+Dropdowns, mega-menus, tooltips — any `position: absolute` panel must
+bound both its width **and** its horizontal position:
+
+```css
+.panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    max-width: min(100vw - 16px, 720px);
+    width: max-content;
+    left: clamp(8px, 0px, calc(100vw - 100% - 8px));
+}
+```
+
+Never ship a panel with a naked `min-width: 240px` and no `max-width`.
+Never ship `left: 0` without a right-edge guard. Re-verify by opening
+the panel at 360 px with the trigger near the right edge.
+
+### Fluid images, capped containers, clamped typography
+
+```css
+img, ::slotted(img) { display: block; max-width: 100%; height: auto; }
+.card     { width: 100%; max-width: 400px; }
+h2        { font-size: clamp(1.25rem, 2vw + 1rem, 2.25rem); }
+.long-text { overflow-wrap: anywhere; }
+```
+
+Canonical breakpoints: `480px` (last-resort stacking), `720px` (primary
+go-vertical), `1024px` (narrow hero). Do not invent others.
+
 ## Host display
 
 `Component` uses an open shadow root but does **not** set a default display.
