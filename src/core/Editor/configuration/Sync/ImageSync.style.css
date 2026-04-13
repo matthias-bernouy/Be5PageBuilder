@@ -28,6 +28,7 @@ p9r-image-sync .image-sync-card:hover {
 
 p9r-image-sync .image-sync-card.has-image {
     border-style: solid;
+    padding: 1rem;
 }
 
 /* ── Preview image ── */
@@ -36,7 +37,8 @@ p9r-image-sync .image-sync-card img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
-    object-fit: cover;
+    object-fit: contain;
+    object-position: center;
 }
 
 /* ── Empty state ── */
