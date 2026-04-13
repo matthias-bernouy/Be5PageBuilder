@@ -23,18 +23,35 @@ export type PositionInput = {
  */
 export function computeGroupPosition(input: PositionInput): { x: number; y: number; vAnchor: VAnchor } {
     const { rect, barWidth, barHeight, mouseX, mouseY } = input;
+    const margin = 8;
     const centerY = rect.top + rect.height / 2;
-    const vAnchor: VAnchor = mouseY < centerY ? "top" : "bottom";
+    let vAnchor: VAnchor = mouseY < centerY ? "top" : "bottom";
 
+    // Flip vertical anchor if the chosen side would push the bar off-screen.
+    if (vAnchor === "top" && rect.top - barHeight < margin && rect.bottom + barHeight <= window.innerHeight - margin) {
+        vAnchor = "bottom";
+    } else if (vAnchor === "bottom" && rect.bottom + barHeight > window.innerHeight - margin && rect.top - barHeight >= margin) {
+        vAnchor = "top";
+    }
+
+    // X: follow the cursor, clamped to the bloc's horizontal span,
+    // then clamped to the viewport so the bar never sits in a corner the user can't reach.
     const halfWidth = barWidth / 2;
     let x = mouseX + window.scrollX - halfWidth;
-    const minX = rect.left + window.scrollX;
-    const maxX = rect.right + window.scrollX - barWidth;
-    x = Math.max(minX, Math.min(maxX, x));
+    const minRectX = rect.left + window.scrollX;
+    const maxRectX = rect.right + window.scrollX - barWidth;
+    x = Math.max(minRectX, Math.min(maxRectX, x));
+    const minViewX = window.scrollX + margin;
+    const maxViewX = window.scrollX + window.innerWidth - barWidth - margin;
+    x = Math.max(minViewX, Math.min(maxViewX, x));
 
-    const y = vAnchor === "top"
+    // Y: then clamp to viewport as a last resort.
+    let y = vAnchor === "top"
         ? rect.top + window.scrollY - barHeight
         : rect.bottom + window.scrollY;
+    const minViewY = window.scrollY + margin;
+    const maxViewY = window.scrollY + window.innerHeight - barHeight - margin;
+    y = Math.max(minViewY, Math.min(maxViewY, y));
 
     return { x, y, vAnchor };
 }
