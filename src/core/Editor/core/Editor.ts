@@ -54,6 +54,11 @@ export abstract class Editor {
             this._panelConfig.innerHTML += editor;
             this._setPanelItemIdentifiers();
             document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig)
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);
+                });
+            });
         }
 
         document.addEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);

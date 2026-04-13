@@ -98,6 +98,7 @@ export class TextEditor extends Editor {
             if (TextEditor._editorAttrs.has(attr.name)) return;
             element.setAttribute(attr.name, attr.value);
         });
+        element.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
         return element;
     }
 

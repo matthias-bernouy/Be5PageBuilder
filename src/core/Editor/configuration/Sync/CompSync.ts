@@ -88,62 +88,10 @@ export class CompSync extends HTMLElement {
         const selector = slotName ? `[slot="${slotName}"]` : ':not([slot])';
 
         if (!this._component?.querySelector(selector)) {
-            // `p9r-slot-disabled` on the parent component records slots the
-            // user has intentionally emptied so we don't resurrect them from
-            // the template on every editor reload.
-            if (this._isSlotDisabled()) return;
-            const toAppend = child.cloneNode(true);
+            if (!this.isCreating && this.optionnal) return;
+            const toAppend = child.cloneNode(true) as HTMLElement;
+            toAppend.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
             this._component?.append(toAppend);
-        }
-    }
-
-    private static _SLOT_DISABLED_ATTR = "p9r-slot-disabled";
-    private static _SLOT_DISABLED_DEFAULT = "__default__";
-
-    private _slotKey(): string {
-        const name = this.firstElementChild?.getAttribute("slot");
-        return name || CompSync._SLOT_DISABLED_DEFAULT;
-    }
-
-    private _readDisabledList(): string[] {
-        const raw = this._component?.getAttribute(CompSync._SLOT_DISABLED_ATTR);
-        if (!raw) return [];
-        return raw.split(",").map(s => s.trim()).filter(Boolean);
-    }
-
-    private _writeDisabledList(list: string[]) {
-        if (!this._component) return;
-        if (list.length === 0) {
-            this._component.removeAttribute(CompSync._SLOT_DISABLED_ATTR);
-        } else {
-            this._component.setAttribute(CompSync._SLOT_DISABLED_ATTR, list.join(","));
-        }
-    }
-
-    private _isSlotDisabled(): boolean {
-        return this._readDisabledList().includes(this._slotKey());
-    }
-
-    private _updateSlotDisabled(slotCount: number) {
-        const key = this._slotKey();
-        const list = this._readDisabledList();
-        const idx = list.indexOf(key);
-
-        if (slotCount > 0) {
-            if (idx !== -1) {
-                list.splice(idx, 1);
-                this._writeDisabledList(list);
-            }
-            return;
-        }
-
-        // slotCount === 0: only persist the emptied state if the slot is
-        // actually allowed to be empty — otherwise _sync will (correctly)
-        // recreate the default on the next pass.
-        const canBeEmpty = this.optionnal || (this.isMultiple && this.min === 0);
-        if (canBeEmpty && idx === -1) {
-            list.push(key);
-            this._writeDisabledList(list);
         }
     }
 
@@ -160,8 +108,6 @@ export class CompSync extends HTMLElement {
                 : `:scope > :not([slot])`;
 
         let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
-
-        this._updateSlotDisabled(slots.length);
 
         slots.forEach((slot) => {
             const slotEditor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
@@ -287,6 +233,7 @@ export class CompSync extends HTMLElement {
         if (current >= this.max) return;
 
         const clone = template.cloneNode(true) as HTMLElement;
+        clone.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
         this._component.append(clone);
         // The ObserverManager picks up the mutation, creates an Editor for the
         // new child, and calls `onChildrenAdded` on the parent editor — which
@@ -329,6 +276,10 @@ export class CompSync extends HTMLElement {
 
     get disableOthersComponents(){
         return this.hasAttribute("disable-others-components");
+    }
+
+    get isCreating(): boolean {
+        return this._component?.getAttribute(p9r.attr.EDITOR.IS_CREATING) === "true";
     }
 
     private static _css = `
@@ -461,6 +412,7 @@ export class CompSync extends HTMLElement {
             cursor: not-allowed;
         }
     `;
+
 
 }
 
