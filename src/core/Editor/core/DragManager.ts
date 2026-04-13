@@ -13,6 +13,8 @@ export class DragManager {
         if (this.draggedElement) {
             e.dataTransfer?.setData("text/plain", "");
             this.draggedElement.classList.add("dragging");
+            document.EditorManager?.getBlocActionGroup()?.close();
+            (document.querySelector("w13c-editor-toolbar") as any)?.hide?.();
         }
     }
 

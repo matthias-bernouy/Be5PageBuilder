@@ -281,7 +281,7 @@ export class EditorToolbar extends Component {
         this.style.left = `${left}px`;
     }
 
-    private hide() {
+    hide() {
         this.classList.remove("visible");
         this.shadowRoot!.querySelector(".color-panel")?.classList.remove("open");
         this.closeLinkBar();
