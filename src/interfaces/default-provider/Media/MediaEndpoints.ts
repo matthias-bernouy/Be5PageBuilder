@@ -1,11 +1,11 @@
-import type { Be5_Runner } from "@bernouy/socle";
+import type { Be5_Runner, Runner } from "@bernouy/socle";
 import type { DefaultMediaRepository } from "./DefaultMediaRepository";
 import type { MediaDocument } from "src/interfaces/contract/Media/MediaRepository";
 import sharp from "sharp";
 
 
 
-export default function MediaEndpoints(runner: Be5_Runner, system: DefaultMediaRepository) {
+export default function MediaEndpoints(runner: Runner, system: DefaultMediaRepository) {
 
     runner.get("/media", async (req: Request) => {
         const url = new URL(req.url);
