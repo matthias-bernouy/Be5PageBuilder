@@ -150,6 +150,16 @@ task**, before reading any other skill file.
     `bunx p9r list-blocs` — if a suitable child bloc is deployed, use it
     as the `<p9r-comp-sync>` default so the user starts with something
     useful instead of a placeholder they'll immediately swap out.
+    **When you are scaffolding a cohesive set of blocs in the same
+    session (e.g. navbar + nav-link + nav-dropdown + button together),
+    treat the siblings being scaffolded as deployed for the purpose of
+    choosing defaults.** They will be imported together with
+    `bunx p9r import`, so referencing them as slot defaults is the right
+    call — the alternative (plain `<a>`, `<span>`) forces the user to
+    swap every item manually right after deployment. Rule 9's "only
+    tags that appear in `list-blocs`" protects against *inventing*
+    third-party tags; it does not prohibit wiring up siblings from the
+    same scaffold set.
 
 12. **Never use `disable-others-components` unless structurally required.**
     Component swapping is one of the editor's most powerful features.
