@@ -1,4 +1,5 @@
 import { watch, type FSWatcher } from "node:fs";
+import { readdir, stat } from "node:fs/promises";
 import type { DevBloc } from "./scan";
 import { scanDevBlocs } from "./scan";
 import type { BuiltBloc } from "./build";
@@ -45,7 +46,29 @@ type Entry = {
     rebuildTimer: ReturnType<typeof setTimeout> | null;
     building: boolean;
     pending: boolean;
+    /** Max mtimeMs seen across the folder at the last successful build. Used
+     *  by the polling loop as a safety net for fs.watch events that inotify
+     *  drops (atomic renames, overlayfs, some editors). */
+    lastBuildMtimeMs: number;
 };
+
+/** Scan a bloc folder (one level deep, skipping hidden / ignored files) and
+ *  return the max mtimeMs of its regular files. Zero means the folder is
+ *  empty or unreadable. */
+async function folderMaxMtimeMs(folder: string): Promise<number> {
+    let max = 0;
+    let entries: string[];
+    try { entries = await readdir(folder); }
+    catch { return 0; }
+    for (const name of entries) {
+        if (name.startsWith(".__p9r_dev_") || name.startsWith(".")) continue;
+        try {
+            const s = await stat(`${folder}/${name}`);
+            if (s.isFile() && s.mtimeMs > max) max = s.mtimeMs;
+        } catch {}
+    }
+    return max;
+}
 
 /**
  * Owns the live set of dev blocs: one in-memory entry per folder, its
@@ -64,13 +87,14 @@ export function createBlocRegistry(
     /** Folders we've already warned about for a tag collision, so the poll loop doesn't re-log every tick. */
     const warnedCollisions = new Set<string>();
 
-    const addEntry = (bloc: DevBloc) => {
+    const addEntry = (bloc: DevBloc, initialMtimeMs = Date.now()) => {
         const entry: Entry = {
             bloc,
             watcher: null as unknown as FSWatcher,
             rebuildTimer: null,
             building: false,
             pending: false,
+            lastBuildMtimeMs: initialMtimeMs,
         };
         entry.watcher = makeWatcher(entry, built, emitter);
         entries.set(bloc.folder, entry);
@@ -147,9 +171,17 @@ export function createBlocRegistry(
                     continue;
                 }
 
-                // Existing folder — check if manifest metadata changed.
+                // Existing folder — check if manifest metadata changed OR
+                // any source file is newer than our last build (safety net
+                // for fs.watch events that inotify drops).
                 const old = existing.bloc;
-                if (old.tag === bloc.tag && old.label === bloc.label && old.group === bloc.group) {
+                const metaUnchanged = old.tag === bloc.tag && old.label === bloc.label && old.group === bloc.group;
+                if (metaUnchanged) {
+                    const maxMtime = await folderMaxMtimeMs(bloc.folder);
+                    if (maxMtime > existing.lastBuildMtimeMs && !existing.building) {
+                        console.log(`[poll] ${bloc.tag} source changed — rebuilding (fs.watch miss)`);
+                        triggerRebuild(existing, built, emitter);
+                    }
                     continue;
                 }
                 try {
@@ -190,48 +222,56 @@ export function createBlocRegistry(
     };
 }
 
+async function triggerRebuild(
+    entry: Entry,
+    built: Map<string, BuiltBloc>,
+    emitter: ReloadEmitter,
+): Promise<void> {
+    if (entry.building) { entry.pending = true; return; }
+    entry.building = true;
+    try {
+        const b = await buildDevBloc(entry.bloc);
+        // The manifest tag may have changed since this watcher was set up
+        // (the polling loop usually catches it first, but a fast edit can
+        // race). Drop the stale tag before setting the new one.
+        if (b.tag !== entry.bloc.tag) built.delete(entry.bloc.tag);
+        built.set(b.tag, b);
+        entry.bloc = { ...entry.bloc, tag: b.tag, label: b.label, group: b.group };
+        entry.lastBuildMtimeMs = await folderMaxMtimeMs(entry.bloc.folder);
+        console.log(`[watch] Rebuilt ${b.tag}`);
+        emitter.emit(b.tag);
+    } catch (e) {
+        // Ignore the race where a rebuild fires just after the folder was
+        // deleted — the polling loop removes the entry within ~1s anyway.
+        const msg = e instanceof Error ? e.message : String(e);
+        if (!msg.includes("ENOENT")) {
+            console.error(`[watch] ${entry.bloc.tag}: ${msg}`);
+        }
+    } finally {
+        entry.building = false;
+        if (entry.pending) {
+            entry.pending = false;
+            setTimeout(() => triggerRebuild(entry, built, emitter), 10);
+        }
+    }
+}
+
 function makeWatcher(
     entry: Entry,
     built: Map<string, BuiltBloc>,
     emitter: ReloadEmitter,
 ): FSWatcher {
-    const rebuild = async () => {
-        if (entry.building) { entry.pending = true; return; }
-        entry.building = true;
-        try {
-            const b = await buildDevBloc(entry.bloc);
-            // The manifest tag may have changed since this watcher was set up
-            // (the polling loop usually catches it first, but a fast edit can
-            // race). Drop the stale tag before setting the new one.
-            if (b.tag !== entry.bloc.tag) built.delete(entry.bloc.tag);
-            built.set(b.tag, b);
-            entry.bloc = { ...entry.bloc, tag: b.tag, label: b.label, group: b.group };
-            console.log(`[watch] Rebuilt ${b.tag}`);
-            emitter.emit(b.tag);
-        } catch (e) {
-            // Ignore the race where a rebuild fires just after the folder was
-            // deleted — the polling loop removes the entry within ~1s anyway.
-            const msg = e instanceof Error ? e.message : String(e);
-            if (!msg.includes("ENOENT")) {
-                console.error(`[watch] ${entry.bloc.tag}: ${msg}`);
-            }
-        } finally {
-            entry.building = false;
-            if (entry.pending) {
-                entry.pending = false;
-                setTimeout(() => rebuild(), 10);
-            }
-        }
-    };
-
     const onChange = (_type: string, filename: string | null) => {
         if (filename && IGNORED.test(filename)) return;
         if (entry.rebuildTimer) clearTimeout(entry.rebuildTimer);
-        entry.rebuildTimer = setTimeout(rebuild, 150);
+        entry.rebuildTimer = setTimeout(() => triggerRebuild(entry, built, emitter), 150);
     };
 
     // `recursive: true` is only supported on macOS and Windows. Bloc folders
     // are typically flat so a shallow watch is enough. Folder-level changes
     // (rename, new sibling folder, delete) are handled by the polling loop.
+    // The polling loop also stats each folder every tick as a safety net for
+    // fs.watch events dropped by inotify (atomic renames on some filesystems,
+    // editors that write via swap-and-rename, overlayfs layers, etc).
     return watch(entry.bloc.folder, onChange);
 }
