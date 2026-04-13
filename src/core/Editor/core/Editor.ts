@@ -1,4 +1,5 @@
 import { ConfigPanel } from "../configuration/ConfigPanel";
+import type { StateSync } from "../configuration/Sync/StateSync";
 
 export type CustomAction = {
     action: string;
@@ -16,6 +17,7 @@ export abstract class Editor {
     public         _panelConfig: ConfigPanel | null = null;
     public         variant: string = "default";
     public         customActions: CustomAction[] = [];
+    public         stateSyncs: StateSync[] = [];
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["duplicate", true],
@@ -75,7 +77,19 @@ export abstract class Editor {
         document.EditorManager.getBlocActionGroup().open(e.clientX, e.clientY);
     }
 
+    public registerStateSync(sync: StateSync) {
+        if (!this.stateSyncs.includes(sync)) this.stateSyncs.push(sync);
+    }
+
+    public unregisterStateSync(sync: StateSync) {
+        const i = this.stateSyncs.indexOf(sync);
+        if (i >= 0) this.stateSyncs.splice(i, 1);
+    }
+
+    public onEditorPinState?(pinned: boolean, stateSync?: StateSync): void;
+
     public viewClient() {
+        this.stateSyncs.forEach(s => s.unpin());
         this.restore();
         this.target.removeEventListener("mouseenter", this.handleHover);
 
@@ -150,7 +164,7 @@ export abstract class Editor {
         this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) !== "true");
         this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
 
-        if (this._actionBarFeatures.values().some(v => v === true)){
+        if (this._actionBarFeatures.values().some(v => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0){
             this.target.addEventListener("mouseenter", this.handleHover);
         }
 

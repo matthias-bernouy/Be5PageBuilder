@@ -14,6 +14,11 @@
 /* Snippet variant — blue accent to signal this bar is acting on a reference,
    not a regular bloc. We override the HorizontalActionGroup CSS variables so
    its existing ::slotted button styles pick up the new palette. */
+::slotted([data-action="pin-state"][data-active]) {
+    background: var(--primary-muted, #eef2ff) !important;
+    color: var(--primary-base, #4361ee) !important;
+}
+
 :host([data-variant="snippet"]) {
     --_color: #007aff;
     --_hover-color: #005bb5;

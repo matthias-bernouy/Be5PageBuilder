@@ -6,6 +6,8 @@ import insertBtnCss from './insert-btn.css' with { type: 'text' };
 import insertBtnHtml from './insert-btn.html' with { type: 'text' };
 import { computeGroupPosition, positionInsertButtons, type VAnchor } from './positioning';
 import { insertClone, openChangeComponentPicker } from './actions';
+import { ICON_PIN } from '../../icons';
+import type { StateSync } from '../../configuration/Sync/StateSync';
 
 export class BlocActionGroup extends HorizontalActionGroup {
 
@@ -16,6 +18,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private _btnAfter: HTMLButtonElement;
     private _cooldown: boolean = false;
     private _resizeObserver: ResizeObserver;
+    private _pinMenu: HTMLElement | null = null;
 
     constructor() {
         super();
@@ -60,7 +63,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
     setEditor(editor: Editor) {
         const allDisabled = Array.from(editor.actionBarConfiguration.values()).every(v => v === false);
         const hasCustomActions = editor.customActions.length > 0;
-        if (allDisabled && !hasCustomActions) {
+        const hasStateSyncs = editor.stateSyncs.length > 0;
+        if (allDisabled && !hasCustomActions && !hasStateSyncs) {
             this.close();
             return;
         }
@@ -99,6 +103,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     }
 
     close() {
+        this._closePinMenu();
         this._target?.classList.remove("p9r-active");
         this.style.visibility = "hidden";
         this.style.opacity = "0";
@@ -190,6 +195,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private handleClickOutside = (e: MouseEvent) => {
         const target = e.target as HTMLElement;
         if (this.contains(target)) return;
+        if (this._pinMenu?.contains(target)) return;
         if (target === this._btnBefore || target === this._btnAfter) return;
         if (this._target?.contains(target)) return;
         this.close();
@@ -198,6 +204,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private handleLeave = (e: MouseEvent) => {
         const toElement = e.relatedTarget as HTMLElement;
         if (this.contains(toElement)) return;
+        if (this._pinMenu?.contains(toElement)) return;
         if (toElement === this._btnBefore || toElement === this._btnAfter) return;
 
         // If leaving a child but staying within a parent editor, re-open on the parent
@@ -216,11 +223,83 @@ export class BlocActionGroup extends HorizontalActionGroup {
             case "edit":         this._editor?.showConfigPanel(); break;
             case "duplicate":    this._insertClone('after'); break;
             case "changeComponent": this._changeComponent(); break;
+            case "pin-state":    this._handlePinClick(); break;
             default: {
                 const custom = this._editor?.customActions.find(a => a.action === e.detail.action);
                 custom?.handler();
             }
         }
+    }
+
+    private _handlePinClick() {
+        const syncs = this._editor?.stateSyncs ?? [];
+        if (syncs.length === 0) return;
+        if (syncs.length === 1) {
+            this._togglePin(syncs[0]!);
+            this._refreshPinButton();
+            return;
+        }
+        this._togglePinMenu(syncs);
+    }
+
+    private _togglePin(sync: StateSync) {
+        sync.toggle();
+        this._editor?.onEditorPinState?.(sync.isPinned, sync);
+    }
+
+    private _refreshPinButton() {
+        const btn = this.querySelector('[data-action="pin-state"]') as HTMLElement | null;
+        if (!btn) return;
+        const anyPinned = this._editor?.stateSyncs.some(s => s.isPinned) ?? false;
+        btn.toggleAttribute("data-active", anyPinned);
+    }
+
+    private _togglePinMenu(syncs: StateSync[]) {
+        if (this._pinMenu) { this._closePinMenu(); return; }
+
+        const btn = this.querySelector('[data-action="pin-state"]') as HTMLElement | null;
+        if (!btn) return;
+
+        const menu = document.createElement("div");
+        menu.className = "p9r-pin-menu";
+
+        const title = document.createElement("div");
+        title.className = "p9r-pin-menu__title";
+        title.textContent = "Pin state";
+        menu.appendChild(title);
+
+        const renderItem = (sync: StateSync) => {
+            const item = document.createElement("button");
+            item.type = "button";
+            item.className = "p9r-pin-menu__item";
+            item.innerHTML = `
+                <span class="p9r-pin-menu__icon">${ICON_PIN}</span>
+                <span class="p9r-pin-menu__label"></span>
+            `;
+            (item.querySelector(".p9r-pin-menu__label") as HTMLElement).textContent = sync.label;
+            const setState = () => item.toggleAttribute("data-active", sync.isPinned);
+            setState();
+            item.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this._togglePin(sync);
+                setState();
+                this._refreshPinButton();
+            });
+            return item;
+        };
+
+        for (const sync of syncs) menu.appendChild(renderItem(sync));
+
+        const rect = btn.getBoundingClientRect();
+        menu.style.left = `${rect.left}px`;
+        menu.style.top = `${rect.bottom}px`;
+        document.body.appendChild(menu);
+        this._pinMenu = menu;
+    }
+
+    private _closePinMenu() {
+        this._pinMenu?.remove();
+        this._pinMenu = null;
     }
 
     private _toggle(action: string, show: boolean) {
@@ -234,7 +313,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const customActions = this._editor!.customActions;
 
         const customKey = customActions.map(a => a.action).join(",");
-        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey;
+        const stateSyncCount = this._editor!.stateSyncs.length;
+        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey + "|s=" + stateSyncCount;
         if (this._lastConfigKey === currentConfigKey) return;
         this._lastConfigKey = currentConfigKey;
 
@@ -258,10 +338,24 @@ export class BlocActionGroup extends HorizontalActionGroup {
             }
         }
 
+        // Pin button: visible if the editor has at least one <p9r-state-sync>.
+        if (stateSyncCount > 0) {
+            const separator = this.querySelector('[data-group="delete"]');
+            const btn = document.createElement("button");
+            btn.setAttribute("data-action", "pin-state");
+            btn.setAttribute("title", stateSyncCount === 1
+                ? `Pin: ${this._editor!.stateSyncs[0]!.label}`
+                : "Pin state");
+            btn.innerHTML = ICON_PIN;
+            this.insertBefore(btn, separator);
+            this._refreshPinButton();
+        }
+
         const hasLeftButtons = hasConfig
             || config.get("duplicate")
             || config.get("changeComponent")
-            || customActions.length > 0;
+            || customActions.length > 0
+            || stateSyncCount > 0;
         this.querySelector('[data-group="delete"]')?.toggleAttribute("hidden", !config.get("delete") || !hasLeftButtons);
     }
 }

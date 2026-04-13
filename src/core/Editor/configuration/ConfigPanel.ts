@@ -9,6 +9,7 @@ import { Component } from "src/core/Editor/core/Component";
 import "./Sync/AttrSync";
 import "./Sync/CompSync";
 import "./Sync/ImageSync";
+import "./Sync/StateSync";
 import "./Inputs/P9rSelect";
 import "./Inputs/P9rRange";
 import "./Inputs/P9rPageLink";
