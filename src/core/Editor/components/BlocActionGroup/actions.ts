@@ -7,8 +7,10 @@ import { BlocLibrary } from '../BlocLibrary/BlocLibrary';
 export function insertClone(target: HTMLElement, position: 'before' | 'after') {
     const clone = target.cloneNode(true) as HTMLElement;
     clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+    clone.classList.remove("p9r-active");
     clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach(el => {
         el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+        el.classList.remove("p9r-active");
     });
     if (position === 'before') {
         target.before(clone);
