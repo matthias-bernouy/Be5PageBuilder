@@ -18,6 +18,8 @@ export class PinMode {
     private _btn: HTMLButtonElement | null = null;
     private _resizeObs: ResizeObserver | null = null;
     private _reflow = () => this._position();
+    private _rafId = 0;
+    private _lastRect: { x: number; y: number; w: number; h: number } | null = null;
 
     constructor(
         private _target: HTMLElement,
@@ -49,6 +51,12 @@ export class PinMode {
         window.addEventListener("resize", this._reflow);
         this._resizeObs = new ResizeObserver(this._reflow);
         this._resizeObs.observe(this._target);
+        this._resizeObs.observe(document.body);
+
+        // A sibling resizing/reflowing can displace `_target` without
+        // changing its own box — ResizeObserver on the target alone misses
+        // that. Poll the rect via rAF while pinned and reposition on diff.
+        this._startRectWatch();
 
         this._position();
     }
@@ -61,6 +69,25 @@ export class PinMode {
         window.removeEventListener("resize", this._reflow);
         this._resizeObs?.disconnect();
         this._resizeObs = null;
+        if (this._rafId) {
+            cancelAnimationFrame(this._rafId);
+            this._rafId = 0;
+        }
+        this._lastRect = null;
+    }
+
+    private _startRectWatch() {
+        const tick = () => {
+            if (!this._btn) return;
+            const r = this._target.getBoundingClientRect();
+            const last = this._lastRect;
+            if (!last || last.x !== r.left || last.y !== r.top || last.w !== r.width || last.h !== r.height) {
+                this._lastRect = { x: r.left, y: r.top, w: r.width, h: r.height };
+                this._position();
+            }
+            this._rafId = requestAnimationFrame(tick);
+        };
+        this._rafId = requestAnimationFrame(tick);
     }
 
     private _position() {
