@@ -60,6 +60,7 @@ export class ImageSync extends HTMLElement {
             img.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
             img.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
         }
+        if (this.allowResize) img.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
         this._component?.appendChild(img);
     }
 
@@ -77,6 +78,7 @@ export class ImageSync extends HTMLElement {
         target = document.createElement("img");
         const slot = this._slotName;
         if (slot) target.setAttribute("slot", slot);
+        if (this.allowResize) target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
         this._component!.appendChild(target);
         return target;
     }
@@ -180,8 +182,15 @@ export class ImageSync extends HTMLElement {
         return this.hasAttribute("multi-select");
     }
 
+    get allowResize() {
+        return this.hasAttribute("allow-resize");
+    }
+
     init() {
         this._target = this._resolveTarget();
+        if (this._target && this.allowResize) {
+            this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
+        }
         const currentValue = this._target?.getAttribute("src") || "";
         this._updatePreview(currentValue);
     }

@@ -79,6 +79,11 @@ export abstract class Editor {
         this.restore();
         this.target.removeEventListener("mouseenter", this.handleHover);
 
+        this.target.style.removeProperty("pointer-events");
+        if (this.target.getAttribute("style") === "") {
+            this.target.removeAttribute("style");
+        }
+
         this.styleElement.remove();
 
         Editor.bodyStyle.delete(this.target.tagName);
@@ -97,6 +102,7 @@ export abstract class Editor {
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT)
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE)
         this.target.removeAttribute(p9r.attr.ACTION.INLINE_ADDING)
+        this.target.removeAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE)
 
         this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)
         this.target.removeAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT)
@@ -134,6 +140,8 @@ export abstract class Editor {
         if ( this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)){
             this.target.removeAttribute("draggable");
         }
+
+        this.target.style.setProperty("pointer-events", "auto", "important");
 
         this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
         this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");

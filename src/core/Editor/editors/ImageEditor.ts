@@ -27,7 +27,10 @@ export class ImageEditor extends Editor {
     init() {
         this.target.removeEventListener("click", this.onClick);
         this.target.addEventListener("click", this.onClick);
-        this.resizeInstance.start();
+
+        const insideComponent = this.target.parentElement?.closest(`[${p9r.attr.EDITOR.IS_EDITOR}]`);
+        const allowResize = !insideComponent || this.target.hasAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE);
+        if (allowResize) this.resizeInstance.start();
     }
 
     private handleSelectMedia(e: any) {
