@@ -222,6 +222,7 @@ cursor has to leave to reach the editor UI.
 | `attr`    | Attribute to override. Special-cased: `class` adds/removes a token; any other attr sets/unsets the full value. |
 | `value`   | The token (for `class`) or the value to force. |
 | `label`   | Shown in the pin menu when a bloc declares several `<p9r-state-sync>`s. Falls back to `value`. |
+| `placement` | Where the floating **Unpin** button sits relative to the pinned bloc: `left` (default), `right`, `top`, `bottom`. Pick the side that does not overlap the revealed content (e.g. `right` for a left-anchored dropdown). |
 
 - Put `<p9r-state-sync>` at the **top level** of `configuration.html`,
   outside of `<p9r-attr-sync>` / `<p9r-comp-sync>` / `<p9r-section>` — it
@@ -230,6 +231,11 @@ cursor has to leave to reach the editor UI.
 - While a state is pinned, a `MutationObserver` reinstates the value if
   the bloc's own handlers remove it — you don't need to disable the
   runtime JS that normally toggles the state.
+- While *any* state is pinned, the bloc's own action bar is hidden and
+  hover is suppressed on the bloc (otherwise the parent's outline and
+  ActionGroup would leak over children that only exist in the pinned
+  state). The author sees just a floating **Unpin** button at
+  `placement`. Clicking it unpins everything and restores normal hover.
 - All pinned states are **unpinned automatically** when switching back
   to client mode, so the saved HTML never contains editor-only classes.
 - **Target the shadow DOM only.** The selector runs against the bloc's

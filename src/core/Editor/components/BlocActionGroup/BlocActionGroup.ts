@@ -284,7 +284,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private _togglePin(sync: StateSync) {
         sync.toggle();
-        this._editor?.onEditorPinState?.(sync.isPinned, sync);
+        this._editor?.notifyPinStateChanged(sync);
     }
 
     private _refreshPinButton() {

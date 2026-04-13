@@ -1,5 +1,6 @@
 import { ConfigPanel } from "../configuration/ConfigPanel";
 import type { StateSync } from "../configuration/Sync/StateSync";
+import { PinMode } from "./PinMode";
 
 export type CustomAction = {
     action: string;
@@ -18,6 +19,7 @@ export abstract class Editor {
     public         variant: string = "default";
     public         customActions: CustomAction[] = [];
     public         stateSyncs: StateSync[] = [];
+    private        _pinMode: PinMode;
     private        _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["duplicate", true],
@@ -41,6 +43,11 @@ export abstract class Editor {
         }
 
         document.compIdentifierToEditor.set(this.targetIdentifier, this);
+
+        this._pinMode = new PinMode(this.target, this.stateSyncs, () => {
+            this.stateSyncs.forEach(s => s.unpin());
+            this.notifyPinStateChanged();
+        });
 
         if ( editor ) {
             this._panelConfig = document.createElement("p9r-config-panel") as ConfigPanel;
@@ -97,8 +104,35 @@ export abstract class Editor {
 
     public onEditorPinState?(pinned: boolean, stateSync?: StateSync): void;
 
+    /**
+     * Called by the action bar after toggling a <p9r-state-sync>. While any
+     * state is pinned, PinMode suppresses hover and shows a floating "Unpin"
+     * button — see PinMode.ts for the UX rationale.
+     */
+    public notifyPinStateChanged(stateSync?: StateSync) {
+        const anyPinned = this.stateSyncs.some(s => s.isPinned);
+        if (anyPinned) {
+            this.target.removeEventListener("mouseenter", this.handleHover);
+            document.EditorManager?.getBlocActionGroup()?.close();
+            this._pinMode.enter();
+        } else {
+            this._pinMode.exit();
+            if (this._hasInteractiveFeatures()) {
+                this.target.addEventListener("mouseenter", this.handleHover);
+            }
+        }
+        this.onEditorPinState?.(anyPinned, stateSync);
+    }
+
+    private _hasInteractiveFeatures(): boolean {
+        return this._actionBarFeatures.values().some(v => v === true)
+            || this.stateSyncs.length > 0
+            || this.customActions.length > 0;
+    }
+
     public viewClient() {
         this.stateSyncs.forEach(s => s.unpin());
+        this._pinMode.exit();
         this.restore();
         this.target.removeEventListener("mouseenter", this.handleHover);
 
@@ -177,6 +211,7 @@ export abstract class Editor {
     public dispose() {
         document.removeEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);
         this.target.removeEventListener("mouseenter", this.handleHover);
+        this._pinMode.exit();
         this._panelConfig?.remove();
         this.styleElement.remove();
     }

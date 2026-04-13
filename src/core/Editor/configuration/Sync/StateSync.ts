@@ -2,14 +2,16 @@ import type { Component } from "src/core/Editor/core/Component";
 import type { Editor } from "src/core/Editor/core/Editor";
 
 /**
- * <p9r-state-sync target=".dropdown" attr="class" value="is-open" label="Dropdown"></p9r-state-sync>
+ * <p9r-state-sync target=".dropdown" attr="class" value="is-open" label="Dropdown" placement="left"></p9r-state-sync>
  *
  * Declarative "pinnable state" for a component in editor mode.
- * - target : selector resolved in the component's shadow DOM.
- * - attr   : attribute to override.
- * - value  : value to force. For `class`, add/remove this token in the class list;
- *            for any other attr, set/unset the full value.
- * - label  : shown in the pin menu when multiple state-syncs coexist.
+ * - target    : selector resolved in the component's shadow DOM.
+ * - attr      : attribute to override.
+ * - value     : value to force. For `class`, add/remove this token in the class list;
+ *               for any other attr, set/unset the full value.
+ * - label     : shown in the pin menu when multiple state-syncs coexist.
+ * - placement : where the floating unpin button sits relative to the pinned
+ *               editor — "left" | "right" | "top" | "bottom". Default "left".
  *
  * While pinned, a MutationObserver on the target reinstates the value if the
  * component's own handlers remove it.
@@ -25,6 +27,10 @@ export class StateSync extends HTMLElement {
     get attrName():       string   { return this.getAttribute("attr")   || ""; }
     get attrValue():      string   { return this.getAttribute("value")  || ""; }
     get label():          string   { return this.getAttribute("label")  || this.attrValue || this.attrName; }
+    get placement():      "left" | "right" | "top" | "bottom" {
+        const v = this.getAttribute("placement");
+        return (v === "right" || v === "top" || v === "bottom") ? v : "left";
+    }
     get isPinned():       boolean  { return this._pinned; }
 
     connectedCallback() {
