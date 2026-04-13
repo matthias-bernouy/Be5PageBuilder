@@ -212,6 +212,20 @@ task**, before reading any other skill file.
     `document.documentElement.scrollWidth === clientWidth`. See
     `conventions/responsive.md`.
 
+17. **Never `stopPropagation()` on a toggle label.** Dropdowns,
+    mega-menus, accordions, modals — any bloc that uses a
+    `document.addEventListener("click", …)` to close itself when the
+    user clicks outside — **must let the label click bubble to
+    `document`**. If the label's handler calls `e.stopPropagation()`,
+    sibling instances never receive the signal to close, and the page
+    ends up with multiple panels open simultaneously. The
+    outside-click contract relies on propagation reaching `document`;
+    breaking it silently breaks every sibling. The correct close test
+    is `if (!this.contains(e.target)) this._close();` — which is true
+    for every *other* instance and false for the one that was just
+    clicked. See `conventions/pitfalls.md` → "The sibling toggle that
+    won't close".
+
 ## File layout of a bloc
 
 ```

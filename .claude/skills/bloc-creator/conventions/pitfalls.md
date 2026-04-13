@@ -395,3 +395,32 @@ or another deployed bloc). If you genuinely need list semantics, wrap
 the editable elements in `<ul>`/`<li>` **inside the bloc's own
 `template.html`**, not in the slot default. Same rule for `<td>`,
 `<tr>`, `<option>` — none of these are independently editable.
+
+## The sibling toggle that won't close
+
+**Symptom.** Two instances of the same toggleable bloc (two dropdowns,
+two nav-megas, two accordions…) sit side by side. Opening one works.
+Clicking outside closes it. But clicking the **label of a sibling**
+opens the sibling *without closing the first one* — the page ends up
+with both panels open at once.
+
+**Cause.** The label's click handler calls `e.stopPropagation()`. Each
+instance relies on a `document.addEventListener("click", …)` to close
+itself when a click lands outside its host. `stopPropagation` kills the
+bubbling before the event reaches `document`, so the sibling instances
+never get the signal to close. It's a "defensive" line that silently
+breaks the outside-click contract between siblings.
+
+**Fix.** **Do not call `stopPropagation()` on a toggle label click.**
+Let the event bubble to `document`. Each instance's document handler
+checks `if (!this.contains(e.target)) this._close();` — since `target`
+is retargeted to the clicked sibling's host, that check is true for
+every *other* instance and they close correctly. The instance that
+owns the click keeps its panel open because `this.contains(this)` is
+true.
+
+**Rule of thumb.** Use `stopPropagation()` only when you genuinely need
+to block an outer handler (e.g. a parent that would swallow the event).
+For toggle widgets that coexist with siblings, it is almost always
+wrong — the outside-click pattern *depends* on propagation reaching
+`document`.
