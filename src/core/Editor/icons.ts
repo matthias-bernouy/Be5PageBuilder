@@ -58,6 +58,12 @@ export const ICON_UPLOAD = `
 </svg>
 `;
 
+export const ICON_PARENT = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="18 15 12 9 6 15"></polyline>
+</svg>
+`;
+
 export const ICON_PIN = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M12 17v5"/>

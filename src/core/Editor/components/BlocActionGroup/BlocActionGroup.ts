@@ -6,7 +6,7 @@ import insertBtnCss from './insert-btn.css' with { type: 'text' };
 import insertBtnHtml from './insert-btn.html' with { type: 'text' };
 import { computeGroupPosition, positionInsertButtons, type VAnchor } from './positioning';
 import { insertClone, openChangeComponentPicker } from './actions';
-import { ICON_PIN } from '../../icons';
+import { ICON_PARENT, ICON_PIN } from '../../icons';
 import type { StateSync } from '../../configuration/Sync/StateSync';
 
 export class BlocActionGroup extends HorizontalActionGroup {
@@ -246,11 +246,29 @@ export class BlocActionGroup extends HorizontalActionGroup {
             case "duplicate":    this._insertClone('after'); break;
             case "changeComponent": this._changeComponent(); break;
             case "pin-state":    this._handlePinClick(); break;
+            case "select-parent": this._selectParent(); break;
             default: {
                 const custom = this._editor?.customActions.find(a => a.action === e.detail.action);
                 custom?.handler();
             }
         }
+    }
+
+    private _parentEditor(): Editor | null {
+        const parentId = this._target?.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+        if (!parentId) return null;
+        return (document.compIdentifierToEditor?.get(parentId) as Editor | undefined) ?? null;
+    }
+
+    private _selectParent() {
+        const parent = this._parentEditor();
+        if (!parent) return;
+        const rect = parent.target.getBoundingClientRect();
+        const mx = this._lastMouseX || (rect.left + rect.width / 2);
+        const my = rect.top + rect.height / 2;
+        this.close();
+        this.setEditor(parent);
+        this.open(mx, my);
     }
 
     private _handlePinClick() {
@@ -336,12 +354,21 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
         const customKey = customActions.map(a => a.action).join(",");
         const stateSyncCount = this._editor!.stateSyncs.length;
-        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey + "|s=" + stateSyncCount;
+        const hasParent = !!this._parentEditor();
+        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey + "|s=" + stateSyncCount + "|p=" + hasParent;
         if (this._lastConfigKey === currentConfigKey) return;
         this._lastConfigKey = currentConfigKey;
 
         this.setAttribute("data-variant", variant);
         this.innerHTML = template as unknown as string;
+
+        if (hasParent) {
+            const btn = document.createElement("button");
+            btn.setAttribute("data-action", "select-parent");
+            btn.setAttribute("title", "Select parent");
+            btn.innerHTML = ICON_PARENT;
+            this.insertBefore(btn, this.firstChild);
+        }
 
         this._toggle("edit", hasConfig);
         this._toggle("duplicate", config.get("duplicate")!);
