@@ -22,6 +22,7 @@ export class EditorManager{
     private mediaCenter: MediaCenter;
     private toolbar: FloatingToolbar;
     private blocActionGroup: BlocActionGroup;
+    private richTextBar: EditorToolbar;
 
     private observer: ObserverManager;
 
@@ -36,10 +37,11 @@ export class EditorManager{
         this.mediaCenter        = new MediaCenter();
         this.toolbar            = new FloatingToolbar();
         this.blocActionGroup    = new BlocActionGroup();
+        this.richTextBar        = new EditorToolbar();
 
         this.editorSystem.append(this.mediaCenter)
         this.editorSystem.append(this.toolbar)
-        this.editorSystem.append(new EditorToolbar())
+        this.editorSystem.append(this.richTextBar)
         this.editorSystem.append(this.blocActionGroup)
 
         new DragManager(workingElement);
@@ -101,8 +103,10 @@ export class EditorManager{
     switchMode(mode?: PageMode){
         if ( this.mode === p9r.mode.EDITOR ){
             this.mode = p9r.mode.VIEW;
+            this.richTextBar.remove();
         } else {
             this.mode = p9r.mode.EDITOR;
+            this.editorSystem.append(this.richTextBar);
         }
         if ( mode ) this.mode = mode;
         document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, {
