@@ -208,6 +208,7 @@ export class CompSync extends HTMLElement {
     }
 
     private _focus(slot: HTMLElement) {
+        (this.closest("p9r-config-panel") as any)?.close?.();
         slot.scrollIntoView({ behavior: "smooth", block: "center" });
         if (!slot.hasAttribute("tabindex")) slot.setAttribute("tabindex", "-1");
         try {
