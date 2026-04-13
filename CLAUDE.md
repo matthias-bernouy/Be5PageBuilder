@@ -55,6 +55,7 @@
 - `EditorManager.getConfiguration()` finds either `w13c-page-information` or `w13c-template-information`
 - `BlocLibrary` has 3 sections: Blocs (by group), Templates (by category), Snippets (upcoming)
 - Templates insert as HTML fragments (independent copies), blocs insert as custom elements
+- `BlocActionGroup` exposes per-bloc actions (edit, duplicate, delete, change component, pin-state, select-parent). The **select-parent** button climbs to the parent editor via `p9r.attr.EDITOR.PARENT_IDENTIFIER` — needed when the bloc's CSS (full-bleed children, `pointer-events`) prevents reaching the parent by click. The **pin-state** button surfaces every `<p9r-state-sync>` declared in `configuration.html` so the author can lock a runtime state (open dropdown, hover, active tab…) while editing; pinned states are auto-unpinned on switch back to client mode
 
 ## CSS conventions
 
@@ -73,6 +74,7 @@ Use styled inputs in `configuration.html` instead of raw native elements:
 - `<p9r-sizes-select>` — shortcut for NONE/XS/S/M/L/XL select
 - `<p9r-page-link>` — page picker fetching from admin API
 - `<p9r-image-sync>` — image picker via MediaCenter
+- `<p9r-state-sync>` — declares a pinnable runtime state (target selector in shadow DOM, attr, value, label) so the action bar can freeze it during editing
 
 ## Key rules
 

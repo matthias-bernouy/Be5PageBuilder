@@ -338,6 +338,7 @@ Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 |---|---|
 | `<p9r-attr-sync>` | Binds an input to an HTML attribute on the component |
 | `<p9r-comp-sync>` | Manages slots (default content, allowed actions, multiplicity) |
+| `<p9r-state-sync>` | Declares a pinnable runtime state (open dropdown, hover, active tab…) so the author can freeze it from the action bar and edit the element without losing the state |
 | `<p9r-image-sync>` | Image picker wired to MediaCenter |
 | `<p9r-section>` | Visual grouping inside the panel |
 | `<p9r-select>` | Styled dropdown with label |
