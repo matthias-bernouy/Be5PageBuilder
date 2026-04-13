@@ -159,7 +159,15 @@ task**, before reading any other skill file.
     `disable-others-components` inside a button slot is a textbook
     anti-pattern.
 
-13. **Expose every attribute the element needs to function.** If a host
+13. **Pin interaction-only states with `<p9r-state-sync>`.** If the bloc
+    has visual states triggered by user interaction (hover, click,
+    focus) — dropdown open, modal visible, tab active, hover flyout —
+    declare a `<p9r-state-sync>` per state in `configuration.html` so
+    the author can pin it from the action bar and edit the element
+    without the state collapsing. See `conventions/configuration.md`
+    (sync system #3).
+
+14. **Expose every attribute the element needs to function.** If a host
     or slotted element requires attributes for basic behavior (`name` on
     form fields, `href` on links, `action`/`method` on forms,
     `placeholder` on inputs…), they **must** be configurable from the
@@ -215,9 +223,10 @@ Read the matching one before you write a non-trivial version of that file.
 - `conventions/style.md` — self-containment, CSS variables, `attr()` limits,
   enum presets via `:host([attr="value"])`, `::slotted()`, hiding empty slot
   wrappers, global design tokens
-- `conventions/configuration.md` — the three sync systems (`<p9r-attr-sync>`,
-  `<p9r-comp-sync>`, `<p9r-image-sync>`), all styled inputs (`<p9r-select>`,
-  `<p9r-range>`, `<p9r-sizes-select>`, `<p9r-page-link>`), and `<p9r-section>`
+- `conventions/configuration.md` — the four sync systems (`<p9r-attr-sync>`,
+  `<p9r-comp-sync>`, `<p9r-state-sync>`, `<p9r-image-sync>`), all styled
+  inputs (`<p9r-select>`, `<p9r-range>`, `<p9r-sizes-select>`,
+  `<p9r-page-link>`), and `<p9r-section>`
 - `conventions/composition.md` — using a bloc inside another bloc (no
   declaration needed)
 - `conventions/verification.md` — smoke test setup + full browser-based

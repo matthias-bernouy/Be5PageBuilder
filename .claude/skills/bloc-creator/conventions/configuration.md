@@ -4,7 +4,7 @@ The editor panel is declarative HTML. No `<script>`, no event handlers, no
 logic. It is rendered inside a `<p9r-config-panel>` by the editor system,
 which then wires each sync element to the bloc being edited.
 
-## The three sync systems
+## The four sync systems
 
 ### 1. `<p9r-attr-sync>` — attributes on the host element
 
@@ -161,7 +161,49 @@ Optional attributes for the UI:
 | `data-min` | Minimum number of items in multiple mode. Default `1`. |
 | `data-max` | Maximum number of items in multiple mode. Default unlimited. |
 
-### 3. `<p9r-image-sync>` — MediaCenter-backed image slot
+### 3. `<p9r-state-sync>` — pinnable runtime states
+
+Declares a "state" of the bloc (open dropdown, hover style, active tab…)
+that the author can **pin** from the action bar to keep the element in
+that state while they edit it. Without this, states triggered by user
+interactions (hover, click, focus) are impossible to edit because the
+cursor has to leave to reach the editor UI.
+
+```html
+<p9r-state-sync target=".dropdown"     attr="class" value="is-open"        label="Dropdown open"></p9r-state-sync>
+<p9r-state-sync target=".label"        attr="class" value="is-highlighted" label="Label highlighted"></p9r-state-sync>
+<p9r-state-sync target=".modal-root"   attr="data-open" value="true"       label="Modal"></p9r-state-sync>
+```
+
+| Attribute | Purpose |
+|---|---|
+| `target`  | CSS selector resolved **in the bloc's shadow DOM**. Must match at least one element at mount time. |
+| `attr`    | Attribute to override. Special-cased: `class` adds/removes a token; any other attr sets/unsets the full value. |
+| `value`   | The token (for `class`) or the value to force. |
+| `label`   | Shown in the pin menu when a bloc declares several `<p9r-state-sync>`s. Falls back to `value`. |
+
+- Put `<p9r-state-sync>` at the **top level** of `configuration.html`,
+  outside of `<p9r-attr-sync>` / `<p9r-comp-sync>` / `<p9r-section>` — it
+  does not render any UI inside the panel. A pin icon appears
+  automatically in the bloc's action bar.
+- While a state is pinned, a `MutationObserver` reinstates the value if
+  the bloc's own handlers remove it — you don't need to disable the
+  runtime JS that normally toggles the state.
+- All pinned states are **unpinned automatically** when switching back
+  to client mode, so the saved HTML never contains editor-only classes.
+- **Target the shadow DOM only.** The selector runs against the bloc's
+  shadow root — do not try to reach light-DOM children from here.
+- The visual style for the forced state is normally already in the
+  bloc's `style.css`. If the state is purely a visual helper that does
+  not exist in client mode (e.g. an `is-highlighted` class not used by
+  the published page), declare it in the editor-mode CSS (second arg of
+  `super(...)` in `BlocEditor.ts`) instead of the bloc's `style.css`.
+
+Typical use cases: nav dropdowns, modals, off-canvas menus, tabs,
+accordions, hover-only flyouts, click-to-expand cards — anything whose
+"interesting" visual state is hidden behind user interaction.
+
+### 4. `<p9r-image-sync>` — MediaCenter-backed image slot
 
 Placed **outside** of `<p9r-attr-sync>` and `<p9r-comp-sync>`, directly
 inside a `<p9r-section>`. It opens the MediaCenter on click and writes the
