@@ -92,6 +92,47 @@ Attributes combine. A typical editable list:
 This says: the `actions` slot holds multiple items, each deletable,
 with inline add buttons. Component swapping is implicit.
 
+> **Never put raw text inside a custom-element default.** When a
+> `<p9r-comp-sync>`'s default child is another bloc (`<zlo-nav-link>`,
+> `<zlo-button>`, …), do **not** write text directly between its tags:
+>
+> ```html
+> <!-- ❌ WRONG — "Item" becomes an orphan text node -->
+> <p9r-comp-sync allow-multiple>
+>     <zlo-nav-link slot="items">Item</zlo-nav-link>
+> </p9r-comp-sync>
+> ```
+>
+> The comp-sync clones that child verbatim into the parent's slot, so
+> the cloned `<zlo-nav-link>` ends up containing the text node `"Item"`.
+> Text nodes have no editor — the user cannot click them, cannot remove
+> them, cannot replace them, and the child bloc's own `connectedCallback`
+> will still append its own default `<span>` alongside the stray text.
+> The result is unreachable dead content.
+>
+> Two correct forms:
+>
+> ```html
+> <!-- ✅ Empty — the child bloc's own <p9r-comp-sync> fills its slot -->
+> <p9r-comp-sync allow-multiple>
+>     <zlo-nav-link slot="items"></zlo-nav-link>
+> </p9r-comp-sync>
+>
+> <!-- ✅ Or wrap the text in an editable element -->
+> <p9r-comp-sync allow-multiple>
+>     <zlo-nav-link slot="items"><span>Item</span></zlo-nav-link>
+> </p9r-comp-sync>
+> ```
+>
+> Prefer the empty form — it lets the child bloc control its own
+> defaults rather than hard-coding a label from outside. Only use the
+> `<span>` form when you explicitly want a different starting text than
+> the child's own default.
+>
+> This only applies when the default is a **custom element**. Plain
+> HTML defaults (`<p>Text</p>`, `<a href="#">Link</a>`, `<span>Label</span>`)
+> are fine — the element itself *is* the editor surface for its text.
+
 > **Default content must be editable.** The child element of a
 > `<p9r-comp-sync>` is what the user will see and edit. Only use elements
 > that have an editor mode in the PageBuilder runtime (text-bearing

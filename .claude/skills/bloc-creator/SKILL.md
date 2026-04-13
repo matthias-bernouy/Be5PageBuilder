@@ -177,7 +177,18 @@ task**, before reading any other skill file.
     without the state collapsing. See `conventions/configuration.md`
     (sync system #3).
 
-14. **Expose every attribute the element needs to function.** If a host
+14. **No raw text inside a custom-element default.** When a
+    `<p9r-comp-sync>`'s default child is another bloc
+    (`<zlo-nav-link>`, `<zlo-button>`, …), leave it empty
+    (`<zlo-nav-link slot="items"></zlo-nav-link>`) so the child's own
+    `<p9r-comp-sync>` fills its slot — or wrap the text in an editable
+    element (`<zlo-nav-link><span>Item</span></zlo-nav-link>`). Raw
+    text nodes inside a custom element have no editor and become
+    unreachable dead content. This rule only applies when the default
+    is a custom element — plain HTML defaults (`<p>Text</p>`,
+    `<a href="#">Link</a>`) are fine.
+
+15. **Expose every attribute the element needs to function.** If a host
     or slotted element requires attributes for basic behavior (`name` on
     form fields, `href` on links, `action`/`method` on forms,
     `placeholder` on inputs…), they **must** be configurable from the
