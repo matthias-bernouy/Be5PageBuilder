@@ -13,6 +13,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private _target: HTMLElement | null = null;
     private _editor: Editor | null = null;
+    private _insertTarget: HTMLElement | null = null;
+    private _insertConfig: { before: boolean; after: boolean } = { before: false, after: false };
     private _lastConfigKey: string = "";
     private _btnBefore: HTMLButtonElement;
     private _btnAfter: HTMLButtonElement;
@@ -71,6 +73,28 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._target?.classList.remove("p9r-active");
         this._editor = editor;
         this._target = editor.target;
+        this._resolveInsertTarget();
+    }
+
+    private _resolveInsertTarget() {
+        let ed: Editor | null = this._editor;
+        let target: HTMLElement | null = this._target;
+        while (ed && target) {
+            const cfg = ed.actionBarConfiguration;
+            if (cfg.get("addBefore") || cfg.get("addAfter")) {
+                this._insertTarget = target;
+                this._insertConfig = { before: !!cfg.get("addBefore"), after: !!cfg.get("addAfter") };
+                return;
+            }
+            const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+            if (!parentId) break;
+            const parentEd = document.compIdentifierToEditor?.get(parentId) as Editor | undefined;
+            if (!parentEd) break;
+            ed = parentEd;
+            target = parentEd.target;
+        }
+        this._insertTarget = this._target;
+        this._insertConfig = { before: false, after: false };
     }
 
     open(mouseX?: number, mouseY?: number) {
@@ -133,18 +157,16 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._positionInsertButtons(rect);
     }
 
-    private _positionInsertButtons(rect: DOMRect) {
-        const config = this._editor!.actionBarConfiguration;
-        const isInline = this._target!.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
-        positionInsertButtons(this._btnBefore, this._btnAfter, rect, isInline, {
-            before: !!config.get("addBefore"),
-            after: !!config.get("addAfter"),
-        });
+    private _positionInsertButtons(_rect: DOMRect) {
+        if (!this._insertTarget) return;
+        const insertRect = this._insertTarget.getBoundingClientRect();
+        const isInline = this._insertTarget.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
+        positionInsertButtons(this._btnBefore, this._btnAfter, insertRect, isInline, this._insertConfig);
     }
 
     private _insertClone(position: 'before' | 'after') {
-        if (!this._target) return;
-        insertClone(this._target, position);
+        if (!this._insertTarget) return;
+        insertClone(this._insertTarget, position);
         this.close();
         this._cooldown = true;
         requestAnimationFrame(() => { this._cooldown = false; });

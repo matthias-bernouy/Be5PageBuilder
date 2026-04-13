@@ -77,6 +77,15 @@ export abstract class Editor {
         document.EditorManager.getBlocActionGroup().open(e.clientX, e.clientY);
     }
 
+    public refreshActionBarFeatures() {
+        this._actionBarFeatures.set("delete",          this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE)            !== "true");
+        this._actionBarFeatures.set("duplicate",       this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE)         !== "true");
+        this._actionBarFeatures.set("addBefore",       this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE)        !== "true");
+        this._actionBarFeatures.set("addAfter",        this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER)         !== "true");
+        this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT)  !== "true");
+        this._actionBarFeatures.set("saveAsTemplate",  this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE)  !== "true");
+    }
+
     public registerStateSync(sync: StateSync) {
         if (!this.stateSyncs.includes(sync)) this.stateSyncs.push(sync);
     }
@@ -157,12 +166,7 @@ export abstract class Editor {
 
         this.target.style.setProperty("pointer-events", "auto", "important");
 
-        this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
-        this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
-        this._actionBarFeatures.set("addBefore", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
-        this._actionBarFeatures.set("addAfter", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
-        this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) !== "true");
-        this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
+        this.refreshActionBarFeatures();
 
         if (this._actionBarFeatures.values().some(v => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0){
             this.target.addEventListener("mouseenter", this.handleHover);
