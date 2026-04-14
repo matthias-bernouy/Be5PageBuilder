@@ -233,6 +233,14 @@ export abstract class Editor {
         return this._actionBarFeatures;
     }
 
+    get ensurePersistentIdentifier(): string {
+        if (!this.target.hasAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)){
+            const generatedId = crypto.randomUUID();
+            this.target.setAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER, generatedId);
+        }
+        return this.target.getAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)!;
+    }
+
     showConfigPanel() {
         this._panelConfig?.show();
     };
