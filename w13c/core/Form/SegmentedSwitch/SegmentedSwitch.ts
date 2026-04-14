@@ -10,7 +10,7 @@ export class SegmentedSwitch extends Component {
     private _optionCount: number = 0;
 
     static get observedAttributes() {
-        return ['value', 'disabled', 'name'];
+        return ['value', 'disabled', 'name', 'label'];
     }
 
     constructor() {
@@ -30,8 +30,12 @@ export class SegmentedSwitch extends Component {
             slot.addEventListener('slotchange', () => this._onSlotChange(slot));
         }
 
-        // Handle click on the wrapper to delegate to options
-        this.shadowRoot?.querySelector('.switch-wrapper')?.addEventListener('click', (e) => this._handleOptionClick(e));
+        this._updateLabel();
+    }
+
+    private _updateLabel() {
+        const el = this.shadowRoot?.querySelector('.label');
+        if (el) el.textContent = this.getAttribute('label') || '';
     }
 
     get value() { return this.getAttribute('value') || ""; }
@@ -43,8 +47,7 @@ export class SegmentedSwitch extends Component {
         this._updateSliderPosition();
         this._updateSlottedSelections(v);
         
-        // Dispatch native event
-        this.dispatchEvent(new CustomEvent('change', { detail: { value: v } }));
+        this.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
     get name() { return this.getAttribute('name') || ""; }
@@ -98,6 +101,7 @@ export class SegmentedSwitch extends Component {
 
     attributeChangedCallback(name: string, _oldVal: string, newVal: string) {
         if (name === 'value') this.value = newVal;
+        else if (name === 'label') this._updateLabel();
     }
 }
 

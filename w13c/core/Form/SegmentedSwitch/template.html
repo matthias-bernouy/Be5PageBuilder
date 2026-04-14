@@ -1,13 +1,11 @@
 <div class="switch-container">
-    <label for="group-label">
-        <slot name="label">Choose an option</slot>
-    </label>
+    <span class="label" id="group-label"></span>
 
     <div class="switch-wrapper" role="radiogroup" aria-labelledby="group-label">
         <div class="selection-slider"></div>
-        
+
         <div class="options-container">
-            <slot></slot> 
+            <slot></slot>
         </div>
     </div>
 
