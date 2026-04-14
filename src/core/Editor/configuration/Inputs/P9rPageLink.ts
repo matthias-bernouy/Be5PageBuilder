@@ -16,10 +16,16 @@ export class P9rPageLink extends HTMLElement {
     private _empty: HTMLElement | null = null;
     private _panel: HTMLElement | null = null;
     private _clearBtn: HTMLElement | null = null;
+    private _pageSection: HTMLElement | null = null;
+    private _externalSection: HTMLElement | null = null;
+    private _externalInput: HTMLInputElement | null = null;
+    private _tabPage: HTMLElement | null = null;
+    private _tabExternal: HTMLElement | null = null;
     private _options: HTMLElement[] = [];
     private _pages: PageRef[] = [];
     private _isOpen = false;
     private _value = "";
+    private _mode: "page" | "external" = "page";
 
     connectedCallback() {
         this._render();
@@ -72,11 +78,20 @@ export class P9rPageLink extends HTMLElement {
                     </button>
                 </div>
                 <div class="panel">
-                    <div class="search-wrap">
-                        <input class="search" type="text" placeholder="Search for a page...">
+                    <div class="tabs">
+                        <button type="button" class="tab tab-page" data-mode="page">Page</button>
+                        <button type="button" class="tab tab-external" data-mode="external">External URL</button>
                     </div>
-                    <ul class="list"></ul>
-                    <div class="empty">No pages found</div>
+                    <div class="page-section">
+                        <div class="search-wrap">
+                            <input class="search" type="text" placeholder="Search for a page...">
+                        </div>
+                        <ul class="list"></ul>
+                        <div class="empty">No pages found</div>
+                    </div>
+                    <div class="external-section">
+                        <input class="external-input" type="url" placeholder="https://example.com" spellcheck="false">
+                    </div>
                 </div>
             </div>
             <div hidden><slot></slot></div>
@@ -88,6 +103,11 @@ export class P9rPageLink extends HTMLElement {
         this._panel = shadow.querySelector(".panel")!;
         this._empty = shadow.querySelector(".empty")!;
         this._clearBtn = shadow.querySelector(".clear-btn")!;
+        this._pageSection = shadow.querySelector(".page-section")!;
+        this._externalSection = shadow.querySelector(".external-section")!;
+        this._externalInput = shadow.querySelector(".external-input")!;
+        this._tabPage = shadow.querySelector(".tab-page")!;
+        this._tabExternal = shadow.querySelector(".tab-external")!;
 
         const searchInput = shadow.querySelector(".search") as HTMLInputElement;
         searchInput.addEventListener("input", () => this._refreshOptions(filterPages(this._pages, searchInput.value)));
@@ -96,6 +116,40 @@ export class P9rPageLink extends HTMLElement {
             e.stopPropagation();
             this._select("", "No page");
         });
+
+        this._tabPage.addEventListener("click", (e) => { e.stopPropagation(); this._setMode("page"); });
+        this._tabExternal.addEventListener("click", (e) => { e.stopPropagation(); this._setMode("external"); });
+
+        this._externalInput.addEventListener("input", () => {
+            const url = this._externalInput!.value.trim();
+            this._setValue(url, url || "No link");
+            this.dispatchEvent(new Event("change", { bubbles: true }));
+        });
+        this._externalInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") { e.preventDefault(); this._close(); }
+            if (e.key === "Escape") this._close();
+        });
+
+        this._applyMode();
+    }
+
+    private _isExternal(v: string) {
+        return /^(https?:|mailto:|tel:|\/\/)/i.test(v);
+    }
+
+    private _setMode(mode: "page" | "external") {
+        this._mode = mode;
+        this._applyMode();
+        if (mode === "external") requestAnimationFrame(() => this._externalInput!.focus());
+    }
+
+    private _applyMode() {
+        if (!this._pageSection) return;
+        const isPage = this._mode === "page";
+        this._pageSection!.style.display = isPage ? "" : "none";
+        this._externalSection!.style.display = isPage ? "none" : "";
+        this._tabPage!.classList.toggle("active", isPage);
+        this._tabExternal!.classList.toggle("active", !isPage);
     }
 
     private async _fetchPages() {
@@ -107,8 +161,15 @@ export class P9rPageLink extends HTMLElement {
             // Sync with current attribute value
             const currentValue = this.getAttribute("value") || "";
             if (currentValue) {
-                const match = this._pages.find(p => p.path === currentValue);
-                if (match) this._setValue(match.path, match.title);
+                if (this._isExternal(currentValue)) {
+                    this._mode = "external";
+                    this._externalInput!.value = currentValue;
+                    this._setValue(currentValue, currentValue);
+                    this._applyMode();
+                } else {
+                    const match = this._pages.find(p => p.path === currentValue);
+                    if (match) this._setValue(match.path, match.title);
+                }
             }
         } catch (e) {
             console.warn("P9rPageLink: failed to fetch pages", e);
@@ -156,7 +217,10 @@ export class P9rPageLink extends HTMLElement {
         const searchInput = this.shadowRoot!.querySelector(".search") as HTMLInputElement;
         searchInput.value = "";
         this._refreshOptions(this._pages);
-        requestAnimationFrame(() => searchInput.focus());
+        requestAnimationFrame(() => {
+            if (this._mode === "page") searchInput.focus();
+            else this._externalInput!.focus();
+        });
     }
 
     _close() {
@@ -167,9 +231,17 @@ export class P9rPageLink extends HTMLElement {
 
     get value() { return this._value; }
     set value(v: string) {
-        const match = this._pages.find(p => p.path === v);
-        if (match) this._setValue(match.path, match.title);
-        else this._setValue(v, v || "No page");
+        if (this._isExternal(v)) {
+            this._mode = "external";
+            if (this._externalInput) this._externalInput.value = v;
+            this._setValue(v, v);
+        } else {
+            this._mode = "page";
+            const match = this._pages.find(p => p.path === v);
+            if (match) this._setValue(match.path, match.title);
+            else this._setValue(v, v || "No page");
+        }
+        this._applyMode();
     }
 
     get name() { return this.getAttribute("name"); }
