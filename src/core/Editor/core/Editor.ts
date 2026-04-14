@@ -139,6 +139,7 @@ export abstract class Editor {
         this.stateSyncs.forEach(s => s.unpin());
         this._pinMode.exit();
         this.restore();
+
         this.target.removeEventListener("mouseenter", this.handleHover);
 
         this.target.style.removeProperty("pointer-events");
@@ -181,7 +182,6 @@ export abstract class Editor {
         this._panelConfig?.init();
         this.init();
 
-
         if (!this.target.shadowRoot) {
             if (!Editor.bodyStyle.has(this.target.tagName)){
                 Editor.bodyStyle.set(this.target.tagName, true)
@@ -190,8 +190,6 @@ export abstract class Editor {
         } else {
             this.target.shadowRoot?.append(this.styleElement);
         }
-
-
 
         this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
         this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier)

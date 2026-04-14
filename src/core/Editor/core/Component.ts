@@ -5,6 +5,7 @@ export type ComponentMetadata = {
 
 export abstract class Component extends HTMLElement {
 
+    private _rawStyles: string = "";
     private _styles: HTMLStyleElement | null = null;
     private _template: HTMLTemplateElement | null = null;
 
@@ -12,6 +13,7 @@ export abstract class Component extends HTMLElement {
         super();
         const shadow = this.attachShadow({ mode: "open" });
         if (metadata){
+            this._rawStyles = metadata.css;
             this._styles = document.createElement("style") as HTMLStyleElement;
             this._styles.innerHTML = metadata.css;
             shadow.appendChild(this._styles);
@@ -23,7 +25,7 @@ export abstract class Component extends HTMLElement {
 
     registerCSSVariables(items: Record<string, string>) {
         if ( !this._styles ) return;
-        let src = this._styles.innerHTML; 
+        let src = this._rawStyles; 
         Object.entries(items).forEach(([key, value]) => {
             src = src.replaceAll("var(--" + key + ")", value); 
         });
