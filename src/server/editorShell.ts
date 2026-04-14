@@ -44,7 +44,11 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     const apiBaseMeta = document.createElement("meta");
     apiBaseMeta.setAttribute("name", "p9r-api-base");
     apiBaseMeta.setAttribute("content", `${adminPrefix}/api/`);
+    const basPathMeta = document.createElement("meta");
+    basPathMeta.setAttribute("name", "p9r-base-path");
+    basPathMeta.setAttribute("content", `${adminPrefix}/`);
     document.head.appendChild(apiBaseMeta);
+    document.head.appendChild(basPathMeta);
 
     // ── Bloc editor scripts ─────────────────────────────────────────────
     // Each bloc ships an editorJS snippet that must run once `document.EditorManager`

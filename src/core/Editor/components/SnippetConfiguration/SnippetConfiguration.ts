@@ -30,7 +30,7 @@ export class SnippetConfiguration extends Component {
             const content = document.EditorManager.getContent();
 
             const url = new URL(window.location.href);
-            const id = url.searchParams.get("id");
+            const id = url.searchParams.get("id") || this.getAttribute("default-id");
 
             const endpoint = new URL("../../api/snippet", window.location.href);
             if (id) endpoint.searchParams.set("id", id);
@@ -59,8 +59,10 @@ export class SnippetConfiguration extends Component {
 
             const result = await res.json();
             if (!id && result.id) {
-                url.searchParams.set("id", result.id);
+                url.searchParams.set("identifier", result.identifier);
+                url.searchParams.delete("id");
                 window.history.pushState({}, "", url);
+                this.setAttribute("default-id", result.id);
                 this.lockIdentifier();
             }
         });

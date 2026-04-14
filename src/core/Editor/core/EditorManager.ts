@@ -100,6 +100,11 @@ export class EditorManager{
         return new URL(base, window.location.href).href;
     }
 
+    get basePath(){
+        const meta = document.querySelector('meta[name="p9r-base-path"]') as HTMLMetaElement | null;
+        return meta?.content || "/page-builder"
+    }
+
     switchMode(mode?: PageMode){
         if ( this.mode === p9r.mode.EDITOR ){
             this.mode = p9r.mode.VIEW;

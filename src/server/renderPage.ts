@@ -64,7 +64,7 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
     for (const tag of usedTags) {
         const script = document.createElement("script");
         script.setAttribute("src", `/bloc?tag=${tag}`);
-        document.body.appendChild(script);
+        document.head.appendChild(script);
     }
 
     return compress(document.toString(), "text/html");

@@ -15,6 +15,7 @@ export default async function SnippetEditorServer(req: Request, system: PageBuil
 
     const configAttributes: Record<string, string> = {};
     if (snippet) {
+        configAttributes["default-id"]          = snippet.id!;
         configAttributes["default-identifier"]  = snippet.identifier;
         configAttributes["default-name"]        = snippet.name;
         configAttributes["default-description"] = snippet.description || "";

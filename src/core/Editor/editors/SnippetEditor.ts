@@ -27,7 +27,7 @@ export class SnippetEditor extends Editor {
                 const identifier = target.getAttribute("identifier");
                 if (!identifier) return;
                 window.open(
-                    `/page-builder/admin/snippets/editor?identifier=${encodeURIComponent(identifier)}`,
+                    document.EditorManager.basePath + `admin/snippets/editor?identifier=${encodeURIComponent(identifier)}`,
                     "_blank"
                 );
             }

@@ -16,7 +16,7 @@ export default async function SnippetsPage(_req: Request, system: PageBuilder) {
             : "—";
 
         tableBody.innerHTML += `
-        <p9r-row href="./snippets/editor?id=${snippet.id}">
+        <p9r-row href="./snippets/editor?identifier=${encodeURIComponent(snippet.identifier)}">
             <p9r-cell><code>${snippet.identifier}</code></p9r-cell>
             <p9r-cell>${snippet.name}</p9r-cell>
             <p9r-cell>${snippet.category || "—"}</p9r-cell>
