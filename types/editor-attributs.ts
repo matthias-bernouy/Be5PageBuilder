@@ -30,7 +30,7 @@ export const P9R_ATTR = {
         IS_EDITOR:         "p9r-is-editor",
         OPAQUE:            "p9r-opaque",
         IS_CREATING:       "p9r-is-creating",
-        PERSISTENT_IDENTIFIER: "p9r-persistent-identifier",
+        PERSISTENT_IDENTIFIER: "p9r-persistent-identifier"
     }
 
 } as const;

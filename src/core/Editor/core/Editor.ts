@@ -235,10 +235,14 @@ export abstract class Editor {
 
     get ensurePersistentIdentifier(): string {
         if (!this.target.hasAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)){
-            const generatedId = crypto.randomUUID();
+            const generatedId = "ID-" + crypto.randomUUID();
             this.target.setAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER, generatedId);
         }
         return this.target.getAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)!;
+    }
+
+    get persistentIdentifierAttrName(): string {
+        return p9r.attr.EDITOR.PERSISTENT_IDENTIFIER;
     }
 
     showConfigPanel() {
