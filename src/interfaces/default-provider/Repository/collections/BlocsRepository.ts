@@ -33,6 +33,14 @@ export class BlocsRepository {
         return bloc;
     }
 
+    async replace(bloc: TBloc): Promise<TBloc> {
+        const result = await this._collection.replaceOne({ id: bloc.id }, bloc, { upsert: true });
+        if (!result.acknowledged) {
+            throw new Error("Failed to replace bloc");
+        }
+        return bloc;
+    }
+
     async getEditorJS(): Promise<{ id: string, editorJS: string }[]> {
         const blocs = await this._collection
             .find({}, { projection: { id: 1, editorJS: 1, _id: 0 } })

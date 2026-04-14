@@ -5,6 +5,7 @@ export interface PageBuilderRepository {
 
     // BLOC
     createBloc(bloc: TBloc): Promise<TBloc>;
+    replaceBloc(bloc: TBloc): Promise<TBloc>;
 
     getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
     getBlocsList(): Promise<{ id: string, name: string, group: string, description: string }[]>;

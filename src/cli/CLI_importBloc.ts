@@ -4,21 +4,24 @@ import { buildAllDevBlocs, type BuiltBloc } from "./dev-server/build";
 
 type Flags = {
     dryRun: boolean;
+    force:  boolean;
     only: Set<string> | null;
 };
 
 function parseFlags(args: string[]): Flags {
     let dryRun = false;
+    let force = false;
     let only: Set<string> | null = null;
     for (const arg of args) {
         if (arg === "--dry-run") dryRun = true;
+        else if (arg === "--force" || arg === "-f") force = true;
         else if (arg.startsWith("--only=")) {
             only = new Set(
                 arg.slice("--only=".length).split(",").map(s => s.trim()).filter(Boolean),
             );
         }
     }
-    return { dryRun, only };
+    return { dryRun, force, only };
 }
 
 function resolveAdminBase(): { adminBase: URL; token: string } {
@@ -53,6 +56,7 @@ export default async function CLI_importBloc(args: string[]) {
     console.log(`→ Admin base : ${adminBase.href.replace(/\/$/, "")}`);
     console.log(`→ Scanning   : ${cwd}`);
     if (flags.dryRun) console.log(`→ Mode       : dry-run (no upload)`);
+    if (flags.force)  console.log(`→ Force      : existing blocs will be overwritten`);
     if (flags.only)   console.log(`→ Filter     : --only=${[...flags.only].join(",")}`);
 
     // Fail fast — reach the CMS before we spend time building.
@@ -92,30 +96,40 @@ export default async function CLI_importBloc(args: string[]) {
         else                       fresh.push(b);
     }
 
+    const toBuild = flags.force ? [...fresh, ...collisions] : fresh;
+    const skipped = flags.force ? [] : collisions;
+
     if (collisions.length > 0) {
         console.warn("");
-        console.warn(`⚠ ${collisions.length} bloc(s) already exist on the remote — skipping:`);
-        for (const b of collisions) {
-            console.warn(`    • ${b.tag}  (${relative(cwd, b.folder) || "."})`);
+        if (flags.force) {
+            console.warn(`⚠ ${collisions.length} bloc(s) already exist on the remote — will be overwritten (--force):`);
+            for (const b of collisions) {
+                console.warn(`    • ${b.tag}  (${relative(cwd, b.folder) || "."})`);
+            }
+        } else {
+            console.warn(`⚠ ${collisions.length} bloc(s) already exist on the remote — skipping:`);
+            for (const b of collisions) {
+                console.warn(`    • ${b.tag}  (${relative(cwd, b.folder) || "."})`);
+            }
+            console.warn(`  Re-run with --force to overwrite, or delete them from the admin UI first.`);
         }
-        console.warn(`  To re-import, delete the existing bloc from the admin UI first.`);
     }
 
-    if (fresh.length === 0) {
+    if (toBuild.length === 0) {
         console.log("");
         console.log("→ Nothing to push.");
         process.exit(0);
     }
 
     console.log("");
-    console.log(`→ Building ${fresh.length} bloc(s)...`);
-    const built = await buildAllDevBlocs(fresh);
+    console.log(`→ Building ${toBuild.length} bloc(s)...`);
+    const built = await buildAllDevBlocs(toBuild);
 
     if (built.size === 0) {
         console.error("✖ All builds failed. See errors above.");
         process.exit(1);
     }
-    const buildFailures = fresh.length - built.size;
+    const buildFailures = toBuild.length - built.size;
     if (buildFailures > 0) {
         console.warn(`⚠ ${buildFailures} bloc(s) failed to build (see errors above)`);
     }
@@ -137,7 +151,7 @@ export default async function CLI_importBloc(args: string[]) {
     let fail = 0;
     for (const [tag, b] of built) {
         try {
-            await pushBloc(adminBase, token, b);
+            await pushBloc(adminBase, token, b, flags.force);
             console.log(`    ✓ ${tag}`);
             ok++;
         } catch (e) {
@@ -147,7 +161,7 @@ export default async function CLI_importBloc(args: string[]) {
     }
 
     console.log("");
-    console.log(`→ Done. ${ok} imported, ${collisions.length} skipped, ${fail + buildFailures} failed.`);
+    console.log(`→ Done. ${ok} imported, ${skipped.length} skipped, ${fail + buildFailures} failed.`);
     process.exit(fail + buildFailures > 0 ? 1 : 0);
 }
 
@@ -176,7 +190,7 @@ async function fetchRemoteTags(adminBase: URL, token: string): Promise<Set<strin
     return new Set((data as { id: string }[]).map(b => b.id));
 }
 
-async function pushBloc(adminBase: URL, token: string, bloc: BuiltBloc): Promise<void> {
+async function pushBloc(adminBase: URL, token: string, bloc: BuiltBloc, force: boolean): Promise<void> {
     const url = new URL("api/bloc", adminBase).href;
 
     const form = new FormData();
@@ -184,6 +198,7 @@ async function pushBloc(adminBase: URL, token: string, bloc: BuiltBloc): Promise
     form.append("group",       bloc.group);
     form.append("description", bloc.description);
     form.append("tag",         bloc.tag);
+    if (force) form.append("force", "true");
     form.append(
         "viewJS",
         new File([bloc.viewJS], `${bloc.tag}.js`, { type: "application/javascript" }),

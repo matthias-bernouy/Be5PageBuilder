@@ -66,6 +66,10 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         return this._blocs.create(bloc);
     }
 
+    replaceBloc(bloc: TBloc): Promise<TBloc> {
+        return this._blocs.replace(bloc);
+    }
+
     getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]> {
         return this._blocs.getEditorJS();
     }
