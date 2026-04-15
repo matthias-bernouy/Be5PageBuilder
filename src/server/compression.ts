@@ -54,6 +54,7 @@ function sendCompressed(req: Request, entry: CacheEntry): Response {
             headers: {
                 "Content-Type": entry.contentType,
                 "Content-Encoding": "br",
+                "X-Content-Type-Options": "nosniff",
             },
         });
     }
@@ -63,11 +64,15 @@ function sendCompressed(req: Request, entry: CacheEntry): Response {
             headers: {
                 "Content-Type": entry.contentType,
                 "Content-Encoding": "gzip",
+                "X-Content-Type-Options": "nosniff",
             },
         });
     }
 
     return new Response(entry.raw as BodyInit, {
-        headers: { "Content-Type": entry.contentType },
+        headers: {
+            "Content-Type": entry.contentType,
+            "X-Content-Type-Options": "nosniff",
+        },
     });
 }
