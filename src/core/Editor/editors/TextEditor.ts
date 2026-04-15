@@ -121,6 +121,11 @@ export class TextEditor extends Editor {
         }
 
         if (e.key === "Backspace" && this.target.innerHTML === "" && !this.isDeleteDisabled) {
+            // Must stop propagation: BAG's window-level keydown would otherwise
+            // receive the same Backspace and, if the user was hovering the
+            // parent, delete the parent as well.
+            e.preventDefault();
+            e.stopImmediatePropagation();
             this.restore();
             const previous = this.target.previousElementSibling as HTMLElement | null;
             const next = this.target.nextElementSibling as HTMLElement | null;
