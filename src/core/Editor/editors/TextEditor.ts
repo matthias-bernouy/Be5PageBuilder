@@ -184,6 +184,16 @@ export class TextEditor extends Editor {
         return deleteAttr ? deleteAttr === "true" : false;
     }
 
+    // Text blocs rely on Backspace-on-empty for deletion — the action-bar
+    // delete button is redundant noise. `p9r-force-delete-button` opts back
+    // in (e.g. for decorative headings the user never empties).
+    override refreshActionBarFeatures() {
+        super.refreshActionBarFeatures();
+        if (!this.target.hasAttribute("p9r-force-delete-button")) {
+            this._actionBarFeatures.set("delete", false);
+        }
+    }
+
     private get isAddAfterDisabled(){
         return this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) === "true";
     }

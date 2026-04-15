@@ -20,7 +20,7 @@ export abstract class Editor {
     public customActions: CustomAction[] = [];
     public stateSyncs: StateSync[] = [];
     private _pinMode: PinMode;
-    private _actionBarFeatures: Map<string, boolean> = new Map([
+    protected _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["duplicate", true],
         ["addBefore", false],

@@ -354,15 +354,23 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
         const customKey = customActions.map(a => a.action).join(",");
         const stateSyncCount = this._editor!.stateSyncs.length;
-        const hasParent = !!this._parentEditor();
-        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey + "|s=" + stateSyncCount + "|p=" + hasParent;
+        const parent = this._parentEditor();
+        const hasAnyButton =
+            hasConfig ||
+            !!config.get("duplicate") ||
+            !!config.get("delete") ||
+            !!config.get("changeComponent") ||
+            customActions.length > 0 ||
+            stateSyncCount > 0;
+        const showSelectParent = !!parent && hasAnyButton;
+        const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey + "|s=" + stateSyncCount + "|p=" + showSelectParent;
         if (this._lastConfigKey === currentConfigKey) return;
         this._lastConfigKey = currentConfigKey;
 
         this.setAttribute("data-variant", variant);
         this.innerHTML = template as unknown as string;
 
-        if (hasParent) {
+        if (showSelectParent) {
             const btn = document.createElement("button");
             btn.setAttribute("data-action", "select-parent");
             btn.setAttribute("title", "Select parent");
