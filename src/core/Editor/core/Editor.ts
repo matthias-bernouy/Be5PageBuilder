@@ -14,7 +14,14 @@ export abstract class Editor {
     private targetIdentifier: string;
     public target: HTMLElement;
     private styleElement: HTMLStyleElement;
-    private static bodyStyle: Map<string, boolean> = new Map();
+    // Shared per-tag stylesheet + refcount. Each light-DOM editor of a tag
+    // holds one ref; the shared <style> is appended on the first ref and
+    // removed on the last. Previously this was a boolean flag keyed by tag,
+    // which meant (a) disposing the first editor yanked the style element
+    // that every sibling still relied on, and (b) viewClient deleted the
+    // map entry even when other editors of the same tag were still active.
+    private static bodyStyle: Map<string, { el: HTMLStyleElement, count: number }> = new Map();
+    private _holdsBodyStyle = false;
     public _panelConfig: ConfigPanel | null = null;
     public variant: string = "default";
     public customActions: CustomAction[] = [];
@@ -150,9 +157,10 @@ export abstract class Editor {
             this.target.removeAttribute("style");
         }
 
-        this.styleElement.remove();
-
-        Editor.bodyStyle.delete(this.target.tagName);
+        this._releaseBodyStyle();
+        // Shadow-DOM case: the styleElement lives in the target's shadow root
+        // and is unique per editor instance, so always safe to remove.
+        if (this.target.shadowRoot) this.styleElement.remove();
 
         this.target.removeAttribute(p9r.attr.EDITOR.IS_EDITOR)
         this.target.classList.remove("editor-block")
@@ -186,12 +194,9 @@ export abstract class Editor {
         this.init();
 
         if (!this.target.shadowRoot) {
-            if (!Editor.bodyStyle.has(this.target.tagName)) {
-                Editor.bodyStyle.set(this.target.tagName, true)
-                document.body.append(this.styleElement);
-            };
+            this._acquireBodyStyle();
         } else {
-            this.target.shadowRoot?.append(this.styleElement);
+            this.target.shadowRoot.append(this.styleElement);
         }
 
         this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
@@ -231,7 +236,36 @@ export abstract class Editor {
         this._pinMode.exit();
         this._panelConfig?.remove();
         this._panelConfig = null;
+        this._releaseBodyStyle();
         this.styleElement.remove();
+    }
+
+    private _acquireBodyStyle() {
+        if (this._holdsBodyStyle) return;
+        const tag = this.target.tagName;
+        let entry = Editor.bodyStyle.get(tag);
+        if (!entry) {
+            // First editor of this tag — promote this instance's styleElement
+            // to the shared one and mount it on <body>.
+            document.body.append(this.styleElement);
+            entry = { el: this.styleElement, count: 0 };
+            Editor.bodyStyle.set(tag, entry);
+        }
+        entry.count++;
+        this._holdsBodyStyle = true;
+    }
+
+    private _releaseBodyStyle() {
+        if (!this._holdsBodyStyle) return;
+        const tag = this.target.tagName;
+        const entry = Editor.bodyStyle.get(tag);
+        this._holdsBodyStyle = false;
+        if (!entry) return;
+        entry.count--;
+        if (entry.count <= 0) {
+            entry.el.remove();
+            Editor.bodyStyle.delete(tag);
+        }
     }
 
     onChildrenRemoved() {
