@@ -696,6 +696,135 @@ const enterNextToImageSync: DriverScenario = {
     },
 };
 
+/**
+ * Hold Enter on a <p> living inside an allow-multiple slot of a complex
+ * bloc (perf-card has image-sync + several comp-syncs + nested buttons).
+ * Exercises the CompSync onChildrenAdded path that re-runs viewEditor() on
+ * every sibling slot for each keystroke. Measures per-keystroke wall time
+ * AND an INP proxy via PerformanceObserver on "event" entries.
+ */
+const holdEnterInAllowMultiple: DriverScenario = {
+    kind: "driver",
+    name: "hold-enter-allow-multiple",
+    async run(page): Promise<Record<string, number>> {
+        await page.evaluate(() => {
+            const main = document.querySelector("main")!;
+            main.querySelectorAll(".__perf_card_p__").forEach(el => el.remove());
+            const card = document.createElement("perf-card");
+            card.className = "__perf_card_p__";
+            card.innerHTML = `
+                <h3>Card with paragraphs</h3>
+                <p slot="body">Body description of the card.</p>
+                <p slot="paragraphs" class="__seed__">seed</p>
+                <p slot="paragraphs">Second existing paragraph.</p>
+                <perf-button slot="actions">Primary</perf-button>
+                <perf-button slot="actions" variant="ghost">Secondary</perf-button>
+            `;
+            main.appendChild(card);
+        });
+        await page.waitForTimeout(1000);
+
+        await page.evaluate(() => {
+            const seed = document.querySelector(".__perf_card_p__ .__seed__") as HTMLElement;
+            seed.focus();
+            const sel = getSelection()!;
+            const r = document.createRange();
+            r.selectNodeContents(seed);
+            r.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(r);
+
+            (window as any).__inpEntries = [];
+            const po = new PerformanceObserver((list) => {
+                for (const e of list.getEntries()) {
+                    (window as any).__inpEntries.push({
+                        name: (e as any).name,
+                        duration: e.duration,
+                    });
+                }
+            });
+            try { po.observe({ type: "event", buffered: true, durationThreshold: 16 } as any); } catch {}
+            (window as any).__inpObserver = po;
+        });
+
+        const countBefore = await page.evaluate(
+            () => document.querySelectorAll('.__perf_card_p__ [slot="paragraphs"]').length,
+        );
+
+        // Real key presses via Playwright — required for PerformanceObserver
+        // "event" entries (INP only sees trusted events) and for the focus
+        // chase that makes each Enter land on the latest created <p>.
+        const samples: number[] = [];
+        for (let i = 0; i < 20; i++) {
+            // Re-focus the latest editable <p> in the paragraphs slot so focus
+            // loss during async editorization doesn't starve later presses.
+            await page.evaluate(() => {
+                const ps = document.querySelectorAll<HTMLElement>(
+                    '.__perf_card_p__ [slot="paragraphs"]',
+                );
+                const last = ps[ps.length - 1];
+                if (last && last.isContentEditable) {
+                    last.focus();
+                    const sel = getSelection()!;
+                    const r = document.createRange();
+                    r.selectNodeContents(last);
+                    r.collapse(false);
+                    sel.removeAllRanges();
+                    sel.addRange(r);
+                }
+            });
+            const t = await page.evaluate(() => performance.now());
+            await page.keyboard.press("Enter");
+            const t2 = await page.evaluate(() => performance.now());
+            samples.push(t2 - t);
+            await page.waitForTimeout(60);
+        }
+        await page.waitForTimeout(400);
+
+        const countAfter = await page.evaluate(
+            () => document.querySelectorAll('.__perf_card_p__ [slot="paragraphs"]').length,
+        );
+
+        const inp = await page.evaluate(() => {
+            const po = (window as any).__inpObserver as PerformanceObserver | undefined;
+            po?.disconnect();
+            const entries = ((window as any).__inpEntries || []) as { name: string; duration: number }[];
+            const keydowns = entries.filter(e => e.name === "keydown").map(e => e.duration);
+            const all = entries.map(e => e.duration);
+            const max = (xs: number[]) => (xs.length ? Math.max(...xs) : 0);
+            const p98 = (xs: number[]) => {
+                if (!xs.length) return 0;
+                const s = [...xs].sort((a, b) => a - b);
+                return s[Math.min(s.length - 1, Math.floor(s.length * 0.98))];
+            };
+            return {
+                inpAllMaxMs: +max(all).toFixed(1),
+                inpAllP98Ms: +p98(all).toFixed(1),
+                inpKeydownMaxMs: +max(keydowns).toFixed(1),
+                inpEventCount: entries.length,
+            };
+        });
+
+        const s = stats(samples);
+        return {
+            holdAmMedianMs: s.median,
+            holdAmP95Ms: s.p95,
+            holdAmMaxMs: s.max,
+            holdAmCreated: countAfter - countBefore,
+            inpAllMaxMs: inp.inpAllMaxMs,
+            inpAllP98Ms: inp.inpAllP98Ms,
+            inpKeydownMaxMs: inp.inpKeydownMaxMs,
+            inpEventCount: inp.inpEventCount,
+        };
+    },
+    absolutes: {
+        holdAmMedianMs: 30,
+        holdAmP95Ms: 80,
+        // Google's "good INP" threshold is 200ms; "needs improvement" starts at 200.
+        inpAllP98Ms: 200,
+    },
+};
+
 const selectTextToolbar: DriverScenario = {
     kind: "driver",
     name: "select-text-toolbar",
@@ -1764,6 +1893,7 @@ export const SCENARIOS: Scenario[] = [
     dragReorder,
     holdEnter30,
     holdEnterReal,
+    holdEnterInAllowMultiple,
     enterNextToImageSync,
 ];
 
