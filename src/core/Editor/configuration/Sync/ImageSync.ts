@@ -17,6 +17,7 @@ export class ImageSync extends HTMLElement {
     private _previewImg: HTMLImageElement | null = null;
     private _emptyState: HTMLElement | null = null;
     private _overlay: HTMLElement | null = null;
+    private _targetObserver: MutationObserver | null = null;
 
     connectedCallback() {
         const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
@@ -89,6 +90,7 @@ export class ImageSync extends HTMLElement {
 
     private _render() {
         this._target = this._resolveTarget();
+        this._watchTarget(this._target);
         const label = this.getAttribute("label") || "Image";
         const currentValue = this._target?.getAttribute("src") || "";
 
@@ -140,6 +142,19 @@ export class ImageSync extends HTMLElement {
         this._updatePreview(currentValue);
     }
 
+    // The target <img> can have its `src` mutated from outside this panel
+    // (e.g. ImageEditor's own click-to-MediaCenter flow). Watch for that so
+    // the preview mirrors the live value.
+    private _watchTarget(target: HTMLImageElement | null) {
+        this._targetObserver?.disconnect();
+        this._targetObserver = null;
+        if (!target) return;
+        this._targetObserver = new MutationObserver(() => {
+            this._updatePreview(target.getAttribute("src") || "");
+        });
+        this._targetObserver.observe(target, { attributes: true, attributeFilter: ["src"] });
+    }
+
     private _updatePreview(src: string) {
         if (!this._previewImg || !this._emptyState || !this._overlay) return;
         const card = this._previewImg.parentElement!;
@@ -166,6 +181,7 @@ export class ImageSync extends HTMLElement {
         const handler = (e: CustomEvent) => {
             mediaCenter.removeEventListener("select-item", handler as EventListener);
             this._target = this._ensureTarget();
+            this._watchTarget(this._target);
             this._target.setAttribute("src", e.detail.src);
             this._updatePreview(e.detail.src);
         };
@@ -179,6 +195,7 @@ export class ImageSync extends HTMLElement {
             this._target.remove();
             this._target = null;
         }
+        this._watchTarget(null);
         this._updatePreview("");
     }
 
@@ -200,11 +217,17 @@ export class ImageSync extends HTMLElement {
 
     init() {
         this._target = this._resolveTarget();
+        this._watchTarget(this._target);
         if (this._target && this.allowResize) {
             this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
         }
         const currentValue = this._target?.getAttribute("src") || "";
         this._updatePreview(currentValue);
+    }
+
+    disconnectedCallback() {
+        this._targetObserver?.disconnect();
+        this._targetObserver = null;
     }
 }
 
