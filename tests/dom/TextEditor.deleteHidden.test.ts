@@ -28,6 +28,19 @@ function make(attrs: Record<string, string> = {}) {
     return { target: p, features: (editor as any)._actionBarFeatures as Map<string, boolean> };
 }
 
+describe("TextEditor — standard action-bar features hidden (keyboard-driven)", () => {
+    beforeEach(() => reset());
+
+    test("all standard buttons are hidden by default", () => {
+        const { features } = make();
+        expect(features.get("delete")).toBe(false);
+        expect(features.get("duplicate")).toBe(false);
+        expect(features.get("addBefore")).toBe(false);
+        expect(features.get("addAfter")).toBe(false);
+        expect(features.get("changeComponent")).toBe(false);
+    });
+});
+
 describe("TextEditor — delete button hidden by default (backspace-on-empty handles it)", () => {
     beforeEach(() => reset());
 
@@ -47,5 +60,23 @@ describe("TextEditor — delete button hidden by default (backspace-on-empty han
             [p9r.attr.ACTION.DISABLE_DELETE]: "true",
         });
         expect(features.get("delete")).toBe(false);
+    });
+
+    test("duplicate is hidden by default on text blocs", () => {
+        const { features } = make();
+        expect(features.get("duplicate")).toBe(false);
+    });
+
+    test("p9r-force-duplicate-button opts duplicate back in", () => {
+        const { features } = make({ "p9r-force-duplicate-button": "" });
+        expect(features.get("duplicate")).toBe(true);
+    });
+
+    test("force-duplicate + DISABLE_DUPLICATE stays false", () => {
+        const { features } = make({
+            "p9r-force-duplicate-button": "",
+            [p9r.attr.ACTION.DISABLE_DUPLICATE]: "true",
+        });
+        expect(features.get("duplicate")).toBe(false);
     });
 });

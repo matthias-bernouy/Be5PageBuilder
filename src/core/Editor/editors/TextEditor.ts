@@ -120,9 +120,12 @@ export class TextEditor extends Editor {
             const nextEl = this.createElement("p")
             this.target.after(nextEl)
 
-            requestAnimationFrame(() => {
-                nextEl.focus();
-            });
+            // Inside a comp-sync, `onChildrenAdded` re-runs `viewEditor()` on
+            // every sibling slot, each scheduling its own rAF focus. Wait two
+            // frames so our focus is the last one applied.
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                if (nextEl.isConnected) nextEl.focus();
+            }));
         }
 
         if (e.key === "Backspace" && this.target.innerHTML === "" && !this.isDeleteDisabled) {
@@ -194,13 +197,22 @@ export class TextEditor extends Editor {
         return deleteAttr ? deleteAttr === "true" : false;
     }
 
-    // Text blocs rely on Backspace-on-empty for deletion — the action-bar
-    // delete button is redundant noise. `p9r-force-delete-button` opts back
-    // in (e.g. for decorative headings the user never empties).
+    // Text blocs are driven by keyboard: Enter adds a sibling, Backspace on
+    // empty deletes, "/" opens the component picker. The standard action-bar
+    // buttons are all redundant — hide them by default so the bar disappears
+    // unless the bloc has a config panel, custom actions or state-syncs.
+    // `p9r-force-delete-button` / `p9r-force-duplicate-button` opt individual
+    // buttons back in (e.g. a decorative heading the user never empties).
     override refreshActionBarFeatures() {
         super.refreshActionBarFeatures();
+        this._actionBarFeatures.set("addBefore", false);
+        this._actionBarFeatures.set("addAfter", false);
+        this._actionBarFeatures.set("changeComponent", false);
         if (!this.target.hasAttribute("p9r-force-delete-button")) {
             this._actionBarFeatures.set("delete", false);
+        }
+        if (!this.target.hasAttribute("p9r-force-duplicate-button")) {
+            this._actionBarFeatures.set("duplicate", false);
         }
     }
 

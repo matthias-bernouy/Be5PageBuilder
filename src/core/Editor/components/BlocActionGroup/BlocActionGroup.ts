@@ -66,8 +66,12 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const allDisabled = Array.from(editor.actionBarConfiguration.values()).every(v => v === false);
         const hasCustomActions = editor.customActions.length > 0;
         const hasStateSyncs = editor.stateSyncs.length > 0;
-        if (allDisabled && !hasCustomActions && !hasStateSyncs) {
+        if (allDisabled && !hasCustomActions && !hasStateSyncs && editor._panelConfig == null) {
+            // Nothing to render — clear so a subsequent open() is a no-op
+            // instead of showing an empty circle.
             this.close();
+            this._editor = null;
+            this._target = null;
             return;
         }
         this._target?.classList.remove("p9r-active");
