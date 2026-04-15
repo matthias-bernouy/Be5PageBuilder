@@ -190,9 +190,13 @@ export class CompSync extends HTMLElement {
             this._listEl.append(li);
         });
 
-        const canAdd = this.isMultiple && slots.length < this.max;
-        this._addBtn.hidden = !this.isMultiple;
-        this._addBtn.disabled = !canAdd;
+        // Optional single-slot mode: once the user deletes the only slot, show
+        // the same add button so they can bring it back. Without this, an
+        // optional comp-sync with nothing inside is a dead-end.
+        const optionalEmptySingle = this.optionnal && !this.isMultiple && slots.length === 0;
+        const canAddMultiple = this.isMultiple && slots.length < this.max;
+        this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
+        this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
     }
 
     private _titleLabel(): string {
@@ -223,14 +227,18 @@ export class CompSync extends HTMLElement {
     }
 
     private _add() {
-        if (!this.isMultiple) return;
         if (!this._component) return;
 
         const template = this.firstElementChild;
         if (!template) return;
 
         const current = this._countSlots();
-        if (current >= this.max) return;
+        if (this.isMultiple) {
+            if (current >= this.max) return;
+        } else {
+            // Optional single-slot: only re-insert when currently empty.
+            if (!this.optionnal || current > 0) return;
+        }
 
         const clone = template.cloneNode(true) as HTMLElement;
         clone.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");

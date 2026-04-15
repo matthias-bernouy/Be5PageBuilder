@@ -101,3 +101,60 @@ describe("CompSync (non-multiple) — action bar state", () => {
         expect(f.get("changeComponent")).toBe(false);
     });
 });
+
+// Regression: an optional (single-slot) comp-sync with its element deleted
+// used to be a dead-end — the add button stayed hidden because it was gated
+// solely on `isMultiple`. Users had no way to re-add the slot content.
+describe("CompSync — add button availability", () => {
+    beforeEach(() => reset());
+
+    function addBtnOf(compSync: CompSync) {
+        return compSync.shadowRoot!.querySelector("button.add") as HTMLButtonElement;
+    }
+
+    function clearSlot(parent: HTMLElement) {
+        parent.querySelectorAll(':scope > [slot="body"]').forEach((n) => n.remove());
+    }
+
+    test("optionnal + empty: add button is visible and enabled", () => {
+        const { compSync, parent } = buildSlotThroughCompSync("optionnal");
+        clearSlot(parent);
+        compSync.init();
+        const btn = addBtnOf(compSync);
+        expect(btn.hidden).toBe(false);
+        expect(btn.disabled).toBe(false);
+    });
+
+    test("optionnal + populated: add button stays hidden (single-slot cap)", () => {
+        const { compSync } = buildSlotThroughCompSync("optionnal");
+        const btn = addBtnOf(compSync);
+        expect(btn.hidden).toBe(true);
+    });
+
+    test("non-optionnal non-multiple: add button stays hidden", () => {
+        const { compSync, parent } = buildSlotThroughCompSync("");
+        clearSlot(parent);
+        compSync.init();
+        const btn = addBtnOf(compSync);
+        expect(btn.hidden).toBe(true);
+    });
+
+    test("clicking the add button on an empty optional slot re-inserts the template", () => {
+        const { compSync, parent } = buildSlotThroughCompSync("optionnal");
+        clearSlot(parent);
+        compSync.init();
+
+        addBtnOf(compSync).click();
+
+        const slots = parent.querySelectorAll(':scope > [slot="body"]');
+        expect(slots.length).toBe(1);
+        expect(slots[0]!.getAttribute(p9r.attr.EDITOR.IS_CREATING)).toBe("true");
+    });
+
+    test("allow-multiple below max: add button enabled", () => {
+        const { compSync } = buildSlotThroughCompSync("allow-multiple");
+        const btn = addBtnOf(compSync);
+        expect(btn.hidden).toBe(false);
+        expect(btn.disabled).toBe(false);
+    });
+});
