@@ -22,6 +22,7 @@ export class StateSync extends HTMLElement {
     private _editor: Editor | null = null;
     private _pinned: boolean = false;
     private _observer: MutationObserver | null = null;
+    private _prepared = false;
 
     get targetSelector(): string   { return this.getAttribute("target") || ""; }
     get attrName():       string   { return this.getAttribute("attr")   || ""; }
@@ -34,6 +35,7 @@ export class StateSync extends HTMLElement {
     get isPinned():       boolean  { return this._pinned; }
 
     connectedCallback() {
+        if (this._prepared) return;
         const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if (!componentIdentifier) return;
 
@@ -42,6 +44,18 @@ export class StateSync extends HTMLElement {
         );
         this._editor = document.compIdentifierToEditor?.get(componentIdentifier) ?? null;
         this._editor?.registerStateSync(this);
+    }
+
+    /**
+     * Eager pass from Editor._initPanelFragment. Registers this StateSync on
+     * the editor so _hasInteractiveFeatures / BAG pin button are correctly
+     * reported even before the panel DOM exists.
+     */
+    public prepare(component: Component, editor: Editor) {
+        this._component = component;
+        this._editor = editor;
+        editor.registerStateSync(this);
+        this._prepared = true;
     }
 
     disconnectedCallback() {

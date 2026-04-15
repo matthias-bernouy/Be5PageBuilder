@@ -22,7 +22,15 @@ export abstract class Editor {
     // map entry even when other editors of the same tag were still active.
     private static bodyStyle: Map<string, { el: HTMLStyleElement, count: number }> = new Map();
     private _holdsBodyStyle = false;
+    // Panel is lazy: we parse the editor HTML into a detached fragment at
+    // construction time (so syncs can run their slot-defaulting logic on
+    // the target), but we only wrap it in a real <p9r-config-panel> and
+    // attach it to the DOM the first time the user opens the panel. This
+    // saves the lateral dialog + shadow DOM + UI rendering cost per editor
+    // during bulk template inserts.
     public _panelConfig: ConfigPanel | null = null;
+    private _panelFragment: DocumentFragment | null = null;
+    private _panelSyncs: HTMLElement[] = [];
     public variant: string = "default";
     public customActions: CustomAction[] = [];
     public stateSyncs: StateSync[] = [];
@@ -57,10 +65,7 @@ export abstract class Editor {
         });
 
         if (editor) {
-            this._panelConfig = document.createElement("p9r-config-panel") as ConfigPanel;
-            this._panelConfig.innerHTML += editor;
-            this._setPanelItemIdentifiers();
-            document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig)
+            this._initPanelFragment(editor);
         }
 
         requestAnimationFrame(() => {
@@ -92,6 +97,77 @@ export abstract class Editor {
         panelItems.forEach((item) => {
             item.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.targetIdentifier);
         });
+    }
+
+    private _initPanelFragment(editor: string): void {
+        const tpl = document.createElement("template");
+        tpl.innerHTML = editor;
+        this._panelFragment = tpl.content;
+
+        // Upgrade every custom element in the fragment — otherwise their
+        // connectedCallback never fires until the fragment is attached, and
+        // our prepare() calls below would land on an un-upgraded instance.
+        try { customElements.upgrade(this._panelFragment); } catch {}
+
+        // Stamp PARENT_IDENTIFIER on every descendant so syncs (at any depth)
+        // can resolve their component without relying on the panel DOM.
+        this._panelFragment.querySelectorAll('*').forEach((el) => {
+            el.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.targetIdentifier);
+        });
+
+        // Collect syncs so we can route init()/onChildrenAdded notifications
+        // directly to them while the panel is still detached.
+        this._panelSyncs = Array.from(
+            this._panelFragment.querySelectorAll(
+                "p9r-comp-sync, p9r-image-sync, p9r-attr-sync, p9r-state-sync"
+            )
+        ) as HTMLElement[];
+
+        // Eager prepare pass: slot defaulting, attr locking, StateSync
+        // registration. Must run now so IS_CREATING blocs get their
+        // default children & attrs before the user interacts.
+        for (const sync of this._panelSyncs) {
+            (sync as any).prepare?.(this.target, this);
+        }
+    }
+
+    private _ensurePanelBuilt(): void {
+        if (this._panelConfig || !this._panelFragment) return;
+        this._panelConfig = document.createElement("p9r-config-panel") as ConfigPanel;
+        this._panelConfig.appendChild(this._panelFragment);
+        this._panelFragment = null;
+        document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig);
+    }
+
+    /**
+     * True when this editor declared a configuration panel — even if we
+     * haven't instantiated it yet. BAG & action resolvers use this rather
+     * than `_panelConfig != null` since the latter lies during the lazy
+     * window.
+     */
+    public get hasConfigPanel(): boolean {
+        return this._panelConfig != null || this._panelFragment != null;
+    }
+
+    /**
+     * Query panel children regardless of whether the panel is built or
+     * still sitting in the detached fragment. Used by action resolvers that
+     * need to introspect `<p9r-comp-sync>` templates.
+     */
+    public queryPanelChildren<T extends Element = Element>(selector: string): T[] {
+        if (this._panelConfig) return Array.from(this._panelConfig.querySelectorAll(selector)) as T[];
+        if (this._panelFragment) return Array.from(this._panelFragment.querySelectorAll(selector)) as T[];
+        return [];
+    }
+
+    private _notifyPanelSyncs(opts?: { added?: HTMLElement; removed?: HTMLElement }): void {
+        if (this._panelConfig) {
+            this._panelConfig.init(opts);
+            return;
+        }
+        for (const sync of this._panelSyncs) {
+            (sync as any).init?.(opts);
+        }
     }
 
     private handleHover = (e: MouseEvent) => {
@@ -188,9 +264,10 @@ export abstract class Editor {
     }
 
     public viewEditor() {
-        // Default values
+        // Default values. Routed through _notifyPanelSyncs so syncs run even
+        // when the panel hasn't been instantiated yet (lazy panel mode).
         this._setPanelItemIdentifiers();
-        this._panelConfig?.init();
+        this._notifyPanelSyncs();
         this.init();
 
         if (!this.target.shadowRoot) {
@@ -236,6 +313,8 @@ export abstract class Editor {
         this._pinMode.exit();
         this._panelConfig?.remove();
         this._panelConfig = null;
+        this._panelFragment = null;
+        this._panelSyncs = [];
         this._releaseBodyStyle();
         this.styleElement.remove();
     }
@@ -269,11 +348,11 @@ export abstract class Editor {
     }
 
     onChildrenRemoved(removedNode?: HTMLElement) {
-        this._panelConfig?.init({ removed: removedNode });
+        this._notifyPanelSyncs({ removed: removedNode });
     }
 
     onChildrenAdded(addedNode?: HTMLElement) {
-        this._panelConfig?.init({ added: addedNode });
+        this._notifyPanelSyncs({ added: addedNode });
     }
 
     get actionBarConfiguration() {
@@ -293,6 +372,7 @@ export abstract class Editor {
     }
 
     showConfigPanel() {
+        this._ensurePanelBuilt();
         this._panelConfig?.show();
     };
 

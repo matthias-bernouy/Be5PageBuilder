@@ -32,10 +32,11 @@ export class ImageSync extends HTMLElement {
     private _emptyState: HTMLElement | null = null;
     private _overlay: HTMLElement | null = null;
     private _targetObserver: MutationObserver | null = null;
+    private _prepared = false;
 
     connectedCallback() {
         const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-        if (componentIdentifier) {
+        if (componentIdentifier && !this._component) {
             this._component = document.querySelector(
                 `[${p9r.attr.EDITOR.IDENTIFIER}="${componentIdentifier}"]`
             );
@@ -44,9 +45,27 @@ export class ImageSync extends HTMLElement {
         ImageSync._injectStyles();
 
         requestAnimationFrame(() => {
-            this._syncDefault();
+            if (!this._prepared) this._syncDefault();
             this._render();
         });
+    }
+
+    /**
+     * Eager pass invoked while this element is still in a detached fragment.
+     * Seeds the default image (IS_CREATING contract) and locks the target
+     * <img>'s actions. Skips _render — that happens on connectedCallback
+     * when the user actually opens the panel.
+     */
+    public prepare(component: Component) {
+        this._component = component;
+        this._syncDefault();
+        this._target = this._resolveTarget();
+        this._lockActions(this._target);
+        this._watchTarget(this._target);
+        if (this._target && this.allowResize) {
+            this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
+        }
+        this._prepared = true;
     }
 
     private static _stylesInjected = false;

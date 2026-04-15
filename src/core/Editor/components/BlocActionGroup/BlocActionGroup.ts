@@ -66,7 +66,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const allDisabled = Array.from(editor.actionBarConfiguration.values()).every(v => v === false);
         const hasCustomActions = editor.customActions.length > 0;
         const hasStateSyncs = editor.stateSyncs.length > 0;
-        if (allDisabled && !hasCustomActions && !hasStateSyncs && editor._panelConfig == null) {
+        if (allDisabled && !hasCustomActions && !hasStateSyncs && !editor.hasConfigPanel) {
             // Nothing to render — clear so a subsequent open() is a no-op
             // instead of showing an empty circle.
             this.close();
@@ -373,7 +373,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private smartRender(): void {
         const config = this._editor!.actionBarConfiguration;
-        const hasConfig = this._editor!._panelConfig != null;
+        const hasConfig = this._editor!.hasConfigPanel;
         const variant = this._editor!.variant;
         const customActions = this._editor!.customActions;
 

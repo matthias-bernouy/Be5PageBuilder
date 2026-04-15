@@ -1856,6 +1856,168 @@ async () => {
     },
 };
 
+/**
+ * Reproduces the user-reported lag: when the BlocLibrary inserts a sizeable
+ * template (createContextualFragment + replaceWith/appendChild), the browser
+ * pays a single giant long task that currently lands in the 300–500 ms INP
+ * band on the real app. The fragment carries IS_CREATING markers exactly like
+ * `openChangeComponentPicker` in BlocActionGroup/actions.ts does, so the
+ * ObserverManager walk + editorize + CompSync init + rAF-cascade costs are
+ * all captured. We report long-task timings (the INP proxy you can observe
+ * without a trusted click) plus settle time and editorized-node count.
+ */
+const insertLargeTemplate: BrowserScenario = {
+    name: "insert-large-template",
+    run: `
+async () => {
+    const main = document.querySelector('main');
+    main.querySelectorAll('.__perf_tpl__').forEach(el => el.remove());
+    await new Promise(r => setTimeout(r, 150));
+
+    const tracker = (window).__perfListeners;
+    const mapBefore = document.compIdentifierToEditor?.size ?? -1;
+    const listenersBefore = tracker ? tracker.total() : -1;
+
+    // Build a template that's big but still plausible as a "landing page
+    // template" a user might drop in: 4 heroes, 4 feature-grids (16 icon
+    // boxes), 12 cards with actions, a testimonial row, a nav bar and a
+    // handful of stats/badges. Tune the repeat count to dial the workload.
+    const REPEAT = 3;
+    const unit = \`
+        <perf-hero align="center">
+            <h1>Build faster with PageBuilder</h1>
+            <p slot="subtitle">Compose pages from vetted blocs — ship in minutes.</p>
+            <perf-button slot="ctas">Get started</perf-button>
+            <perf-button slot="ctas" variant="ghost">Learn more</perf-button>
+        </perf-hero>
+        <perf-feature-grid columns="4">
+            <perf-icon-box slot="items"><h4>Fast</h4><p slot="caption">Instant HMR.</p></perf-icon-box>
+            <perf-icon-box slot="items"><h4>Typed</h4><p slot="caption">End-to-end TS.</p></perf-icon-box>
+            <perf-icon-box slot="items"><h4>Modular</h4><p slot="caption">One bloc, one folder.</p></perf-icon-box>
+            <perf-icon-box slot="items"><h4>Open</h4><p slot="caption">MIT license.</p></perf-icon-box>
+        </perf-feature-grid>
+        <perf-card>
+            <h3>Card one</h3>
+            <p slot="body">Description of card one goes here.</p>
+            <perf-button slot="actions">Open</perf-button>
+            <perf-button slot="actions" variant="ghost">Share</perf-button>
+        </perf-card>
+        <perf-card>
+            <h3>Card two</h3>
+            <p slot="body">Description of card two goes here.</p>
+            <perf-button slot="actions">Open</perf-button>
+        </perf-card>
+        <perf-card>
+            <h3>Card three</h3>
+            <p slot="body">Description of card three.</p>
+            <perf-button slot="actions">Details</perf-button>
+        </perf-card>
+        <perf-card>
+            <h3>Card four</h3>
+            <p slot="body">Description of card four.</p>
+            <perf-button slot="actions">Buy</perf-button>
+            <perf-button slot="actions" variant="ghost">Preview</perf-button>
+        </perf-card>
+        <perf-testimonial>
+            <p>Using these blocs saved us weeks of frontend work.</p>
+            <span slot="author">Alex — Engineering Lead</span>
+        </perf-testimonial>
+        <p>
+            <perf-nav-item>About</perf-nav-item>
+            <perf-nav-item>Pricing</perf-nav-item>
+            <perf-nav-item>Contact</perf-nav-item>
+            <perf-nav-item>Docs</perf-nav-item>
+        </p>
+        <perf-stat value="1200">Users</perf-stat>
+        <perf-stat value="48">Blocs</perf-stat>
+        <perf-badge>Beta</perf-badge>
+        <perf-divider></perf-divider>
+    \`;
+    let html = '';
+    for (let i = 0; i < REPEAT; i++) html += unit;
+
+    // Collect long tasks only across the insertion window — this is our
+    // INP proxy: INP is basically "worst event-blocking task", and here the
+    // template insert IS a single blocking task.
+    const longTasks = [];
+    let po;
+    try {
+        po = new PerformanceObserver(list => {
+            for (const e of list.getEntries()) longTasks.push(e.duration);
+        });
+        po.observe({ entryTypes: ['longtask'] });
+    } catch {}
+
+    // Mirror the real code path from BlocActionGroup/actions.ts
+    // (openChangeComponentPicker template branch): build a fragment, stamp
+    // IS_CREATING on each top-level child, insert.
+    const fragment = document.createRange().createContextualFragment(html);
+    Array.from(fragment.children).forEach(el => {
+        el.classList.add('__perf_tpl__');
+        el.setAttribute('p9r-is-creating', 'true');
+    });
+    const topChildrenCount = fragment.children.length;
+
+    const t0 = performance.now();
+    main.appendChild(fragment);
+    const syncAppendMs = performance.now() - t0;
+
+    // Wait until editorization + is-creating cleanup has settled, bounded
+    // at 5 s so a pathological regression still returns (rather than
+    // timing out the whole run).
+    const deadline = performance.now() + 5000;
+    while (performance.now() < deadline) {
+        const busy = main.querySelector('.__perf_tpl__[p9r-is-creating]');
+        if (!busy) break;
+        await new Promise(r => setTimeout(r, 20));
+    }
+    await new Promise(r => setTimeout(r, 200));
+    const settleMs = performance.now() - t0;
+
+    if (po) po.disconnect();
+    const totalLongTaskMs = longTasks.reduce((a, b) => a + b, 0);
+    const maxLongTaskMs = longTasks.length ? Math.max(...longTasks) : 0;
+
+    const editorizedNodes = main.querySelectorAll('.__perf_tpl__ [p9r-is-editor], .__perf_tpl__[p9r-is-editor]').length;
+    const mapAfter = document.compIdentifierToEditor?.size ?? -1;
+    const listenersAfter = tracker ? tracker.total() : -1;
+
+    // Leave the content behind so downstream scenarios aren't freshly-empty
+    // — matches what realisticLanding does (teardown there is exercising a
+    // different signal). Actually tear it down to avoid poisoning later
+    // listener counts.
+    main.querySelectorAll('.__perf_tpl__').forEach(el => el.remove());
+    await new Promise(r => setTimeout(r, 400));
+    const mapFinal = document.compIdentifierToEditor?.size ?? -1;
+    const listenersFinal = tracker ? tracker.total() : -1;
+
+    return {
+        tplTopChildren: topChildrenCount,
+        tplAppendMs: +syncAppendMs.toFixed(2),
+        tplSettleMs: +settleMs.toFixed(1),
+        tplEditorizedNodes: editorizedNodes,
+        tplLongTaskCount: longTasks.length,
+        tplTotalLongTaskMs: +totalLongTaskMs.toFixed(1),
+        // INP proxy: the single worst main-thread block during the insert.
+        // User-reported pain point sits around 300–500ms on the real app;
+        // below 200ms would be "good INP" per Google's thresholds.
+        tplMaxLongTaskMs: +maxLongTaskMs.toFixed(1),
+        tplMapPeak: mapAfter - mapBefore,
+        tplListenerPeak: listenersAfter - listenersBefore,
+        tplMapResidual: mapFinal - mapBefore,
+        tplListenerResidual: listenersFinal - listenersBefore,
+    };
+}
+`,
+    absolutes: {
+        // Current pain point is 300–500ms — we flag a regression only above
+        // 500ms so the scenario surfaces the issue without failing the suite
+        // until the fix lands. Drop this once the insert path is optimised.
+        tplMaxLongTaskMs: 500,
+        tplSettleMs: 3000,
+    },
+};
+
 export const SCENARIOS: Scenario[] = [
     // Structural — run first so later scenarios' insertions don't pollute the count.
     listenerScan,
@@ -1863,6 +2025,7 @@ export const SCENARIOS: Scenario[] = [
     editorLifecycleLeak,
     blocRealInsert,
     realisticLanding,
+    insertLargeTemplate,
     // Internals — cheap, always-on signals.
     { name: "bulk-insert-200",      run: bulkInsert(200),
         absolutes: { syncAppendMs: 5, maxLongTaskMs: 150 } },

@@ -32,6 +32,10 @@ export class CompSync extends HTMLElement {
     private _titleEl: HTMLElement;
     private _countEl: HTMLElement;
     private _addBtn: HTMLButtonElement;
+    // Set by Editor._initPanelFragment's eager prepare() pass so a later
+    // connectedCallback (when the panel is actually opened) doesn't re-run
+    // _sync() and re-clone the default template on top of user content.
+    private _prepared = false;
 
     constructor() {
         super();
@@ -67,14 +71,31 @@ export class CompSync extends HTMLElement {
 
     connectedCallback() {
         const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-        if (componentIdentifier) {
+        if (componentIdentifier && !this._component) {
             this._component = document.querySelector(`[${p9r.attr.EDITOR.IDENTIFIER}="${componentIdentifier}"]`);
         }
         requestAnimationFrame(() => {
-            this._sync();
+            if (!this._prepared) {
+                this._sync();
+                this._component?.connectedCallback();
+            }
             this.init();
-            this._component?.connectedCallback();
         });
+    }
+
+    /**
+     * Eager pass invoked from Editor._initPanelFragment while this element
+     * still lives in a detached fragment. Runs the slot-defaulting clone
+     * and applies DISABLE_* attrs so the component is in a valid state
+     * before the user interacts — even though the panel UI hasn't been
+     * rendered yet. connectedCallback later skips the duplicate work.
+     */
+    public prepare(component: Component) {
+        this._component = component;
+        this._sync();
+        this._component?.connectedCallback();
+        this.init();
+        this._prepared = true;
     }
 
     private _sync() {
@@ -117,13 +138,15 @@ export class CompSync extends HTMLElement {
         // remaining slots. Same O(N²) → O(1) story as the add path (hot
         // path: hold-Delete inside a list).
         if (opts?.removed) {
-            this._removePanelItem(opts.removed);
-            this._updatePanelCount(slots.length);
+            if (this.isConnected) {
+                this._removePanelItem(opts.removed);
+                this._updatePanelCount(slots.length);
 
-            const canAddMultiple = this.isMultiple && slots.length < this.max;
-            const optionalEmptySingle = this.optionnal && !this.isMultiple && slots.length === 0;
-            this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
-            this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
+                const canAddMultiple = this.isMultiple && slots.length < this.max;
+                const optionalEmptySingle = this.optionnal && !this.isMultiple && slots.length === 0;
+                this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
+                this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
+            }
 
             if (this.isMultiple && slots.length === this.min) {
                 slots.forEach((slot) => {
@@ -198,6 +221,11 @@ export class CompSync extends HTMLElement {
         // previous approach was O(N) per insert, so a hold-Enter on a list of
         // N items was O(N²) in DOM churn (listeners + nodes), which is why
         // work kept piling up well after the key was released.
+        //
+        // When this CompSync lives in a detached fragment (lazy panel not yet
+        // opened), `isConnected` is false — we did the slot-attr work above
+        // and skip the panel UI entirely.
+        if (!this.isConnected) return;
         if (addedNode && slots.includes(addedNode as Component)) {
             this._appendPanelItem(addedNode, slots.length - 1);
             this._updatePanelCount(slots.length);

@@ -28,11 +28,10 @@ function resolveDefaultTag(target: HTMLElement): string {
     const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
     if (!parentId) return "p";
     const parentEditor = document.compIdentifierToEditor?.get(parentId) as any;
-    const panel = parentEditor?._panelConfig as HTMLElement | null | undefined;
-    if (!panel) return "p";
+    if (!parentEditor) return "p";
     const slotName = target.getAttribute("slot");
-    const compSyncs = panel.querySelectorAll("p9r-comp-sync");
-    for (const cs of Array.from(compSyncs)) {
+    const compSyncs = parentEditor.queryPanelChildren("p9r-comp-sync") as Element[];
+    for (const cs of compSyncs) {
         const template = cs.firstElementChild as HTMLElement | null;
         if (!template) continue;
         const tSlot = template.getAttribute("slot");
