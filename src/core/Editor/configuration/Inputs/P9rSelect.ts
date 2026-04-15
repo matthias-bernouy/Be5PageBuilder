@@ -15,31 +15,52 @@ export class P9rSelect extends HTMLElement {
     private _isOpen = false;
     private _value = "";
 
-    connectedCallback() {
-        this._render();
-
-        const slot = this.shadowRoot!.querySelector("slot") as HTMLSlotElement;
-        slot.addEventListener("slotchange", () => this._syncFromSlot());
-
-        this._trigger!.addEventListener("click", (e) => {
-            e.stopPropagation();
+    // Stable handler refs so disconnectedCallback can pair add/remove.
+    // An arrow literal in connectedCallback would leak one window listener
+    // per re-connect (moving the element around, switching modes, etc.).
+    private _onWindowClick = (e: MouseEvent) => {
+        if (this._isOpen && !this.contains(e.target as Node)) this._close();
+    };
+    private _onTriggerClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        this._isOpen ? this._close() : this._open();
+    };
+    private _onTriggerKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") this._close();
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
             this._isOpen ? this._close() : this._open();
-        });
+        }
+    };
+    private _onSlotChange = () => this._syncFromSlot();
 
-        window.addEventListener("click", (e) => {
-            if (this._isOpen && !this.contains(e.target as Node)) this._close();
-        });
-
-        this._trigger!.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key === "Escape") this._close();
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                this._isOpen ? this._close() : this._open();
-            }
-        });
+    constructor() {
+        super();
+        // Shadow is built once, in the constructor — attachShadow throws on
+        // the second call, which used to crash whenever the custom element
+        // was re-connected after a reparenting.
+        this._buildShadow();
     }
 
-    private _render() {
+    connectedCallback() {
+        const slot = this.shadowRoot!.querySelector("slot") as HTMLSlotElement;
+        slot.addEventListener("slotchange", this._onSlotChange);
+        this._trigger!.addEventListener("click", this._onTriggerClick);
+        this._trigger!.addEventListener("keydown", this._onTriggerKeyDown);
+        window.addEventListener("click", this._onWindowClick);
+        // A reconnect doesn't fire slotchange, so sync explicitly.
+        this._syncFromSlot();
+    }
+
+    disconnectedCallback() {
+        const slot = this.shadowRoot!.querySelector("slot") as HTMLSlotElement | null;
+        slot?.removeEventListener("slotchange", this._onSlotChange);
+        this._trigger?.removeEventListener("click", this._onTriggerClick);
+        this._trigger?.removeEventListener("keydown", this._onTriggerKeyDown);
+        window.removeEventListener("click", this._onWindowClick);
+    }
+
+    private _buildShadow() {
         const label = this.getAttribute("label") || this.getAttribute("name") || "";
 
         const shadow = this.attachShadow({ mode: "open" });

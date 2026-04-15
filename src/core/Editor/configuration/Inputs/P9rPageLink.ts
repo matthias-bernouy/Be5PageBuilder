@@ -27,29 +27,46 @@ export class P9rPageLink extends HTMLElement {
     private _value = "";
     private _mode: "page" | "external" = "page";
 
-    connectedCallback() {
-        this._render();
-        whenEditorManagerReady(() => this._fetchPages());
-
-        this._trigger!.addEventListener("click", (e) => {
-            e.stopPropagation();
+    private _onWindowClick = (e: MouseEvent) => {
+        if (this._isOpen && !this.contains(e.target as Node)) this._close();
+    };
+    private _onTriggerClick = (e: MouseEvent) => {
+        e.stopPropagation();
+        this._isOpen ? this._close() : this._open();
+    };
+    private _onTriggerKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") this._close();
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
             this._isOpen ? this._close() : this._open();
-        });
+        }
+    };
+    private _pagesFetched = false;
 
-        window.addEventListener("click", (e) => {
-            if (this._isOpen && !this.contains(e.target as Node)) this._close();
-        });
-
-        this._trigger!.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key === "Escape") this._close();
-            if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                this._isOpen ? this._close() : this._open();
-            }
-        });
+    constructor() {
+        super();
+        // attachShadow can only be called once — do it in the constructor so
+        // the custom element survives reparenting without a re-render crash.
+        this._buildShadow();
     }
 
-    private _render() {
+    connectedCallback() {
+        if (!this._pagesFetched) {
+            this._pagesFetched = true;
+            whenEditorManagerReady(() => this._fetchPages());
+        }
+        this._trigger!.addEventListener("click", this._onTriggerClick);
+        this._trigger!.addEventListener("keydown", this._onTriggerKeyDown);
+        window.addEventListener("click", this._onWindowClick);
+    }
+
+    disconnectedCallback() {
+        this._trigger?.removeEventListener("click", this._onTriggerClick);
+        this._trigger?.removeEventListener("keydown", this._onTriggerKeyDown);
+        window.removeEventListener("click", this._onWindowClick);
+    }
+
+    private _buildShadow() {
         const label = this.getAttribute("label");
         const shadow = this.attachShadow({ mode: "open" });
         shadow.innerHTML = `
