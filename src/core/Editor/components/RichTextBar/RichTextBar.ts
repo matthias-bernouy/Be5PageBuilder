@@ -29,6 +29,24 @@ export class EditorToolbar extends Component {
     private interacting = false;
     private pageLink: HTMLElement | null = null;
 
+    // Stable handler refs so connect/disconnect can pair up. Previously
+    // these were arrow literals in connectedCallback — every re-append
+    // (EditorManager.switchMode does exactly that) leaked 2 document
+    // listeners (selectionchange + mousedown).
+    private _onRootMousedown = (e: Event) => {
+        const target = e.target as HTMLElement;
+        this.interacting = true;
+        if (target.tagName === "INPUT" || target.tagName.includes("-") || target.closest('p9r-page-link')) {
+            return;
+        }
+        e.preventDefault();
+    };
+    private _onRootMouseup = () => { setTimeout(() => { this.interacting = false; }, 50); };
+    private _onRootClick = (e: Event) => this.handleClick(e as MouseEvent);
+    private _onSelectionChange = () => this.handleSelection();
+    private _onOutsideMousedown = (e: MouseEvent) => this.handleOutsideMouseDown(e);
+    private _rootListenersAttached = false;
+
     constructor() {
         super({
             css,
@@ -38,33 +56,34 @@ export class EditorToolbar extends Component {
 
     override connectedCallback() {
         const root = this.shadowRoot!;
-        root.addEventListener("mousedown", (e) => {
-            const target = e.target as HTMLElement;
-            this.interacting = true;
-            if (target.tagName === "INPUT" || target.tagName.includes("-") || target.closest('p9r-page-link')) {
-                return;
-            }
-            e.preventDefault();
-        });
-
-        root.addEventListener("mouseup", () => {
-            setTimeout(() => { this.interacting = false; }, 50);
-        });
-
-        root.addEventListener("click", (e) => this.handleClick(e as MouseEvent));
-        document.addEventListener("selectionchange", () => this.handleSelection());
-
+        if (!this._rootListenersAttached) {
+            // Shadow-root listeners survive re-parenting (the shadow root is
+            // owned by this element), so attach once only — no matching
+            // disconnectedCallback cleanup needed.
+            root.addEventListener("mousedown", this._onRootMousedown);
+            root.addEventListener("mouseup", this._onRootMouseup);
+            root.addEventListener("click", this._onRootClick);
+            this._rootListenersAttached = true;
+        }
+        document.addEventListener("selectionchange", this._onSelectionChange);
         // Selection-change alone doesn't close the bar when the user clicks an
         // element that doesn't collapse the caret (a non-editable sibling in
         // the parent, a BAG button with preventDefault, etc.). Catch those via
         // a document-level mousedown outside the bar and outside the current
         // editable.
-        document.addEventListener("mousedown", (e) => this.handleOutsideMouseDown(e));
+        document.addEventListener("mousedown", this._onOutsideMousedown);
 
-        this.pageLink = document.createElement("p9r-page-link");
-        this.pageLink.setAttribute("label", "");
-        this.pageLink.setAttribute("name", "href");
-        root.querySelector(".link-pages-wrap")!.appendChild(this.pageLink);
+        if (!this.pageLink) {
+            this.pageLink = document.createElement("p9r-page-link");
+            this.pageLink.setAttribute("label", "");
+            this.pageLink.setAttribute("name", "href");
+            root.querySelector(".link-pages-wrap")!.appendChild(this.pageLink);
+        }
+    }
+
+    override disconnectedCallback() {
+        document.removeEventListener("selectionchange", this._onSelectionChange);
+        document.removeEventListener("mousedown", this._onOutsideMousedown);
     }
 
     // ── Event routing ───────────────────────────────────────────────────

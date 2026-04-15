@@ -193,6 +193,7 @@ async function main() {
             // an un-added combo is a no-op — we must mirror that semantics
             // or we over-decrement (the `remove-then-add` idiom is common).
             const byType = new Map<string, number>();
+            const globalByType = new Map<string, number>();
             const perTarget = new WeakMap<object, Map<string, Set<unknown>>>();
             let winCount = 0, docCount = 0;
             const capFlag = (opts: unknown): boolean => {
@@ -216,6 +217,9 @@ async function main() {
                     byType.set(type, (byType.get(type) ?? 0) + 1);
                     if (this === window) winCount++;
                     else if (this === document) docCount++;
+                    if (this === window || this === document) {
+                        globalByType.set(type, (globalByType.get(type) ?? 0) + 1);
+                    }
                 }
                 return origAdd.call(this, type, listener, opts);
             };
@@ -229,6 +233,9 @@ async function main() {
                     byType.set(type, (byType.get(type) ?? 0) - 1);
                     if (this === window) winCount--;
                     else if (this === document) docCount--;
+                    if (this === window || this === document) {
+                        globalByType.set(type, (globalByType.get(type) ?? 0) - 1);
+                    }
                 }
                 return origRemove.call(this, type, listener, opts);
             };
@@ -239,6 +246,11 @@ async function main() {
                 byType: () => {
                     const o: Record<string, number> = {};
                     for (const [k, v] of byType) if (v !== 0) o[k] = v;
+                    return o;
+                },
+                globalByType: () => {
+                    const o: Record<string, number> = {};
+                    for (const [k, v] of globalByType) if (v !== 0) o[k] = v;
                     return o;
                 },
             };

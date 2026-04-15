@@ -1372,6 +1372,7 @@ async () => {
     // GC when the target is removed, but our tracker never sees the remove.
     // Document/window survive across the whole test, so residual > 0 = leak.
     const globalBefore = tracker ? (tracker.onWindow() + tracker.onDocument()) : -1;
+    const leakBaselineByType = tracker && tracker.globalByType ? tracker.globalByType() : {};
     const heapBefore = performance.memory ? performance.memory.usedJSHeapSize : 0;
 
     // Insert 200 <p> and wait for editorization.
@@ -1413,7 +1414,18 @@ async () => {
     const globalAfter = tracker ? (tracker.onWindow() + tracker.onDocument()) : -1;
     const heapAfter = performance.memory ? performance.memory.usedJSHeapSize : 0;
 
-    return {
+    // Identify which document/window listener types leaked.
+    const leakedByType = {};
+    if (tracker && tracker.globalByType) {
+        const snap = tracker.globalByType();
+        for (const [k, v] of Object.entries(snap)) {
+            const before = (leakBaselineByType || {})[k] || 0;
+            const d = (v) - before;
+            if (d !== 0) leakedByType[k] = d;
+        }
+    }
+
+    const out = {
         leakMapBefore: mapBefore,
         leakMapPeak: mapPeak,
         leakMapAfter: mapAfter,
@@ -1424,6 +1436,10 @@ async () => {
         leakGlobalResidual: globalAfter - globalBefore,
         leakHeapGrowthKB: +((heapAfter - heapBefore) / 1024).toFixed(1),
     };
+    // Expose top leaking types in the report.
+    const top = Object.entries(leakedByType).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    for (const [t, n] of top) out['leak_' + t] = n;
+    return out;
 }
 `,
     absolutes: {
