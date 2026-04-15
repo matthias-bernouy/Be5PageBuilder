@@ -14,9 +14,9 @@ export const createAuthGuard = (system: PageBuilder): Middleware => {
         try {
             const subject = await system.auth.guardAuthenticated(req);
             if (subject.role !== "admin") throw new Error("Not connected")
-
             return await next();
         } catch (error) {
+            console.log(error)
             const currentPath = new URL(req.url).pathname;
             const loginUrl = system.auth.withRedirect(system.auth.loginPage, currentPath);
             
