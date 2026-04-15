@@ -160,12 +160,22 @@ export class ImageSync extends HTMLElement {
     // the preview mirrors the live value.
     private _lockActions(target: HTMLImageElement | null) {
         if (!target) return;
+        // Idempotency: only touch the DOM (and re-run viewEditor) when at
+        // least one DISABLE_* attr isn't already in place. Without this, any
+        // sibling MutationObserver fan-out (ConfigPanel.init → every sync's
+        // init) unconditionally re-calls viewEditor() on the img, which in
+        // turn re-triggers style recalc / action-bar rebuild for every
+        // keystroke on an adjacent text node. See perf scenario
+        // image-sync-init-cost.
+        let changed = false;
         for (const key of ImageSync._LOCKED_ACTIONS) {
-            target.setAttribute(p9r.attr.ACTION[key], "true");
+            const attr = p9r.attr.ACTION[key];
+            if (target.getAttribute(attr) !== "true") {
+                target.setAttribute(attr, "true");
+                changed = true;
+            }
         }
-        // The editor caches its action-bar features in viewEditor() → they
-        // must be recomputed now that the DISABLE_* attrs are in place,
-        // otherwise the previously-computed bar still shows every button.
+        if (!changed) return;
         const id = target.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
         if (id) {
             const editor = document.compIdentifierToEditor?.get(id);
@@ -244,8 +254,14 @@ export class ImageSync extends HTMLElement {
         return this._component?.getAttribute(p9r.attr.EDITOR.IS_CREATING) === "true";
     }
 
-    init() {
-        this._target = this._resolveTarget();
+    init(addedNode?: HTMLElement) {
+        const target = this._resolveTarget();
+        // ConfigPanel.init fans addedNode out to every sync. We only care
+        // when the mutation concerns *our* <img> — otherwise a keystroke
+        // that inserts a sibling <p> would re-run _lockActions +
+        // _watchTarget + viewEditor() on the image on every Enter.
+        if (addedNode && addedNode !== target) return;
+        this._target = target;
         this._lockActions(this._target);
         this._watchTarget(this._target);
         if (this._target && this.allowResize) {

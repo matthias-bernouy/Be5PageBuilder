@@ -614,6 +614,88 @@ const holdEnterReal: DriverScenario = {
     },
 };
 
+/**
+ * Regression guard for the ImageSync cascade: when a bloc's ConfigPanel
+ * contains a <p9r-image-sync>, every sibling mutation under that bloc used
+ * to cascade into ImageSync._lockActions → editor.viewEditor() on the <img>,
+ * triggering style recalc + action-bar rebuild for every keystroke. The
+ * fix makes ImageSync.init early-return when the mutation doesn't concern
+ * its own <img>, and _lockActions idempotent. This scenario presses Enter
+ * inside a perf-hero (which has an image-sync) and counts viewEditor()
+ * calls on the image editor — should be ~0 per Enter after the fix.
+ */
+const enterNextToImageSync: DriverScenario = {
+    kind: "driver",
+    name: "enter-next-to-image-sync",
+    async run(page): Promise<Record<string, number>> {
+        await page.evaluate(() => {
+            const main = document.querySelector("main")!;
+            main.querySelectorAll(".__perf_hero__").forEach(el => el.remove());
+            const hero = document.createElement("perf-hero");
+            hero.className = "__perf_hero__";
+            hero.innerHTML = `<h1>Hero perf title</h1><p slot="subtitle">Subtitle</p>`;
+            main.appendChild(hero);
+        });
+        await page.waitForTimeout(800);
+
+        await page.evaluate(() => {
+            const h1 = document.querySelector(".__perf_hero__ h1") as HTMLElement;
+            h1.focus();
+            const sel = getSelection()!;
+            const r = document.createRange();
+            r.selectNodeContents(h1);
+            r.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(r);
+        });
+        await page.keyboard.type("seed");
+
+        await page.evaluate(() => {
+            const img = document.querySelector(".__perf_hero__ img") as HTMLElement | null;
+            const id = img?.getAttribute("p9r-identifier");
+            const editor = id ? (document as any).compIdentifierToEditor?.get(id) : null;
+            (window as any).__imgViewEditorCalls = 0;
+            if (editor && !editor.__perfWrapped) {
+                const orig = editor.viewEditor.bind(editor);
+                editor.viewEditor = function () {
+                    (window as any).__imgViewEditorCalls++;
+                    return orig();
+                };
+                editor.__perfWrapped = true;
+            }
+        });
+
+        const samples: number[] = [];
+        for (let i = 0; i < 15; i++) {
+            const t = await page.evaluate(() => performance.now());
+            await page.keyboard.press("Enter");
+            const t2 = await page.evaluate(() => performance.now());
+            samples.push(t2 - t);
+        }
+        await page.waitForTimeout(150);
+
+        const imgViewEditorCalls = await page.evaluate(
+            () => (window as any).__imgViewEditorCalls || 0,
+        );
+
+        const s = stats(samples);
+        return {
+            enterImgMedianMs: s.median,
+            enterImgP95Ms: s.p95,
+            enterImgMaxMs: s.max,
+            enterImgViewEditorCalls: imgViewEditorCalls,
+        };
+    },
+    absolutes: {
+        enterImgMedianMs: 15,
+        enterImgP95Ms: 40,
+        // Re-entering viewEditor on the image for a sibling keystroke is
+        // exactly the cascade we fixed — more than a couple of calls per
+        // 15 Enters means the idempotency guard regressed.
+        enterImgViewEditorCalls: 3,
+    },
+};
+
 const selectTextToolbar: DriverScenario = {
     kind: "driver",
     name: "select-text-toolbar",
@@ -1682,6 +1764,7 @@ export const SCENARIOS: Scenario[] = [
     dragReorder,
     holdEnter30,
     holdEnterReal,
+    enterNextToImageSync,
 ];
 
 // Absolute thresholds for driver scenarios (attached here because the scenario
