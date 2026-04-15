@@ -1,3 +1,5 @@
+import { p9rExternalsPlugin } from "./p9rExternalsPlugin";
+
 /** Synthetic editor source for blocs deployed without their own Editor module.
  *  The bloc is registered as opaque: it still gets the default parent-level
  *  action bar, but its subtree is sealed at runtime. */
@@ -17,6 +19,7 @@ export async function prepare_bloc(fileView: File, fileEditor: File | null, labe
         entrypoints: [entry],
         target: "browser" as const,
         format: "iife" as const,
+        plugins: [p9rExternalsPlugin],
     });
 
     const viewPath   = "./tmp/" + blocId + ".js";

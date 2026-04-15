@@ -79,6 +79,12 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     inlineScript.defer = true;
     document.head.appendChild(inlineScript);
 
+    // Synchronous global runtime: installs `window.p9r.Component` / `Editor`
+    // etc. before any bloc `<script>` evaluates. Must come first in <head>.
+    const globalScript = document.createElement("script");
+    globalScript.src = "/assets/component.js";
+    document.head.prepend(globalScript);
+
     for (const bloc of blocs) {
         const s = document.createElement("script");
         s.src = `/bloc?tag=${bloc.id}`;

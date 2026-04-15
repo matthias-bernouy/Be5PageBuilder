@@ -61,6 +61,12 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
         if (re.test(expandedContent)) usedTags.add(bloc.id);
     }
 
+    // Synchronous global runtime — must come first in <head> so the bloc
+    // IIFEs below can read `window.p9r.Component` at evaluation time.
+    const globalScript = document.createElement("script");
+    globalScript.setAttribute("src", "/assets/component.js");
+    document.head.prepend(globalScript);
+
     for (const tag of usedTags) {
         const script = document.createElement("script");
         script.setAttribute("src", `/bloc?tag=${tag}`);

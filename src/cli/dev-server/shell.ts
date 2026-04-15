@@ -59,6 +59,12 @@ export async function buildShell(ctx: ShellContext): Promise<string> {
     inline.setAttribute("defer", "");
     document.head.appendChild(inline);
 
+    // Synchronous global runtime — must come first in <head> so the bloc
+    // IIFEs below can read `window.p9r.Component` at evaluation time.
+    const globalScript = document.createElement("script");
+    globalScript.setAttribute("src", "/assets/component.js");
+    document.head.prepend(globalScript);
+
     for (const id of merged.keys()) {
         const s = document.createElement("script");
         s.setAttribute("src", `/bloc?tag=${id}`);
