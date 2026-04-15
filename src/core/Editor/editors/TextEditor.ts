@@ -98,6 +98,11 @@ export class TextEditor extends Editor {
             if (TextEditor._editorAttrs.has(attr.name)) return;
             element.setAttribute(attr.name, attr.value);
         });
+        // Preserve the parent-identifier so ObserverManager can notify the
+        // parent (onChildrenAdded) and its CompSync re-applies slot
+        // attributes (DISABLE_CHANGE_COMPONENT, etc.) on the new node.
+        const parentId = this.target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+        if (parentId) element.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, parentId);
         element.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
         return element;
     }
