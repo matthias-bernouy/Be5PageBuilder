@@ -184,4 +184,13 @@ export class EditorManager{
         return this.mode;
     }
 
+    dispose() {
+        this.observer.dispose();
+        this.mediaCenter.remove();
+        this.toolbar.remove();
+        this.richTextBar.remove();
+        this.blocActionGroup.remove();
+        if (document.EditorManager === this) delete (document as any).EditorManager;
+    }
+
 }

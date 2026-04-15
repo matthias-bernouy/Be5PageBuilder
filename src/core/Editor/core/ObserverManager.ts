@@ -18,6 +18,7 @@ export type TagElement = {
 export class ObserverManager {
 
     private workingElement: HTMLElement;
+    private observer?: MutationObserver;
 
     private editors: Map<string, TagElement> = new Map();
 
@@ -97,14 +98,18 @@ export class ObserverManager {
                     const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
 
                     if (allAdded.has(node)) {
-                        // DOM move — notify old parent but keep the editor alive
+                        // DOM move — notify old parent but keep the editor (and subtree) alive
                         document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
                         continue;
                     }
 
                     document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
+                    // MutationObserver only reports the top-level removed node.
+                    // Walk the subtree so editorized descendants get disposed too —
+                    // otherwise removing a container leaks every nested editor
+                    // (and its listeners, observers, panels) into the registry.
+                    this._disposeSubtree(node);
                     document.compIdentifierToEditor.get(identifier)?.dispose();
-                    document.compIdentifierToEditor.delete(identifier);
                 }
 
                 if (mutation.type === 'childList') {
@@ -132,10 +137,32 @@ export class ObserverManager {
             }
         };
 
-        const observer = new MutationObserver(callback);
-        observer.observe(workingElement, {
+        this.observer = new MutationObserver(callback);
+        this.observer.observe(workingElement, {
             childList: true,
             subtree: true
+        });
+    }
+
+    dispose() {
+        this.observer?.disconnect();
+        this.observer = undefined;
+        // Tear down every editor this manager spawned.
+        const map = document.compIdentifierToEditor;
+        if (!map) return;
+        const descendants = this.workingElement.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
+        descendants.forEach((node) => {
+            const id = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+            if (id) map.get(id)?.dispose();
+        });
+    }
+
+    private _disposeSubtree(root: HTMLElement) {
+        if (!root.querySelectorAll) return;
+        const descendants = root.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
+        descendants.forEach((node) => {
+            const id = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+            if (id) document.compIdentifierToEditor?.get(id)?.dispose();
         });
     }
 
@@ -177,7 +204,6 @@ export class ObserverManager {
             if (editor) {
                 editor.viewClient();
                 editor.dispose();
-                document.compIdentifierToEditor.delete(id);
             }
         });
     }
