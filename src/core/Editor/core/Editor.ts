@@ -100,13 +100,17 @@ export abstract class Editor {
     }
 
     private _initPanelFragment(editor: string): void {
-        const tpl = document.createElement("template");
-        tpl.innerHTML = editor;
-        this._panelFragment = tpl.content;
+        // Must use createContextualFragment (not <template>.content): a
+        // template's content lives in a separate inert document, whose custom
+        // elements are not upgraded by the main document's registry — so
+        // customElements.upgrade() would silently do nothing and prepare()
+        // would run against un-upgraded HTMLElement instances. The contextual
+        // fragment is created in `document`, so upgrade() sees the registry.
+        this._panelFragment = document.createRange().createContextualFragment(editor);
 
         // Upgrade every custom element in the fragment — otherwise their
-        // connectedCallback never fires until the fragment is attached, and
-        // our prepare() calls below would land on an un-upgraded instance.
+        // prepare() method doesn't exist yet (class not instantiated) and
+        // our default-seeding pass would be a no-op.
         try { customElements.upgrade(this._panelFragment); } catch {}
 
         // Stamp PARENT_IDENTIFIER on every descendant so syncs (at any depth)

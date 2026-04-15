@@ -9,7 +9,10 @@ beforeEach(() => {
 function registerParent(parent: HTMLElement, panel: HTMLElement) {
     const id = "parent-" + Math.random().toString(36).slice(2);
     parent.setAttribute(p9r.attr.EDITOR.IDENTIFIER, id);
-    (document as any).compIdentifierToEditor.set(id, { _panelConfig: panel });
+    (document as any).compIdentifierToEditor.set(id, {
+        _panelConfig: panel,
+        queryPanelChildren: (sel: string) => Array.from(panel.querySelectorAll(sel)),
+    });
     return id;
 }
 
