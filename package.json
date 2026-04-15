@@ -43,6 +43,7 @@
         "build": "bun run build.ts",
         "typecheck": "bun x tsc --noEmit",
         "test": "bun test",
+        "perf": "bun run scripts/perf/run.ts",
         "prepublishOnly": "bun run build"
     },
     "devDependencies": {
@@ -51,6 +52,7 @@
         "@types/bun": "latest",
         "bun-types": "^1.3.11",
         "happy-dom": "^20.8.9",
+        "playwright": "^1.59.1",
         "typescript": "^5.9.3"
     },
     "peerDependencies": {

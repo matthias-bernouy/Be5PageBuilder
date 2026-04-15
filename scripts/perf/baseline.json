@@ -1,0 +1,123 @@
+{
+  "createdAt": "2026-04-15T16:03:40.271Z",
+  "scenarios": [
+    {
+      "name": "bulk-insert-200",
+      "metrics": {
+        "syncAppendMs": 0.6,
+        "longTaskCount": 0,
+        "totalLongTaskMs": 0,
+        "maxLongTaskMs": 0,
+        "elementsAfter": 232
+      },
+      "durationMs": 653.6
+    },
+    {
+      "name": "bulk-insert-1000",
+      "metrics": {
+        "syncAppendMs": 1.6,
+        "longTaskCount": 1,
+        "totalLongTaskMs": 86,
+        "maxLongTaskMs": 86,
+        "elementsAfter": 1032
+      },
+      "durationMs": 655.1
+    },
+    {
+      "name": "observer-scaling",
+      "metrics": {
+        "observerLagMedianMs": 4.1,
+        "observerLagP95Ms": 4.9,
+        "observerLagMaxMs": 4.9
+      },
+      "durationMs": 70
+    },
+    {
+      "name": "hover-cost",
+      "metrics": {
+        "hoverMedianMs": 0,
+        "hoverP95Ms": 0.1,
+        "hoverMaxMs": 0.1
+      },
+      "durationMs": 3.4
+    },
+    {
+      "name": "typing-cost",
+      "metrics": {
+        "typingMedianMs": 0.6,
+        "typingP95Ms": 0.9,
+        "typingMaxMs": 1
+      },
+      "durationMs": 364.4
+    },
+    {
+      "name": "serialize-cost",
+      "metrics": {
+        "serializeMedianMs": 1.2,
+        "serializeP95Ms": 2.3,
+        "serializedBytes": 307144
+      },
+      "durationMs": 33.8
+    },
+    {
+      "name": "memory-footprint",
+      "metrics": {
+        "heapUsedMB": 9.54,
+        "domElements": 1052
+      },
+      "durationMs": 1.3
+    },
+    {
+      "name": "type-and-enter",
+      "metrics": {
+        "typeMedianMs": 2.4,
+        "typeP95Ms": 6.3,
+        "typeMaxMs": 10.3,
+        "enterMedianMs": 3.6,
+        "enterP95Ms": 10.5,
+        "enterMaxMs": 10.5
+      },
+      "durationMs": 806.9
+    },
+    {
+      "name": "slash-open-library",
+      "metrics": {
+        "slashOpenMedianMs": 9.5,
+        "slashOpenP95Ms": 17.2,
+        "slashOpenMaxMs": 17.2,
+        "slashOpenSamples": 8
+      },
+      "durationMs": 1664
+    },
+    {
+      "name": "hover-real-mouse",
+      "metrics": {
+        "hoverFrameMedianMs": 16.7,
+        "hoverFrameP95Ms": 16.9,
+        "hoverFrameMaxMs": 18,
+        "hoverFrameCount": 103
+      },
+      "durationMs": 2101.7
+    },
+    {
+      "name": "bag-duplicate",
+      "metrics": {
+        "bagDuplicateMedianMs": 5.1,
+        "bagDuplicateP95Ms": 6.3,
+        "bagDuplicateMaxMs": 6.3,
+        "bagDuplicateCreated": 7
+      },
+      "durationMs": 1184.8
+    },
+    {
+      "name": "select-text-toolbar",
+      "metrics": {
+        "selectToolbarMedianMs": 1.8,
+        "selectToolbarP95Ms": 4.9,
+        "selectToolbarMaxMs": 4.9,
+        "selectToolbarSamples": 8
+      },
+      "durationMs": 758
+    }
+  ]
+}
