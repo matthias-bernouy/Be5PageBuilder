@@ -12,15 +12,15 @@ export type CustomAction = {
 export abstract class Editor {
 
     private targetIdentifier: string;
-    public         target:       HTMLElement;
+    public target: HTMLElement;
     private styleElement: HTMLStyleElement;
     private static bodyStyle: Map<string, boolean> = new Map();
-    public         _panelConfig: ConfigPanel | null = null;
-    public         variant: string = "default";
-    public         customActions: CustomAction[] = [];
-    public         stateSyncs: StateSync[] = [];
-    private        _pinMode: PinMode;
-    private        _actionBarFeatures: Map<string, boolean> = new Map([
+    public _panelConfig: ConfigPanel | null = null;
+    public variant: string = "default";
+    public customActions: CustomAction[] = [];
+    public stateSyncs: StateSync[] = [];
+    private _pinMode: PinMode;
+    private _actionBarFeatures: Map<string, boolean> = new Map([
         ["delete", true],
         ["duplicate", true],
         ["addBefore", false],
@@ -37,8 +37,8 @@ export abstract class Editor {
         this.targetIdentifier = crypto.randomUUID();
         this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier);
 
-        if ( !document.compIdentifierToEditor ) document.compIdentifierToEditor = new Map();
-        if ( document.compIdentifierToEditor.has(this.targetIdentifier) ){
+        if (!document.compIdentifierToEditor) document.compIdentifierToEditor = new Map();
+        if (document.compIdentifierToEditor.has(this.targetIdentifier)) {
             throw new Error("Critial Random Error: UUID duplication for " + this.target);
         }
 
@@ -49,21 +49,22 @@ export abstract class Editor {
             this.notifyPinStateChanged();
         });
 
-        if ( editor ) {
+        if (editor) {
             this._panelConfig = document.createElement("p9r-config-panel") as ConfigPanel;
             this._panelConfig.innerHTML += editor;
             this._setPanelItemIdentifiers();
             document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig)
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);
-                });
-            });
         }
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);
+            });
+        });
 
         document.addEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);
 
-        if (document.EditorManager?.getBlocActionGroup()){
+        if (document.EditorManager?.getBlocActionGroup()) {
             document.EditorManager.getBlocActionGroup().close();
         }
     }
@@ -77,7 +78,7 @@ export abstract class Editor {
     }
 
     private _setPanelItemIdentifiers(): void {
-        if ( !this._panelConfig ) return;
+        if (!this._panelConfig) return;
         const panelItems = this._panelConfig.querySelectorAll('*') as unknown as any[];
         panelItems.forEach((item) => {
             item.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.targetIdentifier);
@@ -90,12 +91,12 @@ export abstract class Editor {
     }
 
     public refreshActionBarFeatures() {
-        this._actionBarFeatures.set("delete",          this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE)            !== "true");
-        this._actionBarFeatures.set("duplicate",       this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE)         !== "true");
-        this._actionBarFeatures.set("addBefore",       this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE)        !== "true");
-        this._actionBarFeatures.set("addAfter",        this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER)         !== "true");
-        this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT)  !== "true");
-        this._actionBarFeatures.set("saveAsTemplate",  this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE)  !== "true");
+        this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
+        this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
+        this._actionBarFeatures.set("addBefore", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
+        this._actionBarFeatures.set("addAfter", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
+        this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) !== "true");
+        this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
     }
 
     public registerStateSync(sync: StateSync) {
@@ -183,7 +184,7 @@ export abstract class Editor {
         this.init();
 
         if (!this.target.shadowRoot) {
-            if (!Editor.bodyStyle.has(this.target.tagName)){
+            if (!Editor.bodyStyle.has(this.target.tagName)) {
                 Editor.bodyStyle.set(this.target.tagName, true)
                 document.body.append(this.styleElement);
             };
@@ -197,7 +198,7 @@ export abstract class Editor {
         this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true")
 
         this.target.draggable = true;
-        if ( this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)){
+        if (this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)) {
             this.target.removeAttribute("draggable");
         }
 
@@ -205,7 +206,7 @@ export abstract class Editor {
 
         this.refreshActionBarFeatures();
 
-        if (this._actionBarFeatures.values().some(v => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0){
+        if (this._actionBarFeatures.values().some(v => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0) {
             this.target.addEventListener("mouseenter", this.handleHover);
         }
 
@@ -219,20 +220,20 @@ export abstract class Editor {
         this.styleElement.remove();
     }
 
-    onChildrenRemoved(){
+    onChildrenRemoved() {
         this._panelConfig?.init();
     }
 
-    onChildrenAdded(){
+    onChildrenAdded() {
         this._panelConfig?.init();
     }
 
-    get actionBarConfiguration(){
+    get actionBarConfiguration() {
         return this._actionBarFeatures;
     }
 
     get ensurePersistentIdentifier(): string {
-        if (!this.target.hasAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)){
+        if (!this.target.hasAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)) {
             const generatedId = "ID-" + crypto.randomUUID();
             this.target.setAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER, generatedId);
         }
