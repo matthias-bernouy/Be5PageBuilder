@@ -971,10 +971,476 @@ async () => {
     },
 };
 
+/**
+ * Cost of EditorManager.switchMode(). `save()` and `getContent()` both call it
+ * twice back-to-back, and it iterates every registered editor to dispatch
+ * `onSwitchMode`. With a 400-cell grid this hot loop happens on every save —
+ * worth a timing signal so regressions in `onSwitchMode` overrides surface.
+ */
+const modeSwitchCost: BrowserScenario = {
+    name: "mode-switch-cost",
+    run: `
+async () => {
+    const main = document.querySelector('main');
+    const em = document.EditorManager;
+    if (!em) return { modeSwitchMedianMs: -1, modeSwitchP95Ms: -1, modeSwitchMaxMs: -1, modeSwitchEditors: -1 };
+    const now = () => performance.now();
+
+    // Build a grid of paragraphs so onSwitchMode has something to iterate.
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 200; i++) {
+        const p = document.createElement('p');
+        p.className = '__perf_switch__';
+        p.textContent = 'switch ' + i;
+        frag.appendChild(p);
+    }
+    main.appendChild(frag);
+    // Wait until all 200 are editorized.
+    const deadline = now() + 5000;
+    while (now() < deadline) {
+        if (main.querySelectorAll('p.__perf_switch__[p9r-is-editor]').length >= 200) break;
+        await new Promise(r => setTimeout(r, 10));
+    }
+    await new Promise(r => setTimeout(r, 200));
+
+    const editorCount = document.compIdentifierToEditor?.size ?? 0;
+    const samples = [];
+    for (let i = 0; i < 10; i++) {
+        const t0 = now();
+        em.switchMode(p9r.mode.VIEW);
+        const toView = now() - t0;
+        const t1 = now();
+        em.switchMode(p9r.mode.EDITOR);
+        const toEditor = now() - t1;
+        samples.push(toView, toEditor);
+        await new Promise(r => setTimeout(r, 20));
+    }
+    samples.sort((a, b) => a - b);
+
+    // Cleanup.
+    main.querySelectorAll('.__perf_switch__').forEach(el => el.remove());
+    return {
+        modeSwitchMedianMs: +samples[Math.floor(samples.length / 2)].toFixed(2),
+        modeSwitchP95Ms: +samples[Math.floor(samples.length * 0.95)].toFixed(2),
+        modeSwitchMaxMs: +samples[samples.length - 1].toFixed(2),
+        modeSwitchEditors: editorCount,
+    };
+}
+`,
+    absolutes: { modeSwitchMedianMs: 50, modeSwitchP95Ms: 120, modeSwitchMaxMs: 200 },
+};
+
+/**
+ * Leak detector: insert 500 paragraphs, remove them all, check that
+ *   (a) the editor registry empties out,
+ *   (b) no listener accumulates on window or document.
+ * Per-element listeners are ignored — once the <p> is removed its handlers
+ * are GC'd even if `removeEventListener` was never called, so they don't
+ * constitute a real leak. Window/document handlers do survive, so a forgotten
+ * `removeEventListener` on a global target would show up here.
+ */
+const deleteCleanup: BrowserScenario = {
+    name: "delete-cleanup",
+    run: `
+async () => {
+    const tracker = (window).__perfListeners;
+    if (!tracker) return { cleanupLeakedWindowListeners: -1, cleanupLeakedDocumentListeners: -1 };
+    const main = document.querySelector('main');
+    const now = () => performance.now();
+
+    await new Promise(r => setTimeout(r, 200));
+    const beforeWindow = tracker.onWindow();
+    const beforeDocument = tracker.onDocument();
+    const beforeEditors = document.compIdentifierToEditor?.size ?? 0;
+
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 500; i++) {
+        const p = document.createElement('p');
+        p.className = '__perf_cleanup__';
+        p.textContent = 'cleanup ' + i;
+        frag.appendChild(p);
+    }
+    main.appendChild(frag);
+    const ready = now() + 6000;
+    while (now() < ready) {
+        if (main.querySelectorAll('p.__perf_cleanup__[p9r-is-editor]').length >= 500) break;
+        await new Promise(r => setTimeout(r, 10));
+    }
+    await new Promise(r => setTimeout(r, 200));
+    const afterInsertWindow = tracker.onWindow();
+    const afterInsertDocument = tracker.onDocument();
+    const afterInsertEditors = document.compIdentifierToEditor?.size ?? 0;
+
+    // Delete them all at once and measure cleanup time.
+    const t0 = now();
+    main.querySelectorAll('p.__perf_cleanup__').forEach(el => el.remove());
+    const syncRemoveMs = now() - t0;
+    // MutationObserver fires on microtask — wait for dispose() to have run.
+    await new Promise(r => setTimeout(r, 300));
+
+    const afterWindow = tracker.onWindow();
+    const afterDocument = tracker.onDocument();
+    const afterEditors = document.compIdentifierToEditor?.size ?? 0;
+    return {
+        cleanupWindowBefore: beforeWindow,
+        cleanupWindowPeak: afterInsertWindow,
+        cleanupWindowAfter: afterWindow,
+        cleanupLeakedWindowListeners: afterWindow - beforeWindow,
+        cleanupDocumentBefore: beforeDocument,
+        cleanupDocumentPeak: afterInsertDocument,
+        cleanupDocumentAfter: afterDocument,
+        cleanupLeakedDocumentListeners: afterDocument - beforeDocument,
+        cleanupEditorsBefore: beforeEditors,
+        cleanupEditorsPeak: afterInsertEditors,
+        cleanupEditorsAfter: afterEditors,
+        cleanupLeakedEditors: afterEditors - beforeEditors,
+        cleanupSyncRemoveMs: +syncRemoveMs.toFixed(2),
+    };
+}
+`,
+    absolutes: {
+        // Hard zero tolerance on shared targets and editor registry.
+        // Per-element listeners are excluded — they're GC'd with the removed node.
+        cleanupLeakedWindowListeners: 0,
+        cleanupLeakedDocumentListeners: 0,
+        cleanupLeakedEditors: 0,
+        cleanupSyncRemoveMs: 100,
+    },
+};
+
+/**
+ * Deeply nested insertion: build a 30-level chain of <ul><li>…</ul></li> that
+ * collapses to a single subtree insertion. ObserverManager.make_it_editor runs
+ * querySelectorAll('*') on the root when the subtree lands, so this exercises
+ * the pathological "one mutation, many editors" path.
+ */
+const deepNesting: BrowserScenario = {
+    name: "deep-nesting-build",
+    run: `
+async () => {
+    const main = document.querySelector('main');
+    const now = () => performance.now();
+    const DEPTH = 30;
+
+    // Build detached tree — one single insertion triggers one mutation record.
+    let root = document.createElement('ul');
+    root.className = '__perf_deep__';
+    let cursor = root;
+    for (let i = 0; i < DEPTH; i++) {
+        const li = document.createElement('li');
+        const child = document.createElement('ul');
+        li.appendChild(child);
+        cursor.appendChild(li);
+        cursor = child;
+    }
+    // Leaf paragraph at the bottom.
+    const leaf = document.createElement('p');
+    leaf.textContent = 'leaf';
+    cursor.appendChild(leaf);
+
+    const totalEditables = root.querySelectorAll('ul, li, p').length;
+
+    const t0 = now();
+    main.appendChild(root);
+    // Wait until the leaf paragraph is editorized (last-to-be-reached).
+    const deadline = t0 + 5000;
+    while (now() < deadline) {
+        if (leaf.hasAttribute('p9r-is-editor')) break;
+        await new Promise(r => setTimeout(r, 5));
+    }
+    const settleMs = now() - t0;
+
+    // Count how many descendants got editorized (ul only — li is not registered).
+    const editorized = root.querySelectorAll('[p9r-is-editor]').length;
+
+    // Cleanup.
+    root.remove();
+    await new Promise(r => setTimeout(r, 200));
+    return {
+        deepNestingSettleMs: +settleMs.toFixed(2),
+        deepNestingNodes: totalEditables,
+        deepNestingEditorized: editorized,
+    };
+}
+`,
+    absolutes: { deepNestingSettleMs: 150 },
+};
+
+/**
+ * Core Web Vitals on the editor page. Re-navigates so the measurement starts
+ * from a clean document state, then collects LCP (largest-contentful-paint),
+ * CLS (layout-shift entries), and classic navigation timings. INP is not
+ * measured here — it needs real continuous interaction; `hover-real-mouse` /
+ * `typing-cost` already cover per-event handler latency on this codebase.
+ */
+const webVitals: DriverScenario = {
+    kind: "driver",
+    name: "web-vitals",
+    async run(page): Promise<Record<string, number>> {
+        const currentUrl = page.url();
+        // Install collectors BEFORE navigation so the first entries aren't lost.
+        await page.evaluate(() => {
+            const w = window as unknown as {
+                __vitals?: { lcp: number; cls: number; entries: number };
+                __lcpObserver?: PerformanceObserver;
+                __clsObserver?: PerformanceObserver;
+            };
+            w.__vitals = { lcp: 0, cls: 0, entries: 0 };
+        });
+        await page.goto(currentUrl, { waitUntil: "domcontentloaded" });
+        await page.evaluate(() => {
+            const w = window as unknown as { __vitals: { lcp: number; cls: number; entries: number } };
+            w.__vitals = { lcp: 0, cls: 0, entries: 0 };
+            const lcp = new PerformanceObserver((list) => {
+                for (const e of list.getEntries()) {
+                    w.__vitals.lcp = Math.max(w.__vitals.lcp, e.startTime);
+                }
+            });
+            lcp.observe({ type: "largest-contentful-paint", buffered: true });
+            const cls = new PerformanceObserver((list) => {
+                for (const e of list.getEntries() as unknown as Array<{ value: number; hadRecentInput: boolean }>) {
+                    if (!e.hadRecentInput) {
+                        w.__vitals.cls += e.value;
+                        w.__vitals.entries++;
+                    }
+                }
+            });
+            cls.observe({ type: "layout-shift", buffered: true });
+        });
+        // Give the editor time to boot, paint, and settle layout shifts.
+        await page.waitForSelector("main p", { timeout: 10000 });
+        await page.waitForTimeout(3000);
+
+        const result = await page.evaluate(() => {
+            const w = window as unknown as { __vitals: { lcp: number; cls: number; entries: number } };
+            const nav = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+            const paints = performance.getEntriesByType("paint") as Array<PerformanceEntry & { name: string; startTime: number }>;
+            const fcp = paints.find(p => p.name === "first-contentful-paint")?.startTime ?? 0;
+            return {
+                lcp: w.__vitals.lcp,
+                cls: w.__vitals.cls,
+                clsEntries: w.__vitals.entries,
+                fcp,
+                domContentLoaded: nav ? nav.domContentLoadedEventEnd - nav.startTime : 0,
+                loadEvent: nav ? nav.loadEventEnd - nav.startTime : 0,
+            };
+        });
+        return {
+            lcpMs: +result.lcp.toFixed(1),
+            cls: +result.cls.toFixed(4),
+            clsShifts: result.clsEntries,
+            fcpMs: +result.fcp.toFixed(1),
+            domContentLoadedMs: +result.domContentLoaded.toFixed(1),
+            loadEventMs: +result.loadEvent.toFixed(1),
+        };
+    },
+    absolutes: { lcpMs: 2500, cls: 0.1, fcpMs: 2000, domContentLoadedMs: 2000 },
+};
+
+/**
+ * Shadow DOM topology survey. Walks every shadow root reachable from the
+ * document, reports max depth + total shadow root count + max slotted children
+ * in a single host. Deep shadow trees inflate style recalc cost and make
+ * debugging harder; this is a structural canary for accidental nesting.
+ */
+const shadowDomDepth: BrowserScenario = {
+    name: "shadow-dom-depth",
+    run: `
+async () => {
+    const visit = (root, depth, acc) => {
+        acc.maxDepth = Math.max(acc.maxDepth, depth);
+        const hosts = root.querySelectorAll('*');
+        for (const el of hosts) {
+            if (el.shadowRoot) {
+                acc.totalShadowRoots++;
+                // Count slotted children on this host (light-DOM children projected in).
+                acc.maxSlotted = Math.max(acc.maxSlotted, el.children.length);
+                visit(el.shadowRoot, depth + 1, acc);
+            }
+        }
+    };
+    const acc = { maxDepth: 0, totalShadowRoots: 0, maxSlotted: 0 };
+    visit(document, 0, acc);
+
+    // Also measure the cost of a style recalc triggered by toggling a CSS variable on :root.
+    const now = () => performance.now();
+    const samples = [];
+    for (let i = 0; i < 20; i++) {
+        document.documentElement.style.setProperty('--__perf_probe', String(i));
+        const t = now();
+        // Force layout by reading a property that depends on it.
+        void document.body.getBoundingClientRect();
+        samples.push(now() - t);
+    }
+    document.documentElement.style.removeProperty('--__perf_probe');
+    samples.sort((a, b) => a - b);
+    return {
+        shadowMaxDepth: acc.maxDepth,
+        shadowRootCount: acc.totalShadowRoots,
+        shadowMaxSlottedChildren: acc.maxSlotted,
+        recalcMedianMs: +samples[Math.floor(samples.length / 2)].toFixed(3),
+        recalcP95Ms: +samples[Math.floor(samples.length * 0.95)].toFixed(3),
+    };
+}
+`,
+    absolutes: { shadowMaxDepth: 5, recalcP95Ms: 5 },
+};
+
+/**
+ * Reloads the editor while recording every HTTP request. Flags duplicate URLs
+ * (same full URL fetched more than once — usually a bug), oversized payloads,
+ * and responses served without compression. `getContent()` / `save()` aren't
+ * called here — this is strictly the boot-time waterfall.
+ */
+const networkDuplicates: DriverScenario = {
+    kind: "driver",
+    name: "network-duplicates",
+    async run(page): Promise<Record<string, number>> {
+        type Req = { url: string; status: number; bytes: number; encoded: boolean };
+        const requests: Req[] = [];
+        const reqListener = (req: import("playwright").Request) => { /* noop — response captures the size */ void req; };
+        const respListener = async (resp: import("playwright").Response) => {
+            try {
+                const url = resp.url();
+                // Ignore anything not from the app origin (favicons etc. are fine).
+                if (!url.startsWith(page.url().split("/").slice(0, 3).join("/"))) return;
+                const enc = (resp.headers()["content-encoding"] || "").toLowerCase();
+                const lenHdr = resp.headers()["content-length"];
+                let bytes = lenHdr ? parseInt(lenHdr, 10) : 0;
+                if (!bytes) {
+                    try { const buf = await resp.body(); bytes = buf.byteLength; } catch { /* aborted */ }
+                }
+                requests.push({ url, status: resp.status(), bytes, encoded: enc === "gzip" || enc === "br" || enc === "deflate" });
+            } catch { /* response already disposed */ }
+        };
+        page.on("request", reqListener);
+        page.on("response", respListener);
+
+        const currentUrl = page.url();
+        await page.goto(currentUrl, { waitUntil: "load" });
+        await page.waitForSelector("main p", { timeout: 10000 });
+        await page.waitForTimeout(500);
+
+        page.off("request", reqListener);
+        page.off("response", respListener);
+
+        const urls = new Map<string, number>();
+        for (const r of requests) urls.set(r.url, (urls.get(r.url) ?? 0) + 1);
+        const duplicates = Array.from(urls.values()).filter(n => n > 1).reduce((a, n) => a + (n - 1), 0);
+        const duplicateUrls = Array.from(urls.entries()).filter(([, n]) => n > 1).length;
+        const totalBytes = requests.reduce((a, r) => a + r.bytes, 0);
+        const oversize = requests.filter(r => r.bytes > 500 * 1024).length;
+        const uncompressed = requests.filter(r => !r.encoded && r.bytes > 50 * 1024).length;
+        const failed = requests.filter(r => r.status >= 400).length;
+
+        return {
+            netRequestCount: requests.length,
+            netUniqueUrls: urls.size,
+            netDuplicateUrls: duplicateUrls,
+            netDuplicateRequests: duplicates,
+            netTotalKB: +(totalBytes / 1024).toFixed(1),
+            netOversizePayloads: oversize,
+            netUncompressedLargePayloads: uncompressed,
+            netFailedRequests: failed,
+        };
+    },
+    absolutes: {
+        netDuplicateRequests: 0,
+        netOversizePayloads: 0,
+        netFailedRequests: 0,
+    },
+};
+
+/**
+ * Full create→destroy cycle. Adds 200 <p>, waits for editorization, then
+ * removes them all. Checks three things that must hold after teardown:
+ *   - document.compIdentifierToEditor returns to its pre-insert size
+ *   - listener count returns to its pre-insert count (no leaked handlers)
+ *   - heap delta is small (no retained Editor instances)
+ * Absolute ceilings catch leaks the baseline might hide (baseline itself
+ * could be leaky — we want a structural guarantee).
+ */
+const editorLifecycleLeak: BrowserScenario = {
+    name: "editor-lifecycle-leak",
+    run: `
+async () => {
+    const tracker = (window).__perfListeners;
+    const main = document.querySelector('main');
+    const mapBefore = document.compIdentifierToEditor?.size ?? -1;
+    const listenersBefore = tracker ? tracker.total() : -1;
+    // Only document+window listeners are reliable: element listeners die with
+    // GC when the target is removed, but our tracker never sees the remove.
+    // Document/window survive across the whole test, so residual > 0 = leak.
+    const globalBefore = tracker ? (tracker.onWindow() + tracker.onDocument()) : -1;
+    const heapBefore = performance.memory ? performance.memory.usedJSHeapSize : 0;
+
+    // Insert 200 <p> and wait for editorization.
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 200; i++) {
+        const p = document.createElement('p');
+        p.className = '__perf_leak__';
+        p.textContent = 'leak ' + i;
+        frag.appendChild(p);
+    }
+    main.appendChild(frag);
+    const deadline = performance.now() + 5000;
+    while (performance.now() < deadline) {
+        const done = main.querySelectorAll('p.__perf_leak__[p9r-is-editor]').length;
+        if (done >= 200) break;
+        await new Promise(r => setTimeout(r, 10));
+    }
+    await new Promise(r => setTimeout(r, 200));
+    const mapPeak = document.compIdentifierToEditor?.size ?? -1;
+    const listenersPeak = tracker ? tracker.total() : -1;
+
+    // Switch mode both ways to exercise the new onSwitchMode path and
+    // make sure it doesn't leak anything either.
+    document.EditorManager?.switchMode(p9r.mode.VIEW);
+    document.EditorManager?.switchMode(p9r.mode.EDITOR);
+    await new Promise(r => setTimeout(r, 100));
+
+    // Remove all inserted nodes and wait for ObserverManager to dispose.
+    main.querySelectorAll('.__perf_leak__').forEach(el => el.remove());
+    await new Promise(r => setTimeout(r, 600));
+
+    if (performance.memory) {
+        // Give GC a nudge. Not guaranteed but helps stabilize numbers.
+        for (let i = 0; i < 5; i++) await new Promise(r => setTimeout(r, 60));
+    }
+
+    const mapAfter = document.compIdentifierToEditor?.size ?? -1;
+    const listenersAfter = tracker ? tracker.total() : -1;
+    const globalAfter = tracker ? (tracker.onWindow() + tracker.onDocument()) : -1;
+    const heapAfter = performance.memory ? performance.memory.usedJSHeapSize : 0;
+
+    return {
+        leakMapBefore: mapBefore,
+        leakMapPeak: mapPeak,
+        leakMapAfter: mapAfter,
+        leakMapResidual: mapAfter - mapBefore,
+        leakListenersBefore: listenersBefore,
+        leakListenersPeak: listenersPeak,
+        leakListenersAfter: listenersAfter,
+        leakGlobalResidual: globalAfter - globalBefore,
+        leakHeapGrowthKB: +((heapAfter - heapBefore) / 1024).toFixed(1),
+    };
+}
+`,
+    absolutes: {
+        // Map MUST return to baseline — strict 0.
+        leakMapResidual: 0,
+        // Document + window listeners MUST return to baseline. Element-level
+        // listeners are fine to "leak" in our tracker (GC collects them with
+        // the node), but listeners on `document`/`window` outlive the DOM.
+        leakGlobalResidual: 0,
+    },
+};
+
 export const SCENARIOS: Scenario[] = [
     // Structural — run first so later scenarios' insertions don't pollute the count.
     listenerScan,
     listenerGrowth,
+    editorLifecycleLeak,
     // Internals — cheap, always-on signals.
     { name: "bulk-insert-200",      run: bulkInsert(200),
         absolutes: { syncAppendMs: 5, maxLongTaskMs: 150 } },
@@ -993,6 +1459,12 @@ export const SCENARIOS: Scenario[] = [
     { name: "large-grid-build",     run: largeGridBuild(20, 20),
         absolutes: { buildAppendMs: 50, buildObserveMs: 2000, buildSerializeMs: 15, buildViewSerializeMs: 50 } },
     { name: "memory-footprint",     run: memoryFootprint() },
+    modeSwitchCost,
+    deleteCleanup,
+    deepNesting,
+    shadowDomDepth,
+    webVitals,
+    networkDuplicates,
     // Network roundtrips.
     pageSaveRoundtrip,
     templateSaveRoundtrip,

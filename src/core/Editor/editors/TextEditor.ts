@@ -255,4 +255,13 @@ export class TextEditor extends Editor {
         this.target.removeEventListener("input", this.onInput);
         this.target.removeEventListener("paste", this.onPaste);
     }
+
+    public override dispose() {
+        // If disposed while in EDITOR mode, the observer is still connected —
+        // disconnect explicitly so the callback closure (and its capture of
+        // `this`) doesn't keep the editor + target alive.
+        this.attrObserver?.disconnect();
+        this.attrObserver = undefined;
+        super.dispose();
+    }
 }
