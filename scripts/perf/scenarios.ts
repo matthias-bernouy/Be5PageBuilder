@@ -736,14 +736,20 @@ const holdEnterInAllowMultiple: DriverScenario = {
 
             (window as any).__inpEntries = [];
             const po = new PerformanceObserver((list) => {
-                for (const e of list.getEntries()) {
+                for (const e of list.getEntries() as any[]) {
                     (window as any).__inpEntries.push({
-                        name: (e as any).name,
+                        name: e.name,
                         duration: e.duration,
+                        startTime: e.startTime,
+                        processingStart: e.processingStart,
+                        processingEnd: e.processingEnd,
                     });
                 }
             });
-            try { po.observe({ type: "event", buffered: true, durationThreshold: 16 } as any); } catch {}
+            // durationThreshold: 0 → report all events (clamped to 8ms by spec);
+            // 16 is the default and hides fast events, giving a misleading "no
+            // events captured" when headless is fast. We want raw numbers.
+            try { po.observe({ type: "event", buffered: true, durationThreshold: 0 } as any); } catch {}
             (window as any).__inpObserver = po;
         });
 
@@ -752,12 +758,11 @@ const holdEnterInAllowMultiple: DriverScenario = {
         );
 
         // Real key presses via Playwright — required for PerformanceObserver
-        // "event" entries (INP only sees trusted events) and for the focus
-        // chase that makes each Enter land on the latest created <p>.
-        const samples: number[] = [];
+        // "event" entries (the spec only reports trusted events). Note: we do
+        // NOT time page.keyboard.press around here because that only measures
+        // CDP dispatch latency, not the JS handler. The real per-keystroke
+        // cost comes from the PerformanceEventTiming entries below.
         for (let i = 0; i < 20; i++) {
-            // Re-focus the latest editable <p> in the paragraphs slot so focus
-            // loss during async editorization doesn't starve later presses.
             await page.evaluate(() => {
                 const ps = document.querySelectorAll<HTMLElement>(
                     '.__perf_card_p__ [slot="paragraphs"]',
@@ -773,10 +778,7 @@ const holdEnterInAllowMultiple: DriverScenario = {
                     sel.addRange(r);
                 }
             });
-            const t = await page.evaluate(() => performance.now());
             await page.keyboard.press("Enter");
-            const t2 = await page.evaluate(() => performance.now());
-            samples.push(t2 - t);
             await page.waitForTimeout(60);
         }
         await page.waitForTimeout(400);
@@ -788,40 +790,44 @@ const holdEnterInAllowMultiple: DriverScenario = {
         const inp = await page.evaluate(() => {
             const po = (window as any).__inpObserver as PerformanceObserver | undefined;
             po?.disconnect();
-            const entries = ((window as any).__inpEntries || []) as { name: string; duration: number }[];
-            const keydowns = entries.filter(e => e.name === "keydown").map(e => e.duration);
-            const all = entries.map(e => e.duration);
-            const max = (xs: number[]) => (xs.length ? Math.max(...xs) : 0);
-            const p98 = (xs: number[]) => {
+            const entries = ((window as any).__inpEntries || []) as {
+                name: string; duration: number; startTime: number;
+                processingStart: number; processingEnd: number;
+            }[];
+            const keydowns = entries.filter(e => e.name === "keydown");
+            const durations = keydowns.map(e => e.duration);
+            const processing = keydowns.map(e => e.processingEnd - e.processingStart);
+            const med = (xs: number[]) => {
                 if (!xs.length) return 0;
                 const s = [...xs].sort((a, b) => a - b);
-                return s[Math.min(s.length - 1, Math.floor(s.length * 0.98))];
+                return s[Math.floor(s.length / 2)];
             };
+            const p = (xs: number[], q: number) => {
+                if (!xs.length) return 0;
+                const s = [...xs].sort((a, b) => a - b);
+                return s[Math.min(s.length - 1, Math.floor(s.length * q))];
+            };
+            const max = (xs: number[]) => (xs.length ? Math.max(...xs) : 0);
             return {
-                inpAllMaxMs: +max(all).toFixed(1),
-                inpAllP98Ms: +p98(all).toFixed(1),
-                inpKeydownMaxMs: +max(keydowns).toFixed(1),
-                inpEventCount: entries.length,
+                inpKeydownCount: keydowns.length,
+                inpKeydownMedianMs: +med(durations).toFixed(1),
+                inpKeydownP95Ms: +p(durations, 0.95).toFixed(1),
+                inpKeydownMaxMs: +max(durations).toFixed(1),
+                inpProcessingMedianMs: +med(processing).toFixed(1),
+                inpProcessingMaxMs: +max(processing).toFixed(1),
             };
         });
 
-        const s = stats(samples);
         return {
-            holdAmMedianMs: s.median,
-            holdAmP95Ms: s.p95,
-            holdAmMaxMs: s.max,
             holdAmCreated: countAfter - countBefore,
-            inpAllMaxMs: inp.inpAllMaxMs,
-            inpAllP98Ms: inp.inpAllP98Ms,
-            inpKeydownMaxMs: inp.inpKeydownMaxMs,
-            inpEventCount: inp.inpEventCount,
+            ...inp,
         };
     },
     absolutes: {
-        holdAmMedianMs: 30,
-        holdAmP95Ms: 80,
         // Google's "good INP" threshold is 200ms; "needs improvement" starts at 200.
-        inpAllP98Ms: 200,
+        // Keydown p95 / max are what INP reports in the field.
+        inpKeydownP95Ms: 200,
+        inpKeydownMaxMs: 300,
     },
 };
 
