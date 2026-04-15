@@ -13,15 +13,26 @@ export class EmptyEditor extends Editor {
 }
 
 
+/**
+ * Canonical registrar. Bloc bundles never call this directly — the
+ * `p9rExternalsPlugin` injects a per-bloc shim that carries the
+ * `BE5_*_TO_BE_REPLACED` placeholders at the bloc's own call site, so
+ * post-build substitution in `build.ts` / `prepare_bloc.ts` produces the
+ * right tag/label/group for that specific bloc. This function only lives
+ * once on `window.p9r`, so it must not contain placeholders.
+ */
 export function registerEditor(props: {
     suffix?: string,
-    cl?: new (node: HTMLElement) => Editor
+    cl?: new (node: HTMLElement) => Editor,
+    tag: string,
+    label: string,
+    group: string,
 }) {
     document.EditorManager.getObserver().register_editor({
-        tag: "BE5_TAG_TO_BE_REPLACED" + (props.suffix || ""),
-        cl: props.cl || EmptyEditor,
-        label: "BE5_LABEL_TO_BE_REPLACED" + (props.suffix || ""),
-        group: "BE5_GROUP_TO_BE_REPLACED"
+        tag:   props.tag + (props.suffix || ""),
+        cl:    props.cl || EmptyEditor,
+        label: props.label + (props.suffix || ""),
+        group: props.group,
     });
 }
 
@@ -31,11 +42,15 @@ export function registerEditor(props: {
  * descendant will be editorized. Used when a bloc is deployed without an
  * Editor module.
  */
-export function registerEditor_opaque() {
+export function registerEditor_opaque(props: {
+    tag: string,
+    label: string,
+    group: string,
+}) {
     document.EditorManager.getObserver().register_editor_opaque({
-        tag:   "BE5_TAG_TO_BE_REPLACED",
+        tag:   props.tag,
         cl:    EmptyEditor,
-        label: "BE5_LABEL_TO_BE_REPLACED",
-        group: "BE5_GROUP_TO_BE_REPLACED",
+        label: props.label,
+        group: props.group,
     });
 }

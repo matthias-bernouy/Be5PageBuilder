@@ -24,11 +24,24 @@ export const p9rExternalsPlugin: BunPlugin = {
                         loader: "js",
                     };
                 }
+                // The shim lives inside each bloc bundle, so the post-build
+                // `.replaceAll("BE5_*_TO_BE_REPLACED", ...)` in build.ts /
+                // prepare_bloc.ts substitutes the placeholders per-bloc before
+                // they hit the canonical window.p9r.registerEditor.
                 return {
                     contents:
                         `export const Editor = window.p9r.Editor;\n` +
-                        `export const registerEditor = window.p9r.registerEditor;\n` +
-                        `export const registerEditor_opaque = window.p9r.registerEditor_opaque;\n`,
+                        `export const registerEditor = (props) => window.p9r.registerEditor({\n` +
+                        `    ...props,\n` +
+                        `    tag:   "BE5_TAG_TO_BE_REPLACED",\n` +
+                        `    label: "BE5_LABEL_TO_BE_REPLACED",\n` +
+                        `    group: "BE5_GROUP_TO_BE_REPLACED",\n` +
+                        `});\n` +
+                        `export const registerEditor_opaque = () => window.p9r.registerEditor_opaque({\n` +
+                        `    tag:   "BE5_TAG_TO_BE_REPLACED",\n` +
+                        `    label: "BE5_LABEL_TO_BE_REPLACED",\n` +
+                        `    group: "BE5_GROUP_TO_BE_REPLACED",\n` +
+                        `});\n`,
                     loader: "js",
                 };
             },
