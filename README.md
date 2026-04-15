@@ -150,9 +150,9 @@ import type {
 ```
 
 - **`TPage`** — `{ path, identifier, content, title, description, visible, tags }`. The compound key `(path, identifier)` allows multiple variants on the same URL, disambiguated by `?identifier=`.
-- **`TBloc`** — `{ id, name, viewJS, editorJS }`. A registered page-builder component. `viewJS` is the public-facing bundle, `editorJS` is loaded in the admin editor. They are **separate bundles** — never cross-import.
+- **`TBloc`** — `{ id, name, group, description, viewJS, editorJS }`. A registered page-builder component. `viewJS` is the public-facing bundle, `editorJS` is loaded in the admin editor — they are **separate bundles**, never cross-import. `group` and `description` are persisted alongside the bundles so `GET /api/blocs-list` can answer without parsing any JS.
+- **`TSnippet`** — a reusable HTML fragment keyed by a stable `identifier`. Unlike templates, editing a snippet propagates to every page that uses it.
 - **`TTemplate`** — a reusable HTML fragment. When inserted into a page it becomes an independent copy (no live link).
-- **`TSnippet`** — a reusable HTML fragment with a stable `identifier`. Unlike templates, editing a snippet propagates to every page that uses it.
 - **`TSystem`** — site-wide settings: `site.{name, favicon, theme, home, notFound, serverError}`, `seo.*`, `editor.layoutCategory`, and an `initializationStep` for the onboarding flow. `home/notFound/serverError` are `TPageRef = { path, identifier } | null`.
 
 ---
@@ -414,13 +414,14 @@ src/
 │   ├── Editor/
 │   │   ├── core/           EditorManager, Editor, ObserverManager, DragManager
 │   │   ├── components/     BlocActionGroup, BlocLibrary, FloatingToolbar, RichTextBar,
-│   │   │                   PageConfiguration, TemplateConfiguration, AdminLayout, MediaCenter
+│   │   │                   PageConfiguration, TemplateConfiguration, SnippetConfiguration,
+│   │   │                   AdminLayout, MediaCenter
 │   │   ├── configuration/
-│   │   │   ├── Sync/       AttrSync, CompSync, ImageSync
+│   │   │   ├── Sync/       AttrSync, CompSync, ImageSync, StateSync
 │   │   │   ├── Inputs/     P9rSelect, P9rRange, P9rPageLink
 │   │   │   ├── ConfigPanel.ts
 │   │   │   └── ConfigItem.ts
-│   │   └── editors/        TextEditor, ImageEditor, ListEditor
+│   │   └── editors/        TextEditor, ImageEditor, ListEditor, SnippetEditor
 │   └── Domain/Media/       CardMedia, GridMedia, DetailMedia, CropSystem
 ├── interfaces/
 │   ├── contract/           Repository interfaces, data models (TPage, TBloc, …)

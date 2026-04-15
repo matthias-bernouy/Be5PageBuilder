@@ -53,9 +53,52 @@
 - `EditorManager.getContent()` returns current HTML without saving (used by TemplateConfiguration)
 - `EditorManager.save()` is page-specific (POST to `/api/page`)
 - `EditorManager.getConfiguration()` finds either `w13c-page-information` or `w13c-template-information`
-- `BlocLibrary` has 3 sections: Blocs (by group), Templates (by category), Snippets (upcoming)
-- Templates insert as HTML fragments (independent copies), blocs insert as custom elements
-- `BlocActionGroup` exposes per-bloc actions (edit, duplicate, delete, change component, pin-state, select-parent). The **select-parent** button climbs to the parent editor via `p9r.attr.EDITOR.PARENT_IDENTIFIER` — needed when the bloc's CSS (full-bleed children, `pointer-events`) prevents reaching the parent by click. The **pin-state** button surfaces every `<p9r-state-sync>` declared in `configuration.html` so the author can lock a runtime state (open dropdown, hover, active tab…) while editing; pinned states are auto-unpinned on switch back to client mode
+- `BlocLibrary` has 3 sections: Blocs (by group), Templates (by category), Snippets
+- Templates insert as HTML fragments (independent copies), blocs and snippets insert as custom elements (`<w13c-snippet identifier="…">` keeps a live link to the snippet source)
+- `ObserverManager` walks the editor tree and creates an editor per registered tag. Opaque blocs get marked with `p9r-opaque="true"` after editorizing so descendants bail out (the bloc still gets its parent-level action bar)
+
+### BlocActionGroup
+
+- Per-bloc action bar with: `edit`, `duplicate`, `delete`, `changeComponent`, `pin-state`, `select-parent`, plus any `customActions` and a pin button when the editor has `stateSyncs`
+- **select-parent visibility**: shown whenever the target has a parent editor AND the bar already carries at least one other button. It climbs to the parent via `p9r.attr.EDITOR.PARENT_IDENTIFIER` — needed when a bloc's CSS (full-bleed children, `pointer-events: none`) prevents reaching the parent by click
+- **Empty-bar guard**: `setEditor()` rejects an editor whose feature map is all-disabled with no customActions/stateSyncs/config panel and clears `_editor`/`_target`, so the subsequent `open()` from `handleHover` is a no-op (no "empty circle" visible)
+- **Keyboard delete** (window-level `Backspace`/`Delete`) is guarded on `canDelete` and skips when `activeElement.isContentEditable` — text editors handle their own Backspace-on-empty and stop propagation so BAG never sees it
+- **Insert buttons** (`+` before / after): use `insertBlankSibling` — creates a fresh empty element whose tag is resolved by looking up the parent editor's `_panelConfig` for a `<p9r-comp-sync>` whose template has a matching `slot` attribute (falls back to `<p>` when no parent editor / no matching comp-sync)
+- **Duplicate** uses `duplicateSibling` — deep-clones the target, stripping `p9r-is-editor` and `.p9r-active` from the clone
+
+### TextEditor
+
+- Text blocs (`p`, `span`, `h1`-`h6`, `blockquote`, `a`) are driven by the keyboard — the standard action-bar buttons are hidden by default (`delete`, `duplicate`, `addBefore`, `addAfter`, `changeComponent` all force-false in `refreshActionBarFeatures`). The bar only appears if the bloc has a config panel, custom actions, state-syncs, or one of the opt-in flags below
+- `p9r-force-delete-button` re-enables the delete button (still respects `DISABLE_DELETE`)
+- `p9r-force-duplicate-button` re-enables duplicate (still respects `DISABLE_DUPLICATE`)
+- **Enter** inserts a new `<p>` sibling via `this.target.after(nextEl)`, copying non-`p9r-*` attributes plus preserving `PARENT_IDENTIFIER` (the latter is critical — without it, `ObserverManager` can't notify the parent's `CompSync` and `DISABLE_*` attrs never get applied to the new node). `e.shiftKey` bypasses (native newline). Blocked by `isAddAfterDisabled`. Focus is scheduled via **double-rAF** because `CompSync.onChildrenAdded` re-runs `viewEditor()` on every sibling slot, each scheduling its own focus-rAF — two frames puts ours last
+- **Backspace on empty** (`innerHTML === ""`) calls `restore()` + removes the node. Must `preventDefault()` + `stopImmediatePropagation()` — otherwise the same keydown bubbles to BAG's window listener and, if the user is hovering the parent, cascades into deleting the parent too
+- **`/`** opens the BlocLibrary for inline component swap. Gated on `isBlocManagementEnabled` (attr `p9r-text-bloc-management`, default true) AND `!isChangeComponentDisabled`. On insert, swaps the text node for a template fragment / `<w13c-snippet>` / raw bloc tag
+
+### RichTextBar (FloatingToolbar)
+
+- Text-format floating bar, opens on `selectionchange` when there's a non-collapsed selection
+- Closes on `selectionchange` when the selection collapses, **and** on document-level `mousedown` outside the bar and outside the currently-focused contenteditable. The mousedown path catches cases where `selectionchange` alone doesn't fire (clicking a BAG button that `preventDefault`s, clicking a non-editable sibling, etc.)
+
+### DragManager
+
+- No DOM mutation during `dragover`. Shows a 3px blue **drop indicator** positioned on the target's top/bottom (vertical flow) or left/right (horizontal flow — detected via computed `display`/`flex-direction`)
+- `dragstart` hides the source element via `display: none` wrapped in `setTimeout(0)` (immediate `display: none` aborts the native drag on some browsers)
+- Drag **ghost** is a compact 180×32 pill with the bloc label, set via `setDragImage`
+- Skips elements with `p9r-action-disable-dragging="true"`. `Editor.viewEditor` sets `draggable="false"` explicitly when disabled — `removeAttribute("draggable")` resets to `"auto"` which still allows drag on contenteditable
+
+### PinMode
+
+- When any `<p9r-state-sync>` on an editor is pinned, `PinMode` detaches the editor's hover listener, closes the BAG, and renders a floating **Unpin** button
+- A `MutationObserver` watches the target attribute and re-applies the pinned value if the component clears it during its own render
+- Switching to client mode auto-unpins every state and exits PinMode
+
+### Configuration syncs
+
+- `AttrSync` — input ↔ attribute binding. Empty value **removes** the attribute rather than leaving `attr=""`
+- `CompSync` — manages a slot's content. Modes: `allow-multiple` (list with add/delete/duplicate/drag), `optionnal` (single slot that can be empty; the add button comes back when the slot is empty + not currently creating), `disable-others-components` (locks `DISABLE_CHANGE_COMPONENT` on the slot)
+- `ImageSync` — image picker backed by MediaCenter. In non-optional/non-creating mode, `_lockActions` sets every `DISABLE_*` flag on the `<img>` so only the click-to-open-MediaCenter interaction remains, and re-calls the image editor's `viewEditor()` to refresh its cached feature map. A `MutationObserver` on the img's `src` mirrors changes back into the panel
+- `StateSync` — declares a pinnable runtime state: `target` selector (in shadow DOM), `attr`, `value`, `label`. Interacts with `PinMode`
 
 ## CSS conventions
 
