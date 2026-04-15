@@ -19,11 +19,30 @@ export class DragManager {
     private _dropTarget: HTMLElement | null = null;
     private _dropPosition: "before" | "after" | null = null;
 
+    // Stable handlers so dispose() can pair add/remove. Previously arrow
+    // literals in the constructor: no dispose path, and a second
+    // EditorManager instance would stack a second set of listeners on the
+    // container — each drag would fire handleDrag* twice.
+    private _onDragStart = (e: DragEvent) => this.handleDragStart(e);
+    private _onDragOver = (e: DragEvent) => this.handleDragOver(e);
+    private _onDrop = (e: DragEvent) => this.handleDrop(e);
+    private _onDragEnd = () => this.handleDragEnd();
+    private _container: HTMLElement;
+
     constructor(container: HTMLElement) {
-        container.addEventListener("dragstart", (e) => this.handleDragStart(e));
-        container.addEventListener("dragover", (e) => this.handleDragOver(e));
-        container.addEventListener("drop", (e) => this.handleDrop(e));
-        container.addEventListener("dragend", () => this.handleDragEnd());
+        this._container = container;
+        container.addEventListener("dragstart", this._onDragStart);
+        container.addEventListener("dragover", this._onDragOver);
+        container.addEventListener("drop", this._onDrop);
+        container.addEventListener("dragend", this._onDragEnd);
+    }
+
+    dispose() {
+        this._container.removeEventListener("dragstart", this._onDragStart);
+        this._container.removeEventListener("dragover", this._onDragOver);
+        this._container.removeEventListener("drop", this._onDrop);
+        this._container.removeEventListener("dragend", this._onDragEnd);
+        this._finalize();
     }
 
     private handleDragStart(e: DragEvent) {

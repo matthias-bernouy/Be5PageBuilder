@@ -25,6 +25,7 @@ export class EditorManager{
     private richTextBar: EditorToolbar;
 
     private observer: ObserverManager;
+    private dragManager: DragManager;
 
     private backPath?: string;
     publicRoot: string = "/";
@@ -44,7 +45,7 @@ export class EditorManager{
         this.editorSystem.append(this.richTextBar)
         this.editorSystem.append(this.blocActionGroup)
 
-        new DragManager(workingElement);
+        this.dragManager = new DragManager(workingElement);
 
         document.EditorManager = this;
 
@@ -186,6 +187,7 @@ export class EditorManager{
 
     dispose() {
         this.observer.dispose();
+        this.dragManager.dispose();
         this.mediaCenter.remove();
         this.toolbar.remove();
         this.richTextBar.remove();
