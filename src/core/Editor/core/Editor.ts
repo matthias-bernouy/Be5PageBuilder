@@ -197,9 +197,13 @@ export abstract class Editor {
         this.target.classList.add("editor-block")
         this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true")
 
-        this.target.draggable = true;
+        // `removeAttribute("draggable")` resets to the HTML default "auto",
+        // which still allows drag on contenteditable text (the native browser
+        // behaviour) — we need an explicit "false" to actually lock it.
         if (this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)) {
-            this.target.removeAttribute("draggable");
+            this.target.setAttribute("draggable", "false");
+        } else {
+            this.target.draggable = true;
         }
 
         this.target.style.setProperty("pointer-events", "auto", "important");

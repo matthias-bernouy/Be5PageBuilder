@@ -1,9 +1,23 @@
 const DRAG_PILL_WIDTH = 180;
 const DRAG_PILL_HEIGHT = 32;
 
+/**
+ * Drag & drop for editor blocks.
+ *
+ * Design: during a drag, the dragged element is hidden (`display:none`) so it
+ * is out of the layout flow. We never mutate the DOM on `dragover` — instead
+ * we show a thin drop indicator at the candidate insertion point, and the
+ * real `insertBefore` happens exactly once on `drop`. This eliminates the
+ * reflow-during-drag jumps and makes `closest()` deterministic because the
+ * dragged node is not a candidate sibling anymore.
+ */
 export class DragManager {
     private draggedElement: HTMLElement | null = null;
+    private _originalDisplay: string = "";
     private _ghost: HTMLElement | null = null;
+    private _indicator: HTMLElement | null = null;
+    private _dropTarget: HTMLElement | null = null;
+    private _dropPosition: "before" | "after" | null = null;
 
     constructor(container: HTMLElement) {
         container.addEventListener("dragstart", (e) => this.handleDragStart(e));
@@ -14,19 +28,130 @@ export class DragManager {
 
     private handleDragStart(e: DragEvent) {
         this.draggedElement = (e.target as HTMLElement).closest(".editor-block");
-        if (this.draggedElement) {
-            e.dataTransfer?.setData("text/plain", "");
-            // The native drag image mirrors the element at its real size —
-            // unusable for a full-bleed hero. Force a compact fixed-size ghost.
-            this._setGhostImage(e, this.draggedElement);
-            this.draggedElement.classList.add("dragging");
-            document.EditorManager?.getBlocActionGroup()?.close();
-            (document.querySelector("w13c-editor-toolbar") as any)?.hide?.();
+        if (!this.draggedElement) return;
+
+        e.dataTransfer?.setData("text/plain", "");
+        this._setGhostImage(e);
+        this.draggedElement.classList.add("dragging");
+        document.EditorManager?.getBlocActionGroup()?.close();
+        (document.querySelector("w13c-editor-toolbar") as any)?.hide?.();
+
+        // Hide from flow on the next tick — `display:none` applied
+        // synchronously inside dragstart aborts the native drag operation
+        // (the source element would vanish mid-init). Defer so the browser
+        // has committed the drag start, then hide for the rest of the drag.
+        this._originalDisplay = this.draggedElement.style.display;
+        const toHide = this.draggedElement;
+        setTimeout(() => {
+            if (this.draggedElement === toHide) toHide.style.display = "none";
+        }, 0);
+
+        this._createIndicator();
+    }
+
+    private handleDragOver(e: DragEvent) {
+        e.preventDefault();
+        if (!this.draggedElement) return;
+
+        const target = this._pickTarget(e);
+        if (!target) {
+            this._hideIndicator();
+            return;
+        }
+
+        const rect = target.getBoundingClientRect();
+        const horizontal = this._isHorizontalFlow(target);
+        const after = horizontal
+            ? (e.clientX - rect.left) / (rect.right - rect.left) > 0.5
+            : (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
+        this._dropTarget = target;
+        this._dropPosition = after ? "after" : "before";
+        this._showIndicator(target, after, horizontal);
+    }
+
+    /**
+     * A horizontal flow means siblings lay out left-to-right: the drop
+     * indicator must be a **vertical** bar on the side of the target, not a
+     * horizontal bar on the top/bottom. Detected from the parent's computed
+     * style (flex-row / grid / inline variants).
+     */
+    private _isHorizontalFlow(target: HTMLElement): boolean {
+        const parent = target.parentElement;
+        if (!parent) return false;
+        const cs = getComputedStyle(parent);
+        const display = cs.display;
+        if (display.includes("inline")) return true;
+        if (display.endsWith("flex")) {
+            return cs.flexDirection.startsWith("row");
+        }
+        if (display.endsWith("grid")) {
+            // Grid auto-flow defaults to "row" (fill left-to-right). Either
+            // way, once siblings share the same top they're in a row.
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Find the drop target sibling under the cursor. Requirements:
+     *  1. Must be a `.editor-block`.
+     *  2. Must not be the dragged element itself.
+     *  3. Must not be an ancestor of the dragged element (prevents the old
+     *     "jumps between nesting levels" glitch).
+     */
+    private _pickTarget(e: DragEvent): HTMLElement | null {
+        const el = (e.target as HTMLElement | null)?.closest?.(".editor-block") as HTMLElement | null;
+        if (!el) return null;
+        if (el === this.draggedElement) return null;
+        if (this.draggedElement && el.contains(this.draggedElement)) return null;
+        // Opted-out participants (e.g. p9r-image-sync's locked <img>) should
+        // neither be dragged nor receive drops — otherwise we'd insert a
+        // sibling that the panel is about to wipe back out.
+        if (el.getAttribute(p9r.attr.ACTION.DISABLE_DRAGGING) === "true") return null;
+        return el;
+    }
+
+    private handleDrop(e: DragEvent) {
+        e.preventDefault();
+        this._commitDrop();
+        this._finalize();
+    }
+
+    private handleDragEnd() {
+        // Drop didn't fire (cancelled / outside a drop zone) → no move; just
+        // clean up and restore visibility where the element was originally.
+        this._finalize();
+    }
+
+    private _commitDrop() {
+        if (!this.draggedElement || !this._dropTarget || !this._dropPosition) return;
+
+        this._matchSlot(this._dropTarget.getAttribute("slot"));
+        const parent = this._dropTarget.parentElement;
+        if (!parent) return;
+
+        if (this._dropPosition === "after") {
+            parent.insertBefore(this.draggedElement, this._dropTarget.nextSibling);
+        } else {
+            parent.insertBefore(this.draggedElement, this._dropTarget);
         }
     }
 
-    private _setGhostImage(e: DragEvent, source: HTMLElement) {
-        if (!e.dataTransfer) return;
+    private _matchSlot(slotName: string | null) {
+        if (!this.draggedElement) return;
+        const current = this.draggedElement.getAttribute("slot");
+        if (slotName === current) return;
+        if (slotName) {
+            this.draggedElement.setAttribute("slot", slotName);
+        } else {
+            this.draggedElement.removeAttribute("slot");
+        }
+    }
+
+    // ── Visuals ─────────────────────────────────────────────────────────
+
+    private _setGhostImage(e: DragEvent) {
+        if (!e.dataTransfer || !this.draggedElement) return;
 
         // A compact pill — discrete, always readable, independent of the
         // source's size. The cloned-scaled approach fails for full-bleed
@@ -69,86 +194,69 @@ export class DragManager {
             </svg>
             <span style="overflow:hidden;text-overflow:ellipsis"></span>
         `;
-        ghost.querySelector("span")!.textContent = this._pillLabel(source);
+        ghost.querySelector("span")!.textContent = `<${this.draggedElement.tagName.toLowerCase()}>`;
 
         document.body.appendChild(ghost);
         e.dataTransfer.setDragImage(ghost, 16, DRAG_PILL_HEIGHT / 2);
         this._ghost = ghost;
     }
 
-    private _pillLabel(el: HTMLElement): string {
-        return `<${el.tagName.toLowerCase()}>`;
+    private _createIndicator() {
+        const ind = document.createElement("div");
+        ind.className = "p9r-drop-indicator";
+        Object.assign(ind.style, {
+            position: "fixed",
+            height: "3px",
+            background: "rgba(67, 97, 238, 1)",
+            borderRadius: "2px",
+            boxShadow: "0 0 8px rgba(67, 97, 238, 0.6)",
+            pointerEvents: "none",
+            zIndex: "999999",
+            opacity: "0",
+            left: "0",
+            top: "0",
+            width: "0",
+        } as Partial<CSSStyleDeclaration>);
+        document.body.appendChild(ind);
+        this._indicator = ind;
     }
 
-    private handleDragOver(e: DragEvent) {
-        e.preventDefault();
-        if (!this.draggedElement) return;
-
-        const target = (e.target as HTMLElement).closest(".editor-block") as HTMLElement;
-
-        if (target && target !== this.draggedElement) {
-            // Skip ancestors — prevents the glitch where closest() matches
-            // the parent component and the element jumps between levels
-            if (target.contains(this.draggedElement)) return;
-
-            const rect = target.getBoundingClientRect();
-            const next = (e.clientY - rect.top) / (rect.bottom - rect.top) > 0.5;
-
-            // Match destination slot
-            this._matchSlot(target.getAttribute("slot"));
-
-            target.parentElement?.insertBefore(this.draggedElement, next ? target.nextSibling : target);
-        } else if (!target) {
-            // Cursor over empty slot area — walk composedPath to find a <slot>
-            const slotName = this._slotFromComposedPath(e);
-            if (slotName !== undefined) {
-                this._matchSlot(slotName);
-                this.draggedElement.parentElement?.appendChild(this.draggedElement);
-            }
-        }
-    }
-
-    private handleDrop(e: DragEvent) {
-        e.preventDefault();
-        this._finalize();
-    }
-
-    private handleDragEnd() {
-        this._finalize();
-        this.draggedElement = null;
-    }
-
-    /** Update the dragged element's slot attribute to match the destination. */
-    private _matchSlot(slotName: string | null) {
-        if (!this.draggedElement) return;
-        const current = this.draggedElement.getAttribute("slot");
-        if (slotName === current) return;
-
-        if (slotName) {
-            this.draggedElement.setAttribute("slot", slotName);
+    private _showIndicator(target: HTMLElement, after: boolean, horizontal: boolean) {
+        if (!this._indicator) return;
+        const r = target.getBoundingClientRect();
+        if (horizontal) {
+            const x = (after ? r.right : r.left) - 1.5;
+            this._indicator.style.left = `${x}px`;
+            this._indicator.style.top = `${r.top}px`;
+            this._indicator.style.width = "3px";
+            this._indicator.style.height = `${r.height}px`;
         } else {
-            this.draggedElement.removeAttribute("slot");
+            const y = (after ? r.bottom : r.top) - 1.5;
+            this._indicator.style.left = `${r.left}px`;
+            this._indicator.style.top = `${y}px`;
+            this._indicator.style.width = `${r.width}px`;
+            this._indicator.style.height = "3px";
         }
+        this._indicator.style.opacity = "1";
     }
 
-    /**
-     * Walk the event's composed path (crosses shadow boundaries) looking for
-     * a `<slot>` element. Returns the slot name (string), `null` for the
-     * default slot, or `undefined` if no slot was found in the path.
-     */
-    private _slotFromComposedPath(e: DragEvent): string | null | undefined {
-        for (const el of e.composedPath()) {
-            if (el instanceof HTMLSlotElement) {
-                return el.name || null;
-            }
-        }
-        return undefined;
+    private _hideIndicator() {
+        if (this._indicator) this._indicator.style.opacity = "0";
+        this._dropTarget = null;
+        this._dropPosition = null;
     }
 
     private _finalize() {
+        if (this.draggedElement) {
+            this.draggedElement.style.display = this._originalDisplay;
+            this.draggedElement.classList.remove("dragging");
+        }
         this._ghost?.remove();
         this._ghost = null;
-        if (!this.draggedElement) return;
-        this.draggedElement.classList.remove("dragging");
+        this._indicator?.remove();
+        this._indicator = null;
+        this._dropTarget = null;
+        this._dropPosition = null;
+        this.draggedElement = null;
     }
 }

@@ -1,20 +1,10 @@
 import { describe, test, expect, beforeEach } from "bun:test";
 import { DragManager } from "src/core/Editor/core/DragManager";
 
-// happy-dom's getBoundingClientRect returns zeros which breaks the
-// "before vs after" midpoint calculation. Force a geometry per node so the
-// tests can simulate realistic drop zones.
 function setRect(el: HTMLElement, top: number, height: number) {
     (el as any).getBoundingClientRect = () => ({
-        top,
-        bottom: top + height,
-        left: 0,
-        right: 100,
-        width: 100,
-        height,
-        x: 0,
-        y: top,
-        toJSON: () => ({}),
+        top, bottom: top + height, left: 0, right: 100, width: 100, height,
+        x: 0, y: top, toJSON: () => ({}),
     });
 }
 
@@ -38,22 +28,28 @@ function drag(kind: "dragstart" | "dragover" | "drop" | "dragend", target: HTMLE
     return ev;
 }
 
-describe("DragManager", () => {
+describe("DragManager — indicator-based drag", () => {
     let container: HTMLElement;
 
     beforeEach(() => {
+        document.body.innerHTML = "";
         container = document.createElement("div");
         document.body.appendChild(container);
         new DragManager(container);
     });
 
-    test("dragstart adds `.dragging` class to the dragged editor-block", () => {
+    test("dragstart marks the block as dragging and hides it from flow (deferred)", async () => {
         const block = makeBlock(container, 0);
         drag("dragstart", block);
         expect(block.classList.contains("dragging")).toBe(true);
+        // display:none is applied on the next macrotask — doing it synchronously
+        // inside dragstart would abort the native drag operation.
+        expect(block.style.display).toBe("");
+        await new Promise((r) => setTimeout(r, 0));
+        expect(block.style.display).toBe("none");
     });
 
-    test("dragstart on a non-editor-block (via `closest`) picks the nearest ancestor", () => {
+    test("dragstart on a descendant picks the nearest .editor-block ancestor", () => {
         const block = makeBlock(container, 0);
         const inner = document.createElement("span");
         block.appendChild(inner);
@@ -61,68 +57,181 @@ describe("DragManager", () => {
         expect(block.classList.contains("dragging")).toBe(true);
     });
 
-    test("dragover moves the dragged block AFTER the target when dropped below midpoint", () => {
+    test("dragover does NOT reorder the DOM — it only positions the indicator", () => {
         const a = makeBlock(container, 0, 100);
         const b = makeBlock(container, 100, 100);
 
         drag("dragstart", a);
-        // Drop at y=180, which is 80% into block b → insert AFTER b.
         drag("dragover", b, 180);
 
-        const children = Array.from(container.children);
-        expect(children).toEqual([b, a]);
+        // The DOM order is unchanged during dragover; moves happen on drop.
+        expect(Array.from(container.children)).toEqual([a, b]);
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator).not.toBeNull();
+        expect(indicator.style.opacity).toBe("1");
     });
 
-    test("dragover moves the dragged block BEFORE the target when dropped above midpoint", () => {
+    test("drop inserts AFTER the target when cursor is below midpoint", () => {
+        const a = makeBlock(container, 0, 100);
+        const b = makeBlock(container, 100, 100);
+
+        drag("dragstart", a);
+        drag("dragover", b, 180);
+        drag("drop", b, 180);
+
+        expect(Array.from(container.children)).toEqual([b, a]);
+    });
+
+    test("drop inserts BEFORE the target when cursor is above midpoint", () => {
         const a = makeBlock(container, 0, 100);
         const b = makeBlock(container, 100, 100);
         const c = makeBlock(container, 200, 100);
 
         drag("dragstart", c);
-        // Drop at y=120, which is 20% into block b → insert BEFORE b.
         drag("dragover", b, 120);
+        drag("drop", b, 120);
 
-        const children = Array.from(container.children);
-        expect(children).toEqual([a, c, b]);
+        expect(Array.from(container.children)).toEqual([a, c, b]);
     });
 
-    test("dragover over the dragged block itself is a no-op", () => {
+    test("dragover over the dragged block itself is ignored (no indicator)", () => {
         const a = makeBlock(container, 0, 100);
         const b = makeBlock(container, 100, 100);
 
         drag("dragstart", a);
         drag("dragover", a, 50);
 
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator.style.opacity).toBe("0");
+        // And no commit on drop (no valid target was chosen).
+        drag("drop", a, 50);
         expect(Array.from(container.children)).toEqual([a, b]);
     });
 
-    test("drop removes the `.dragging` class", () => {
-        const a = makeBlock(container, 0);
-        drag("dragstart", a);
-        drag("drop", a);
-        expect(a.classList.contains("dragging")).toBe(false);
+    test("dragover over an ancestor of the dragged block is ignored", () => {
+        const parent = makeBlock(container, 0, 300);
+        const child = makeBlock(parent, 50, 100);
+        // Force the lookup: the dragstart event bubbles from `child` — ensure
+        // the parent, which contains it, is rejected as a target.
+        drag("dragstart", child);
+        drag("dragover", parent, 10); // cursor near parent top
+
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator.style.opacity).toBe("0");
     });
 
-    test("dragend clears the `.dragging` class", () => {
-        // NOTE: the current impl doesn't null-guard `this.draggedElement` in
-        // handleDragOver after dragend — a follow-up dragover would throw due
-        // to the `!` non-null assertion. The hardening of DragManager is a
-        // separate follow-up; for now we only assert class cleanup.
+    test("drop restores display and removes the indicator", () => {
         const a = makeBlock(container, 0);
+        const b = makeBlock(container, 100);
+
+        a.style.display = "block";
         drag("dragstart", a);
-        drag("dragend", a);
+        drag("dragover", b, 180);
+        drag("drop", b, 180);
+
         expect(a.classList.contains("dragging")).toBe(false);
+        expect(a.style.display).toBe("block");
+        expect(document.querySelector(".p9r-drop-indicator")).toBeNull();
+        expect(document.querySelector(".p9r-drag-ghost")).toBeNull();
     });
 
-    test("dragover with clientY at exact midpoint resolves to AFTER", () => {
-        // Edge case: `(e.clientY - top) / height > 0.5` is strictly greater,
-        // so exactly 0.5 → false → insert BEFORE. Documenting the boundary.
+    test("dragend without a drop restores display and does NOT move the element", () => {
         const a = makeBlock(container, 0, 100);
         const b = makeBlock(container, 100, 100);
 
         drag("dragstart", a);
-        drag("dragover", b, 150); // exact midpoint of b
+        drag("dragover", b, 180); // would insert after b on drop
+        drag("dragend", a);       // but user released outside / escaped
 
         expect(Array.from(container.children)).toEqual([a, b]);
+        expect(a.style.display).toBe("");
+        expect(a.classList.contains("dragging")).toBe(false);
+    });
+
+    test("indicator width and top mirror the target's bounding box (after)", () => {
+        const a = makeBlock(container, 0, 100);
+        const b = makeBlock(container, 100, 100);
+
+        drag("dragstart", a);
+        drag("dragover", b, 180); // "after" b → top ≈ bottom(=200) - 1.5
+
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator.style.width).toBe("100px");
+        expect(indicator.style.top).toBe("198.5px");
+    });
+
+    test("indicator top mirrors the target's bounding box (before)", () => {
+        const a = makeBlock(container, 0, 100);
+        const b = makeBlock(container, 100, 100);
+
+        drag("dragstart", b);
+        drag("dragover", a, 20); // "before" a → top ≈ 0 - 1.5
+
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator.style.top).toBe("-1.5px");
+    });
+
+    test("blocks with DISABLE_DRAGGING are rejected as drop targets (e.g. image-sync)", () => {
+        const a = makeBlock(container, 0, 100);
+        const locked = makeBlock(container, 100, 100);
+        locked.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
+        const c = makeBlock(container, 200, 100);
+
+        drag("dragstart", a);
+        drag("dragover", locked, 140);
+
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator.style.opacity).toBe("0");
+
+        drag("drop", locked, 140);
+        // Nothing moved since no valid target was selected.
+        expect(Array.from(container.children)).toEqual([a, locked, c]);
+    });
+
+    test("horizontal flow (flex-row parent): indicator is a vertical bar", () => {
+        container.style.display = "flex";
+        (container as any).style.flexDirection = "row";
+        // Force computed style since happy-dom doesn't honour inline style on
+        // every property — override getComputedStyle for this test.
+        const realGCS = window.getComputedStyle;
+        (window as any).getComputedStyle = (el: Element) =>
+            el === container
+                ? ({ display: "flex", flexDirection: "row" } as any)
+                : realGCS.call(window, el);
+
+        const a = makeBlock(container, 0, 100);
+        const b = makeBlock(container, 0, 100);
+        // Simulate horizontal layout: b at x=[100..200].
+        (b as any).getBoundingClientRect = () => ({
+            top: 0, bottom: 100, left: 100, right: 200, width: 100, height: 100,
+            x: 100, y: 0, toJSON: () => ({}),
+        });
+
+        drag("dragstart", a);
+        // cursor past midpoint of b → "after" → indicator at b.right
+        const ev = new Event("dragover", { bubbles: true, cancelable: true }) as any;
+        ev.clientX = 180; ev.clientY = 50;
+        ev.dataTransfer = { setData: () => {}, getData: () => "", setDragImage: () => {} };
+        b.dispatchEvent(ev);
+
+        const indicator = document.querySelector(".p9r-drop-indicator") as HTMLElement;
+        expect(indicator.style.width).toBe("3px");
+        expect(indicator.style.height).toBe("100px");
+        // "after" → left = b.right - 1.5 = 198.5
+        expect(indicator.style.left).toBe("198.5px");
+
+        (window as any).getComputedStyle = realGCS;
+    });
+
+    test("slot attribute is matched on drop when target lives in a named slot", () => {
+        const inSlot = makeBlock(container, 0, 100);
+        inSlot.setAttribute("slot", "body");
+        const moving = makeBlock(container, 100, 100);
+
+        drag("dragstart", moving);
+        drag("dragover", inSlot, 20);
+        drag("drop", inSlot, 20);
+
+        expect(moving.getAttribute("slot")).toBe("body");
     });
 });
