@@ -74,9 +74,16 @@ export class BlocActionGroup extends HorizontalActionGroup {
             this._target = null;
             return;
         }
+        // open() binds `mouseleave` on the current _target. When setEditor
+        // swaps _target without going through close() first (the hover path
+        // calls setEditor + open without an intervening close if BAG is
+        // already visible on another bloc), the old target keeps the
+        // listener — one leak per hovered bloc for the life of the page.
+        if (this._listenersAttached) this._target?.removeEventListener("mouseleave", this.handleLeave);
         this._target?.classList.remove("p9r-active");
         this._editor = editor;
         this._target = editor.target;
+        if (this._listenersAttached) this._target.addEventListener("mouseleave", this.handleLeave);
         this._resolveInsertTarget();
     }
 
@@ -191,7 +198,10 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     // ── Event listeners ──
 
+    private _listenersAttached = false;
+
     private addEventListeners() {
+        if (this._listenersAttached) return;
         this.addEventListener("action-click" as any, this.handleBlocActionClick);
         this.addEventListener("mouseleave", this.handleLeave);
         this._target?.addEventListener("mouseleave", this.handleLeave);
@@ -199,9 +209,11 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnAfter.addEventListener("mouseenter", this.handleInsertBtnEnter);
         window.addEventListener("keydown", this.handleKeyDown);
         window.addEventListener("click", this.handleClickOutside);
+        this._listenersAttached = true;
     }
 
     private removeEventListeners() {
+        if (!this._listenersAttached) return;
         this.removeEventListener("action-click" as any, this.handleBlocActionClick);
         this.removeEventListener("mouseleave", this.handleLeave);
         this._target?.removeEventListener("mouseleave", this.handleLeave);
@@ -209,6 +221,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnAfter.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         window.removeEventListener("keydown", this.handleKeyDown);
         window.removeEventListener("click", this.handleClickOutside);
+        this._listenersAttached = false;
     }
 
     private handleInsertBtnEnter = () => {}
