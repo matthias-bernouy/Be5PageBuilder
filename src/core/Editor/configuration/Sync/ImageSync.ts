@@ -51,6 +51,10 @@ export class ImageSync extends HTMLElement {
         const defaultSrc = this.getAttribute("default");
         if (!defaultSrc) return;
         if (this._resolveTarget()) return;
+        // Optional image: only seed the default on first creation of the
+        // parent bloc (IS_CREATING="true"). Afterwards — including when the
+        // user has clicked Remove — leave it empty.
+        if (this.optionnal && !this.isCreating) return;
 
         const img = document.createElement("img");
         const slot = this._slotName;
@@ -184,6 +188,14 @@ export class ImageSync extends HTMLElement {
 
     get allowResize() {
         return this.hasAttribute("allow-resize");
+    }
+
+    get optionnal() {
+        return this.hasAttribute("optionnal");
+    }
+
+    get isCreating(): boolean {
+        return this._component?.getAttribute(p9r.attr.EDITOR.IS_CREATING) === "true";
     }
 
     init() {
