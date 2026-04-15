@@ -41,9 +41,11 @@ export function openChangeComponentPicker(target: HTMLElement, onDone: () => voi
     const library = BlocLibrary.open();
     library.addEventListener('insert', ((e: CustomEvent) => {
         const detail = e.detail;
-        // template is-creating attribut to be set, but check if a fragment can be a html tag
         if (detail.type === 'template') {
             const fragment = document.createRange().createContextualFragment(detail.html);
+            Array.from(fragment.children).forEach(el => {
+                el.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
+            });
             target.replaceWith(fragment);
         } else if (detail.type === 'snippet') {
             const newEl = document.createElement('w13c-snippet');
