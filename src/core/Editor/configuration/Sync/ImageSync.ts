@@ -12,6 +12,20 @@ import css from "./ImageSync.style.css" with { type: "text" };
  */
 export class ImageSync extends HTMLElement {
 
+    // An image managed by p9r-image-sync is fully owned by the panel: the
+    // action bar would be meaningless since the only supported operation is
+    // "click → MediaCenter" (or the panel's own Remove). We lock every action
+    // unconditionally, regardless of `optionnal` / `multi-select` / etc.
+    private static readonly _LOCKED_ACTIONS = [
+        "DISABLE_DELETE",
+        "DISABLE_DUPLICATE",
+        "DISABLE_ADD_BEFORE",
+        "DISABLE_ADD_AFTER",
+        "DISABLE_CHANGE_COMPONENT",
+        "DISABLE_DRAGGING",
+        "DISABLE_SAVE_AS_TEMPLATE",
+    ] as const;
+
     private _component: Component | null = null;
     private _target: HTMLImageElement | null = null;
     private _previewImg: HTMLImageElement | null = null;
@@ -61,10 +75,7 @@ export class ImageSync extends HTMLElement {
         const slot = this._slotName;
         if (slot) img.setAttribute("slot", slot);
         img.setAttribute("src", defaultSrc);
-        if ( !this.isMultiSelect ) {
-            img.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
-            img.setAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE, "true");
-        }
+        this._lockActions(img);
         if (this.allowResize) img.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
         this._component?.appendChild(img);
     }
@@ -83,6 +94,7 @@ export class ImageSync extends HTMLElement {
         target = document.createElement("img");
         const slot = this._slotName;
         if (slot) target.setAttribute("slot", slot);
+        this._lockActions(target);
         if (this.allowResize) target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
         this._component!.appendChild(target);
         return target;
@@ -90,6 +102,7 @@ export class ImageSync extends HTMLElement {
 
     private _render() {
         this._target = this._resolveTarget();
+        this._lockActions(this._target);
         this._watchTarget(this._target);
         const label = this.getAttribute("label") || "Image";
         const currentValue = this._target?.getAttribute("src") || "";
@@ -145,6 +158,21 @@ export class ImageSync extends HTMLElement {
     // The target <img> can have its `src` mutated from outside this panel
     // (e.g. ImageEditor's own click-to-MediaCenter flow). Watch for that so
     // the preview mirrors the live value.
+    private _lockActions(target: HTMLImageElement | null) {
+        if (!target) return;
+        for (const key of ImageSync._LOCKED_ACTIONS) {
+            target.setAttribute(p9r.attr.ACTION[key], "true");
+        }
+        // The editor caches its action-bar features in viewEditor() → they
+        // must be recomputed now that the DISABLE_* attrs are in place,
+        // otherwise the previously-computed bar still shows every button.
+        const id = target.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+        if (id) {
+            const editor = document.compIdentifierToEditor?.get(id);
+            editor?.viewEditor();
+        }
+    }
+
     private _watchTarget(target: HTMLImageElement | null) {
         this._targetObserver?.disconnect();
         this._targetObserver = null;
@@ -181,6 +209,7 @@ export class ImageSync extends HTMLElement {
         const handler = (e: CustomEvent) => {
             mediaCenter.removeEventListener("select-item", handler as EventListener);
             this._target = this._ensureTarget();
+            this._lockActions(this._target);
             this._watchTarget(this._target);
             this._target.setAttribute("src", e.detail.src);
             this._updatePreview(e.detail.src);
@@ -217,6 +246,7 @@ export class ImageSync extends HTMLElement {
 
     init() {
         this._target = this._resolveTarget();
+        this._lockActions(this._target);
         this._watchTarget(this._target);
         if (this._target && this.allowResize) {
             this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");

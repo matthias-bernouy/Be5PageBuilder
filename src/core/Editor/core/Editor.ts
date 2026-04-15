@@ -206,6 +206,11 @@ export abstract class Editor {
 
         this.refreshActionBarFeatures();
 
+        // viewEditor can be re-called after a sync (CompSync/ImageSync) flips
+        // DISABLE_* flags. Always detach first so the listener state mirrors
+        // the current feature map — otherwise an action bar keeps opening on
+        // hover after every button has been disabled.
+        this.target.removeEventListener("mouseenter", this.handleHover);
         if (this._actionBarFeatures.values().some(v => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0) {
             this.target.addEventListener("mouseenter", this.handleHover);
         }
