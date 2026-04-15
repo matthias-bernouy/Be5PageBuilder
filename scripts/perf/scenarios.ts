@@ -1452,11 +1452,200 @@ async () => {
     },
 };
 
+/**
+ * Insert every registered perf-* bloc once and measure the per-bloc
+ * editorization cost (ObserverManager walks the subtree, creates the editor,
+ * initializes the config panel, wires up attr/comp/image syncs). Catches
+ * regressions in the hot path that plain <p> insertions miss.
+ */
+const blocRealInsert: BrowserScenario = {
+    name: "bloc-real-insert",
+    run: `
+async () => {
+    const main = document.querySelector('main');
+    const tags = [
+        'perf-badge', 'perf-divider', 'perf-button', 'perf-icon-box',
+        'perf-card', 'perf-hero', 'perf-stat', 'perf-testimonial',
+        'perf-nav-item', 'perf-feature-grid',
+    ];
+    // Drop anything we inserted in a previous run.
+    main.querySelectorAll('.__perf_bloc__').forEach(el => el.remove());
+    await new Promise(r => setTimeout(r, 100));
+
+    const tracker = (window).__perfListeners;
+    const mapBefore = document.compIdentifierToEditor?.size ?? -1;
+    const listenersBefore = tracker ? tracker.total() : -1;
+
+    const perBloc = [];
+    const t0 = performance.now();
+    for (const tag of tags) {
+        const t = performance.now();
+        const el = document.createElement(tag);
+        el.classList.add('__perf_bloc__');
+        main.appendChild(el);
+        // Wait until ObserverManager has processed the new subtree — the
+        // editor marker is how downstream UI (BAG) knows to attach.
+        const deadline = performance.now() + 800;
+        while (performance.now() < deadline) {
+            if (el.getAttribute('p9r-is-editor') || el.hasAttribute('p9r-opaque')) break;
+            await new Promise(r => requestAnimationFrame(r));
+        }
+        perBloc.push({ tag, ms: +(performance.now() - t).toFixed(2) });
+    }
+    const totalMs = performance.now() - t0;
+
+    await new Promise(r => setTimeout(r, 200));
+    const mapAfter = document.compIdentifierToEditor?.size ?? -1;
+    const listenersAfter = tracker ? tracker.total() : -1;
+
+    const times = perBloc.map(p => p.ms);
+    const sorted = [...times].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    const max = sorted[sorted.length - 1];
+
+    const out = {
+        blocTotalMs: +totalMs.toFixed(1),
+        blocMedianMs: +median.toFixed(2),
+        blocMaxMs: +max.toFixed(2),
+        blocsInserted: tags.length,
+        blocMapDelta: mapAfter - mapBefore,
+        blocListenerDelta: listenersAfter - listenersBefore,
+    };
+    // Surface each tag individually so a regression points at the culprit.
+    for (const p of perBloc) out['ms_' + p.tag] = p.ms;
+    return out;
+}
+`,
+    absolutes: {
+        // Each bloc should editorize in well under 50ms on a quiet box.
+        blocMedianMs: 20,
+        blocMaxMs: 80,
+        blocTotalMs: 400,
+    },
+};
+
+/**
+ * Build a realistic landing page out of the perf blocs (hero → feature-grid of
+ * 4 icon-boxes → 3 cards with actions → testimonial → nav row → divider) and
+ * measure total editorize + serialize round-trip, plus peak listener / editor
+ * counts. This is the closest proxy we have to "what a real user page does".
+ */
+const realisticLanding: BrowserScenario = {
+    name: "realistic-landing",
+    run: `
+async () => {
+    const main = document.querySelector('main');
+    // Clean slate.
+    main.querySelectorAll('.__perf_landing__').forEach(el => el.remove());
+    await new Promise(r => setTimeout(r, 100));
+
+    const tracker = (window).__perfListeners;
+    const mapBefore = document.compIdentifierToEditor?.size ?? -1;
+    const listenersBefore = tracker ? tracker.total() : -1;
+
+    const root = document.createElement('div');
+    root.className = '__perf_landing__';
+    root.innerHTML = \`
+        <perf-hero align="center">
+            <h1>Build faster with PageBuilder</h1>
+            <p slot="subtitle">Compose pages from vetted blocs — ship in minutes.</p>
+            <perf-button slot="ctas">Get started</perf-button>
+            <perf-button slot="ctas" variant="ghost">Learn more</perf-button>
+        </perf-hero>
+        <perf-feature-grid columns="4">
+            <perf-icon-box slot="items"><h4>Fast</h4><p slot="caption">Instant HMR.</p></perf-icon-box>
+            <perf-icon-box slot="items"><h4>Typed</h4><p slot="caption">End-to-end TS.</p></perf-icon-box>
+            <perf-icon-box slot="items"><h4>Modular</h4><p slot="caption">One bloc, one folder.</p></perf-icon-box>
+            <perf-icon-box slot="items"><h4>Open</h4><p slot="caption">MIT license.</p></perf-icon-box>
+        </perf-feature-grid>
+        <perf-card>
+            <h3>Card one</h3>
+            <p slot="body">Description of card one goes here.</p>
+            <perf-button slot="actions">Open</perf-button>
+        </perf-card>
+        <perf-card>
+            <h3>Card two</h3>
+            <p slot="body">Description of card two goes here.</p>
+            <perf-button slot="actions">Open</perf-button>
+            <perf-button slot="actions" variant="ghost">Share</perf-button>
+        </perf-card>
+        <perf-card>
+            <h3>Card three</h3>
+            <p slot="body">Description of card three goes here.</p>
+        </perf-card>
+        <perf-testimonial>
+            <p>Using these blocs saved us weeks of frontend work.</p>
+            <span slot="author">Alex — Engineering Lead</span>
+        </perf-testimonial>
+        <p>
+            <perf-nav-item>About</perf-nav-item>
+            <perf-nav-item>Pricing</perf-nav-item>
+            <perf-nav-item>Contact</perf-nav-item>
+        </p>
+        <perf-divider></perf-divider>
+        <perf-stat value="1200">Users</perf-stat>
+        <perf-stat value="48">Blocs</perf-stat>
+        <perf-badge>Beta</perf-badge>
+    \`;
+
+    const t0 = performance.now();
+    main.appendChild(root);
+    const syncAppendMs = performance.now() - t0;
+
+    // Wait for all editorized descendants to settle.
+    const deadline = performance.now() + 3000;
+    while (performance.now() < deadline) {
+        const unprocessed = root.querySelectorAll('[p9r-opaque] [p9r-is-editor]').length;
+        const busy = root.querySelector('[p9r-is-creating]');
+        if (!busy && unprocessed === 0) break;
+        await new Promise(r => setTimeout(r, 20));
+    }
+    await new Promise(r => setTimeout(r, 150));
+    const settleMs = performance.now() - t0;
+
+    const editorizedNodes = root.querySelectorAll('[p9r-is-editor]').length;
+
+    // Serialize in view mode — same path as EditorManager.save().
+    const s0 = performance.now();
+    const content = document.EditorManager.getContent();
+    const serializeMs = performance.now() - s0;
+
+    const mapAfter = document.compIdentifierToEditor?.size ?? -1;
+    const listenersAfter = tracker ? tracker.total() : -1;
+
+    // Teardown — remove the subtree and verify disposal clears the registry.
+    root.remove();
+    await new Promise(r => setTimeout(r, 400));
+    const mapFinal = document.compIdentifierToEditor?.size ?? -1;
+    const listenersFinal = tracker ? tracker.total() : -1;
+
+    return {
+        landingAppendMs: +syncAppendMs.toFixed(2),
+        landingSettleMs: +settleMs.toFixed(1),
+        landingSerializeMs: +serializeMs.toFixed(2),
+        landingEditorizedNodes: editorizedNodes,
+        landingContentBytes: content.length,
+        landingMapPeak: mapAfter - mapBefore,
+        landingListenerPeak: listenersAfter - listenersBefore,
+        landingMapResidual: mapFinal - mapBefore,
+        landingListenerResidual: listenersFinal - listenersBefore,
+    };
+}
+`,
+    absolutes: {
+        landingAppendMs: 80,
+        landingSettleMs: 1500,
+        landingSerializeMs: 30,
+    },
+};
+
 export const SCENARIOS: Scenario[] = [
     // Structural — run first so later scenarios' insertions don't pollute the count.
     listenerScan,
     listenerGrowth,
     editorLifecycleLeak,
+    blocRealInsert,
+    realisticLanding,
     // Internals — cheap, always-on signals.
     { name: "bulk-insert-200",      run: bulkInsert(200),
         absolutes: { syncAppendMs: 5, maxLongTaskMs: 150 } },

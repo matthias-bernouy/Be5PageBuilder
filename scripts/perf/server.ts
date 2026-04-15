@@ -1,8 +1,11 @@
 import { AuthRepositoryProvider, Be5_Authentication, Be5_Runner } from "@bernouy/socle";
 import { MongoClient } from "mongodb";
+import { resolve } from "node:path";
 import { PageBuilder } from "../../src/PageBuilder";
 import { DefaultPageBuilderRepository } from "../../src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
 import { DefaultMediaRepository } from "../../src/interfaces/default-provider/Media/DefaultMediaRepository";
+import { scanDevBlocs } from "../../src/cli/dev-server/scan";
+import { buildAllDevBlocs } from "../../src/cli/dev-server/build";
 
 export type PerfServer = {
     port: number;
@@ -34,6 +37,11 @@ export async function startPerfServer(opts: { port?: number; dbName?: string; mo
         clientPathPrefix: "/",
     });
 
+    // Build + register the perf-scenario blocs so the BlocLibrary has real
+    // custom elements to insert. Skipped if the folder doesn't exist so the
+    // server still works without them.
+    await registerPerfBlocs(repository);
+
     runner.start(port);
 
     return {
@@ -45,4 +53,22 @@ export async function startPerfServer(opts: { port?: number; dbName?: string; mo
             if (typeof stop === "function") stop.call(runner);
         },
     };
+}
+
+async function registerPerfBlocs(repository: DefaultPageBuilderRepository) {
+    const dir = resolve(import.meta.dir, "components");
+    const blocs = await scanDevBlocs(dir, { quiet: true });
+    if (blocs.length === 0) return;
+    const built = await buildAllDevBlocs(blocs);
+    for (const b of built.values()) {
+        await repository.createBloc({
+            id: b.tag,
+            name: b.label,
+            group: b.group,
+            description: b.description,
+            viewJS: b.viewJS,
+            editorJS: b.editorJS ?? "",
+        });
+    }
+    console.log(`  → registered ${built.size} perf bloc(s): ${[...built.keys()].join(", ")}`);
 }
