@@ -30,40 +30,38 @@ describe("Editor lifecycle (dispose leak fix)", () => {
         resetState();
     });
 
-    test("SWITCH_MODE listener is active after construction", () => {
+    test("onSwitchMode dispatches viewEditor / viewClient", () => {
+        // EditorManager drives mode changes by iterating compIdentifierToEditor
+        // and calling onSwitchMode() directly — no per-editor document listener.
         const node = document.createElement("div");
         document.body.appendChild(node);
         const editor = new TrackingEditor(node, "");
         const base = editor.viewClientCalls + editor.viewEditorCalls;
 
-        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, { detail: p9r.mode.VIEW }));
+        editor.onSwitchMode(p9r.mode.VIEW);
         expect(editor.viewClientCalls).toBe(1);
-        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, { detail: p9r.mode.EDITOR }));
+        editor.onSwitchMode(p9r.mode.EDITOR);
         expect(editor.viewEditorCalls).toBe(1);
-        // Sanity: both handlers ran exactly once past the baseline.
         expect(editor.viewClientCalls + editor.viewEditorCalls).toBe(base + 2);
     });
 
-    test("dispose() removes the SWITCH_MODE listener — subsequent dispatches are ignored", () => {
+    test("dispose() removes the editor from compIdentifierToEditor", () => {
+        // EditorManager.switchMode() iterates the registry; once an editor is
+        // gone from the map, no future mode change can reach it.
         const node = document.createElement("div");
         document.body.appendChild(node);
         const editor = new TrackingEditor(node, "");
-
-        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, { detail: p9r.mode.VIEW }));
-        const viewClientBefore = editor.viewClientCalls;
+        const sizeBefore = document.compIdentifierToEditor!.size;
 
         editor.dispose();
 
-        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, { detail: p9r.mode.VIEW }));
-        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, { detail: p9r.mode.EDITOR }));
-
-        expect(editor.viewClientCalls).toBe(viewClientBefore);
+        expect(document.compIdentifierToEditor!.size).toBe(sizeBefore - 1);
     });
 
     test("dispose() does not leak across many instances", () => {
-        // Regression guard: create N editors, dispose each, then dispatch a
-        // single SWITCH_MODE — nothing should fire. Before the fix, all N
-        // listeners would still be attached and all N editors would respond.
+        // Regression guard: create N editors, dispose each — the registry
+        // must return to its pre-creation size.
+        const sizeBefore = document.compIdentifierToEditor!.size;
         const editors: TrackingEditor[] = [];
         for (let i = 0; i < 10; i++) {
             const node = document.createElement("div");
@@ -72,10 +70,6 @@ describe("Editor lifecycle (dispose leak fix)", () => {
         }
         editors.forEach((e) => e.dispose());
 
-        document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, { detail: p9r.mode.VIEW }));
-
-        for (const e of editors) {
-            expect(e.viewClientCalls).toBe(0);
-        }
+        expect(document.compIdentifierToEditor!.size).toBe(sizeBefore);
     });
 });
