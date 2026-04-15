@@ -18,7 +18,11 @@ export class AttrSync extends HTMLElement {
     private onChange(event: Event) {
         const target = event.target as HTMLElement & { name?: string; value?: any };
         if (target && target.name) {
-            this._component?.setAttribute(target.name, target.value)
+            if (target.value === "" || target.value == null) {
+                this._component?.removeAttribute(target.name);
+            } else {
+                this._component?.setAttribute(target.name, target.value);
+            }
         }
     }
 
