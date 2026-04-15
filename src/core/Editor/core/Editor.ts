@@ -268,12 +268,12 @@ export abstract class Editor {
         }
     }
 
-    onChildrenRemoved() {
-        this._panelConfig?.init();
+    onChildrenRemoved(removedNode?: HTMLElement) {
+        this._panelConfig?.init({ removed: removedNode });
     }
 
     onChildrenAdded(addedNode?: HTMLElement) {
-        this._panelConfig?.init(addedNode);
+        this._panelConfig?.init({ added: addedNode });
     }
 
     get actionBarConfiguration() {

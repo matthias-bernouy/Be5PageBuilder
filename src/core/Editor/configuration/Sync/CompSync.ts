@@ -95,7 +95,7 @@ export class CompSync extends HTMLElement {
         }
     }
 
-    init(addedNode?: HTMLElement){
+    init(opts?: { added?: HTMLElement; removed?: HTMLElement }){
         const child = this.firstElementChild;
         const slotName = child?.getAttribute("slot");
 
@@ -108,6 +108,37 @@ export class CompSync extends HTMLElement {
                 : `:scope > :not([slot])`;
 
         let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
+
+        // Incremental REMOVE: the removed node is already detached, so the
+        // N-1 surviving siblings don't need their slot attrs re-applied or
+        // `viewEditor()` re-run — their state hasn't changed. We just drop
+        // the matching <li> and re-index. The only exception is the min
+        // threshold crossing, where delete/drag must be re-locked on the
+        // remaining slots. Same O(N²) → O(1) story as the add path (hot
+        // path: hold-Delete inside a list).
+        if (opts?.removed) {
+            this._removePanelItem(opts.removed);
+            this._updatePanelCount(slots.length);
+
+            const canAddMultiple = this.isMultiple && slots.length < this.max;
+            const optionalEmptySingle = this.optionnal && !this.isMultiple && slots.length === 0;
+            this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
+            this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
+
+            if (this.isMultiple && slots.length === this.min) {
+                slots.forEach((slot) => {
+                    if (!this.optionnal) {
+                        slot.setAttribute(p9r.attr.ACTION.DISABLE_DELETE, "true");
+                    }
+                    slot.setAttribute(p9r.attr.ACTION.DISABLE_DRAGGING, "true");
+                    const id = slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+                    if (id) document.compIdentifierToEditor.get(id)?.viewEditor();
+                });
+            }
+            return;
+        }
+
+        const addedNode = opts?.added;
 
         // When we know which node was just added, we can skip re-applying the
         // slot attributes on the N-1 untouched siblings — their state hasn't
@@ -206,6 +237,9 @@ export class CompSync extends HTMLElement {
 
     private _appendPanelItem(slot: HTMLElement, index: number) {
         const li = document.createElement("li");
+        // Stash the slot ref on the <li> so incremental removes can find the
+        // matching item without rescanning the DOM.
+        (li as any)._slot = slot;
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "item";
@@ -220,6 +254,20 @@ export class CompSync extends HTMLElement {
         });
         li.append(btn);
         this._listEl.append(li);
+    }
+
+    private _removePanelItem(removed: HTMLElement) {
+        const lis = Array.from(this._listEl.children) as HTMLLIElement[];
+        for (const li of lis) {
+            if ((li as any)._slot === removed) {
+                li.remove();
+                break;
+            }
+        }
+        Array.from(this._listEl.children).forEach((li, i) => {
+            const idx = li.querySelector(".item-index");
+            if (idx) idx.textContent = `#${i + 1}`;
+        });
     }
 
     private _titleLabel(): string {

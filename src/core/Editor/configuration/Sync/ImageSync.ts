@@ -254,13 +254,14 @@ export class ImageSync extends HTMLElement {
         return this._component?.getAttribute(p9r.attr.EDITOR.IS_CREATING) === "true";
     }
 
-    init(addedNode?: HTMLElement) {
+    init(opts?: { added?: HTMLElement; removed?: HTMLElement }) {
         const target = this._resolveTarget();
-        // ConfigPanel.init fans addedNode out to every sync. We only care
+        // ConfigPanel.init fans mutations out to every sync. We only care
         // when the mutation concerns *our* <img> — otherwise a keystroke
-        // that inserts a sibling <p> would re-run _lockActions +
-        // _watchTarget + viewEditor() on the image on every Enter.
-        if (addedNode && addedNode !== target) return;
+        // that inserts/removes a sibling <p> would re-run _lockActions +
+        // _watchTarget + viewEditor() on the image on every keystroke.
+        if (opts?.added && opts.added !== target) return;
+        if (opts?.removed && opts.removed !== this._target && opts.removed !== target) return;
         this._target = target;
         this._lockActions(this._target);
         this._watchTarget(this._target);

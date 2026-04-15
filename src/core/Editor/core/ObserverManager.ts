@@ -99,11 +99,11 @@ export class ObserverManager {
 
                     if (allAdded.has(node)) {
                         // DOM move — notify old parent but keep the editor (and subtree) alive
-                        document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
+                        document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
                         continue;
                     }
 
-                    document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved();
+                    document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
                     // MutationObserver only reports the top-level removed node.
                     // Walk the subtree so editorized descendants get disposed too —
                     // otherwise removing a container leaks every nested editor

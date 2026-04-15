@@ -43,10 +43,10 @@ export class ConfigPanel extends Component {
         this.dialog?.close();
     }
 
-    init(addedNode?: HTMLElement){
+    init(opts?: { added?: HTMLElement; removed?: HTMLElement }){
         const elements = Array.from(this.querySelectorAll("*")) as any[];
         for ( const element of elements ) {
-            if ( element.init ) element.init(addedNode);
+            if ( element.init ) element.init(opts);
         }
     }
 
