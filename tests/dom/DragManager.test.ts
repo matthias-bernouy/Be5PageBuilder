@@ -32,6 +32,7 @@ function drag(kind: "dragstart" | "dragover" | "drop" | "dragend", target: HTMLE
     ev.dataTransfer = {
         setData: () => {},
         getData: () => "",
+        setDragImage: () => {},
     };
     target.dispatchEvent(ev);
     return ev;
