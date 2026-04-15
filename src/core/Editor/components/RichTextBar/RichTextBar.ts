@@ -54,6 +54,13 @@ export class EditorToolbar extends Component {
         root.addEventListener("click", (e) => this.handleClick(e as MouseEvent));
         document.addEventListener("selectionchange", () => this.handleSelection());
 
+        // Selection-change alone doesn't close the bar when the user clicks an
+        // element that doesn't collapse the caret (a non-editable sibling in
+        // the parent, a BAG button with preventDefault, etc.). Catch those via
+        // a document-level mousedown outside the bar and outside the current
+        // editable.
+        document.addEventListener("mousedown", (e) => this.handleOutsideMouseDown(e));
+
         this.pageLink = document.createElement("p9r-page-link");
         this.pageLink.setAttribute("label", "");
         this.pageLink.setAttribute("name", "href");
@@ -279,6 +286,20 @@ export class EditorToolbar extends Component {
 
         this.style.top = `${top}px`;
         this.style.left = `${left}px`;
+    }
+
+    private handleOutsideMouseDown(e: MouseEvent) {
+        if (!this.classList.contains("visible")) return;
+        const t = e.target as Node;
+        if (this === t || this.contains(t) || this.shadowRoot!.contains(t)) return;
+        const range = this.selection.range;
+        if (range) {
+            const anchor = range.commonAncestorContainer;
+            const el = anchor.nodeType === 1 ? anchor as Element : anchor.parentElement;
+            const editable = el?.closest?.('[contenteditable="true"]') as HTMLElement | null;
+            if (editable && editable.contains(t)) return;
+        }
+        this.hide();
     }
 
     hide() {
