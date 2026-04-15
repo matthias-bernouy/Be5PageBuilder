@@ -262,6 +262,12 @@ export class TextEditor extends Editor {
         // `this`) doesn't keep the editor + target alive.
         this.attrObserver?.disconnect();
         this.attrObserver = undefined;
+        // Pair the add in init(): without this, removing a text bloc leaves
+        // three listeners (keydown/input/paste) bound to the detached node,
+        // each holding the editor + target alive through the handler closure.
+        this.target.removeEventListener("keydown", this.onKeyDown);
+        this.target.removeEventListener("input", this.onInput);
+        this.target.removeEventListener("paste", this.onPaste);
         super.dispose();
     }
 }
