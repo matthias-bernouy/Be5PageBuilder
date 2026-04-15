@@ -5,7 +5,7 @@ import template from './template.html' with { type: 'text' };
 import insertBtnCss from './insert-btn.css' with { type: 'text' };
 import insertBtnHtml from './insert-btn.html' with { type: 'text' };
 import { computeGroupPosition, positionInsertButtons, type VAnchor } from './positioning';
-import { insertClone, openChangeComponentPicker } from './actions';
+import { duplicateSibling, insertBlankSibling, openChangeComponentPicker } from './actions';
 import { ICON_PARENT, ICON_PIN } from '../../icons';
 import type { StateSync } from '../../configuration/Sync/StateSync';
 
@@ -33,8 +33,8 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
         this._btnBefore = this._createInsertButton('before');
         this._btnAfter = this._createInsertButton('after');
-        this._btnBefore.addEventListener('click', () => this._insertClone('before'));
-        this._btnAfter.addEventListener('click', () => this._insertClone('after'));
+        this._btnBefore.addEventListener('click', () => this._insertBlank('before'));
+        this._btnAfter.addEventListener('click', () => this._insertBlank('after'));
 
         this._resizeObserver = new ResizeObserver(() => this._reflow());
     }
@@ -164,9 +164,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
         positionInsertButtons(this._btnBefore, this._btnAfter, insertRect, isInline, this._insertConfig);
     }
 
-    private _insertClone(position: 'before' | 'after') {
+    private _insertBlank(position: 'before' | 'after') {
         if (!this._insertTarget) return;
-        insertClone(this._insertTarget, position);
+        insertBlankSibling(this._insertTarget, position);
+        this.close();
+        this._cooldown = true;
+        requestAnimationFrame(() => { this._cooldown = false; });
+    }
+
+    private _duplicate() {
+        if (!this._target) return;
+        duplicateSibling(this._target, 'after');
         this.close();
         this._cooldown = true;
         requestAnimationFrame(() => { this._cooldown = false; });
@@ -243,7 +251,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         switch (e.detail.action) {
             case "delete":       this._target?.remove(); this.close(); break;
             case "edit":         this._editor?.showConfigPanel(); break;
-            case "duplicate":    this._insertClone('after'); break;
+            case "duplicate":    this._duplicate(); break;
             case "changeComponent": this._changeComponent(); break;
             case "pin-state":    this._handlePinClick(); break;
             case "select-parent": this._selectParent(); break;
