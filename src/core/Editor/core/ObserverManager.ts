@@ -115,7 +115,7 @@ export class ObserverManager {
                             if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
                                 const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
                                 if (newParentId) {
-                                    document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded();
+                                    document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded(node);
                                 }
                                 return;
                             }
@@ -215,7 +215,7 @@ export class ObserverManager {
         }
         const parentComponent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if ( parentComponent ){
-            document.compIdentifierToEditor.get(parentComponent)?.onChildrenAdded();
+            document.compIdentifierToEditor.get(parentComponent)?.onChildrenAdded(node);
         }
     }
 }

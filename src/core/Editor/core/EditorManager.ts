@@ -114,6 +114,15 @@ export class EditorManager{
             this.editorSystem.append(this.richTextBar);
         }
         if ( mode ) this.mode = mode;
+        // Direct dispatch via the editor registry Editor already maintains
+        // (`document.compIdentifierToEditor`). Used to be a per-editor
+        // `document.addEventListener(SWITCH_MODE)` — 2 listeners per editor
+        // (Editor base + TextEditor observer toggle), so a 400-item grid
+        // ended up with 800 handlers on `document`.
+        const editors = document.compIdentifierToEditor;
+        if (editors) for (const ed of editors.values()) ed.onSwitchMode(this.mode);
+        // Keep the broadcast for external listeners (custom blocs, MediaCenter…)
+        // that still hook into the document bus.
         document.dispatchEvent(new CustomEvent(p9r.event.SWITCH_MODE, {
             detail: this.mode
         }))

@@ -39,8 +39,10 @@ export class TextEditor extends Editor {
         this.observeAttributes();
     }
 
+    private attrObserver?: MutationObserver;
+
     observeAttributes(){
-        const observer = new MutationObserver((mutations) => {
+        this.attrObserver = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
                 if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
                     if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
@@ -52,19 +54,25 @@ export class TextEditor extends Editor {
                 }
             }
         });
+    }
 
-        document.addEventListener(p9r.event.SWITCH_MODE, (e) => {
-            if ( e.detail === p9r.mode.EDITOR ) {
-                observer.observe(this.target, {
-                    attributes: true,
-                    attributeFilter: [p9r.attr.TEXT.BLOC_MANAGEMENT, p9r.attr.TEXT.EDITABLE]
-                })
-            } else {
-                this.isInitializing = false;
-                observer.disconnect();
-            }
-        })
-
+    /**
+     * Used to be an anonymous `document.addEventListener(SWITCH_MODE)` that
+     * was never removed — one leaked closure per TextEditor. Folded into the
+     * registry-driven hook so lifecycle is explicit.
+     */
+    public override onSwitchMode(mode: string) {
+        super.onSwitchMode(mode);
+        if (!this.attrObserver) return;
+        if (mode === p9r.mode.EDITOR) {
+            this.attrObserver.observe(this.target, {
+                attributes: true,
+                attributeFilter: [p9r.attr.TEXT.BLOC_MANAGEMENT, p9r.attr.TEXT.EDITABLE],
+            });
+        } else {
+            this.isInitializing = false;
+            this.attrObserver.disconnect();
+        }
     }
 
     private handlePaste(e: ClipboardEvent) {
@@ -118,14 +126,15 @@ export class TextEditor extends Editor {
             if (this.isAddAfterDisabled) return;
 
             const nextEl = this.createElement("p")
+            // Make nextEl focusable BEFORE the sync focus call: `TextEditor.init()`
+            // only sets contentEditable/tabIndex inside a rAF (post-microtask),
+            // so a bare `focus()` here would be a no-op and OS key-repeat would
+            // keep firing on `this.target`, stacking every sibling behind the
+            // same anchor in reverse order.
+            nextEl.contentEditable = "true";
+            nextEl.tabIndex = 0;
             this.target.after(nextEl)
-
-            // Inside a comp-sync, `onChildrenAdded` re-runs `viewEditor()` on
-            // every sibling slot, each scheduling its own rAF focus. Wait two
-            // frames so our focus is the last one applied.
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-                if (nextEl.isConnected) nextEl.focus();
-            }));
+            nextEl.focus();
         }
 
         if (e.key === "Backspace" && this.target.innerHTML === "" && !this.isDeleteDisabled) {

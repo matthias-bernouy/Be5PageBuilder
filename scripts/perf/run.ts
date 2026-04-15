@@ -106,20 +106,23 @@ async function loadBaseline(): Promise<RunReport | null> {
 
 function compareToBaseline(current: RunReport, baseline: RunReport | null) {
     const baselineByName = new Map((baseline?.scenarios ?? []).map(s => [s.name, s.metrics]));
-    const rows: Array<{ scenario: string; metric: string; current: number; base: number | null; delta: string; flag: string }> = [];
+    const rows: Array<{ scenario: string; metric: string; current: number; base: number | null; ceiling: number | null; delta: string; flag: string }> = [];
     let regressionCount = 0;
     let improvementCount = 0;
+    let absoluteFailCount = 0;
     for (const s of current.scenarios) {
         const base = baselineByName.get(s.name);
+        const scenario = SCENARIOS.find(x => x.name === s.name);
         for (const [metric, value] of Object.entries(s.metrics)) {
             const baseVal = base?.[metric] ?? null;
+            const ceiling = scenario?.absolutes?.[metric] ?? null;
             let delta = "";
             let flag = "";
             if (baseVal !== null && baseVal > 0) {
                 const ratio = value / baseVal;
                 const pct = (ratio - 1) * 100;
                 delta = `${pct >= 0 ? "+" : ""}${pct.toFixed(1)}%`;
-                const tol = SCENARIOS.find(x => x.name === s.name)?.tolerances?.[metric] ?? DEFAULT_TOLERANCE;
+                const tol = scenario?.tolerances?.[metric] ?? DEFAULT_TOLERANCE;
                 // Only flag regressions on latency metrics (ms). Counters and byte sizes
                 // don't need tolerance treatment — they're either stable by design or
                 // their drift means something structural.
@@ -133,29 +136,37 @@ function compareToBaseline(current: RunReport, baseline: RunReport | null) {
                 delta = "n/a";
                 flag = "new";
             }
-            rows.push({ scenario: s.name, metric, current: value, base: baseVal, delta, flag });
+            // Absolute ceiling takes precedence over baseline delta — it's the
+            // "common-sense sanity check" (e.g., inserting a <p> should never
+            // take 30ms, even if the baseline agrees it does).
+            if (ceiling !== null && value > ceiling) {
+                flag = "ABSOLUTE-FAIL";
+                absoluteFailCount++;
+            }
+            rows.push({ scenario: s.name, metric, current: value, base: baseVal, ceiling, delta, flag });
         }
     }
-    return { rows, regressionCount, improvementCount };
+    return { rows, regressionCount, improvementCount, absoluteFailCount };
 }
 
 function printReport(current: RunReport, cmp: ReturnType<typeof compareToBaseline>) {
     console.log("\n=== Perf report ===");
     const colPad = (s: string, n: number) => s.padEnd(n);
-    console.log(colPad("scenario", 26) + colPad("metric", 26) + colPad("current", 12) + colPad("baseline", 12) + colPad("delta", 10) + "flag");
-    console.log("-".repeat(96));
+    console.log(colPad("scenario", 26) + colPad("metric", 26) + colPad("current", 12) + colPad("baseline", 12) + colPad("ceiling", 10) + colPad("delta", 10) + "flag");
+    console.log("-".repeat(106));
     for (const r of cmp.rows) {
         console.log(
             colPad(r.scenario, 26) +
             colPad(r.metric, 26) +
             colPad(String(r.current), 12) +
             colPad(r.base === null ? "—" : String(r.base), 12) +
+            colPad(r.ceiling === null ? "—" : String(r.ceiling), 10) +
             colPad(r.delta, 10) +
             r.flag
         );
     }
-    console.log("-".repeat(96));
-    console.log(`Scenarios: ${current.scenarios.length}  |  Regressions: ${cmp.regressionCount}  |  Improvements: ${cmp.improvementCount}`);
+    console.log("-".repeat(106));
+    console.log(`Scenarios: ${current.scenarios.length}  |  Regressions: ${cmp.regressionCount}  |  Improvements: ${cmp.improvementCount}  |  Absolute fails: ${cmp.absoluteFailCount}`);
 }
 
 async function main() {
@@ -170,6 +181,68 @@ async function main() {
         console.log("• Launching chromium…");
         browser = await chromium.launch({ headless: !args.headed });
         const context = await browser.newContext();
+        // Install a listener tracker BEFORE any page code runs. We monkey-patch
+        // EventTarget.prototype.{add,remove}EventListener so every registration
+        // made by the editor, its components, and the framework is counted.
+        // The `listener-scan` scenario reads the totals back.
+        await context.addInitScript(() => {
+            const W = window as unknown as { __perfListeners?: unknown };
+            if (W.__perfListeners) return;
+            // Track unique (target, type, listener, capture) tuples. Browsers
+            // dedupe registrations on those four, and removeEventListener on
+            // an un-added combo is a no-op — we must mirror that semantics
+            // or we over-decrement (the `remove-then-add` idiom is common).
+            const byType = new Map<string, number>();
+            const perTarget = new WeakMap<object, Map<string, Set<unknown>>>();
+            let winCount = 0, docCount = 0;
+            const capFlag = (opts: unknown): boolean => {
+                if (typeof opts === "boolean") return opts;
+                if (opts && typeof opts === "object") return !!(opts as { capture?: boolean }).capture;
+                return false;
+            };
+            const key = (type: string, listener: unknown, capture: boolean) =>
+                type + "\x00" + (capture ? "1" : "0");
+            const origAdd = EventTarget.prototype.addEventListener;
+            const origRemove = EventTarget.prototype.removeEventListener;
+            EventTarget.prototype.addEventListener = function (type: string, listener: any, opts?: any) {
+                const cap = capFlag(opts);
+                const k = key(type, listener, cap);
+                let m = perTarget.get(this);
+                if (!m) { m = new Map(); perTarget.set(this, m); }
+                let set = m.get(k);
+                if (!set) { set = new Set(); m.set(k, set); }
+                if (!set.has(listener)) {
+                    set.add(listener);
+                    byType.set(type, (byType.get(type) ?? 0) + 1);
+                    if (this === window) winCount++;
+                    else if (this === document) docCount++;
+                }
+                return origAdd.call(this, type, listener, opts);
+            };
+            EventTarget.prototype.removeEventListener = function (type: string, listener: any, opts?: any) {
+                const cap = capFlag(opts);
+                const k = key(type, listener, cap);
+                const m = perTarget.get(this);
+                const set = m?.get(k);
+                if (set && set.has(listener)) {
+                    set.delete(listener);
+                    byType.set(type, (byType.get(type) ?? 0) - 1);
+                    if (this === window) winCount--;
+                    else if (this === document) docCount--;
+                }
+                return origRemove.call(this, type, listener, opts);
+            };
+            W.__perfListeners = {
+                total: () => Array.from(byType.values()).reduce((a, b) => a + b, 0),
+                onWindow: () => winCount,
+                onDocument: () => docCount,
+                byType: () => {
+                    const o: Record<string, number> = {};
+                    for (const [k, v] of byType) if (v !== 0) o[k] = v;
+                    return o;
+                },
+            };
+        });
         const page = await context.newPage();
 
         console.log("• Setting up account & editor page…");
@@ -209,7 +282,7 @@ async function main() {
             console.log(`\n(no baseline yet — run with --save to record one)`);
         }
 
-        if (cmp.regressionCount > 0) process.exitCode = 1;
+        if (cmp.regressionCount > 0 || cmp.absoluteFailCount > 0) process.exitCode = 1;
     } finally {
         if (browser) await browser.close();
         if (server) await server.stop();

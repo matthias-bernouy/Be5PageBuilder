@@ -95,7 +95,7 @@ export class CompSync extends HTMLElement {
         }
     }
 
-    init(){
+    init(addedNode?: HTMLElement){
         const child = this.firstElementChild;
         const slotName = child?.getAttribute("slot");
 
@@ -109,7 +109,15 @@ export class CompSync extends HTMLElement {
 
         let slots = Array.from(this._component?.querySelectorAll(selector)!) as Component[];
 
-        slots.forEach((slot) => {
+        // When we know which node was just added, we can skip re-applying the
+        // slot attributes on the N-1 untouched siblings — their state hasn't
+        // changed. This turns the hot path of "hold-Enter inside a list" from
+        // O(N²) into O(N).
+        const toProcess = (addedNode && slots.includes(addedNode as Component))
+            ? [addedNode as Component]
+            : slots;
+
+        toProcess.forEach((slot) => {
             const slotEditor = document.compIdentifierToEditor.get(slot.getAttribute(p9r.attr.EDITOR.IDENTIFIER)!);
             slot.setAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE, "true");
             slot.setAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER, "true");
@@ -154,41 +162,27 @@ export class CompSync extends HTMLElement {
             slotEditor?.viewEditor();
         })
 
-        this._renderPanel(slots);
+        // Incremental render when we know only one slot was added: append a
+        // single <li> instead of wiping + recreating the whole list. The
+        // previous approach was O(N) per insert, so a hold-Enter on a list of
+        // N items was O(N²) in DOM churn (listeners + nodes), which is why
+        // work kept piling up well after the key was released.
+        if (addedNode && slots.includes(addedNode as Component)) {
+            this._appendPanelItem(addedNode, slots.length - 1);
+            this._updatePanelCount(slots.length);
+        } else {
+            this._renderPanel(slots);
+        }
     }
 
     // ── Rendered UI ──────────────────────────────────────────────────────
 
     private _renderPanel(slots: HTMLElement[]) {
         this._titleEl.textContent = this._titleLabel();
-
-        if (this.isMultiple) {
-            const max = this.max === Infinity ? "∞" : String(this.max);
-            this._countEl.textContent = `${slots.length} / ${max}`;
-            this._countEl.hidden = false;
-        } else {
-            this._countEl.textContent = "";
-            this._countEl.hidden = true;
-        }
+        this._updatePanelCount(slots.length);
 
         this._listEl.innerHTML = "";
-        slots.forEach((slot, index) => {
-            const li = document.createElement("li");
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "item";
-            btn.innerHTML = `
-                <span class="item-index">#${index + 1}</span>
-                <span class="item-label"></span>
-            `;
-            btn.querySelector(".item-label")!.textContent = this._slotLabel(slot);
-            btn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                this._focus(slot);
-            });
-            li.append(btn);
-            this._listEl.append(li);
-        });
+        slots.forEach((slot, index) => this._appendPanelItem(slot, index));
 
         // Optional single-slot mode: once the user deletes the only slot, show
         // the same add button so they can bring it back. Without this, an
@@ -197,6 +191,35 @@ export class CompSync extends HTMLElement {
         const canAddMultiple = this.isMultiple && slots.length < this.max;
         this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
         this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
+    }
+
+    private _updatePanelCount(total: number) {
+        if (this.isMultiple) {
+            const max = this.max === Infinity ? "∞" : String(this.max);
+            this._countEl.textContent = `${total} / ${max}`;
+            this._countEl.hidden = false;
+        } else {
+            this._countEl.textContent = "";
+            this._countEl.hidden = true;
+        }
+    }
+
+    private _appendPanelItem(slot: HTMLElement, index: number) {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "item";
+        btn.innerHTML = `
+            <span class="item-index">#${index + 1}</span>
+            <span class="item-label"></span>
+        `;
+        btn.querySelector(".item-label")!.textContent = this._slotLabel(slot);
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            this._focus(slot);
+        });
+        li.append(btn);
+        this._listEl.append(li);
     }
 
     private _titleLabel(): string {

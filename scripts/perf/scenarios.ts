@@ -20,6 +20,7 @@ export type BrowserScenario = {
     name: string;
     run: string; // stringified async arrow evaluated in the page
     tolerances?: Record<string, number>;
+    absolutes?: Record<string, number>;
 };
 
 export type DriverScenario = {
@@ -27,6 +28,7 @@ export type DriverScenario = {
     name: string;
     run: (page: Page) => Promise<Record<string, number>>;
     tolerances?: Record<string, number>;
+    absolutes?: Record<string, number>;
 };
 
 export type Scenario = BrowserScenario | DriverScenario;
@@ -507,6 +509,111 @@ const dragReorder: DriverScenario = {
     },
 };
 
+/**
+ * Simulates a user holding the Enter key to create many paragraphs in a row.
+ * Reproduces the hand-reported lag: each Enter triggers the parent editor's
+ * `onChildrenAdded` → `CompSync.init()` which currently re-runs
+ * `slotEditor.viewEditor()` on EVERY sibling, giving O(N²) work.
+ */
+const holdEnter30: DriverScenario = {
+    kind: "driver",
+    name: "hold-enter-30",
+    async run(page): Promise<Record<string, number>> {
+        await ensureFocusedParagraph(page);
+        // Type something in the starting paragraph so Enter creates a real sibling
+        // rather than triggering Backspace-on-empty behavior on the following key.
+        await page.keyboard.type("seed");
+
+        const enterSamples: number[] = [];
+        const t0 = await page.evaluate(() => performance.now());
+        for (let i = 0; i < 30; i++) {
+            const t = await page.evaluate(() => performance.now());
+            await page.keyboard.press("Enter");
+            const t2 = await page.evaluate(() => performance.now());
+            enterSamples.push(t2 - t);
+        }
+        const tEnd = await page.evaluate(() => performance.now());
+
+        const s = stats(enterSamples);
+        return {
+            holdEnterTotalMs: +(tEnd - t0).toFixed(1),
+            holdEnterMedianMs: s.median,
+            holdEnterP95Ms: s.p95,
+            holdEnterMaxMs: s.max,
+            holdEnterLastMs: +enterSamples[enterSamples.length - 1].toFixed(3),
+        };
+    },
+};
+
+/**
+ * Simulates a real OS key-repeat: Enter held down for ~500ms. Playwright's
+ * `keyboard.down` + `up` replays native auto-repeat keydown events, unlike
+ * 30 sequential `press()` calls which are discrete. Catches focus-race bugs
+ * where the double-rAF focus-on-new-sibling hasn't fired yet, so every
+ * repeated Enter lands on the SAME original target and `target.after()`
+ * stacks siblings behind it.
+ */
+const holdEnterReal: DriverScenario = {
+    kind: "driver",
+    name: "hold-enter-real",
+    async run(page): Promise<Record<string, number>> {
+        await ensureFocusedParagraph(page);
+        await page.keyboard.type("seed");
+
+        const countBefore = await page.evaluate(() => document.querySelectorAll("main p").length);
+
+        // Simulate OS key-repeat: 15 synthetic keydowns at ~33ms intervals,
+        // all dispatched to whatever is `activeElement` at fire time (which is
+        // what the OS does). Playwright's `keyboard.down` only fires once, so
+        // we hand-roll the loop via CDP-free page.evaluate.
+        const t0 = await page.evaluate(() => performance.now());
+        await page.evaluate(async () => {
+            const fire = () => {
+                const target = document.activeElement as HTMLElement;
+                if (!target) return;
+                const ev = new KeyboardEvent("keydown", {
+                    key: "Enter", code: "Enter", keyCode: 13, which: 13,
+                    bubbles: true, cancelable: true, repeat: true,
+                });
+                target.dispatchEvent(ev);
+            };
+            for (let i = 0; i < 15; i++) {
+                fire();
+                await new Promise(r => setTimeout(r, 33));
+            }
+        });
+        // Let observers + rAFs settle
+        await new Promise(r => setTimeout(r, 300));
+        const tEnd = await page.evaluate(() => performance.now());
+
+        const countAfter = await page.evaluate(() => document.querySelectorAll("main p").length);
+        const created = countAfter - countBefore;
+
+        // Check stacking: are all created <p> adjacent and in insertion order,
+        // or are they piled up right after the seed paragraph?
+        // Distinguish "stacked" from "chained": if focus stayed on the seed
+        // (because async focus transfer lost the race), every repeated Enter
+        // landed on seed and `seed.after()` stacked all siblings. In that
+        // case activeElement is still seed. If chaining worked, focus should
+        // have walked forward and activeElement is the last created <p>.
+        const focusState = await page.evaluate(() => {
+            const ps = Array.from(document.querySelectorAll("main p")) as HTMLElement[];
+            const seed = ps.find(p => (p.textContent || "").includes("seed"));
+            return {
+                focusOnSeed: document.activeElement === seed,
+                lastEmptyIsActive: ps.length > 0 && document.activeElement === ps[ps.length - 1],
+            };
+        });
+
+        return {
+            holdRealTotalMs: +(tEnd - t0).toFixed(1),
+            holdRealCreated: created,
+            holdRealStacked: focusState.focusOnSeed ? 1 : 0,
+            holdRealChained: focusState.lastEmptyIsActive ? 1 : 0,
+        };
+    },
+};
+
 const selectTextToolbar: DriverScenario = {
     kind: "driver",
     name: "select-text-toolbar",
@@ -555,15 +662,340 @@ const selectTextToolbar: DriverScenario = {
     },
 };
 
+/**
+ * Single-paragraph insert cost: time from `appendChild(p)` to the node receiving
+ * `p9r-is-editor`. This is the user-perceived latency of "I added one element".
+ * Baseline-free intuition: <5ms is healthy, >15ms is a bug.
+ */
+const singleParagraphInsert = () => `
+async () => {
+    const main = document.querySelector('main');
+    const now = () => performance.now();
+    // Warmup: the very first insert pays one-time costs (shadow root creation, etc.).
+    {
+        const warm = document.createElement('p');
+        main.appendChild(warm);
+        const deadline = now() + 100;
+        while (!warm.hasAttribute('p9r-is-editor') && now() < deadline) {
+            await new Promise(r => setTimeout(r, 1));
+        }
+    }
+
+    const samples = [];
+    for (let i = 0; i < 30; i++) {
+        const p = document.createElement('p');
+        p.textContent = 'single ' + i;
+        const t = now();
+        main.appendChild(p);
+        const deadline = t + 100;
+        while (!p.hasAttribute('p9r-is-editor') && now() < deadline) {
+            await new Promise(r => setTimeout(r, 1));
+        }
+        samples.push(now() - t);
+        // Small gap so each insert is isolated.
+        await new Promise(r => setTimeout(r, 10));
+    }
+    samples.sort((a, b) => a - b);
+    return {
+        singleInsertMedianMs: +samples[Math.floor(samples.length / 2)].toFixed(2),
+        singleInsertP95Ms: +samples[Math.floor(samples.length * 0.95)].toFixed(2),
+        singleInsertMaxMs: +samples[samples.length - 1].toFixed(2),
+    };
+}
+`;
+
+/**
+ * Build a large grid (rows × cols <p> inside a wrapper). Measures raw DOM
+ * append time, observer settle wait, and final serialized byte count. Mimics
+ * the "grid of items" workload users hit when composing big templates.
+ */
+const largeGridBuild = (rows: number, cols: number) => `
+async () => {
+    const main = document.querySelector('main');
+    const now = () => performance.now();
+    main.querySelectorAll('.__perf_grid__').forEach(el => el.remove());
+    await new Promise(r => setTimeout(r, 100));
+
+    const t0 = now();
+    const grid = document.createElement('div');
+    grid.className = '__perf_grid__';
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(${cols}, 1fr)';
+    for (let r = 0; r < ${rows}; r++) {
+        for (let c = 0; c < ${cols}; c++) {
+            const cell = document.createElement('div');
+            const p = document.createElement('p');
+            p.textContent = 'cell ' + r + ',' + c;
+            cell.appendChild(p);
+            grid.appendChild(cell);
+        }
+    }
+    main.appendChild(grid);
+    const appendMs = now() - t0;
+
+    // Wait for ObserverManager to editorize everything.
+    const tObs = now();
+    const total = grid.querySelectorAll('p').length;
+    const deadline = tObs + 5000;
+    while (now() < deadline) {
+        const done = grid.querySelectorAll('p[p9r-is-editor]').length;
+        if (done >= total) break;
+        await new Promise(r => setTimeout(r, 10));
+    }
+    const observeMs = now() - tObs;
+
+    const tSer = now();
+    const editorModeBytes = main.innerHTML.length;
+    const serializeMs = now() - tSer;
+
+    // Serialized for save: switches to VIEW mode and strips runtime attrs.
+    const em = document.EditorManager;
+    const tView = now();
+    const viewModeBytes = em ? em.getContent().length : -1;
+    const viewSerializeMs = now() - tView;
+
+    return {
+        buildAppendMs: +appendMs.toFixed(2),
+        buildObserveMs: +observeMs.toFixed(1),
+        buildSerializeMs: +serializeMs.toFixed(2),
+        buildViewSerializeMs: +viewSerializeMs.toFixed(2),
+        buildCellCount: total,
+        buildEditorModeBytes: editorModeBytes,
+        buildViewModeBytes: viewModeBytes,
+    };
+}
+`;
+
+/**
+ * Simulates the real "save page" flow: build a big grid, then POST /api/page
+ * with the serialized HTML. Captures network + server + Mongo roundtrip.
+ */
+const pageSaveRoundtrip: BrowserScenario = {
+    name: "page-save-roundtrip",
+    run: `
+async () => {
+    const main = document.querySelector('main');
+    const now = () => performance.now();
+    main.querySelectorAll('.__perf_save__').forEach(el => el.remove());
+    const grid = document.createElement('div');
+    grid.className = '__perf_save__';
+    for (let i = 0; i < 200; i++) {
+        const p = document.createElement('p');
+        p.textContent = 'save ' + i;
+        grid.appendChild(p);
+    }
+    main.appendChild(grid);
+    await new Promise(r => setTimeout(r, 400));
+
+    // Serialize through the real pipeline: EditorManager.getContent() switches
+    // to VIEW mode first, so runtime-only attrs (p9r-is-editor, etc.) are
+    // stripped — this is what save() actually sends to the API.
+    const em = document.EditorManager;
+    if (!em) throw new Error('EditorManager not on document');
+    const tSer = now();
+    const content = em.getContent();
+    const serializeMs = now() - tSer;
+    // Also capture the raw editor-mode bytes for comparison.
+    const editorModeBytes = main.innerHTML.length;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = urlParams.get('path') || '/perf-test';
+    const identifier = urlParams.get('identifier') || 'perf-test';
+
+    const body = {
+        content,
+        path, identifier,
+        title: 'Perf Test',
+        description: '',
+        visible: true,
+        tags: '',
+    };
+    const target = '/page-builder/api/page?path=' + encodeURIComponent(path) + '&identifier=' + encodeURIComponent(identifier);
+
+    const samples = [];
+    const payloadBytes = JSON.stringify(body).length;
+    for (let i = 0; i < 5; i++) {
+        const t = now();
+        const res = await fetch(target, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+            credentials: 'include',
+        });
+        if (!res.ok) throw new Error('save failed: ' + res.status + ' ' + await res.text());
+        samples.push(now() - t);
+    }
+    samples.sort((a, b) => a - b);
+    return {
+        pageSaveMedianMs: +samples[Math.floor(samples.length / 2)].toFixed(1),
+        pageSaveP95Ms: +samples[Math.floor(samples.length * 0.95)].toFixed(1),
+        pageSaveMaxMs: +samples[samples.length - 1].toFixed(1),
+        pageSaveSerializeMs: +serializeMs.toFixed(2),
+        pageSavePayloadBytes: payloadBytes,
+        pageSaveContentBytes: content.length,
+        pageSaveEditorModeBytes: editorModeBytes,
+    };
+}
+`,
+};
+
+/** POST /api/template with a reasonably large HTML body. */
+const templateSaveRoundtrip: BrowserScenario = {
+    name: "template-save-roundtrip",
+    run: `
+async () => {
+    const now = () => performance.now();
+    const cells = [];
+    for (let i = 0; i < 200; i++) cells.push('<div><p>template cell ' + i + '</p></div>');
+    const content = '<div class="grid">' + cells.join('') + '</div>';
+    const payload = JSON.stringify({ name: 'perf-tpl', description: '', content, category: 'perf' });
+    const payloadBytes = payload.length;
+
+    const samples = [];
+    for (let i = 0; i < 5; i++) {
+        const t = now();
+        const res = await fetch('/page-builder/api/template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: payload,
+            credentials: 'include',
+        });
+        if (!res.ok) throw new Error('template save failed: ' + res.status);
+        samples.push(now() - t);
+    }
+    samples.sort((a, b) => a - b);
+    return {
+        templateSaveMedianMs: +samples[Math.floor(samples.length / 2)].toFixed(1),
+        templateSaveP95Ms: +samples[Math.floor(samples.length * 0.95)].toFixed(1),
+        templateSaveMaxMs: +samples[samples.length - 1].toFixed(1),
+        templateSavePayloadBytes: payloadBytes,
+    };
+}
+`,
+};
+
+/**
+ * Reads the listener tallies collected by the init-script installed before
+ * navigation (see run.ts → installListenerTracker). No timing — this is a
+ * structural signal: big jumps mean we leaked handlers.
+ */
+const listenerScan: BrowserScenario = {
+    name: "listener-scan",
+    run: `
+async () => {
+    const tracker = (window).__perfListeners;
+    if (!tracker) return { listenersTotal: -1, listenersWindow: -1, listenersDocument: -1 };
+    // Only counts live listeners (add - remove). Tracker is installed before any
+    // app code runs, so this number reflects everything the editor attached.
+    const byType = tracker.byType();
+    const topTypes = Object.entries(byType).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    const out = {
+        listenersTotal: tracker.total(),
+        listenersWindow: tracker.onWindow(),
+        listenersDocument: tracker.onDocument(),
+        listenersDistinctTypes: Object.keys(byType).length,
+    };
+    for (const [t, n] of topTypes) out['listeners_' + t] = n;
+    return out;
+}
+`,
+};
+
+/**
+ * Measures how many listeners get attached per element as the editor
+ * editorizes new nodes. Baseline → add 200 <p> → wait for observer → diff.
+ */
+const listenerGrowth: BrowserScenario = {
+    name: "listener-growth",
+    run: `
+async () => {
+    const tracker = (window).__perfListeners;
+    if (!tracker) return { growthBefore: -1, growthAfter: -1, growthDelta: -1, growthPerElement: -1 };
+    const main = document.querySelector('main');
+    const now = () => performance.now();
+
+    // Let any pending init settle.
+    await new Promise(r => setTimeout(r, 200));
+    const before = tracker.total();
+    const byTypeBefore = tracker.byType();
+
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < 200; i++) {
+        const p = document.createElement('p');
+        p.className = '__perf_growth__';
+        p.textContent = 'growth ' + i;
+        frag.appendChild(p);
+    }
+    const t0 = now();
+    main.appendChild(frag);
+
+    // Wait until every inserted <p> is editorized.
+    const deadline = t0 + 5000;
+    while (now() < deadline) {
+        const done = main.querySelectorAll('p.__perf_growth__[p9r-is-editor]').length;
+        if (done >= 200) break;
+        await new Promise(r => setTimeout(r, 10));
+    }
+    await new Promise(r => setTimeout(r, 200));
+
+    const after = tracker.total();
+    const byTypeAfter = tracker.byType();
+    const delta = after - before;
+
+    // Per-type diff, top 5 growers.
+    const diffs = {};
+    const keys = new Set([...Object.keys(byTypeBefore), ...Object.keys(byTypeAfter)]);
+    for (const k of keys) {
+        const d = (byTypeAfter[k] || 0) - (byTypeBefore[k] || 0);
+        if (d !== 0) diffs[k] = d;
+    }
+    const top = Object.entries(diffs).sort((a, b) => b[1] - a[1]).slice(0, 5);
+
+    const out = {
+        growthBefore: before,
+        growthAfter: after,
+        growthDelta: delta,
+        growthPerElement: +(delta / 200).toFixed(2),
+    };
+    for (const [t, n] of top) out['growth_' + t] = n;
+
+    // Clean up so later scenarios start from a neutral DOM.
+    main.querySelectorAll('.__perf_growth__').forEach(el => el.remove());
+    return out;
+}
+`,
+    absolutes: {
+        // Hard sanity cap: more than 3 listeners per plain <p> means something
+        // is leaking or we're attaching handlers that could live on a delegated parent.
+        growthPerElement: 3,
+    },
+};
+
 export const SCENARIOS: Scenario[] = [
+    // Structural — run first so later scenarios' insertions don't pollute the count.
+    listenerScan,
+    listenerGrowth,
     // Internals — cheap, always-on signals.
-    { name: "bulk-insert-200",      run: bulkInsert(200) },
-    { name: "bulk-insert-1000",     run: bulkInsert(1000) },
-    { name: "observer-scaling",     run: editorObserverScaling() },
-    { name: "hover-cost",           run: hoverCost() },
-    { name: "typing-cost",          run: typingCost() },
-    { name: "serialize-cost",       run: serializeCost() },
+    { name: "bulk-insert-200",      run: bulkInsert(200),
+        absolutes: { syncAppendMs: 5, maxLongTaskMs: 150 } },
+    { name: "bulk-insert-1000",     run: bulkInsert(1000),
+        absolutes: { syncAppendMs: 15, maxLongTaskMs: 400 } },
+    { name: "observer-scaling",     run: editorObserverScaling(),
+        absolutes: { observerLagMedianMs: 15, observerLagP95Ms: 25, observerLagMaxMs: 40 } },
+    { name: "single-p-insert",      run: singleParagraphInsert(),
+        absolutes: { singleInsertMedianMs: 10, singleInsertP95Ms: 20, singleInsertMaxMs: 30 } },
+    { name: "hover-cost",           run: hoverCost(),
+        absolutes: { hoverMedianMs: 2, hoverP95Ms: 5, hoverMaxMs: 10 } },
+    { name: "typing-cost",          run: typingCost(),
+        absolutes: { typingMedianMs: 3, typingP95Ms: 6, typingMaxMs: 15 } },
+    { name: "serialize-cost",       run: serializeCost(),
+        absolutes: { serializeMedianMs: 5, serializeP95Ms: 10 } },
+    { name: "large-grid-build",     run: largeGridBuild(20, 20),
+        absolutes: { buildAppendMs: 50, buildObserveMs: 2000, buildSerializeMs: 15, buildViewSerializeMs: 50 } },
     { name: "memory-footprint",     run: memoryFootprint() },
+    // Network roundtrips.
+    pageSaveRoundtrip,
+    templateSaveRoundtrip,
     // Human-like — exercise the real editor pipeline.
     typeAndEnter,
     slashOpenLibrary,
@@ -571,4 +1003,18 @@ export const SCENARIOS: Scenario[] = [
     bagDuplicate,
     selectTextToolbar,
     dragReorder,
+    holdEnter30,
+    holdEnterReal,
 ];
+
+// Absolute thresholds for driver scenarios (attached here because the scenario
+// objects are defined inline above; mutating after definition keeps that terse).
+typeAndEnter.absolutes = { typeMedianMs: 15, typeP95Ms: 30, enterMedianMs: 20, enterP95Ms: 40 };
+slashOpenLibrary.absolutes = { slashOpenMedianMs: 50, slashOpenP95Ms: 100 };
+hoverRealMouse.absolutes = { hoverFrameP95Ms: 25, hoverFrameMaxMs: 50 };
+bagDuplicate.absolutes = { bagDuplicateMedianMs: 30, bagDuplicateP95Ms: 60 };
+selectTextToolbar.absolutes = { selectToolbarMedianMs: 20, selectToolbarP95Ms: 40 };
+dragReorder.absolutes = { dragCycleMedianMs: 30, dragCycleP95Ms: 60, dragIndicatorMedianMs: 20 };
+holdEnter30.absolutes = { holdEnterMedianMs: 20, holdEnterP95Ms: 40, holdEnterMaxMs: 80 };
+(pageSaveRoundtrip as BrowserScenario).absolutes = { pageSaveMedianMs: 200, pageSaveP95Ms: 500, pageSaveSerializeMs: 50 };
+(templateSaveRoundtrip as BrowserScenario).absolutes = { templateSaveMedianMs: 200, templateSaveP95Ms: 500 };

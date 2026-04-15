@@ -62,19 +62,21 @@ export abstract class Editor {
             });
         });
 
-        document.addEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);
-
         if (document.EditorManager?.getBlocActionGroup()) {
             document.EditorManager.getBlocActionGroup().close();
         }
     }
 
-    private handleModeSwitch = (e: CustomEvent) => {
-        if (e.detail === p9r.mode.EDITOR) {
-            this.viewEditor();
-        } else {
-            this.viewClient();
-        }
+    /**
+     * Called by EditorManager on every mode change. Replaces the per-editor
+     * `document.addEventListener(SWITCH_MODE, ...)` we used to attach — see
+     * EditorManager.registerEditor for the rationale. Subclasses override to
+     * add their own mode-dependent work (e.g. TextEditor toggles a
+     * MutationObserver); always call super to keep the view swap.
+     */
+    public onSwitchMode(mode: string) {
+        if (mode === p9r.mode.EDITOR) this.viewEditor();
+        else this.viewClient();
     }
 
     private _setPanelItemIdentifiers(): void {
@@ -222,7 +224,9 @@ export abstract class Editor {
     }
 
     public dispose() {
-        document.removeEventListener(p9r.event.SWITCH_MODE, this.handleModeSwitch);
+        // No listener to remove: mode dispatch now iterates
+        // `document.compIdentifierToEditor`, which ObserverManager already
+        // keeps in sync (it deletes this editor's entry on tree removal).
         this.target.removeEventListener("mouseenter", this.handleHover);
         this._pinMode.exit();
         this._panelConfig?.remove();
@@ -233,8 +237,8 @@ export abstract class Editor {
         this._panelConfig?.init();
     }
 
-    onChildrenAdded() {
-        this._panelConfig?.init();
+    onChildrenAdded(addedNode?: HTMLElement) {
+        this._panelConfig?.init(addedNode);
     }
 
     get actionBarConfiguration() {
