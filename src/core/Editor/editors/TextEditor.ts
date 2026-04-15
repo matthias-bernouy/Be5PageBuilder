@@ -108,6 +108,10 @@ export class TextEditor extends Editor {
             e.preventDefault();
             e.stopImmediatePropagation()
 
+            // Enter inserts a sibling — block it when the action bar forbids
+            // adding after (e.g. a non-multiple p9r-comp-sync slot).
+            if (this.isAddAfterDisabled) return;
+
             const nextEl = this.createElement("p")
             this.target.after(nextEl)
 
@@ -130,7 +134,7 @@ export class TextEditor extends Editor {
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
-        if (this.target.innerText === "/" && this.isBlocManagementEnabled) {
+        if (this.target.innerText === "/" && this.isBlocManagementEnabled && !this.isChangeComponentDisabled) {
             e.stopPropagation();
             e.stopImmediatePropagation()
             const actionbar = BlocLibrary.open();
@@ -162,7 +166,7 @@ export class TextEditor extends Editor {
         if ( this.isTextEditable ){
             this.target.tabIndex = 0;
             this.target.contentEditable = "true";
-            if (this.isBlocManagementEnabled){
+            if (this.isBlocManagementEnabled && !this.isChangeComponentDisabled){
                 this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Type / or write text");
             } else {
                 this.target.setAttribute(p9r.attr.TEXT.PLACEHOLDER, "Type text");
@@ -178,6 +182,14 @@ export class TextEditor extends Editor {
     private get isDeleteDisabled(){
         const deleteAttr = this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE);
         return deleteAttr ? deleteAttr === "true" : false;
+    }
+
+    private get isAddAfterDisabled(){
+        return this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) === "true";
+    }
+
+    private get isChangeComponentDisabled(){
+        return this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) === "true";
     }
 
     private get isBlocManagementEnabled(){
