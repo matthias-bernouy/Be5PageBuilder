@@ -224,12 +224,13 @@ export abstract class Editor {
     }
 
     public dispose() {
-        // No listener to remove: mode dispatch now iterates
-        // `document.compIdentifierToEditor`, which ObserverManager already
-        // keeps in sync (it deletes this editor's entry on tree removal).
+        // Source of truth for teardown — any caller (ObserverManager,
+        // _sealOpaqueSubtree, tests…) gets the map cleanup for free.
+        document.compIdentifierToEditor?.delete(this.targetIdentifier);
         this.target.removeEventListener("mouseenter", this.handleHover);
         this._pinMode.exit();
         this._panelConfig?.remove();
+        this._panelConfig = null;
         this.styleElement.remove();
     }
 
