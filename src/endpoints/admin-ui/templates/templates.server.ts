@@ -3,6 +3,8 @@ import { parseHTML } from 'linkedom';
 import { join } from "node:path";
 import type { PageBuilder } from 'src/PageBuilder';
 
+const DELETE_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
+
 export default async function TemplatesPage(_req: Request, system: PageBuilder) {
     const html = await Bun.file(join(__dirname, "./templates.html")).text();
     const { document } = parseHTML(html);
@@ -15,27 +17,48 @@ export default async function TemplatesPage(_req: Request, system: PageBuilder) 
             ? new Date(tpl.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
             : "—";
 
-        tableBody.innerHTML += `
-        <p9r-row href="./templates/editor?id=${tpl.id}">
-            <p9r-cell>${tpl.name}</p9r-cell>
-            <p9r-cell>${tpl.category || "—"}</p9r-cell>
-            <p9r-cell>${createdAt}</p9r-cell>
-            <p9r-cell>
-                <button class="btn-delete-tpl" data-id="${tpl.id}" onclick="event.preventDefault(); event.stopPropagation(); deleteTemplate('${tpl.id}')">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                </button>
-            </p9r-cell>
-        </p9r-row>
-        `;
+        // DOM APIs rather than `innerHTML +=` so every DB-sourced field is
+        // serialized with proper HTML escaping (stored-XSS safe).
+        const row = document.createElement("p9r-row");
+        row.setAttribute("href", `./templates/editor?id=${encodeURIComponent(tpl.id)}`);
+
+        const nameCell = document.createElement("p9r-cell");
+        nameCell.textContent = tpl.name;
+        row.appendChild(nameCell);
+
+        const catCell = document.createElement("p9r-cell");
+        catCell.textContent = tpl.category || "—";
+        row.appendChild(catCell);
+
+        const createdCell = document.createElement("p9r-cell");
+        createdCell.textContent = createdAt;
+        row.appendChild(createdCell);
+
+        const actCell = document.createElement("p9r-cell");
+        const btn = document.createElement("button");
+        btn.setAttribute("class", "btn-delete-tpl");
+        // Pre-URL-encode so `<` cannot appear raw inside the attribute
+        // (linkedom leaves `<` unescaped in attribute values).
+        btn.setAttribute("data-id", encodeURIComponent(tpl.id));
+        btn.innerHTML = DELETE_ICON;
+        actCell.appendChild(btn);
+        row.appendChild(actCell);
+
+        tableBody.appendChild(row);
     }
 
     const script = document.createElement("script");
     script.textContent = `
-        async function deleteTemplate(id) {
+        document.addEventListener("click", async (ev) => {
+            const btn = ev.target.closest(".btn-delete-tpl");
+            if (!btn) return;
+            ev.preventDefault();
+            ev.stopPropagation();
+            const id = decodeURIComponent(btn.dataset.id);
             if (!confirm("Delete this template?")) return;
-            const res = await fetch("../api/template?id=" + id, { method: "DELETE" });
+            const res = await fetch("../api/template?id=" + encodeURIComponent(id), { method: "DELETE" });
             if (res.ok) window.location.reload();
-        }
+        });
     `;
     document.body.appendChild(script);
 
