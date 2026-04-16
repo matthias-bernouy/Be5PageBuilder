@@ -115,7 +115,7 @@ Use styled inputs in `configuration.html` instead of raw native elements:
 - `<p9r-select>` — styled dropdown with label
 - `<p9r-range>` — slider + number input with label, min, max, unit
 - `<p9r-sizes-select>` — shortcut for NONE/XS/S/M/L/XL select
-- `<p9r-page-link>` — page picker fetching from admin API
+- `<p9r-link>` — link picker with three tabs: internal Page (admin API), External URL, and Media file (MediaCenter)
 - `<p9r-image-sync>` — image picker via MediaCenter
 - `<p9r-state-sync>` — declares a pinnable runtime state (target selector in shadow DOM, attr, value, label) so the action bar can freeze it during editing
 

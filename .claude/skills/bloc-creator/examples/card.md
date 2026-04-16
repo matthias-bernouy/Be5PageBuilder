@@ -7,7 +7,7 @@ A full, deploy-ready card bloc. Showcases:
 - Enum presets via `:host([attr="value"])` for variant, color, size
 - `<p9r-image-sync>` for the cover and the icon
 - `<p9r-comp-sync>` in its three flavors: fixed, optional, multiple
-- A link via `<p9r-page-link>` driving the `href` attribute
+- A link via `<p9r-link>` driving the `href` attribute
 
 ## `manifest.json`
 
@@ -264,7 +264,7 @@ export class BlocEditor extends Editor {
     </p9r-section>
 
     <p9r-section data-title="Link" data-collapsed>
-        <p9r-page-link name="href" label="Target page"></p9r-page-link>
+        <p9r-link name="href" label="Target page"></p9r-link>
     </p9r-section>
 </p9r-attr-sync>
 

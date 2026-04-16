@@ -53,7 +53,7 @@ used for new blocs:
 - `w13c-*` — reserved for the `w13c` design-system internals.
 - `p9r-*`  — reserved for PageBuilder editor primitives
   (`<p9r-comp-sync>`, `<p9r-attr-sync>`, `<p9r-section>`, `<p9r-select>`,
-  `<p9r-range>`, `<p9r-sizes-select>`, `<p9r-page-link>`,
+  `<p9r-range>`, `<p9r-sizes-select>`, `<p9r-link>`,
   `<p9r-image-sync>`, `<p9r-config-panel>`, etc.).
 
 A brand-new CMS deployment has **no blocs at all**. In that case the only

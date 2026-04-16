@@ -38,7 +38,7 @@ The declarative editor panel. Combines three sync systems inside
         <p9r-sizes-select name="size" label="Size"></p9r-sizes-select>
     </p9r-section>
     <p9r-section data-title="Link" data-collapsed>
-        <p9r-page-link name="href" label="Target page"></p9r-page-link>
+        <p9r-link name="href" label="Target page"></p9r-link>
     </p9r-section>
 </p9r-attr-sync>
 
@@ -69,7 +69,7 @@ The declarative editor panel. Combines three sync systems inside
 | `<p9r-comp-sync>` | Declares a slot's default content + its editor permissions. |
 | `<p9r-image-sync>` | Places outside `p9r-attr-sync`. Opens the MediaCenter and injects/updates an `<img>` in the target slot. |
 | `<p9r-section data-title="..." [data-collapsed]>` | Visual section with a title. `data-collapsed` makes it start folded. |
-| `<p9r-select>` / `<p9r-range>` / `<p9r-sizes-select>` / `<p9r-page-link>` | Styled inputs. |
+| `<p9r-select>` / `<p9r-range>` / `<p9r-sizes-select>` / `<p9r-link>` | Styled inputs. |
 
 See `conventions/configuration.md` for attributes, options, and the full
 behavior of each `<p9r-comp-sync>` flag.

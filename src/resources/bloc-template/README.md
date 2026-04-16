@@ -5,7 +5,7 @@
 Two kinds of tags exist:
 
 - **Sync wrappers** — bridge between the inputs and the live component (`p9r-attr-sync`, `p9r-comp-sync`, `p9r-image-sync`).
-- **Inputs & layout** — the actual UI the user interacts with (`p9r-section`, `p9r-select`, `p9r-range`, `p9r-sizes-select`, `p9r-page-link`).
+- **Inputs & layout** — the actual UI the user interacts with (`p9r-section`, `p9r-select`, `p9r-range`, `p9r-sizes-select`, `p9r-link`).
 
 ---
 
@@ -155,12 +155,12 @@ The written values are `none`, `xs`, `sm`, `md` (default), `lg`, `xl`.
 
 ---
 
-### `<p9r-page-link>`
+### `<p9r-link>`
 
-Page picker that fetches the list of pages from the admin API. Ideal for `href`-style attributes.
+Link picker with three tabs — internal **Page** (fetched from the admin API), free-form **External URL**, and **Media** file (opens the MediaCenter). Ideal for `href`-style attributes.
 
 ```html
-<p9r-page-link name="href" label="Link"></p9r-page-link>
+<p9r-link name="href" label="Link"></p9r-link>
 ```
 
 | Attribute | Description                                     |
@@ -248,7 +248,7 @@ Everything in the bloc folder is optional except `Bloc.ts` and `template.html`. 
     </p9r-section>
 
     <p9r-section data-title="Link">
-        <p9r-page-link name="href" label="Link"></p9r-page-link>
+        <p9r-link name="href" label="Link"></p9r-link>
     </p9r-section>
 </p9r-attr-sync>
 

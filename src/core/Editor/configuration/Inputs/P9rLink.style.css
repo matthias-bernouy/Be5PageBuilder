@@ -138,7 +138,7 @@
 
 .tabs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     border-bottom: 1px solid var(--border-default, #e2e8f0);
     background: var(--bg-base, #f8fafc);
 }
@@ -193,6 +193,48 @@
 
 .external-input::placeholder {
     color: var(--text-muted, #94a3b8);
+}
+
+/* ── Media section ── */
+
+.media-section {
+    padding: 8px;
+}
+
+.media-pick-btn {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px dashed var(--border-default, #e2e8f0);
+    border-radius: 6px;
+    background: var(--bg-base, #f8fafc);
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 500;
+    color: var(--text-main, #1e293b);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.media-pick-btn:hover {
+    border-color: var(--primary-base, #4361ee);
+    color: var(--primary-base, #4361ee);
+    background: var(--primary-muted, rgb(67 97 238 / 0.06));
+}
+
+.media-current {
+    display: none;
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--primary-muted, rgb(67 97 238 / 0.08));
+    font-size: 11px;
+    color: var(--text-main, #1e293b);
+    word-break: break-all;
+    font-family: monospace;
+}
+
+.media-current.has-value {
+    display: block;
 }
 
 /* ── Search ── */

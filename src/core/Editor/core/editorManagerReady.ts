@@ -3,7 +3,7 @@
  *
  * Custom elements that depend on `EditorManager` can be upgraded in any
  * order — the `customElements.define()` call for a config/input element
- * (e.g. `<w13c-page-information>`, `<p9r-page-link>`) runs as a side
+ * (e.g. `<w13c-page-information>`, `<p9r-link>`) runs as a side
  * effect of `import`, and any matching element already in the DOM
  * immediately fires `connectedCallback`. That can happen before
  * `new EditorManager(...)` runs in the client bootstrap, so anything

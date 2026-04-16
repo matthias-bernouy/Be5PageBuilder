@@ -282,7 +282,7 @@ Read the matching one before you write a non-trivial version of that file.
 - `conventions/configuration.md` — the four sync systems (`<p9r-attr-sync>`,
   `<p9r-comp-sync>`, `<p9r-state-sync>`, `<p9r-image-sync>`), all styled
   inputs (`<p9r-select>`, `<p9r-range>`, `<p9r-sizes-select>`,
-  `<p9r-page-link>`), and `<p9r-section>`
+  `<p9r-link>`), and `<p9r-section>`
 - `conventions/composition.md` — using a bloc inside another bloc (no
   declaration needed)
 - `conventions/verification.md` — smoke test setup + full browser-based

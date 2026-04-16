@@ -1,5 +1,5 @@
 import { Component } from "src/core/Editor/core/Component";
-import "src/core/Editor/configuration/Inputs/P9rPageLink";
+import "src/core/Editor/configuration/Inputs/P9rLink";
 
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
@@ -36,7 +36,7 @@ export class EditorToolbar extends Component {
     private _onRootMousedown = (e: Event) => {
         const target = e.target as HTMLElement;
         this.interacting = true;
-        if (target.tagName === "INPUT" || target.tagName.includes("-") || target.closest('p9r-page-link')) {
+        if (target.tagName === "INPUT" || target.tagName.includes("-") || target.closest('p9r-link')) {
             return;
         }
         e.preventDefault();
@@ -74,7 +74,7 @@ export class EditorToolbar extends Component {
         document.addEventListener("mousedown", this._onOutsideMousedown);
 
         if (!this.pageLink) {
-            this.pageLink = document.createElement("p9r-page-link");
+            this.pageLink = document.createElement("p9r-link");
             this.pageLink.setAttribute("label", "");
             this.pageLink.setAttribute("name", "href");
             root.querySelector(".link-pages-wrap")!.appendChild(this.pageLink);

@@ -347,13 +347,20 @@ A shortcut that renders as a `<p9r-select>` with six fixed options:
 The host bloc's CSS must map the six values via `:host([attr="value"])`
 presets — see `conventions/style.md`.
 
-### `<p9r-page-link>` — internal page picker
+### `<p9r-link>` — link picker (page / external URL / media)
 
-Fetches available pages from the admin API and lets the user pick one.
-The selected value is the page path, written to the host as an attribute.
+Unified picker for any `href`-style attribute. Offers three tabs:
+
+- **Page** — fetches available pages from the admin API and lets the user
+  pick one (written as a page path).
+- **External URL** — free-form input for absolute URLs, `mailto:`, `tel:`, …
+- **Media** — opens the MediaCenter and writes the resulting
+  `…/media?id=…` URL.
+
+The selected value is a plain string written to the host attribute.
 
 ```html
-<p9r-page-link name="href" label="Target page"></p9r-page-link>
+<p9r-link name="href" label="Target link"></p9r-link>
 ```
 
 | Attribute | Purpose |

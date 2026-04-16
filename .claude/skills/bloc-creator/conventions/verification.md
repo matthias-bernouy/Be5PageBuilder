@@ -194,9 +194,11 @@ likely maximum — testing with "Menu / Item / Btn" hides R3 / R7 bugs.
   MediaCenter opens. Pick an image — it appears in the slot. Click
   *Change* — new image replaces the old. Click *Remove* — slot
   becomes empty (and its wrapper collapses if configured).
-- [ ] **E7. `<p9r-page-link>` works.** The dropdown fetches and
-  displays pages. Selecting one writes the path to the target
-  attribute.
+- [ ] **E7. `<p9r-link>` works.** The three tabs (Page / External
+  URL / Media) each let the user set the target: the Page tab
+  fetches and lists pages, External URL accepts a raw URL, Media
+  opens the MediaCenter. Selecting writes the resulting string to
+  the target attribute.
 
 ### F. Editor integration — slot editing
 

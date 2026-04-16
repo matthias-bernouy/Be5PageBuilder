@@ -12,7 +12,7 @@ import "./Sync/ImageSync";
 import "./Sync/StateSync";
 import "./Inputs/P9rSelect";
 import "./Inputs/P9rRange";
-import "./Inputs/P9rPageLink";
+import "./Inputs/P9rLink";
 import "./Inputs/P9rSizesSelect";
 
 export class ConfigPanel extends Component {

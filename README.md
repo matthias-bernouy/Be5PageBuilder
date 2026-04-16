@@ -344,7 +344,7 @@ Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 | `<p9r-select>` | Styled dropdown with label |
 | `<p9r-range>` | Slider + number input, min/max/unit |
 | `<p9r-sizes-select>` | NONE/XS/S/M/L/XL shortcut select |
-| `<p9r-page-link>` | Page picker fed by the admin API |
+| `<p9r-link>` | Link picker: internal page, external URL, or media file |
 
 ---
 
@@ -418,7 +418,7 @@ src/
 │   │   │                   AdminLayout, MediaCenter
 │   │   ├── configuration/
 │   │   │   ├── Sync/       AttrSync, CompSync, ImageSync, StateSync
-│   │   │   ├── Inputs/     P9rSelect, P9rRange, P9rPageLink
+│   │   │   ├── Inputs/     P9rSelect, P9rRange, P9rLink
 │   │   │   ├── ConfigPanel.ts
 │   │   │   └── ConfigItem.ts
 │   │   └── editors/        TextEditor, ImageEditor, ListEditor, SnippetEditor

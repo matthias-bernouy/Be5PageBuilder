@@ -1,5 +1,5 @@
 /**
- * Pure helpers for the page picker UI used by `<p9r-page-link>`.
+ * Pure helpers for the page picker UI used by `<p9r-link>`.
  * Rendering and filtering live here so the custom element file stays focused
  * on fetching, state, and the public value/name API.
  */
