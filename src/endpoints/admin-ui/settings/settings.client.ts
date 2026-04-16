@@ -1,4 +1,5 @@
 import "src/core/Editor/configuration/Inputs/P9rSelect";
+import "src/core/Editor/components/MediaCenter/MediaCenter";
 
 type PageRef = { path: string; identifier: string } | null;
 
@@ -18,6 +19,45 @@ function decodePageRef(raw: string): PageRef {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // ── Favicon picker ─────────────────────────────────────────────────
+    const mc = document.getElementById("favicon-mediacenter") as any;
+    const faviconHidden = document.getElementById("site-favicon") as HTMLInputElement | null;
+    const faviconPicker = document.getElementById("favicon-picker");
+    const faviconPreview = document.getElementById("favicon-preview") as HTMLImageElement | null;
+    const faviconTitle = document.getElementById("favicon-title");
+    const faviconSubtitle = document.getElementById("favicon-subtitle");
+    const faviconClear = document.getElementById("favicon-clear");
+
+    const setFaviconValue = (src: string, label?: string) => {
+        if (faviconHidden) faviconHidden.value = src;
+        const empty = !src;
+        faviconPicker?.setAttribute("data-empty", String(empty));
+        if (empty) {
+            faviconPreview?.removeAttribute("src");
+            if (faviconTitle) faviconTitle.textContent = "Choose a favicon";
+            if (faviconSubtitle) faviconSubtitle.textContent = "Click to pick from the Media Center";
+        } else {
+            faviconPreview?.setAttribute("src", src);
+            if (faviconTitle) faviconTitle.textContent = label || "Favicon selected";
+            if (faviconSubtitle) faviconSubtitle.textContent = src;
+        }
+    };
+
+    faviconPicker?.addEventListener("click", (e) => {
+        // The inline clear button sits inside the picker tile; don't open the
+        // MediaCenter when the user clicks it.
+        if ((e.target as HTMLElement).closest("#favicon-clear")) return;
+        mc?.show(["image"]);
+    });
+    mc?.addEventListener("select-item", (e: Event) => {
+        const detail = (e as CustomEvent<{ src: string; alt?: string }>).detail;
+        setFaviconValue(detail?.src ?? "", detail?.alt);
+    });
+    faviconClear?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setFaviconValue("");
+    });
+
     const saveBtn = document.getElementById("save-btn");
     if (!saveBtn) return;
 
@@ -25,9 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("settings-form") as HTMLFormElement;
         const body: Record<string, Record<string, unknown>> = {};
 
-        // Text-like inputs (w13c-input) and raw <textarea>
+        // Text-like inputs (w13c-input), raw <textarea>, and plain hidden inputs
         const textInputs = form.querySelectorAll<HTMLElement>(
-            "w13c-input, textarea"
+            "w13c-input, textarea, input"
         );
         textInputs.forEach(el => {
             const name = el.getAttribute("name");

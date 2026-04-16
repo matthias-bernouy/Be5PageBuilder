@@ -141,9 +141,27 @@ export class MediaCenter extends Component {
 
     // ── Private ──
 
+    /**
+     * Admin API base URL. In the editor we read it from `EditorManager` (which
+     * pulls it from the `p9r-api-base` meta tag). Outside the editor (e.g. the
+     * Settings admin page), the host page passes it explicitly via the
+     * `api-base` attribute so we don't force every admin UI to instantiate
+     * an `EditorManager` just to open the MediaCenter.
+     */
     private get _apiBase(): string {
-        const base = document.EditorManager.getApiBasePath();
-        return base.endsWith("/") ? base.slice(0, -1) : base;
+        const attr = this.getAttribute("api-base");
+        const raw = attr ?? document.EditorManager?.getApiBasePath() ?? "";
+        return raw.endsWith("/") ? raw.slice(0, -1) : raw;
+    }
+
+    /**
+     * Public base URL used to build the media `src` returned to consumers.
+     * Same standalone/editor dual-source as `_apiBase`.
+     */
+    private get _publicRoot(): string {
+        const attr = this.getAttribute("public-root");
+        const raw = attr ?? document.EditorManager?.publicRoot ?? "/";
+        return raw.endsWith("/") ? raw : raw + "/";
     }
 
     private async _refresh() {
@@ -210,7 +228,7 @@ export class MediaCenter extends Component {
 
     private _confirmSelection() {
         if (!this._selectedItem) return;
-        const src = document.EditorManager.publicRoot + `media?id=${this._selectedItem.id}`;
+        const src = this._publicRoot + `media?id=${this._selectedItem.id}`;
         this.dispatchEvent(new CustomEvent("select-item", {
             detail: { src, alt: this._selectedItem.label },
             bubbles: true,

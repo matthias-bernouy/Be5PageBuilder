@@ -29,6 +29,11 @@ export class Input extends Component {
                 this.value = this._input?.value || "";
             });
             this._syncAttributes();
+            // Hydrate from the initial `value` attribute. `attributeChangedCallback`
+            // fires before `connectedCallback` during element upgrade, so at that
+            // point `_input` is still null and the attribute is silently dropped.
+            const initial = this.getAttribute('value');
+            if (initial !== null) this.value = initial;
         }
     }
 

@@ -6,6 +6,22 @@ import { compress } from "src/server/compression";
 import { expandSnippets } from "src/server/expandSnippets";
 
 /**
+ * Force any favicon URL that targets the `/media` endpoint to request the
+ * 64px icon-tier variant. Otherwise a user who picks a 2000×2000 source
+ * would ship multi-MB bytes to every visitor for a tab icon. SVG media
+ * items reach the same param but `MediaEndpoints` skips the resize for
+ * them — they stay scalable. Non-media URLs (external, `/assets/favicon`)
+ * pass through untouched.
+ */
+function normalizeFaviconHref(href: string): string {
+    const qIdx = href.indexOf("?");
+    if (qIdx < 0 || !href.slice(0, qIdx).endsWith("/media")) return href;
+    const params = new URLSearchParams(href.slice(qIdx + 1));
+    params.set("w", "64");
+    return `${href.slice(0, qIdx)}?${params.toString()}`;
+}
+
+/**
  * Render a page to a compressed CacheEntry. Shared between every page
  * route registered dynamically by `PageBuilder.registerPageRoute()`. Handles
  * snippet expansion and bloc script injection identically to how the old
@@ -40,10 +56,13 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
     charset.setAttribute("charset", "UTF-8");
     document.head.appendChild(charset);
 
-    // Favicon
+    // Favicon: picked from settings.site.favicon (a media URL chosen via
+    // the MediaCenter picker in the Settings admin UI). Falls back to the
+    // built-in PageBuilder icon at /assets/favicon when no favicon is set.
     const favicon = document.createElement("link");
     favicon.setAttribute("rel", "icon");
-    favicon.setAttribute("href", "/media?type=favicon");
+    const rawFavicon = settings.site?.favicon?.trim() || "/assets/favicon";
+    favicon.setAttribute("href", normalizeFaviconHref(rawFavicon));
     document.head.appendChild(favicon);
 
     // Canonical link when a host is configured. The trailing slash of the

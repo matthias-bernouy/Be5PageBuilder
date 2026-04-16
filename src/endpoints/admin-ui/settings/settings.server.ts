@@ -87,6 +87,32 @@ export default async function Server(_req: Request, system: PageBuilder) {
         el.setAttribute("value", value);
     }
 
+    // Favicon picker: hydrate the tile so the correct empty/set state is
+    // rendered without a client-side flicker.
+    const faviconPicker = document.getElementById("favicon-picker");
+    const faviconPreview = document.getElementById("favicon-preview");
+    const faviconTitle = document.getElementById("favicon-title");
+    const faviconSubtitle = document.getElementById("favicon-subtitle");
+    const currentFavicon = settings.site?.favicon ?? "";
+    if (faviconPicker) {
+        faviconPicker.setAttribute("data-empty", currentFavicon ? "false" : "true");
+    }
+    if (currentFavicon) {
+        faviconPreview?.setAttribute("src", currentFavicon);
+        if (faviconTitle) faviconTitle.textContent = "Favicon selected";
+        if (faviconSubtitle) faviconSubtitle.textContent = currentFavicon;
+    }
+
+    // Point the standalone MediaCenter at the current plugin prefix so it
+    // doesn't need an EditorManager on this page.
+    const mc = document.getElementById("favicon-mediacenter");
+    if (mc) {
+        const adminPrefix = system.config.adminPathPrefix || "/page-builder";
+        const clientPrefix = system.config.clientPathPrefix || "/";
+        mc.setAttribute("api-base", `${adminPrefix}/api`);
+        mc.setAttribute("public-root", clientPrefix);
+    }
+
     // Theme CSS goes into the <textarea> body, not a `value` attribute.
     const themeArea = document.getElementById("site-theme");
     if (themeArea) {

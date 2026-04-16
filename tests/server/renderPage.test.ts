@@ -87,9 +87,55 @@ describe("renderPage — meta", () => {
         expect(html).toContain('charset="UTF-8"');
         expect(html).toContain('content="width=device-width, initial-scale=1.0"');
         expect(html).toMatch(/<link\b[^>]*\brel="icon"[^>]*>/);
-        expect(html).toContain('href="/media?type=favicon"');
+        // Default favicon when the settings.site.favicon is empty.
+        expect(html).toContain('href="/assets/favicon"');
         expect(html).toMatch(/<link\b[^>]*\brel="stylesheet"[^>]*>/);
         expect(html).toContain('href="/style"');
+    });
+
+    test("uses the configured site favicon when one is set and pins the icon-tier width", async () => {
+        const html = await renderToString(
+            page(),
+            makeSystem({ settings: { favicon: "/media?id=abc" } }),
+        );
+        // Force the 64px icon-tier variant regardless of source dimensions.
+        expect(html).toContain('href="/media?id=abc&w=64"');
+        expect(html).not.toContain('href="/assets/favicon"');
+    });
+
+    test("overrides any existing w= param on a media favicon href", async () => {
+        const html = await renderToString(
+            page(),
+            makeSystem({ settings: { favicon: "/media?id=abc&w=400&h=300" } }),
+        );
+        // URLSearchParams reorders keys; h stays, w is forced to 64.
+        expect(html).toMatch(/href="\/media\?[^"]*\bw=64\b[^"]*"/);
+        expect(html).toMatch(/href="\/media\?[^"]*\bh=300\b[^"]*"/);
+        expect(html).toMatch(/href="\/media\?[^"]*\bid=abc\b[^"]*"/);
+        expect(html).not.toContain("w=400");
+    });
+
+    test("does not append w= to non-media favicon URLs", async () => {
+        const html = await renderToString(
+            page(),
+            makeSystem({ settings: { favicon: "https://cdn.example.com/icon.png" } }),
+        );
+        expect(html).toContain('href="https://cdn.example.com/icon.png"');
+        expect(html).not.toContain("w=64");
+    });
+
+    test("default /assets/favicon fallback is passed through unchanged", async () => {
+        const html = await renderToString(page(), makeSystem());
+        expect(html).toContain('href="/assets/favicon"');
+        expect(html).not.toContain("w=64");
+    });
+
+    test("falls back to the default favicon when the setting is whitespace", async () => {
+        const html = await renderToString(
+            page(),
+            makeSystem({ settings: { favicon: "   " } }),
+        );
+        expect(html).toContain('href="/assets/favicon"');
     });
 
     test("always prepends the global runtime script first in <head>", async () => {
