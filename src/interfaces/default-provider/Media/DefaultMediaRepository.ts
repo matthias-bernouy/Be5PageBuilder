@@ -94,11 +94,13 @@ export class DefaultMediaRepository implements MediaRepository {
                 query.type = { $in: filter.type };
             }
             if (filter.text) {
-                query.label = { $regex: filter.text, $options: "i" };
+                const escaped = filter.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                query.label = { $regex: escaped, $options: "i" };
             }
         }
 
-        const docs = await this._mediaCollection.find(query, { projection: { content: 0 } }).toArray();
+        const coll = (this as any)._collection?.() ?? this._mediaCollection;
+        const docs = await coll.find(query, { projection: { content: 0 } }).toArray();
 
         return docs.map(doc => {
             const { _id, ...rest } = doc;
