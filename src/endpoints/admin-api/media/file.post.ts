@@ -49,8 +49,8 @@ export default async function postMedia(req: Request, system: PageBuilder) {
             status: 201,
             headers: { "Content-Type": "application/json" }
         });
-    } catch (err) {
-        console.error("Upload error:", err);
+    } catch {
+        console.error("Upload error");
         return new Response("Upload failed", { status: 500 });
     }
 }
