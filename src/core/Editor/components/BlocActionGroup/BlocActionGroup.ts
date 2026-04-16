@@ -99,12 +99,18 @@ export class BlocActionGroup extends HorizontalActionGroup {
         // calls setEditor + open without an intervening close if BAG is
         // already visible on another bloc), the old anchor keeps the
         // listener — one leak per hovered bloc for the life of the page.
-        if (this._listenersAttached) this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
+        if (this._listenersAttached) {
+            this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
+            this._hoverEl?.removeEventListener("mousemove", this.handleMouseMove);
+        }
         this._target?.classList.remove("p9r-active");
         this._editor = editor;
         this._target = editor.target;
         this._hoverEl = editor.getActionBarAnchor?.() ?? editor.target;
-        if (this._listenersAttached) this._hoverEl.addEventListener("mouseleave", this.handleLeave);
+        if (this._listenersAttached) {
+            this._hoverEl.addEventListener("mouseleave", this.handleLeave);
+            this._hoverEl.addEventListener("mousemove", this.handleMouseMove);
+        }
         this._resolveInsertTarget();
     }
 
@@ -150,6 +156,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
             mouseY: my,
         });
         this._lastMouseX = mx;
+        this._lastMouseY = my;
         this._lastVAnchor = vAnchor;
 
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -181,26 +188,40 @@ export class BlocActionGroup extends HorizontalActionGroup {
     }
 
     private _lastMouseX: number = 0;
+    private _lastMouseY: number = 0;
     private _lastVAnchor: VAnchor = "bottom";
+    private _mouseMoveRaf: number | null = null;
 
     private _reflow() {
         if (!this._target) return;
         const targetRect = this._target.getBoundingClientRect();
         if (!this._positionLocked) {
             const { rect: anchorRect } = resolveActionBarAnchor(this._target, this._editor);
-            const { x, y } = computeGroupPosition({
+            const { x, y, vAnchor } = computeGroupPosition({
                 rect: anchorRect,
                 barWidth: this.offsetWidth,
                 barHeight: this.offsetHeight,
                 mouseX: this._lastMouseX,
-                mouseY: this._lastVAnchor === "top" ? anchorRect.top : anchorRect.bottom,
+                mouseY: this._lastMouseY,
             });
+            this._lastVAnchor = vAnchor;
             this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         }
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
         this._positionInsertButtons(targetRect);
     }
+
+    private handleMouseMove = (e: MouseEvent) => {
+        this._lastMouseX = e.clientX;
+        this._lastMouseY = e.clientY;
+        if (this._mouseMoveRaf !== null) return;
+        this._mouseMoveRaf = requestAnimationFrame(() => {
+            this._mouseMoveRaf = null;
+            if (!this._listenersAttached) return;
+            this._reflow();
+        });
+    };
 
     private _positionInsertButtons(_rect: DOMRect) {
         if (!this._insertTarget) return;
@@ -239,6 +260,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.addEventListener("action-click" as any, this.handleBlocActionClick);
         this.addEventListener("mouseleave", this.handleLeave);
         this._hoverEl?.addEventListener("mouseleave", this.handleLeave);
+        this._hoverEl?.addEventListener("mousemove", this.handleMouseMove);
         this._btnBefore.addEventListener("mouseenter", this.handleInsertBtnEnter);
         this._btnAfter.addEventListener("mouseenter", this.handleInsertBtnEnter);
         window.addEventListener("keydown", this.handleKeyDown);
@@ -251,10 +273,15 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.removeEventListener("action-click" as any, this.handleBlocActionClick);
         this.removeEventListener("mouseleave", this.handleLeave);
         this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
+        this._hoverEl?.removeEventListener("mousemove", this.handleMouseMove);
         this._btnBefore.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         this._btnAfter.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         window.removeEventListener("keydown", this.handleKeyDown);
         window.removeEventListener("click", this.handleClickOutside);
+        if (this._mouseMoveRaf !== null) {
+            cancelAnimationFrame(this._mouseMoveRaf);
+            this._mouseMoveRaf = null;
+        }
         this._listenersAttached = false;
     }
 
