@@ -22,6 +22,17 @@ export class FloatingToolbar extends Component {
     override connectedCallback() {
         const handle = this.shadowRoot?.getElementById('drag-handle');
         handle?.addEventListener('pointerdown', this._onPointerDown.bind(this));
+
+        this.shadowRoot?.querySelector('.actions')?.addEventListener('click', (e) => {
+            const btn = (e.target as HTMLElement).closest<HTMLElement>('[data-action]');
+            if (!btn) return;
+            const em = (document as any).EditorManager;
+            switch (btn.dataset.action) {
+                case 'dashboard':     em.dashboard(); break;
+                case 'switch-mode':   em.switchMode(); break;
+                case 'configuration': em.getConfiguration().show(); break;
+            }
+        });
     }
 
     _onPointerDown(e: any) {
