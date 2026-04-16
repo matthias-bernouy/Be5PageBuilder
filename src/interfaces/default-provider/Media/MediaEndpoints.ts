@@ -51,7 +51,15 @@ export default function MediaEndpoints(runner: Runner, system: DefaultMediaRepos
         // `text/html` or `application/javascript` would otherwise execute
         // in the page origin via `<img src=/media?id=..>` → redirect tricks.
         if (!SAFE_IMAGE_MIMES.has(castItem.mimetype)) {
-            return new Response("Unsupported media type", { status: 415 });
+            // Force a benign image Content-Type so a misstored HTML/JS blob
+            // cannot be rendered as HTML/JS in the browser.
+            return new Response("", {
+                status: 415,
+                headers: {
+                    "Content-Type": "image/png",
+                    "X-Content-Type-Options": "nosniff",
+                },
+            });
         }
 
         let body: Buffer | Uint8Array = castItem.content;
