@@ -31,6 +31,12 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private _resizeObserver: ResizeObserver;
     private _pinMenu: HTMLElement | null = null;
     private _metaEl: HTMLElement;
+    // When the user clicks "select parent", we rebind to the parent editor but
+    // keep the bar under the cursor. This flag tells _reflow() to stop
+    // recomputing position from the target rect so the initial ResizeObserver
+    // callback (fires async after observe()) doesn't yank the bar to the
+    // parent's natural position. Cleared on close().
+    private _positionLocked = false;
 
     constructor() {
         super();
@@ -171,6 +177,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnAfter.style.display = "none";
         this._resizeObserver.disconnect();
         this.removeEventListeners();
+        this._positionLocked = false;
     }
 
     private _lastMouseX: number = 0;
@@ -179,15 +186,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private _reflow() {
         if (!this._target) return;
         const targetRect = this._target.getBoundingClientRect();
-        const { rect: anchorRect } = resolveActionBarAnchor(this._target, this._editor);
-        const { x, y } = computeGroupPosition({
-            rect: anchorRect,
-            barWidth: this.offsetWidth,
-            barHeight: this.offsetHeight,
-            mouseX: this._lastMouseX,
-            mouseY: this._lastVAnchor === "top" ? anchorRect.top : anchorRect.bottom,
-        });
-        this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        if (!this._positionLocked) {
+            const { rect: anchorRect } = resolveActionBarAnchor(this._target, this._editor);
+            const { x, y } = computeGroupPosition({
+                rect: anchorRect,
+                barWidth: this.offsetWidth,
+                barHeight: this.offsetHeight,
+                mouseX: this._lastMouseX,
+                mouseY: this._lastVAnchor === "top" ? anchorRect.top : anchorRect.bottom,
+            });
+            this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+        }
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
         this._positionInsertButtons(targetRect);
@@ -347,12 +356,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private _selectParent() {
         const parent = this._parentEditor();
         if (!parent) return;
-        const rect = parent.target.getBoundingClientRect();
-        const mx = this._lastMouseX || (rect.left + rect.width / 2);
-        const my = rect.top + rect.height / 2;
-        this.close();
+        // Freeze the bar at its current on-screen position. If we let open()
+        // recompute position from the parent's anchor rect, the bar jumps
+        // away from the cursor — the user then has to chase it and the
+        // intervening `mouseleave` closes the bar before they can click
+        // anything. Rebinding editor/target in place keeps the bar right
+        // under the pointer.
+        const savedTransform = this.style.transform;
+        this._positionLocked = true;
         this.setEditor(parent);
-        this.open(mx, my);
+        this.open();
+        this.style.transform = savedTransform;
     }
 
     private _handlePinClick() {
