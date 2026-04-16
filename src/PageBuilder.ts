@@ -8,6 +8,7 @@ import { InMemoryCache } from "./interfaces/default-provider/Cache/InMemoryCache
 import { cachedResponseAsync } from "./server/compression";
 import { renderPage } from "./server/renderPage";
 import { isReservedPath, isValidPathFormat } from "./server/reservedPaths";
+import { ImageOptimizer } from "./server/imageOptimization/ImageOptimizer";
 import { P9R_CACHE } from "types/p9r-constants";
 
 type Configuration = {
@@ -23,6 +24,7 @@ export class PageBuilder{
     private _auth:       Authentication & TokenAuthentication & PasswordAuthentication;
     private _mediaRepository: MediaRepository;
     private _cache:      Cache;
+    private _imageOptimizer: ImageOptimizer;
 
     /**
      * Set of paths for which a dynamic GET route has already been registered
@@ -46,6 +48,7 @@ export class PageBuilder{
         this._repository = repository;
         this._mediaRepository = mediaRepository;
         this._cache = cache || new InMemoryCache();
+        this._imageOptimizer = new ImageOptimizer(this);
         registerEndpoints(this);
         this.registerHomeRoute();
         this.hydratePageRoutes().catch(err => {
@@ -75,6 +78,10 @@ export class PageBuilder{
 
     get cache(){
         return this._cache;
+    }
+
+    get imageOptimizer(){
+        return this._imageOptimizer;
     }
 
     /**

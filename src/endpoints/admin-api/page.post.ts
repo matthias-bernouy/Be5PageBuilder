@@ -53,9 +53,21 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     // re-renders with the fresh body.
     const settings = await system.repository.getSystem();
     const home = settings.site?.home;
-    if (home && ((home.path === oldPath && home.identifier === oldIdentifier) ||
-                 (home.path === newPath && home.identifier === newIdentifier))) {
+    const isHome = home && ((home.path === oldPath && home.identifier === oldIdentifier) ||
+                            (home.path === newPath && home.identifier === newIdentifier));
+    if (isHome) {
         system.cache.delete(P9R_CACHE.page("/", ""));
+    }
+
+    // Kick off image-srcset optimization in the background. Each enqueue
+    // bumps the queue's generation counter for that key, so a fast double
+    // save just triggers one final optimization rather than racing.
+    // The optimizer needs a real running server to navigate to — we trust
+    // the request's origin since this endpoint already requires admin auth.
+    const origin = url.origin;
+    system.imageOptimizer.enqueuePageOptimization(newPath, newIdentifier, origin);
+    if (isHome) {
+        system.imageOptimizer.enqueuePageOptimization("/", "", origin);
     }
 
     return new Response("Page updated");

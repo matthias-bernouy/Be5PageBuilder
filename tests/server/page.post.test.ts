@@ -44,6 +44,7 @@ function makeSystem(opts: {
             }),
         },
         registerPageRoute: (path: string) => { registeredRoutes.push(path); },
+        imageOptimizer: { enqueuePageOptimization: () => {} },
     };
 
     return { system, createPageCalls, registeredRoutes, deleteSpy };
