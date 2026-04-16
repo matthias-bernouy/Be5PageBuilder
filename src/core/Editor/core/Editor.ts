@@ -196,6 +196,25 @@ export abstract class Editor {
     public onEditorPinState?(pinned: boolean, stateSync?: StateSync): void;
 
     /**
+     * Override to anchor the floating action bar against a sub-element rather
+     * than the whole target. The returned element controls BOTH where BAG
+     * positions itself AND when it opens/closes — `mouseenter`/`mouseleave`
+     * are bound to this element, not the target. State-dependent anchors are
+     * supported: call `viewEditor()` again after a state change to re-bind.
+     * Return `null` (default) to use the target.
+     */
+    public getActionBarAnchor(): HTMLElement | null {
+        return null;
+    }
+
+    /**
+     * Element currently bound to the `mouseenter` listener. Tracked so we can
+     * rebind cleanly when the anchor changes (otherwise the old listener
+     * leaks and BAG opens on both old and new anchors).
+     */
+    private _hoverElement: HTMLElement | null = null;
+
+    /**
      * Called by the action bar after toggling a <p9r-state-sync>. While any
      * state is pinned, PinMode suppresses hover and shows a floating "Unpin"
      * button — see PinMode.ts for the UX rationale.
@@ -203,16 +222,27 @@ export abstract class Editor {
     public notifyPinStateChanged(stateSync?: StateSync) {
         const anyPinned = this.stateSyncs.some(s => s.isPinned);
         if (anyPinned) {
-            this.target.removeEventListener("mouseenter", this.handleHover);
+            this._unbindHover();
             document.EditorManager?.getBlocActionGroup()?.close();
             this._pinMode.enter();
         } else {
             this._pinMode.exit();
             if (this._hasInteractiveFeatures()) {
-                this.target.addEventListener("mouseenter", this.handleHover);
+                this._bindHover();
             }
         }
         this.onEditorPinState?.(anyPinned, stateSync);
+    }
+
+    private _bindHover() {
+        this._unbindHover();
+        this._hoverElement = this.getActionBarAnchor() ?? this.target;
+        this._hoverElement.addEventListener("mouseenter", this.handleHover);
+    }
+
+    private _unbindHover() {
+        this._hoverElement?.removeEventListener("mouseenter", this.handleHover);
+        this._hoverElement = null;
     }
 
     private _hasInteractiveFeatures(): boolean {
@@ -226,7 +256,7 @@ export abstract class Editor {
         this._pinMode.exit();
         this.restore();
 
-        this.target.removeEventListener("mouseenter", this.handleHover);
+        this._unbindHover();
 
         this.target.style.removeProperty("pointer-events");
         if (this.target.getAttribute("style") === "") {
@@ -298,9 +328,9 @@ export abstract class Editor {
         // DISABLE_* flags. Always detach first so the listener state mirrors
         // the current feature map — otherwise an action bar keeps opening on
         // hover after every button has been disabled.
-        this.target.removeEventListener("mouseenter", this.handleHover);
+        this._unbindHover();
         if (this._actionBarFeatures.values().some(v => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0) {
-            this.target.addEventListener("mouseenter", this.handleHover);
+            this._bindHover();
         }
 
     }
@@ -309,7 +339,7 @@ export abstract class Editor {
         // Source of truth for teardown — any caller (ObserverManager,
         // _sealOpaqueSubtree, tests…) gets the map cleanup for free.
         document.compIdentifierToEditor?.delete(this.targetIdentifier);
-        this.target.removeEventListener("mouseenter", this.handleHover);
+        this._unbindHover();
         this._pinMode.exit();
         this._panelConfig?.remove();
         this._panelConfig = null;

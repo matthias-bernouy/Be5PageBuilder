@@ -5,6 +5,7 @@ import template from './template.html' with { type: 'text' };
 import insertBtnCss from './insert-btn.css' with { type: 'text' };
 import insertBtnHtml from './insert-btn.html' with { type: 'text' };
 import { computeGroupPosition, positionInsertButtons, type VAnchor } from './positioning';
+import { resolveActionBarAnchor } from './anchor';
 import { duplicateSibling, insertBlankSibling, openChangeComponentPicker } from './actions';
 import { ICON_PARENT, ICON_PIN } from '../../icons';
 import type { StateSync } from '../../configuration/Sync/StateSync';
@@ -13,7 +14,15 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private _target: HTMLElement | null = null;
     private _editor: Editor | null = null;
+    // Element mouseleave is bound to. Defaults to _target, but an Editor can
+    // override `getActionBarAnchor()` to return an inner element — then BAG
+    // closes when the pointer leaves that element rather than the whole bloc.
+    private _hoverEl: HTMLElement | null = null;
     private _insertTarget: HTMLElement | null = null;
+    // Editor whose target hosts the + buttons — used to resolve its anchor so
+    // insert buttons flank the visible sub-element (e.g. `.header`) rather
+    // than the whole bloc when the editor overrides `getActionBarAnchor()`.
+    private _insertEditor: Editor | null = null;
     private _insertConfig: { before: boolean; after: boolean } = { before: false, after: false };
     private _lastConfigKey: string = "";
     private _btnBefore: HTMLButtonElement;
@@ -74,16 +83,17 @@ export class BlocActionGroup extends HorizontalActionGroup {
             this._target = null;
             return;
         }
-        // open() binds `mouseleave` on the current _target. When setEditor
-        // swaps _target without going through close() first (the hover path
+        // open() binds `mouseleave` on the current hover anchor. When setEditor
+        // swaps editor without going through close() first (the hover path
         // calls setEditor + open without an intervening close if BAG is
-        // already visible on another bloc), the old target keeps the
+        // already visible on another bloc), the old anchor keeps the
         // listener — one leak per hovered bloc for the life of the page.
-        if (this._listenersAttached) this._target?.removeEventListener("mouseleave", this.handleLeave);
+        if (this._listenersAttached) this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
         this._target?.classList.remove("p9r-active");
         this._editor = editor;
         this._target = editor.target;
-        if (this._listenersAttached) this._target.addEventListener("mouseleave", this.handleLeave);
+        this._hoverEl = editor.getActionBarAnchor?.() ?? editor.target;
+        if (this._listenersAttached) this._hoverEl.addEventListener("mouseleave", this.handleLeave);
         this._resolveInsertTarget();
     }
 
@@ -94,6 +104,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
             const cfg = ed.actionBarConfiguration;
             if (cfg.get("addBefore") || cfg.get("addAfter")) {
                 this._insertTarget = target;
+                this._insertEditor = ed;
                 this._insertConfig = { before: !!cfg.get("addBefore"), after: !!cfg.get("addAfter") };
                 return;
             }
@@ -105,6 +116,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
             target = parentEd.target;
         }
         this._insertTarget = this._target;
+        this._insertEditor = this._editor;
         this._insertConfig = { before: false, after: false };
     }
 
@@ -113,11 +125,13 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
         this.smartRender();
 
-        const rect = this._target!.getBoundingClientRect();
+        const targetRect = this._target!.getBoundingClientRect();
+        const { rect: anchorRect, element: anchorEl } = resolveActionBarAnchor(this._target!, this._editor);
+        this._hoverEl = anchorEl;
         const mx = mouseX ?? this._lastMouseX;
-        const my = mouseY ?? (this._lastVAnchor === "top" ? rect.top : rect.bottom);
+        const my = mouseY ?? (this._lastVAnchor === "top" ? anchorRect.top : anchorRect.bottom);
         const { x, y, vAnchor } = computeGroupPosition({
-            rect,
+            rect: anchorRect,
             barWidth: this.offsetWidth,
             barHeight: this.offsetHeight,
             mouseX: mx,
@@ -131,8 +145,12 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this.style.opacity = "1";
         this.style.pointerEvents = "auto";
 
-        this._positionInsertButtons(rect);
+        this._positionInsertButtons(targetRect);
+        this._resizeObserver.disconnect();
         this._resizeObserver.observe(this._target!);
+        if (anchorEl && anchorEl !== this._target) {
+            this._resizeObserver.observe(anchorEl);
+        }
         this._target!.classList.add("p9r-active");
         this.addEventListeners();
     }
@@ -154,23 +172,24 @@ export class BlocActionGroup extends HorizontalActionGroup {
 
     private _reflow() {
         if (!this._target) return;
-        const rect = this._target.getBoundingClientRect();
+        const targetRect = this._target.getBoundingClientRect();
+        const { rect: anchorRect } = resolveActionBarAnchor(this._target, this._editor);
         const { x, y } = computeGroupPosition({
-            rect,
+            rect: anchorRect,
             barWidth: this.offsetWidth,
             barHeight: this.offsetHeight,
             mouseX: this._lastMouseX,
-            mouseY: this._lastVAnchor === "top" ? rect.top : rect.bottom,
+            mouseY: this._lastVAnchor === "top" ? anchorRect.top : anchorRect.bottom,
         });
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
-        this._positionInsertButtons(rect);
+        this._positionInsertButtons(targetRect);
     }
 
     private _positionInsertButtons(_rect: DOMRect) {
         if (!this._insertTarget) return;
-        const insertRect = this._insertTarget.getBoundingClientRect();
+        const { rect: insertRect } = resolveActionBarAnchor(this._insertTarget, this._insertEditor);
         const isInline = this._insertTarget.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
         positionInsertButtons(this._btnBefore, this._btnAfter, insertRect, isInline, this._insertConfig);
     }
@@ -204,7 +223,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         if (this._listenersAttached) return;
         this.addEventListener("action-click" as any, this.handleBlocActionClick);
         this.addEventListener("mouseleave", this.handleLeave);
-        this._target?.addEventListener("mouseleave", this.handleLeave);
+        this._hoverEl?.addEventListener("mouseleave", this.handleLeave);
         this._btnBefore.addEventListener("mouseenter", this.handleInsertBtnEnter);
         this._btnAfter.addEventListener("mouseenter", this.handleInsertBtnEnter);
         window.addEventListener("keydown", this.handleKeyDown);
@@ -216,7 +235,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         if (!this._listenersAttached) return;
         this.removeEventListener("action-click" as any, this.handleBlocActionClick);
         this.removeEventListener("mouseleave", this.handleLeave);
-        this._target?.removeEventListener("mouseleave", this.handleLeave);
+        this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
         this._btnBefore.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         this._btnAfter.removeEventListener("mouseenter", this.handleInsertBtnEnter);
         window.removeEventListener("keydown", this.handleKeyDown);
