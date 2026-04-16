@@ -133,8 +133,23 @@ export class TextEditor extends Editor {
             // same anchor in reverse order.
             nextEl.contentEditable = "true";
             nextEl.tabIndex = 0;
+
+            // Split the target at the caret: everything after the caret moves
+            // into the new sibling. Non-collapsed selections are dropped first
+            // so "Hello [World]" + Enter leaves "Hello" / "" rather than
+            // "Hello " / "World".
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount && sel.anchorNode && this.target.contains(sel.anchorNode)) {
+                const range = sel.getRangeAt(0);
+                if (!range.collapsed) range.deleteContents();
+                const tail = range.cloneRange();
+                tail.setEndAfter(this.target.lastChild ?? this.target);
+                const fragment = tail.extractContents();
+                nextEl.appendChild(fragment);
+            }
+
             this.target.after(nextEl)
-            nextEl.focus();
+            this._focusWithCaret(nextEl, "start");
         }
 
         if (e.key === "Backspace" && this.target.innerHTML === "" && !this.isDeleteDisabled) {
