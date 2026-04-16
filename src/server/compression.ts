@@ -2,6 +2,30 @@ import { gzipSync } from "bun";
 import { brotliCompressSync } from "node:zlib";
 import type { Cache, CacheEntry } from "src/interfaces/contract/Cache/Cache";
 
+/**
+ * Static security headers applied to every compressed response.
+ *
+ * - nosniff: prevents MIME-type confusion on user-uploaded media.
+ * - HSTS (1y, no includeSubDomains): forces HTTPS on future hits;
+ *   omitting includeSubDomains lets plain-HTTP subdomains keep working.
+ * - X-Frame-Options DENY: no iframes anywhere in this codebase, so
+ *   clickjacking via <iframe> is always a bug.
+ * - Referrer-Policy strict-origin-when-cross-origin: leaks only the
+ *   origin (not the path/query) to third parties.
+ * - Permissions-Policy: disables browser APIs we never use, so a
+ *   DOM-XSS payload can't invoke them either.
+ * - COOP same-origin: isolates our window from any cross-origin
+ *   popup's opener reference (Spectre / tabnabbing mitigation).
+ */
+export const SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "Strict-Transport-Security": "max-age=31536000",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+    "Cross-Origin-Opener-Policy": "same-origin",
+} as const;
+
 export function compress(raw: string | ArrayBuffer | Uint8Array, contentType: string): CacheEntry {
     const rawBytes = typeof raw === "string" ? new TextEncoder().encode(raw) : new Uint8Array(raw);
     const brotliResult = brotliCompressSync(rawBytes);
@@ -54,7 +78,7 @@ export function sendCompressed(req: Request, entry: CacheEntry): Response {
             headers: {
                 "Content-Type": entry.contentType,
                 "Content-Encoding": "br",
-                "X-Content-Type-Options": "nosniff",
+                ...SECURITY_HEADERS,
             },
         });
     }
@@ -64,7 +88,7 @@ export function sendCompressed(req: Request, entry: CacheEntry): Response {
             headers: {
                 "Content-Type": entry.contentType,
                 "Content-Encoding": "gzip",
-                "X-Content-Type-Options": "nosniff",
+                ...SECURITY_HEADERS,
             },
         });
     }
@@ -72,7 +96,7 @@ export function sendCompressed(req: Request, entry: CacheEntry): Response {
     return new Response(entry.raw as BodyInit, {
         headers: {
             "Content-Type": entry.contentType,
-            "X-Content-Type-Options": "nosniff",
+            ...SECURITY_HEADERS,
         },
     });
 }
