@@ -138,16 +138,66 @@ describe("renderPage — meta", () => {
         expect(html).toContain('href="/assets/favicon"');
     });
 
-    test("always prepends the global runtime script first in <head>", async () => {
+    test("emits a <link rel=preload as=script> for the global runtime", async () => {
         const html = await renderToString(page(), makeSystem());
-        const headOpen = html.indexOf("<head>");
-        const componentJs = html.indexOf("/assets/component.js");
-        const themeLink = html.indexOf('href="/style"');
-        expect(headOpen).toBeGreaterThanOrEqual(0);
-        expect(componentJs).toBeGreaterThan(headOpen);
-        // The global runtime is prepended, so it appears before the theme link
-        // (which is appended).
-        expect(componentJs).toBeLessThan(themeLink);
+        expect(html).toMatch(
+            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="script")(?=[^>]*\bhref="\/assets\/component\.js")[^>]*>/
+        );
+    });
+
+    test("emits a <link rel=preload as=style> for the theme stylesheet", async () => {
+        const html = await renderToString(page(), makeSystem());
+        expect(html).toMatch(
+            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="style")(?=[^>]*\bhref="\/style")[^>]*>/
+        );
+    });
+
+    test("emits a preload for every used bloc tag's script", async () => {
+        const html = await renderToString(
+            page({ content: `<my-card></my-card>` }),
+            makeSystem({
+                blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
+            }),
+        );
+        expect(html).toMatch(
+            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="script")(?=[^>]*\bhref="\/bloc\?tag=my-card")[^>]*>/
+        );
+    });
+
+    test("preloads appear before the deferred script tags", async () => {
+        const html = await renderToString(
+            page({ content: `<my-card></my-card>` }),
+            makeSystem({
+                blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
+            }),
+        );
+        const preload = html.indexOf('rel="preload"');
+        const firstScript = html.indexOf("<script");
+        expect(preload).toBeGreaterThanOrEqual(0);
+        expect(firstScript).toBeGreaterThan(preload);
+    });
+
+    test("every script in <head> is deferred and in execution order (component first)", async () => {
+        const html = await renderToString(
+            page({ content: `<my-card></my-card><other-bloc></other-bloc>` }),
+            makeSystem({
+                blocs: [
+                    { id: "my-card",    name: "Card",  group: "g", description: "" },
+                    { id: "other-bloc", name: "Other", group: "g", description: "" },
+                ],
+            }),
+        );
+        const scriptTags = [...html.matchAll(/<script\b[^>]*>/g)].map(m => m[0]);
+        expect(scriptTags.length).toBe(3);
+        for (const tag of scriptTags) expect(tag).toContain("defer");
+        // Document order → execution order: component.js must come first so
+        // the bloc IIFEs can read `window.p9r.Component`.
+        const componentIdx = html.search(/<script\b[^>]*\bsrc="\/assets\/component\.js"/);
+        const myCardIdx    = html.search(/<script\b[^>]*\bsrc="\/bloc\?tag=my-card"/);
+        const otherIdx     = html.search(/<script\b[^>]*\bsrc="\/bloc\?tag=other-bloc"/);
+        expect(componentIdx).toBeGreaterThan(-1);
+        expect(myCardIdx).toBeGreaterThan(componentIdx);
+        expect(otherIdx).toBeGreaterThan(componentIdx);
     });
 });
 

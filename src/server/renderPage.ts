@@ -5,6 +5,8 @@ import type { CacheEntry } from "src/interfaces/contract/Cache/Cache";
 import { compress } from "src/server/compression";
 import { expandSnippets } from "src/server/expandSnippets";
 
+const COMPONENT_JS = "/assets/component.js";
+
 /**
  * Force any favicon URL that targets the `/media` endpoint to request the
  * 64px icon-tier variant. Otherwise a user who picks a 2000×2000 source
@@ -27,6 +29,12 @@ function normalizeFaviconHref(href: string): string {
  * snippet expansion and bloc script injection identically to how the old
  * file-based `/article` endpoint did.
  *
+ * <head> layout — resources are preloaded at the top so the browser starts
+ * downloading them in parallel before reaching the deferred script tags at
+ * the bottom of <head>. All scripts use `defer`, which keeps execution in
+ * document order: `component.js` runs before any bloc IIFE, and the parser
+ * is never blocked.
+ *
  * Returns a CacheEntry (not a Response) because `cachedResponseAsync` is the
  * only caller and it expects the pre-compressed bytes.
  */
@@ -39,22 +47,58 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
     const language = settings.site?.language?.trim() ?? "";
     if (language) document.documentElement.setAttribute("lang", language);
 
-    // Meta
-    document.title = page.title;
+    // ── Body & bloc-script discovery (needed upfront to emit preloads) ──
+    const expandedContent = await expandSnippets(page.content, system);
+    document.body.innerHTML = expandedContent;
 
-    const metaDescription = document.createElement("meta");
-    metaDescription.setAttribute("name", "description");
-    metaDescription.setAttribute("content", page.description);
-    document.head.appendChild(metaDescription);
+    const blocList = await system.repository.getBlocsList();
+    const usedTags: string[] = [];
+    for (const bloc of blocList) {
+        const re = new RegExp(`<${bloc.id}(\\s|>|/)`, "i");
+        if (re.test(expandedContent)) usedTags.push(bloc.id);
+    }
+    const scriptUrls = [COMPONENT_JS, ...usedTags.map(tag => `/bloc?tag=${tag}`)];
+
+    // ── <head> assembly, in exact document order ──
+    const head = document.head;
+
+    const charset = document.createElement("meta");
+    charset.setAttribute("charset", "UTF-8");
+    head.appendChild(charset);
 
     const viewport = document.createElement("meta");
     viewport.setAttribute("name", "viewport");
     viewport.setAttribute("content", "width=device-width, initial-scale=1.0");
-    document.head.appendChild(viewport);
+    head.appendChild(viewport);
 
-    const charset = document.createElement("meta");
-    charset.setAttribute("charset", "UTF-8");
-    document.head.appendChild(charset);
+    // Preloads — kick off fetches for every known script + the stylesheet
+    // as early as possible. The speculative parser already does this for
+    // resources it discovers later in the head, but emitting explicit
+    // preloads makes the priority hints deterministic and survives edge
+    // cases (e.g. heavy inline content before the script tags).
+    const stylePreload = document.createElement("link");
+    stylePreload.setAttribute("rel", "preload");
+    stylePreload.setAttribute("as", "style");
+    stylePreload.setAttribute("href", "/style");
+    head.appendChild(stylePreload);
+
+    for (const src of scriptUrls) {
+        const preload = document.createElement("link");
+        preload.setAttribute("rel", "preload");
+        preload.setAttribute("as", "script");
+        preload.setAttribute("href", src);
+        head.appendChild(preload);
+    }
+
+    // Title + description
+    const title = document.createElement("title");
+    title.textContent = page.title;
+    head.appendChild(title);
+
+    const metaDescription = document.createElement("meta");
+    metaDescription.setAttribute("name", "description");
+    metaDescription.setAttribute("content", page.description);
+    head.appendChild(metaDescription);
 
     // Favicon: picked from settings.site.favicon (a media URL chosen via
     // the MediaCenter picker in the Settings admin UI). Falls back to the
@@ -63,7 +107,7 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
     favicon.setAttribute("rel", "icon");
     const rawFavicon = settings.site?.favicon?.trim() || "/assets/favicon";
     favicon.setAttribute("href", normalizeFaviconHref(rawFavicon));
-    document.head.appendChild(favicon);
+    head.appendChild(favicon);
 
     // Canonical link when a host is configured. The trailing slash of the
     // host is stripped so we don't emit `https://site.com//about`.
@@ -75,40 +119,23 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
         const canonical = document.createElement("link");
         canonical.setAttribute("rel", "canonical");
         canonical.setAttribute("href", `${host}${page.path}${query}`);
-        document.head.appendChild(canonical);
+        head.appendChild(canonical);
     }
 
     // Theme CSS
     const themeLink = document.createElement("link");
     themeLink.setAttribute("rel", "stylesheet");
     themeLink.setAttribute("href", "/style");
-    document.head.appendChild(themeLink);
+    head.appendChild(themeLink);
 
-    // Expand snippet references before rendering (SSR)
-    const expandedContent = await expandSnippets(page.content, system);
-
-    document.body.innerHTML = expandedContent;
-
-    // Inject a script for every registered bloc whose tag appears in the
-    // expanded content. The set of valid tags comes from the repository so
-    // arbitrary prefixes (e.g. `acme-card`, `ta-hero`) work — not just `be5-*`.
-    const blocList = await system.repository.getBlocsList();
-    const usedTags = new Set<string>();
-    for (const bloc of blocList) {
-        const re = new RegExp(`<${bloc.id}(\\s|>|/)`, "i");
-        if (re.test(expandedContent)) usedTags.add(bloc.id);
-    }
-
-    // Synchronous global runtime — must come first in <head> so the bloc
-    // IIFEs below can read `window.p9r.Component` at evaluation time.
-    const globalScript = document.createElement("script");
-    globalScript.setAttribute("src", "/assets/component.js");
-    document.head.prepend(globalScript);
-
-    for (const tag of usedTags) {
+    // Deferred scripts — downloaded in parallel, executed in document order
+    // after HTML parsing. `component.js` is emitted first so every bloc IIFE
+    // can read `window.p9r.Component` at execution time.
+    for (const src of scriptUrls) {
         const script = document.createElement("script");
-        script.setAttribute("src", `/bloc?tag=${tag}`);
-        document.head.appendChild(script);
+        script.setAttribute("defer", "");
+        script.setAttribute("src", src);
+        head.appendChild(script);
     }
 
     return compress(document.toString(), "text/html");
