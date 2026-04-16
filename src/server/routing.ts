@@ -4,6 +4,16 @@ import type { PageBuilder } from "src/PageBuilder";
 import { cachedResponseAsync, compress } from "src/server/compression";
 import { P9R_CACHE } from "types/p9r-constants";
 
+// Mirrors the union accepted by socle's `Runner.addEndpoint`. Centralized
+// here so the API-folder router can validate filenames against it without
+// an `as any` cast in two places.
+export type HTTPMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+const ALLOWED_METHODS: readonly HTTPMethod[] = ["GET", "POST", "PUT", "DELETE", "PATCH"];
+
+function isHTTPMethod(s: string): s is HTTPMethod {
+    return (ALLOWED_METHODS as readonly string[]).includes(s);
+}
+
 export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: Runner) {
     type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
     const pages = new Map<string, PageEntry>();
@@ -90,19 +100,19 @@ export async function registerAPIFolder(url: string, absoluteFolderPath: string,
         const parts = file.split('.');
         
         const baseName = parts[0] || "";
-        const ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
-        const method = parts[1]?.toUpperCase() || "GET";
-        if (!ALLOWED_METHODS.includes(method as any)) {
-            console.warn(`[API] Ignored "${file}" — unknown HTTP method "${method}"`);
+        const rawMethod = parts[1]?.toUpperCase() || "GET";
+        if (!isHTTPMethod(rawMethod)) {
+            console.warn(`[API] Ignored "${file}" — unknown HTTP method "${rawMethod}"`);
             continue;
         }
+        const method: HTTPMethod = rawMethod;
         const endpointUrl = join(url, baseName).replace(/\\/g, '/');
 
         const module = await import(fullPath);
         const handler = module.default;
 
         if (typeof handler === 'function') {
-            runner.addEndpoint(method as any, endpointUrl, (req: Request) => {
+            runner.addEndpoint(method, endpointUrl, (req: Request) => {
                 return handler(req, system)
             });
         } else {

@@ -53,10 +53,6 @@ export abstract class Editor {
         this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier);
 
         if (!document.compIdentifierToEditor) document.compIdentifierToEditor = new Map();
-        if (document.compIdentifierToEditor.has(this.targetIdentifier)) {
-            throw new Error("Critial Random Error: UUID duplication for " + this.target);
-        }
-
         document.compIdentifierToEditor.set(this.targetIdentifier, this);
 
         this._pinMode = new PinMode(this.target, this.stateSyncs, () => {
