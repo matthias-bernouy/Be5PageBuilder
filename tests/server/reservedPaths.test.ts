@@ -70,6 +70,8 @@ describe("isReservedPath", () => {
         ["/style"],
         ["/media"],
         ["/font"],
+        ["/robots.txt"],
+        ["/sitemap.xml"],
     ])("reserves %s (framework exact path)", (path) => {
         expect(isReservedPath(path, sys())).toBe(true);
     });

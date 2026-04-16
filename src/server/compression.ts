@@ -46,7 +46,7 @@ export async function cachedResponseAsync(
     return sendCompressed(req, entry);
 }
 
-function sendCompressed(req: Request, entry: CacheEntry): Response {
+export function sendCompressed(req: Request, entry: CacheEntry): Response {
     const accept = req.headers.get("accept-encoding") || "";
 
     if (accept.includes("br")) {

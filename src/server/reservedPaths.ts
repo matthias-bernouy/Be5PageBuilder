@@ -10,6 +10,8 @@ const EXACT_RESERVED = new Set([
     "/style",
     "/media",
     "/font",
+    "/robots.txt",
+    "/sitemap.xml",
 ]);
 
 function normalizePath(path: string): string {

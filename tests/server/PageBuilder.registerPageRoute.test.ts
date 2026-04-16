@@ -50,6 +50,8 @@ describe("PageBuilder.registerPageRoute", () => {
         builder.pb.registerPageRoute("/style");
         builder.pb.registerPageRoute("/media");
         builder.pb.registerPageRoute("/font");
+        builder.pb.registerPageRoute("/robots.txt");
+        builder.pb.registerPageRoute("/sitemap.xml");
         expect(builder.registered).toEqual([]);
     });
 
