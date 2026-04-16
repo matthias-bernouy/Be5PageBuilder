@@ -1,0 +1,169 @@
+import { describe, test, expect } from "bun:test";
+import { renderPage } from "src/server/renderPage";
+import type { PageBuilder } from "src/PageBuilder";
+import type { TPage, TSnippet } from "src/interfaces/contract/Repository/TModels";
+
+function page(over: Partial<TPage> = {}): TPage {
+    return {
+        path: "/about",
+        identifier: "",
+        title: "About Us",
+        description: "About description",
+        content: "<p>body</p>",
+        visible: true,
+        tags: [],
+        ...over,
+    };
+}
+
+function makeSystem(opts: {
+    blocs?: { id: string; name: string; group: string; description: string }[];
+    snippets?: Record<string, string>;
+} = {}): PageBuilder {
+    return {
+        repository: {
+            getBlocsList: async () => opts.blocs ?? [],
+            getSnippetByIdentifier: async (id: string): Promise<TSnippet | null> => {
+                if (!opts.snippets || !(id in opts.snippets)) return null;
+                return {
+                    identifier: id,
+                    name: id,
+                    description: "",
+                    content: opts.snippets[id]!,
+                    category: "",
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                };
+            },
+        },
+    } as unknown as PageBuilder;
+}
+
+async function renderToString(p: TPage, system: PageBuilder): Promise<string> {
+    const entry = await renderPage(p, system);
+    return new TextDecoder().decode(entry.raw);
+}
+
+describe("renderPage — meta", () => {
+    test("emits text/html as the cache content type", async () => {
+        const entry = await renderPage(page(), makeSystem());
+        expect(entry.contentType).toBe("text/html");
+    });
+
+    test("uses the page title and description", async () => {
+        const html = await renderToString(
+            page({ title: "My Title", description: "My desc" }),
+            makeSystem(),
+        );
+        // Note: linkedom serializes attributes in alphabetical order, so we
+        // assert presence of each attribute rather than the exact element string.
+        expect(html).toContain("<title>My Title</title>");
+        expect(html).toMatch(/<meta\b[^>]*\bname="description"[^>]*>/);
+        expect(html).toMatch(/<meta\b[^>]*\bcontent="My desc"[^>]*>/);
+    });
+
+    test("includes charset, viewport, favicon and theme stylesheet", async () => {
+        const html = await renderToString(page(), makeSystem());
+        expect(html).toContain('charset="UTF-8"');
+        expect(html).toContain('content="width=device-width, initial-scale=1.0"');
+        expect(html).toMatch(/<link\b[^>]*\brel="icon"[^>]*>/);
+        expect(html).toContain('href="/media?type=favicon"');
+        expect(html).toMatch(/<link\b[^>]*\brel="stylesheet"[^>]*>/);
+        expect(html).toContain('href="/style"');
+    });
+
+    test("always prepends the global runtime script first in <head>", async () => {
+        const html = await renderToString(page(), makeSystem());
+        const headOpen = html.indexOf("<head>");
+        const componentJs = html.indexOf("/assets/component.js");
+        const themeLink = html.indexOf('href="/style"');
+        expect(headOpen).toBeGreaterThanOrEqual(0);
+        expect(componentJs).toBeGreaterThan(headOpen);
+        // The global runtime is prepended, so it appears before the theme link
+        // (which is appended).
+        expect(componentJs).toBeLessThan(themeLink);
+    });
+});
+
+describe("renderPage — body & snippet expansion", () => {
+    test("places the page content inside <body>", async () => {
+        const html = await renderToString(
+            page({ content: "<section>hello world</section>" }),
+            makeSystem(),
+        );
+        expect(html).toContain("<section>hello world</section>");
+    });
+
+    test("expands <w13c-snippet> wrappers via the repository before rendering", async () => {
+        const html = await renderToString(
+            page({ content: `<w13c-snippet identifier="hero">stale</w13c-snippet>` }),
+            makeSystem({ snippets: { hero: "<h1>Live</h1>" } }),
+        );
+        expect(html).toContain("<h1>Live</h1>");
+        expect(html).not.toContain("stale");
+    });
+});
+
+describe("renderPage — bloc script injection", () => {
+    test("injects a script for every registered tag that appears in the content", async () => {
+        const html = await renderToString(
+            page({ content: `<my-card></my-card><other-bloc></other-bloc>` }),
+            makeSystem({
+                blocs: [
+                    { id: "my-card",     name: "Card",  group: "g", description: "" },
+                    { id: "other-bloc",  name: "Other", group: "g", description: "" },
+                    { id: "unused-bloc", name: "Skip",  group: "g", description: "" },
+                ],
+            }),
+        );
+        expect(html).toContain('src="/bloc?tag=my-card"');
+        expect(html).toContain('src="/bloc?tag=other-bloc"');
+        // Unused tag is registered but never appears in content — must NOT
+        // be injected (otherwise every page downloads every bloc bundle).
+        expect(html).not.toContain('src="/bloc?tag=unused-bloc"');
+    });
+
+    test("matches tags case-insensitively but does not double-count", async () => {
+        const html = await renderToString(
+            page({ content: `<MY-CARD></MY-CARD><my-card></my-card>` }),
+            makeSystem({
+                blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
+            }),
+        );
+        const matches = html.match(/src="\/bloc\?tag=my-card"/g) ?? [];
+        expect(matches).toHaveLength(1);
+    });
+
+    test("self-closing usage is detected (e.g. <hero-image />)", async () => {
+        const html = await renderToString(
+            page({ content: `<hero-image/>` }),
+            makeSystem({
+                blocs: [{ id: "hero-image", name: "Hero", group: "g", description: "" }],
+            }),
+        );
+        expect(html).toContain('src="/bloc?tag=hero-image"');
+    });
+
+    test("a tag that appears only as a substring is NOT injected", async () => {
+        // `<my-card-extra>` should not match `my-card` — the regex requires
+        // the next char after the tag to be whitespace, `>` or `/`.
+        const html = await renderToString(
+            page({ content: `<my-card-extra></my-card-extra>` }),
+            makeSystem({
+                blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
+            }),
+        );
+        expect(html).not.toContain('src="/bloc?tag=my-card"');
+    });
+
+    test("injects scripts also for tags that appear inside an expanded snippet", async () => {
+        const html = await renderToString(
+            page({ content: `<w13c-snippet identifier="hero">x</w13c-snippet>` }),
+            makeSystem({
+                snippets: { hero: `<my-card></my-card>` },
+                blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
+            }),
+        );
+        expect(html).toContain('src="/bloc?tag=my-card"');
+    });
+});
