@@ -89,8 +89,13 @@ export async function registerAPIFolder(url: string, absoluteFolderPath: string,
         
         const parts = file.split('.');
         
-        const baseName = parts[0] || ""; 
+        const baseName = parts[0] || "";
+        const ALLOWED_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
         const method = parts[1]?.toUpperCase() || "GET";
+        if (!ALLOWED_METHODS.includes(method as any)) {
+            console.warn(`[API] Ignored "${file}" — unknown HTTP method "${method}"`);
+            continue;
+        }
         const endpointUrl = join(url, baseName).replace(/\\/g, '/');
 
         const module = await import(fullPath);
