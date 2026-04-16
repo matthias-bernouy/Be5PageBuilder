@@ -150,6 +150,72 @@ export class TextEditor extends Editor {
             if ( !previous && next ) next.focus();
             this.target.remove();
         }
+
+        if ((e.key === "ArrowUp" || e.key === "ArrowDown") && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            const isUp = e.key === "ArrowUp";
+            const onEdge = isUp ? this._isCaretOnFirstLine() : this._isCaretOnLastLine();
+            if (!onEdge) return;
+            const adjacent = this._findAdjacentTextEditor(isUp ? "prev" : "next");
+            if (!adjacent) return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            this._focusWithCaret(adjacent, isUp ? "end" : "start");
+        }
+    }
+
+    private _isCaretOnFirstLine(): boolean {
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return false;
+        if (this.target.innerHTML === "") return true;
+        const range = sel.getRangeAt(0);
+        const rects = range.getClientRects();
+        const targetTop = this.target.getBoundingClientRect().top;
+        const first = rects[0];
+        if (!first) {
+            // Collapsed caret at a boundary may yield no rect — fall back to
+            // the element rect so the first keystroke still navigates.
+            return true;
+        }
+        return Math.abs(first.top - targetTop) < 5;
+    }
+
+    private _isCaretOnLastLine(): boolean {
+        const sel = window.getSelection();
+        if (!sel || !sel.rangeCount) return false;
+        if (this.target.innerHTML === "") return true;
+        const range = sel.getRangeAt(0);
+        const rects = range.getClientRects();
+        const targetBottom = this.target.getBoundingClientRect().bottom;
+        const last = rects[rects.length - 1];
+        if (!last) return true;
+        return Math.abs(last.bottom - targetBottom) < 5;
+    }
+
+    private _findAdjacentTextEditor(direction: "prev" | "next"): HTMLElement | null {
+        const selector = Array.from(textTags).map(t => `${t}[contenteditable="true"]`).join(",");
+        const all = Array.from(document.querySelectorAll<HTMLElement>(selector));
+        const idx = all.indexOf(this.target);
+        if (idx === -1) return null;
+        return direction === "prev" ? (all[idx - 1] ?? null) : (all[idx + 1] ?? null);
+    }
+
+    private _focusWithCaret(el: HTMLElement, position: "start" | "end") {
+        el.focus();
+        const sel = window.getSelection();
+        if (!sel) return;
+        const range = document.createRange();
+        if (el.innerHTML === "") {
+            range.setStart(el, 0);
+            range.collapse(true);
+        } else if (position === "start") {
+            range.selectNodeContents(el);
+            range.collapse(true);
+        } else {
+            range.selectNodeContents(el);
+            range.collapse(false);
+        }
+        sel.removeAllRanges();
+        sel.addRange(range);
     }
 
     private handleInput(e: Event) {
