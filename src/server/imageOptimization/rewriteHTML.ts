@@ -3,10 +3,21 @@ import { parseHTML } from "linkedom";
 export type ImageRewrite = {
     /** Index in document order — must align with `document.querySelectorAll('img')`. */
     index: number;
-    /** Ladder rungs to list in srcset, ascending. Empty → skip. */
+    /** Ladder rungs to list in srcset, ascending. Empty → don't touch srcset. */
     widths: number[];
     /** Pre-built `sizes` attribute. Empty → don't emit `sizes`. */
     sizes: string;
+    /**
+     * `lazy` → force `loading="lazy"`. `eager` → remove any existing
+     * `loading` attribute (HTML default is eager anyway). Omitted → leave
+     * the attribute exactly as the bloc authored it.
+     */
+    loading?: "lazy" | "eager";
+    /**
+     * `high` → force `fetchpriority="high"`. `auto` → remove any existing
+     * `fetchpriority` (auto is the default). Omitted → leave untouched.
+     */
+    fetchpriority?: "high" | "auto";
 };
 
 /**
@@ -31,15 +42,27 @@ export function rewriteHTML(html: string, rewrites: readonly ImageRewrite[]): st
 
     imgs.forEach((img: any, i: number) => {
         const rw = byIndex.get(i);
-        if (!rw || rw.widths.length === 0) return;
+        if (!rw) return;
 
-        const src = img.getAttribute("src");
-        const base = baseSrcWithoutDimension(src);
-        if (!base) return;
+        // srcset/sizes path — only applies to images we can serve through
+        // /media (external URLs, data: URIs, etc. are skipped).
+        if (rw.widths.length > 0) {
+            const src = img.getAttribute("src");
+            const base = baseSrcWithoutDimension(src);
+            if (base) {
+                const srcset = rw.widths.map(w => `${base}&w=${w} ${w}w`).join(", ");
+                img.setAttribute("srcset", srcset);
+                if (rw.sizes) img.setAttribute("sizes", rw.sizes);
+            }
+        }
 
-        const srcset = rw.widths.map(w => `${base}&w=${w} ${w}w`).join(", ");
-        img.setAttribute("srcset", srcset);
-        if (rw.sizes) img.setAttribute("sizes", rw.sizes);
+        // loading/fetchpriority apply to every <img>, regardless of src —
+        // an external image above the fold still benefits from eager load.
+        if (rw.loading === "lazy") img.setAttribute("loading", "lazy");
+        else if (rw.loading === "eager") img.removeAttribute("loading");
+
+        if (rw.fetchpriority === "high") img.setAttribute("fetchpriority", "high");
+        else if (rw.fetchpriority === "auto") img.removeAttribute("fetchpriority");
     });
 
     return document.toString();

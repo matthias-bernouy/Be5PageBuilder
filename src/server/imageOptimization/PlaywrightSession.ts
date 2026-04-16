@@ -1,6 +1,15 @@
 import { chromium, type Browser } from "playwright";
 import { VIEWPORT_HEIGHT, VIEWPORT_WIDTHS } from "./viewports";
 
+export type ViewportLayout = {
+    viewport: number;
+    cssWidth: number;
+    /** Distance from the top of the viewport at layout time. */
+    top: number;
+    /** Rendered height in CSS pixels. */
+    height: number;
+};
+
 export type ImageMeasurement = {
     /** Document-order index of the `<img>`. Aligns with rewriteHTML. */
     index: number;
@@ -8,8 +17,8 @@ export type ImageMeasurement = {
     src: string;
     /** Browser-reported intrinsic width. 0 when image hasn't loaded. */
     naturalWidth: number;
-    /** Per-viewport CSS width as measured by getBoundingClientRect. */
-    perViewport: { viewport: number; cssWidth: number }[];
+    /** Per-viewport layout rect as measured by getBoundingClientRect. */
+    perViewport: ViewportLayout[];
 };
 
 /**
@@ -71,14 +80,20 @@ export class PlaywrightSession {
                 // One frame is enough for layout to settle in the absence
                 // of JS-driven async rendering. Container queries / fluid
                 // widths re-flow synchronously inside setViewportSize.
-                const widths = await page.evaluate(() => {
-                    return Array.from(document.querySelectorAll("img")).map(
-                        img => (img as HTMLImageElement).getBoundingClientRect().width,
-                    );
+                const rects = await page.evaluate(() => {
+                    return Array.from(document.querySelectorAll("img")).map(img => {
+                        const r = (img as HTMLImageElement).getBoundingClientRect();
+                        return { width: r.width, top: r.top, height: r.height };
+                    });
                 });
-                widths.forEach((w, i) => {
+                rects.forEach((r, i) => {
                     const slot = perImage.get(i);
-                    if (slot) slot.perViewport.push({ viewport: vw, cssWidth: w });
+                    if (slot) slot.perViewport.push({
+                        viewport: vw,
+                        cssWidth: r.width,
+                        top: r.top,
+                        height: r.height,
+                    });
                 });
             }
 

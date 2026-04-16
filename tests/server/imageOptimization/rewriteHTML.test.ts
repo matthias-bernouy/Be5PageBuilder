@@ -86,6 +86,63 @@ describe("rewriteHTML — preserves other img attributes", () => {
     });
 });
 
+describe("rewriteHTML — loading / fetchpriority", () => {
+    test("loading='lazy' sets the attribute", () => {
+        const html = wrap(`<img src="/media?id=A">`);
+        const out = rewriteHTML(html, [{ index: 0, widths: [], sizes: "", loading: "lazy" }]);
+        expect(out).toContain('loading="lazy"');
+    });
+
+    test("loading='eager' strips an existing loading attribute (HTML default)", () => {
+        const html = wrap(`<img src="/media?id=A" loading="lazy">`);
+        const out = rewriteHTML(html, [{ index: 0, widths: [], sizes: "", loading: "eager" }]);
+        expect(out).not.toContain("loading=");
+    });
+
+    test("fetchpriority='high' sets the attribute", () => {
+        const html = wrap(`<img src="/media?id=A">`);
+        const out = rewriteHTML(html, [{ index: 0, widths: [], sizes: "", fetchpriority: "high" }]);
+        expect(out).toContain('fetchpriority="high"');
+    });
+
+    test("fetchpriority='auto' strips an existing fetchpriority attribute", () => {
+        const html = wrap(`<img src="/media?id=A" fetchpriority="high">`);
+        const out = rewriteHTML(html, [{ index: 0, widths: [], sizes: "", fetchpriority: "auto" }]);
+        expect(out).not.toContain("fetchpriority=");
+    });
+
+    test("loading/fetchpriority apply to external images too (no srcset side-effects)", () => {
+        const html = wrap(`<img src="https://cdn.example.com/x.jpg">`);
+        const out = rewriteHTML(html, [{
+            index: 0, widths: [], sizes: "",
+            loading: "lazy", fetchpriority: "auto",
+        }]);
+        expect(out).toContain('loading="lazy"');
+        expect(out).not.toContain("srcset");
+    });
+
+    test("classifies and srcsets in the same rewrite", () => {
+        const html = wrap(`<img src="/media?id=A">`);
+        const out = rewriteHTML(html, [{
+            index: 0,
+            widths: [400, 800],
+            sizes: "100vw",
+            loading: "eager",
+            fetchpriority: "high",
+        }]);
+        expect(out).toContain("srcset=");
+        expect(out).toContain('sizes="100vw"');
+        expect(out).toContain('fetchpriority="high"');
+    });
+
+    test("omitted loading/fetchpriority leaves existing attributes untouched", () => {
+        const html = wrap(`<img src="/media?id=A" loading="lazy" fetchpriority="high">`);
+        const out = rewriteHTML(html, [{ index: 0, widths: [400], sizes: "100vw" }]);
+        expect(out).toContain('loading="lazy"');
+        expect(out).toContain('fetchpriority="high"');
+    });
+});
+
 describe("extractMediaId", () => {
     test("returns the id from a /media URL", () => {
         expect(extractMediaId("/media?id=ABC&w=400")).toBe("ABC");

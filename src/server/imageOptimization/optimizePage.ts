@@ -3,6 +3,8 @@ import { compress } from "src/server/compression";
 import type { MediaImage } from "src/interfaces/contract/Media/MediaRepository";
 import { computeSrcset } from "./computeSrcset";
 import { rewriteHTML, extractMediaId, type ImageRewrite } from "./rewriteHTML";
+import { classifyImages } from "./classifyImage";
+import { VIEWPORT_HEIGHT } from "./viewports";
 import type { PlaywrightSession, ImageMeasurement } from "./PlaywrightSession";
 
 export type OptimizePagePayload = {
@@ -71,33 +73,51 @@ async function buildRewrites(
     measurements: readonly ImageMeasurement[],
     system: PageBuilder,
 ): Promise<ImageRewrite[]> {
+    const classifications = classifyImages(measurements, VIEWPORT_HEIGHT);
     const out: ImageRewrite[] = [];
     // Cache MediaImage lookups within this pass — a page with N copies of
     // the same image hits the repository once.
     const itemCache = new Map<string, MediaImage | null>();
 
     for (const m of measurements) {
+        const classification = classifications.get(m.index);
+        let widths: number[] = [];
+        let sizes = "";
+
+        // srcset only applies to /media-routed, non-SVG images with a known
+        // source size. Everything else still benefits from the lazy/priority
+        // classification below.
         const id = extractMediaId(m.src);
-        if (!id) continue;
-
-        let item: MediaImage | null;
-        if (itemCache.has(id)) {
-            item = itemCache.get(id)!;
-        } else {
-            const raw = await system.mediaRepository.getItem(id).catch(() => null);
-            item = raw && raw.type === "image" ? (raw as MediaImage) : null;
-            itemCache.set(id, item);
+        if (id) {
+            let item: MediaImage | null;
+            if (itemCache.has(id)) {
+                item = itemCache.get(id)!;
+            } else {
+                const raw = await system.mediaRepository.getItem(id).catch(() => null);
+                item = raw && raw.type === "image" ? (raw as MediaImage) : null;
+                itemCache.set(id, item);
+            }
+            if (item && item.mimetype !== "image/svg+xml") {
+                const naturalWidth = item.width || m.naturalWidth;
+                if (naturalWidth) {
+                    const opt = computeSrcset(m.perViewport, naturalWidth);
+                    widths = opt.widths;
+                    sizes = opt.sizes;
+                }
+            }
         }
-        if (!item) continue;
-        if (item.mimetype === "image/svg+xml") continue;
 
-        const naturalWidth = item.width || m.naturalWidth;
-        if (!naturalWidth) continue;
+        if (widths.length === 0 && !classification) continue;
 
-        const opt = computeSrcset(m.perViewport, naturalWidth);
-        if (opt.widths.length === 0) continue;
-
-        out.push({ index: m.index, widths: opt.widths, sizes: opt.sizes });
+        out.push({
+            index: m.index,
+            widths,
+            sizes,
+            ...(classification ? {
+                loading: classification.loading,
+                fetchpriority: classification.fetchpriority,
+            } : {}),
+        });
     }
 
     return out;
