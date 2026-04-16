@@ -59,10 +59,22 @@ export const SECURITY_HEADERS = {
  * components constantly. Inline *styles* can't execute JS, so the residual
  * risk is a style-only injection (CSS-based phishing) — accepted tradeoff.
  * Inline *scripts* remain forbidden via the stricter default-src 'self'.
+ *
+ * `img-src 'self' data: https:` lets blocs reference external images (CDN
+ * assets, placeholders like picsum, OpenGraph previews). Images can't
+ * execute code, so the residual risk is privacy (visitor IP leaked to the
+ * image host) — accepted for CMS flexibility. Restricted to `https:` to
+ * prevent mixed-content downgrades. `data:` covers inline base64 images.
+ *
+ * Now ENFORCING (not Report-Only): any violation actually blocks the load.
+ * Keep this in mind when adding features — an inline `<script>` or a
+ * cross-origin asset will silently break the page until this policy is
+ * extended.
  */
 export const HTML_CSP_HEADER = {
-    "Content-Security-Policy-Report-Only":
+    "Content-Security-Policy":
         "default-src 'self'; style-src 'self' 'unsafe-inline'; " +
+        "img-src 'self' data: https:; " +
         "base-uri 'self'; form-action 'self'; " +
         "object-src 'none'; frame-ancestors 'none'",
 } as const;
