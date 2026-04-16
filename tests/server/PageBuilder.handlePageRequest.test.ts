@@ -56,6 +56,7 @@ function makeBuilder(opts: {
     pb._repository = repository;
     pb._cache = new InMemoryCache();
     pb._registeredPagePaths = new Set<string>();
+    pb._imageOptimizer = { enqueuePageOptimization: () => {} };
 
     return { pb: pb as PageBuilder, endpoints };
 }

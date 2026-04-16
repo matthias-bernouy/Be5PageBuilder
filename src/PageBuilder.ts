@@ -163,13 +163,28 @@ export class PageBuilder{
         cachePath: string,
         cacheIdentifier: string
     ): Promise<Response> {
+        const cacheKey = P9R_CACHE.page(cachePath, cacheIdentifier);
+        // The in-memory cache is wiped on every server restart, so the first
+        // visitor to a page after a restart would otherwise get the
+        // un-optimized HTML forever (optimization is only kicked off from the
+        // save endpoint). Detect the miss and re-enqueue so the next request
+        // gets the srcset-rewritten version.
+        const wasCached = this._cache.get(cacheKey) !== null;
+
         try {
-            return await cachedResponseAsync(
+            const response = await cachedResponseAsync(
                 req,
-                P9R_CACHE.page(cachePath, cacheIdentifier),
+                cacheKey,
                 this._cache,
                 () => renderPage(page, this)
             );
+
+            if (!wasCached) {
+                const origin = new URL(req.url).origin;
+                this._imageOptimizer.enqueuePageOptimization(cachePath, cacheIdentifier, origin);
+            }
+
+            return response;
         } catch (err) {
             console.error(`Failed to render page ${cachePath}?${cacheIdentifier}:`, err);
             return this.renderServerError(req);

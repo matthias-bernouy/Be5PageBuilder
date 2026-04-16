@@ -90,6 +90,21 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
         head.appendChild(preload);
     }
 
+    // Anti-FOUC shell: while any bloc custom element on the page is still
+    // undefined (JS not yet executed), hide the body entirely and paint a
+    // plain white page. As soon as every bloc registers its tag the `:has`
+    // rules stop matching and the real content flips in at its final
+    // layout — no partial-render jump. Uses the exact same tag list as
+    // the bloc script injection, so the rule is scoped only to the blocs
+    // actually present on this page.
+    if (usedTags.length > 0) {
+        const htmlSel = usedTags.map(tag => `html:has(${tag}:not(:defined))`).join(",");
+        const bodySel = usedTags.map(tag => `html:has(${tag}:not(:defined)) body`).join(",");
+        const foucStyle = document.createElement("style");
+        foucStyle.textContent = `${htmlSel}{background:#fff}${bodySel}{visibility:hidden}`;
+        head.appendChild(foucStyle);
+    }
+
     // Title + description
     const title = document.createElement("title");
     title.textContent = page.title;
