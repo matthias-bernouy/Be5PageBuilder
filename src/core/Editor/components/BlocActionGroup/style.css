@@ -51,6 +51,14 @@
     text-overflow: ellipsis;
 }
 
+/* vAnchor="top" → BAG sits above the target → meta pill above BAG (default).
+   vAnchor="bottom" → BAG sits below the target → flip the pill below BAG so
+   it doesn't land between the cursor and the target. */
+:host([data-v-anchor="bottom"]) .p9r-bag-meta {
+    bottom: auto;
+    top: calc(100% + 2px);
+}
+
 .p9r-bag-meta:empty {
     display: none;
 }

@@ -158,6 +158,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._lastMouseX = mx;
         this._lastMouseY = my;
         this._lastVAnchor = vAnchor;
+        this.setAttribute("data-v-anchor", vAnchor);
 
         this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         this.style.visibility = "visible";
@@ -205,6 +206,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
                 mouseY: this._lastMouseY,
             });
             this._lastVAnchor = vAnchor;
+            this.setAttribute("data-v-anchor", vAnchor);
             this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
         }
         this._btnBefore.style.display = "none";
