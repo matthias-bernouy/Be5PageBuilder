@@ -65,7 +65,7 @@ function buildPreview(item: MediaItem): HTMLElement | null {
     const isSvg = item.mimetype === "image/svg+xml";
     const img = document.createElement("img");
     img.slot = "preview";
-    img.src = `/media?id=${item.id}${isSvg ? '' : '&w=720&h=540'}`;
+    img.src = `/media?id=${item.id}${isSvg ? '' : '&w=800&h=600'}`;
     img.alt = item.alt || item.label;
     return img;
 }

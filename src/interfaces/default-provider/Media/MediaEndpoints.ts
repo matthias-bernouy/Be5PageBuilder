@@ -2,6 +2,8 @@ import type { Be5_Runner, Runner } from "@bernouy/socle";
 import type { DefaultMediaRepository } from "./DefaultMediaRepository";
 import type { MediaDocument } from "src/interfaces/contract/Media/MediaRepository";
 import sharp from "sharp";
+import { LADDER_SET } from "src/server/imageLadder";
+import { VariantCache } from "./VariantCache";
 
 // Only raster image mimetypes we are willing to serve directly. SVG is
 // intentionally excluded from the allow-list and served with a hardening
@@ -15,17 +17,21 @@ const SAFE_IMAGE_MIMES = new Set([
     "image/svg+xml",
 ]);
 
-// Accept only a tight integer in [1, 4096] so sharp never sees NaN, negatives,
-// scientific notation or hex.
+// Accept only an integer that is on the ladder of allowed widths/heights —
+// anything else is rejected. Bounding to a known set both shrinks the cache
+// keyspace (so the on-demand variant cache stays bounded) and prevents
+// callers from forcing an arbitrarily large pixel grid through sharp.
 function parseDimension(raw: string | null): number | undefined {
     if (!raw) return undefined;
     if (!/^\d+$/.test(raw)) return NaN as any;
     const n = Number(raw);
-    if (!Number.isFinite(n) || n < 1 || n > 4096) return NaN as any;
+    if (!LADDER_SET.has(n)) return NaN as any;
     return n;
 }
 
 export default function MediaEndpoints(runner: Runner, system: DefaultMediaRepository) {
+
+    const variantCache = system.variantCache;
 
     runner.get("/media", async (req: Request) => {
         const url = new URL(req.url);
@@ -66,9 +72,20 @@ export default function MediaEndpoints(runner: Runner, system: DefaultMediaRepos
 
         const isSvg = castItem.mimetype === "image/svg+xml";
         if (castItem.type === "image" && !isSvg && (parsedW || parsedH)) {
-            body = await sharp(castItem.content)
-                .resize(parsedW, parsedH, { fit: 'inside', withoutEnlargement: true })
-                .toBuffer();
+            const cacheKey = VariantCache.keyFor(id, parsedW, parsedH);
+            const cached = variantCache.get(cacheKey);
+            if (cached) {
+                body = cached;
+            } else {
+                const resized = await sharp(castItem.content)
+                    .resize(parsedW, parsedH, { fit: 'inside', withoutEnlargement: true })
+                    .toBuffer();
+                // sharp returns a Node Buffer; store it as Uint8Array so the
+                // cache holds a flat view rather than a pooled Buffer slice.
+                const bytes = new Uint8Array(resized.buffer, resized.byteOffset, resized.byteLength);
+                variantCache.set(cacheKey, bytes);
+                body = bytes;
+            }
         }
 
         const headers: Record<string, string> = {

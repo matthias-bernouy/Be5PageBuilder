@@ -10,15 +10,25 @@ import type {
     MediaRepository
 } from "src/interfaces/contract/Media/MediaRepository";
 import MediaEndpoints from "./MediaEndpoints";
+import { VariantCache } from "./VariantCache";
+import { LADDER_SET } from "src/server/imageLadder";
 
 type Config = {
     uri: string;
     databaseName: string;
 }
 
+// Bound the on-demand variant cache. 200 distinct variants × 100 MB total is
+// enough headroom for a typical page (a handful of images × the ladder
+// rungs the browser actually picks per breakpoint) without letting a busy
+// site balloon the heap.
+const VARIANT_CACHE_MAX_ENTRIES = 200;
+const VARIANT_CACHE_MAX_BYTES = 100 * 1024 * 1024;
+
 export class DefaultMediaRepository implements MediaRepository {
     private _database: Db;
     private _mediaCollection: Collection<any>;
+    private _variantCache = new VariantCache(VARIANT_CACHE_MAX_ENTRIES, VARIANT_CACHE_MAX_BYTES);
 
     label: string;
 
@@ -29,6 +39,10 @@ export class DefaultMediaRepository implements MediaRepository {
         MediaEndpoints(runner, this);
     }
 
+    get variantCache(): VariantCache {
+        return this._variantCache;
+    }
+
     static async create(label: string, config: Config, runner: Runner): Promise<DefaultMediaRepository> {
         const client = await new MongoClient(config.uri).connect();
         return new DefaultMediaRepository(label, client, config.databaseName, runner);
@@ -37,6 +51,7 @@ export class DefaultMediaRepository implements MediaRepository {
     async reset(): Promise<void> {
         try {
             await this._mediaCollection.deleteMany({});
+            this._variantCache.clear();
         } catch (err) {
             console.error("Failed to reset the database", err);
             throw err;
@@ -50,6 +65,11 @@ export class DefaultMediaRepository implements MediaRepository {
             { _id: new ObjectId(id) },
             { $set: updates }
         );
+        // Metadata edits don't change image bytes today, but they could
+        // (alt-text rewrites notwithstanding, anything that touches the
+        // stored content would invalidate every cached variant). Wiping the
+        // id's prefix here keeps the contract honest and cheap.
+        this._variantCache.invalidatePrefix(VariantCache.prefixFor(id));
     }
 
     async moveItem(id: string, newParentId?: string): Promise<void> {
@@ -69,6 +89,7 @@ export class DefaultMediaRepository implements MediaRepository {
             await this._deleteFolderRecursive(id);
         } else {
             await this._mediaCollection.deleteOne({ _id: objectId });
+            this._variantCache.invalidatePrefix(VariantCache.prefixFor(id));
         }
     }
 
@@ -79,6 +100,7 @@ export class DefaultMediaRepository implements MediaRepository {
                 await this._deleteFolderRecursive(child._id.toString());
             } else {
                 await this._mediaCollection.deleteOne({ _id: child._id });
+                this._variantCache.invalidatePrefix(VariantCache.prefixFor(child._id.toString()));
             }
         }
         await this._mediaCollection.deleteOne({ _id: new ObjectId(folderId) });
@@ -204,6 +226,15 @@ export class DefaultMediaRepository implements MediaRepository {
         h?: number
     }): Promise<Response> {
         try {
+            const w = opts?.w;
+            const h = opts?.h;
+            // Same allow-list as the public /media handler — keeps the
+            // contract entry point honest if a custom server bypasses the
+            // URL validator and calls getResponse directly.
+            if ((w !== undefined && !LADDER_SET.has(w)) || (h !== undefined && !LADDER_SET.has(h))) {
+                return new Response("Invalid dimension", { status: 400 });
+            }
+
             const item = await this.getItem(id);
 
             if (!item || item.type === "folder") {
@@ -218,22 +249,23 @@ export class DefaultMediaRepository implements MediaRepository {
             });
 
             // Handle image resizing
-            if (media.type === "image") {
-                const w = opts?.w;
-                const h = opts?.h;
-
-                if (w || h) {
-                    const width = w;
-                    const height = h;
-
-                    body = await sharp(media.content)
-                        .resize(width, height, {
+            if (media.type === "image" && (w || h)) {
+                const cacheKey = VariantCache.keyFor(id, w, h);
+                const cached = this._variantCache.get(cacheKey);
+                if (cached) {
+                    body = cached;
+                } else {
+                    const resized = await sharp(media.content)
+                        .resize(w, h, {
                             fit: 'inside',
                             withoutEnlargement: true
                         })
                         .toBuffer();
+                    const bytes = new Uint8Array(resized.buffer, resized.byteOffset, resized.byteLength);
+                    this._variantCache.set(cacheKey, bytes);
+                    body = bytes;
                 }
-            } else {
+            } else if (media.type !== "image") {
                 headers.set("Content-Disposition", `inline; filename="${media.label}"`);
             }
 

@@ -31,7 +31,7 @@ function appendMediaPreview(card: HTMLElement, item: MediaItem) {
     if (isImage || isSvg) {
         const img = document.createElement("img");
         img.slot = "image";
-        img.src = `/media?id=${item.id}${isSvg ? '' : '&w=360&h=270'}`;
+        img.src = `/media?id=${item.id}${isSvg ? '' : '&w=400&h=300'}`;
         img.alt = item.alt || item.label;
         img.loading = "lazy";
         card.appendChild(img);
