@@ -91,6 +91,28 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
     }
 }
 
+/**
+ * Serve every `.woff2` found under `absoluteFolderPath` at `<url>/<file>`.
+ * woff2 is already Brotli-compressed internally; the extra gzip/brotli pass
+ * done by `compress()` is a no-op in practice but keeps the asset pipeline
+ * uniform (one cache shape, one response builder).
+ */
+export async function registerFontsFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
+    const glob = new Bun.Glob("**/*.woff2");
+
+    for await (const file of glob.scan(absoluteFolderPath)) {
+        const fullPath = join(absoluteFolderPath, file);
+        const endpointUrl = join(url, file).replace(/\\/g, '/');
+        const cacheKey = P9R_CACHE.font(endpointUrl);
+        runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
+            return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+                const content = await Bun.file(fullPath).arrayBuffer();
+                return compress(content, "font/woff2");
+            });
+        });
+    }
+}
+
 export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
     const glob = new Bun.Glob("**/*.ts");
 

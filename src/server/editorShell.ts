@@ -52,32 +52,16 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
 
     // ── Bloc editor scripts ─────────────────────────────────────────────
     // Each bloc ships an editorJS snippet that must run once `document.EditorManager`
-    // is ready. We wrap every snippet in a retry loop and append the combined
-    // script once, then a <script src="/bloc?tag=..."> for each bloc so its
-    // view-side code is available to the editor preview.
+    // is ready. The concatenated script is served from <admin>/admin/editor-blocs
+    // so the CSP can stay strict (no inline). Each bloc's view-side code is
+    // loaded via a separate <script src="/bloc?tag=..."> so the editor preview
+    // renders the real component.
     const blocs = await options.system.repository.getBlocsEditorJS();
 
-    const initScript = blocs.map(bloc => `
-        (function() {
-            const init = () => {
-                if (window.document && document.EditorManager) {
-                    try {
-                        ${bloc.editorJS}
-                    } catch (e) {
-                        console.error("Error executing bloc ${bloc.id}:", e);
-                    }
-                } else {
-                    setTimeout(init, 10);
-                }
-            };
-            init();
-        })();
-    `).join("\n");
-
-    const inlineScript = document.createElement("script");
-    inlineScript.textContent = initScript;
-    inlineScript.defer = true;
-    document.head.appendChild(inlineScript);
+    const editorBlocsScript = document.createElement("script");
+    editorBlocsScript.src = `${adminPrefix}/admin/editor-blocs`;
+    editorBlocsScript.defer = true;
+    document.head.appendChild(editorBlocsScript);
 
     // Synchronous global runtime: installs `window.p9r.Component` / `Editor`
     // etc. before any bloc `<script>` evaluates. Must come first in <head>.

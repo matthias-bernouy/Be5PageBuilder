@@ -1,4 +1,4 @@
-import { registerUIFolder, registerCSSFolder, registerAPIFolder } from "src/server/routing";
+import { registerUIFolder, registerCSSFolder, registerAPIFolder, registerFontsFolder } from "src/server/routing";
 import { join } from "node:path"
 import type { PageBuilder } from "src/PageBuilder";
 import type { Middleware } from "@bernouy/socle";
@@ -49,9 +49,10 @@ export function registerEndpoints(system: PageBuilder){
 
     system.runner.group(system.config.adminPathPrefix || "/page-builder", (r) => {
 
-        registerUIFolder ("/admin", res("admin-ui"), system, r);
-        registerAPIFolder("/api", res("admin-api"), system, r);
-        registerCSSFolder("/css", res("admin-css"), system, r);
+        registerUIFolder   ("/admin", res("admin-ui"),    system, r);
+        registerAPIFolder  ("/api",   res("admin-api"),   system, r);
+        registerCSSFolder  ("/css",   res("admin-css"),   system, r);
+        registerFontsFolder("/fonts", res("admin-fonts"), system, r);
 
     }, [createAuthGuard(system)]);
 

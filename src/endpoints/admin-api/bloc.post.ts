@@ -48,8 +48,10 @@ export default async function importBloc(req: Request, system: PageBuilder) {
         throw e;
     }
 
-    // Invalidate the bloc cache
+    // Invalidate caches: per-bloc view bundle, and the editor-blocs
+    // concatenation that bundles every bloc's editorJS into one script.
     system.cache.delete(P9R_CACHE.bloc(bloc.id));
+    system.cache.delete(P9R_CACHE.EDITOR_BLOCS);
 
     return new Response("Bloc imported");
 }

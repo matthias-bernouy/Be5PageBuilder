@@ -56,30 +56,6 @@ export default async function SnippetsPage(_req: Request, system: PageBuilder) {
         tableBody.appendChild(row);
     }
 
-    const script = document.createElement("script");
-    script.textContent = `
-        document.addEventListener("click", async (ev) => {
-            const btn = ev.target.closest(".btn-delete-snippet");
-            if (!btn) return;
-            ev.preventDefault();
-            ev.stopPropagation();
-            const id = decodeURIComponent(btn.dataset.id);
-            if (!confirm("Delete this snippet?")) return;
-            const res = await fetch("../api/snippet?id=" + encodeURIComponent(id), { method: "DELETE" });
-            if (res.status === 409) {
-                const body = await res.json();
-                const pageList = body.pages.map(p => "• " + (p.title || p.identifier)).join("\\n");
-                if (!confirm("This snippet is used on " + body.pages.length + " page(s):\\n\\n" + pageList + "\\n\\nDelete anyway? References will break.")) return;
-                const forceRes = await fetch("../api/snippet?id=" + encodeURIComponent(id) + "&force=true", { method: "DELETE" });
-
-                if (forceRes.ok) window.location.reload();
-                return;
-            }
-            if (res.ok) window.location.reload();
-        });
-    `;
-    document.body.appendChild(script);
-
     const style = document.createElement("style");
     style.textContent = `
         .btn-delete-snippet {

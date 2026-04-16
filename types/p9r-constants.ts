@@ -36,6 +36,9 @@ export const P9R_CACHE = {
     css:  (url: string) => `css:${url}`,
     js:   (url: string) => `js:${url}`,
     html: (url: string) => `html:${url}`,
+    font: (url: string) => `font:${url}`,
     /** The single theme CSS served at `/style`. */
     STYLE: "style:main",
+    /** Concatenated bloc editor JS served at `<admin>/admin/editor-blocs`. */
+    EDITOR_BLOCS: "js:editor-blocs",
 } as const;

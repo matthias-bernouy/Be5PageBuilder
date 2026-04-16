@@ -47,21 +47,6 @@ export default async function TemplatesPage(_req: Request, system: PageBuilder) 
         tableBody.appendChild(row);
     }
 
-    const script = document.createElement("script");
-    script.textContent = `
-        document.addEventListener("click", async (ev) => {
-            const btn = ev.target.closest(".btn-delete-tpl");
-            if (!btn) return;
-            ev.preventDefault();
-            ev.stopPropagation();
-            const id = decodeURIComponent(btn.dataset.id);
-            if (!confirm("Delete this template?")) return;
-            const res = await fetch("../api/template?id=" + encodeURIComponent(id), { method: "DELETE" });
-            if (res.ok) window.location.reload();
-        });
-    `;
-    document.body.appendChild(script);
-
     const style = document.createElement("style");
     style.textContent = `
         .btn-delete-tpl {
