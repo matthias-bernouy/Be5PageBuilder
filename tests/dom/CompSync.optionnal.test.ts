@@ -157,4 +157,46 @@ describe("CompSync — add button availability", () => {
         expect(btn.hidden).toBe(false);
         expect(btn.disabled).toBe(false);
     });
+
+    // Regression: the incremental `init({added})` branch (hit when
+    // onChildrenAdded fires after `_add()` appends a clone) only updated the
+    // panel list and count — it never recomputed the add-button state. So an
+    // `optionnal` single-slot with `disable-others-components` kept the add
+    // button visible/enabled after the user clicked it, even though the slot
+    // was now full.
+    test("optionnal + disable-others-components: add button hides after incremental add", () => {
+        const { compSync, parent } = buildSlotThroughCompSync("optionnal disable-others-components");
+        clearSlot(parent);
+        compSync.init();
+
+        const btn = addBtnOf(compSync);
+        expect(btn.hidden).toBe(false);
+        expect(btn.disabled).toBe(false);
+
+        btn.click();
+        const added = parent.querySelector(':scope > [slot="body"]') as HTMLElement;
+        expect(added).not.toBeNull();
+
+        compSync.init({ added });
+
+        expect(btn.hidden).toBe(true);
+    });
+
+    // Same bug, list flavour: reaching `max` via an incremental add should
+    // disable the button but did not.
+    test("allow-multiple: add button disables when max is reached via incremental add", () => {
+        const { compSync, parent } = buildSlotThroughCompSync("allow-multiple");
+        compSync.setAttribute("data-max", "2");
+        compSync.init();
+
+        const btn = addBtnOf(compSync);
+        expect(btn.disabled).toBe(false);
+
+        btn.click();
+        const slots = parent.querySelectorAll(':scope > [slot="body"]');
+        expect(slots.length).toBe(2);
+        compSync.init({ added: slots[1] as HTMLElement });
+
+        expect(btn.disabled).toBe(true);
+    });
 });

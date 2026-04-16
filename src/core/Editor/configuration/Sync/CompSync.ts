@@ -141,11 +141,7 @@ export class CompSync extends HTMLElement {
             if (this.isConnected) {
                 this._removePanelItem(opts.removed);
                 this._updatePanelCount(slots.length);
-
-                const canAddMultiple = this.isMultiple && slots.length < this.max;
-                const optionalEmptySingle = this.optionnal && !this.isMultiple && slots.length === 0;
-                this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
-                this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
+                this._refreshAddBtn(slots.length);
             }
 
             if (this.isMultiple && slots.length === this.min) {
@@ -229,6 +225,7 @@ export class CompSync extends HTMLElement {
         if (addedNode && slots.includes(addedNode as Component)) {
             this._appendPanelItem(addedNode, slots.length - 1);
             this._updatePanelCount(slots.length);
+            this._refreshAddBtn(slots.length);
         } else {
             this._renderPanel(slots);
         }
@@ -243,11 +240,17 @@ export class CompSync extends HTMLElement {
         this._listEl.innerHTML = "";
         slots.forEach((slot, index) => this._appendPanelItem(slot, index));
 
-        // Optional single-slot mode: once the user deletes the only slot, show
-        // the same add button so they can bring it back. Without this, an
-        // optional comp-sync with nothing inside is a dead-end.
-        const optionalEmptySingle = this.optionnal && !this.isMultiple && slots.length === 0;
-        const canAddMultiple = this.isMultiple && slots.length < this.max;
+        this._refreshAddBtn(slots.length);
+    }
+
+    // Centralised so every path that changes slot count (_renderPanel,
+    // incremental add, incremental remove) keeps the button state in sync.
+    // Optional single-slot mode brings the button back once the user deletes
+    // the only slot — without that, an optional comp-sync with nothing inside
+    // is a dead-end.
+    private _refreshAddBtn(count: number) {
+        const optionalEmptySingle = this.optionnal && !this.isMultiple && count === 0;
+        const canAddMultiple = this.isMultiple && count < this.max;
         this._addBtn.hidden = !(this.isMultiple || optionalEmptySingle);
         this._addBtn.disabled = !(canAddMultiple || optionalEmptySingle);
     }
