@@ -8,7 +8,7 @@ export default async function getPages(_req: Request, system: PageBuilder) {
         .map(page => ({
             title: page.title,
             path: page.identifier
-                ? `${page.path}?identifier=${page.identifier}`
+                ? `${page.path}?identifier=${encodeURIComponent(page.identifier)}`
                 : page.path
         }));
 
