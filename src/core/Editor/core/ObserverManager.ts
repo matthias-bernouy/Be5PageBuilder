@@ -174,6 +174,10 @@ export class ObserverManager {
         return this.editors.values().filter(v => v.visible && v.group === group);
     }
 
+    getItems() {
+        return this.editors.values().filter(v => v.visible);
+    }
+
     register_editor(element: TagElement): void {
         this.editors.set(element.tag, {
             ...element,
