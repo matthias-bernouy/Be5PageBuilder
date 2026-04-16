@@ -30,6 +30,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
     private _cooldown: boolean = false;
     private _resizeObserver: ResizeObserver;
     private _pinMenu: HTMLElement | null = null;
+    private _metaEl: HTMLElement;
 
     constructor() {
         super();
@@ -37,6 +38,10 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const style = document.createElement('style');
         style.textContent = css as unknown as string;
         this.shadowRoot!.appendChild(style);
+
+        this._metaEl = document.createElement('div');
+        this._metaEl.className = 'p9r-bag-meta';
+        this.shadowRoot!.insertBefore(this._metaEl, this.shadowRoot!.querySelector('nav'));
 
         BlocActionGroup._injectInsertBtnStyles();
 
@@ -124,6 +129,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         if (!this._editor || !this._target || this._cooldown) return;
 
         this.smartRender();
+        this._updateMeta();
 
         const targetRect = this._target!.getBoundingClientRect();
         const { rect: anchorRect, element: anchorEl } = resolveActionBarAnchor(this._target!, this._editor);
@@ -302,6 +308,40 @@ export class BlocActionGroup extends HorizontalActionGroup {
         const parentId = this._target?.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if (!parentId) return null;
         return (document.compIdentifierToEditor?.get(parentId) as Editor | undefined) ?? null;
+    }
+
+    private _updateMeta() {
+        if (!this._target) { this._metaEl.textContent = ""; return; }
+        const parents: string[] = [];
+        let el: HTMLElement = this._target;
+        while (parents.length < 4) {
+            const pid = el.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+            if (!pid) break;
+            const pEd = document.compIdentifierToEditor?.get(pid) as Editor | undefined;
+            if (!pEd) break;
+            parents.push(BlocActionGroup._prettyTag(pEd.target.tagName));
+            el = pEd.target;
+        }
+        this._metaEl.innerHTML = "";
+        for (let i = parents.length - 1; i >= 0; i--) {
+            const p = document.createElement("span");
+            p.className = "p9r-bag-meta__parent";
+            p.textContent = parents[i]!;
+            this._metaEl.appendChild(p);
+            const sep = document.createElement("span");
+            sep.className = "p9r-bag-meta__sep";
+            sep.textContent = "›";
+            this._metaEl.appendChild(sep);
+        }
+        const current = document.createElement("span");
+        current.className = "p9r-bag-meta__current";
+        current.textContent = BlocActionGroup._prettyTag(this._target.tagName);
+        this._metaEl.appendChild(current);
+    }
+
+    private static _prettyTag(tagName: string): string {
+        const raw = tagName.toLowerCase().replace(/^(w13c|hub|p9r)-/, "");
+        return raw.replace(/(?:^|-)(.)/g, (_, c: string) => " " + c.toUpperCase()).trim();
     }
 
     private _selectParent() {
