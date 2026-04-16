@@ -17,6 +17,12 @@ import { expandSnippets } from "src/server/expandSnippets";
 export async function renderPage(page: TPage, system: PageBuilder): Promise<CacheEntry> {
     const { document } = parseHTML("<!DOCTYPE html><html><head></head><body></body></html>");
 
+    const settings = await system.repository.getSystem();
+
+    // <html lang="..."> when the site language is configured.
+    const language = settings.site?.language?.trim() ?? "";
+    if (language) document.documentElement.setAttribute("lang", language);
+
     // Meta
     document.title = page.title;
 
@@ -39,6 +45,19 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
     favicon.setAttribute("rel", "icon");
     favicon.setAttribute("href", "/media?type=favicon");
     document.head.appendChild(favicon);
+
+    // Canonical link when a host is configured. The trailing slash of the
+    // host is stripped so we don't emit `https://site.com//about`.
+    const host = settings.site?.host?.trim().replace(/\/+$/, "") ?? "";
+    if (host) {
+        const query = page.identifier
+            ? `?identifier=${encodeURIComponent(page.identifier)}`
+            : "";
+        const canonical = document.createElement("link");
+        canonical.setAttribute("rel", "canonical");
+        canonical.setAttribute("href", `${host}${page.path}${query}`);
+        document.head.appendChild(canonical);
+    }
 
     // Theme CSS
     const themeLink = document.createElement("link");

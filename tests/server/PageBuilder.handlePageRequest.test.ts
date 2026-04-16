@@ -31,6 +31,8 @@ function makeBuilder(opts: {
             name: "Test",
             favicon: "",
             visible: true,
+            host: "",
+            language: "",
             theme: "",
             home: opts.home ?? null,
             notFound: opts.notFound ?? null,

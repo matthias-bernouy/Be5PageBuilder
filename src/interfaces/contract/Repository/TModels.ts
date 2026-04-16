@@ -60,6 +60,18 @@ export type TSystem = {
         name: string;
         favicon: string;
         visible: boolean;
+        /**
+         * Canonical base URL of the public site (e.g. `https://example.com`).
+         * Used to build the `<link rel="canonical">` of every rendered page.
+         * Empty string means "do not emit a canonical link".
+         */
+        host: string;
+        /**
+         * Default site language as a BCP-47 tag (e.g. `en`, `fr`, `fr-FR`).
+         * Emitted as `<html lang="...">` on every rendered page. Empty string
+         * means "do not set a lang attribute".
+         */
+        language: string;
         /** Raw CSS served at `/style` and linked by every rendered public page. */
         theme: string;
         /** Page served at `/` (unless a page exists with literal path `/`). */

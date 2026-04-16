@@ -74,6 +74,8 @@ export default async function Server(_req: Request, system: PageBuilder) {
     const stringValues: Record<string, string> = {
         "site-name":               settings.site?.name ?? "",
         "site-favicon":            settings.site?.favicon ?? "",
+        "site-host":               settings.site?.host ?? "",
+        "site-language":           settings.site?.language ?? "",
         "seo-titleTemplate":       settings.seo?.titleTemplate ?? "%s",
         "seo-defaultDescription":  settings.seo?.defaultDescription ?? "",
         "seo-defaultOgImage":      settings.seo?.defaultOgImage ?? "",

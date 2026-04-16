@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { renderPage } from "src/server/renderPage";
 import type { PageBuilder } from "src/PageBuilder";
-import type { TPage, TSnippet } from "src/interfaces/contract/Repository/TModels";
+import type { TPage, TSnippet, TSystem } from "src/interfaces/contract/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
     return {
@@ -19,9 +19,29 @@ function page(over: Partial<TPage> = {}): TPage {
 function makeSystem(opts: {
     blocs?: { id: string; name: string; group: string; description: string }[];
     snippets?: Record<string, string>;
+    settings?: Partial<TSystem["site"]>;
 } = {}): PageBuilder {
+    const site: TSystem["site"] = {
+        name: "",
+        favicon: "",
+        visible: true,
+        host: "",
+        language: "",
+        theme: "",
+        home: null,
+        notFound: null,
+        serverError: null,
+        ...opts.settings,
+    };
+    const system: TSystem = {
+        initializationStep: 0,
+        site,
+        seo: { titleTemplate: "%s", defaultDescription: "", defaultOgImage: "" },
+        editor: { layoutCategory: "" },
+    };
     return {
         repository: {
+            getSystem: async () => system,
             getBlocsList: async () => opts.blocs ?? [],
             getSnippetByIdentifier: async (id: string): Promise<TSnippet | null> => {
                 if (!opts.snippets || !(id in opts.snippets)) return null;
@@ -82,6 +102,48 @@ describe("renderPage — meta", () => {
         // The global runtime is prepended, so it appears before the theme link
         // (which is appended).
         expect(componentJs).toBeLessThan(themeLink);
+    });
+});
+
+describe("renderPage — lang & canonical", () => {
+    test("does not set <html lang> when language setting is empty", async () => {
+        const html = await renderToString(page(), makeSystem());
+        expect(html).not.toMatch(/<html[^>]*\blang=/);
+    });
+
+    test("sets <html lang> from the site language setting", async () => {
+        const html = await renderToString(page(), makeSystem({ settings: { language: "fr" } }));
+        expect(html).toMatch(/<html[^>]*\blang="fr"/);
+    });
+
+    test("does not emit a canonical link when host is empty", async () => {
+        const html = await renderToString(page(), makeSystem());
+        expect(html).not.toMatch(/rel="canonical"/);
+    });
+
+    test("emits a canonical link from host + page path", async () => {
+        const html = await renderToString(
+            page({ path: "/about" }),
+            makeSystem({ settings: { host: "https://example.com" } }),
+        );
+        expect(html).toContain('rel="canonical"');
+        expect(html).toContain('href="https://example.com/about"');
+    });
+
+    test("strips trailing slash from the configured host", async () => {
+        const html = await renderToString(
+            page({ path: "/about" }),
+            makeSystem({ settings: { host: "https://example.com/" } }),
+        );
+        expect(html).toContain('href="https://example.com/about"');
+    });
+
+    test("appends the identifier query param in canonical for non-default variants", async () => {
+        const html = await renderToString(
+            page({ path: "/article", identifier: "foo bar" }),
+            makeSystem({ settings: { host: "https://example.com" } }),
+        );
+        expect(html).toContain('href="https://example.com/article?identifier=foo%20bar"');
     });
 });
 
