@@ -139,16 +139,31 @@ export class TextEditor extends Editor {
             // so "Hello [World]" + Enter leaves "Hello" / "" rather than
             // "Hello " / "World".
             const sel = window.getSelection();
-            if (sel && sel.rangeCount && sel.anchorNode && this.target.contains(sel.anchorNode)) {
+            if (sel && sel.rangeCount && sel.anchorNode && this.target.contains(sel.anchorNode) && this.target.lastChild) {
                 const range = sel.getRangeAt(0);
                 if (!range.collapsed) range.deleteContents();
                 const tail = range.cloneRange();
-                tail.setEndAfter(this.target.lastChild ?? this.target);
+                // End AFTER the last child (inside target), not after target
+                // itself — the latter spans the target's closing boundary and
+                // extractContents would pull the target node itself into the
+                // fragment, producing a nested <p>.
+                tail.setEndAfter(this.target.lastChild);
                 const fragment = tail.extractContents();
                 nextEl.appendChild(fragment);
             }
 
             this.target.after(nextEl)
+            // Wire the new <p> as an editor synchronously. Without this, the
+            // MutationObserver path is async — a second Enter pressed before
+            // it fires lands on an unbound element and falls through to the
+            // native contentEditable behavior (which inserts a nested <p>).
+            const observer = document.EditorManager?.getObserver?.();
+            if (observer) {
+                observer.make_it_editor(nextEl);
+            } else {
+                const e = new TextEditor(nextEl);
+                e.viewEditor();
+            }
             this._focusWithCaret(nextEl, "start");
         }
 
