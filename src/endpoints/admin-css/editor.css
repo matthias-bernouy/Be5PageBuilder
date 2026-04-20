@@ -3,7 +3,15 @@
 }
 
 .editor-block:hover,
-.editor-block.p9r-active {
+.editor-block.p9r-active,
+.editor-block.p9r-breadcrumb-hover {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Fallback for non-.editor-block targets (e.g. text blocs) whose ancestor is
+   being pointed at from the BAG breadcrumb. */
+.p9r-breadcrumb-hover:not(.editor-block) {
     outline: 2px solid #3b82f6;
     outline-offset: 2px;
 }

@@ -47,8 +47,29 @@
     font-size: 11px;
     line-height: 1.4;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /* overflow:hidden would clip the hover-bridge pseudo-element that lets the
+       cursor cross the 2-4px gap between the BAG and the breadcrumb without
+       triggering a mouseleave-close. `overflow:visible` here is fine because
+       the logical 5-item cap already prevents horizontal overflow of real
+       content. */
+    overflow: visible;
+}
+
+/* Hover bridge — a transparent pseudo-element that physically covers the gap
+   between the BAG and the breadcrumb so the cursor stays over a descendant
+   of the host the whole way across. Without it, crossing the gap fires
+   `mouseleave` on the BAG host with relatedTarget pointing at whatever is
+   behind the gap, and close() runs before the user reaches the breadcrumb. */
+.p9r-bag-meta::before {
+    content: "";
+    position: absolute;
+    /* Default vAnchor="top" → breadcrumb sits above the BAG. Bridge drops
+       from the breadcrumb's bottom edge down past the 2px gap into the BAG's
+       padding band — 6px total, clears sub-pixel rounding. */
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 6px;
 }
 
 /* vAnchor="top" → BAG sits above the target → meta pill above BAG (default).
@@ -59,6 +80,13 @@
     top: calc(100% + 2px);
 }
 
+/* Flip the bridge to rise from the top edge when the breadcrumb is below. */
+:host([data-v-anchor="bottom"]) .p9r-bag-meta::before {
+    top: auto;
+    bottom: 100%;
+    height: 6px;
+}
+
 .p9r-bag-meta:empty {
     display: none;
 }
@@ -66,6 +94,28 @@
 .p9r-bag-meta__parent {
     color: var(--text-muted, #94a3b8);
     font-weight: 500;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+}
+
+.p9r-bag-meta__parent:hover,
+.p9r-bag-meta__parent:focus-visible {
+    color: var(--text-main, #1e293b);
+    background: var(--bg-base, #f1f5f9);
+    outline: none;
+}
+
+.p9r-bag-meta__ellipsis {
+    color: var(--text-muted, #94a3b8);
+    padding: 0 2px;
+    cursor: default;
 }
 
 .p9r-bag-meta__sep {
@@ -80,4 +130,55 @@
     color: var(--primary-base, #4361ee);
     font-weight: 700;
     letter-spacing: 0.01em;
+}
+
+/* Inline fallback — used when the breadcrumb would overflow viewport in its
+   default vertical direction (above or below the BAG). Preferred side is
+   left; right is used only when there is no left room. Absolute positioning
+   overrides the above/below rules. */
+/* The host has asymmetric padding (`padding: 8px 32px 8px 16px`) so `100%`
+   in the inline-left/right offsets resolves to the padding-box, which does
+   NOT line up visually with the button row. Without compensation, the gap
+   between the breadcrumb and the visible BAG edge ends up 16px on the left
+   and 32px on the right — i.e. the right-side breadcrumb looks much farther.
+   We shift the pill horizontally by the host's left/right padding so both
+   sides share the same 4px visual gap. */
+.p9r-bag-meta--inline-left {
+    top: 50% !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: calc(100% + 4px);
+    transform: translate(16px, -50%);
+}
+
+.p9r-bag-meta--inline-right {
+    top: 50% !important;
+    bottom: auto !important;
+    left: calc(100% + 4px) !important;
+    right: auto;
+    transform: translate(-32px, -50%);
+}
+
+/* Inline placements use a horizontal bridge that spans the gap + reaches a
+   bit into the BAG's padding. Without the override the vertical-default
+   bridge rule above leaves a useless 6px-tall strip below the pill while the
+   real gap is on the side — the cursor would still transit over empty
+   pixels. `!important` overrides the default top/left/right rule from the
+   .p9r-bag-meta::before base selector. */
+.p9r-bag-meta--inline-left::before {
+    top: 0 !important;
+    bottom: 0;
+    left: 100% !important;
+    right: auto !important;
+    width: 8px;
+    height: auto !important;
+}
+
+.p9r-bag-meta--inline-right::before {
+    top: 0 !important;
+    bottom: 0;
+    right: 100% !important;
+    left: auto !important;
+    width: 8px;
+    height: auto !important;
 }

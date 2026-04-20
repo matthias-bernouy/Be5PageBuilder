@@ -178,6 +178,13 @@ export class ObserverManager {
         return this.editors.values().filter(v => v.visible);
     }
 
+    /** Display label registered for a tag (via `register_editor`). Used by
+     *  BAG's breadcrumb to name ancestors without reaching into the private
+     *  `editors` Map. Returns undefined for unregistered tags. */
+    getLabel(tag: string): string | undefined {
+        return this.editors.get(tag)?.label;
+    }
+
     register_editor(element: TagElement): void {
         this.editors.set(element.tag, {
             ...element,

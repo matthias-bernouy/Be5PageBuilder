@@ -173,11 +173,19 @@ export class BlocActionGroup extends HorizontalActionGroup {
         }
         this._target!.classList.add("p9r-active");
         this.addEventListeners();
+        this._refineBreadcrumbPosition();
     }
 
     close() {
         this._closePinMenu();
         this._target?.classList.remove("p9r-active");
+        // Any ancestor still marked by a breadcrumb mouseenter that never got
+        // its matching mouseleave (e.g. BAG closed via Escape or hover exit
+        // while the pointer sits on a breadcrumb item) would otherwise keep
+        // its outline forever.
+        document
+            .querySelectorAll(".p9r-breadcrumb-hover")
+            .forEach(el => el.classList.remove("p9r-breadcrumb-hover"));
         this.style.visibility = "hidden";
         this.style.opacity = "0";
         this.style.pointerEvents = "none";
@@ -212,6 +220,7 @@ export class BlocActionGroup extends HorizontalActionGroup {
         this._btnBefore.style.display = "none";
         this._btnAfter.style.display = "none";
         this._positionInsertButtons(targetRect);
+        this._refineBreadcrumbPosition();
     }
 
     private handleMouseMove = (e: MouseEvent) => {
@@ -348,54 +357,141 @@ export class BlocActionGroup extends HorizontalActionGroup {
         return (document.compIdentifierToEditor?.get(parentId) as Editor | undefined) ?? null;
     }
 
-    private _updateMeta() {
-        if (!this._target) { this._metaEl.textContent = ""; return; }
-        const parents: string[] = [];
+    /** Walk the parent-identifier chain from the current editor up to the
+     *  root, returning `[root, …, current]`. Caps the walk at 20 hops as a
+     *  safety net against pathological cycles. */
+    private _ancestorChain(): Editor[] {
+        if (!this._editor || !this._target) return [];
+        const chain: Editor[] = [this._editor];
         let el: HTMLElement = this._target;
-        while (parents.length < 4) {
+        for (let i = 0; i < 20; i++) {
             const pid = el.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
             if (!pid) break;
             const pEd = document.compIdentifierToEditor?.get(pid) as Editor | undefined;
             if (!pEd) break;
-            parents.push(BlocActionGroup._prettyTag(pEd.target.tagName));
+            chain.unshift(pEd);
             el = pEd.target;
         }
-        this._metaEl.innerHTML = "";
-        for (let i = parents.length - 1; i >= 0; i--) {
-            const p = document.createElement("span");
-            p.className = "p9r-bag-meta__parent";
-            p.textContent = parents[i]!;
-            this._metaEl.appendChild(p);
-            const sep = document.createElement("span");
-            sep.className = "p9r-bag-meta__sep";
-            sep.textContent = "›";
-            this._metaEl.appendChild(sep);
-        }
-        const current = document.createElement("span");
-        current.className = "p9r-bag-meta__current";
-        current.textContent = BlocActionGroup._prettyTag(this._target.tagName);
-        this._metaEl.appendChild(current);
+        return chain;
     }
 
-    private static _prettyTag(tagName: string): string {
-        const raw = tagName.toLowerCase().replace(/^(w13c|hub|p9r)-/, "");
-        return raw.replace(/(?:^|-)(.)/g, (_, c: string) => " " + c.toUpperCase()).trim();
+    /** Reduce a chain to at most 5 items by collapsing the middle to an
+     *  ellipsis placeholder (null). Keeps the root, the last three items,
+     *  and a null marker between them. */
+    private static _collapseChain<T>(items: T[]): (T | null)[] {
+        if (items.length <= 5) return items;
+        return [items[0]!, null, items[items.length - 3]!, items[items.length - 2]!, items[items.length - 1]!];
+    }
+
+    private _updateMeta() {
+        this._metaEl.innerHTML = "";
+        this._metaEl.classList.remove("p9r-bag-meta--inline-left", "p9r-bag-meta--inline-right");
+        if (!this._target || !this._editor) return;
+
+        const observer = document.EditorManager?.getObserver?.();
+        const chain = this._ancestorChain()
+            .map(ed => {
+                const label = observer?.getLabel(ed.target.tagName.toLowerCase());
+                return label ? { editor: ed, label } : null;
+            })
+            .filter((it): it is { editor: Editor; label: string } => it !== null);
+
+        if (chain.length === 0) return;
+
+        const rendered = BlocActionGroup._collapseChain(chain);
+
+        rendered.forEach((it, idx) => {
+            const isLast = idx === rendered.length - 1;
+            let node: HTMLElement;
+            if (it === null) {
+                node = document.createElement("span");
+                node.className = "p9r-bag-meta__ellipsis";
+                node.textContent = "…";
+            } else if (isLast) {
+                node = document.createElement("span");
+                node.className = "p9r-bag-meta__current";
+                node.textContent = it.label;
+            } else {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "p9r-bag-meta__parent";
+                btn.textContent = it.label;
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    this._switchToEditor(it.editor);
+                });
+                btn.addEventListener("mouseenter", () => {
+                    it.editor.target.classList.add("p9r-breadcrumb-hover");
+                });
+                btn.addEventListener("mouseleave", () => {
+                    it.editor.target.classList.remove("p9r-breadcrumb-hover");
+                });
+                node = btn;
+            }
+            this._metaEl.appendChild(node);
+            if (!isLast) {
+                const sep = document.createElement("span");
+                sep.className = "p9r-bag-meta__sep";
+                sep.textContent = "›";
+                this._metaEl.appendChild(sep);
+            }
+        });
+    }
+
+    /** Rebind the BAG to an arbitrary ancestor editor while keeping the bar
+     *  visually in place. Freezes transform AND vAnchor so the subsequent
+     *  open() — which recomputes both from the new target's rect — doesn't
+     *  warp the bar away from the cursor (→ mouseleave close) or flip the
+     *  breadcrumb from above-BAG to below-BAG (→ user perceives the BAG as
+     *  jumping when it hasn't actually moved). */
+    private _switchToEditor(target: Editor) {
+        const savedTransform = this.style.transform;
+        const savedVAnchor = this.getAttribute("data-v-anchor") as VAnchor | null;
+        this._positionLocked = true;
+        this.setEditor(target);
+        this.open();
+        this.style.transform = savedTransform;
+        if (savedVAnchor !== null) {
+            this.setAttribute("data-v-anchor", savedVAnchor);
+            this._lastVAnchor = savedVAnchor;
+            // Re-run after data-v-anchor restoration — the breadcrumb CSS
+            // side depends on it, so the clipping check must see the final
+            // state to decide whether to fall back to an inline layout.
+            this._refineBreadcrumbPosition();
+        }
     }
 
     private _selectParent() {
         const parent = this._parentEditor();
         if (!parent) return;
-        // Freeze the bar at its current on-screen position. If we let open()
-        // recompute position from the parent's anchor rect, the bar jumps
-        // away from the cursor — the user then has to chase it and the
-        // intervening `mouseleave` closes the bar before they can click
-        // anything. Rebinding editor/target in place keeps the bar right
-        // under the pointer.
-        const savedTransform = this.style.transform;
-        this._positionLocked = true;
-        this.setEditor(parent);
-        this.open();
-        this.style.transform = savedTransform;
+        this._switchToEditor(parent);
+    }
+
+    /** After layout, if the breadcrumb's vertical placement (above or below
+     *  the BAG per `data-v-anchor`) gets clipped by the viewport, flip to an
+     *  inline placement — left of the BAG by default, right if no left room. */
+    private _refineBreadcrumbPosition() {
+        this._metaEl.classList.remove("p9r-bag-meta--inline-left", "p9r-bag-meta--inline-right");
+        if (!this._metaEl.children.length) return;
+
+        const margin = 4;
+        const metaRect = this._metaEl.getBoundingClientRect();
+        // A zero-sized rect happens before the meta is laid out (no children
+        // or display:none ancestor). Bail rather than running a bogus check.
+        if (metaRect.width === 0 && metaRect.height === 0) return;
+
+        const fitsVertically =
+            metaRect.top >= margin && metaRect.bottom <= window.innerHeight - margin;
+        if (fitsVertically) return;
+
+        const barRect = this.getBoundingClientRect();
+        const leftSpace = barRect.left - margin;
+        const rightSpace = window.innerWidth - barRect.right - margin;
+        const side = leftSpace >= metaRect.width || leftSpace >= rightSpace
+            ? "left"
+            : "right";
+        this._metaEl.classList.add(`p9r-bag-meta--inline-${side}`);
     }
 
     private _handlePinClick() {
