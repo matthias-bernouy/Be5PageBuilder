@@ -28,6 +28,10 @@ export class SegmentedSwitch extends Component {
         const slot = this.shadowRoot?.querySelector('slot:not([name])') as HTMLSlotElement;
         if (slot) {
             slot.addEventListener('slotchange', () => this._onSlotChange(slot));
+            // `slotchange` does NOT fire when the element is upgraded with
+            // pre-existing light-DOM children (or on reconnect) — sync now so
+            // --total-options, click handlers, and slider position are set.
+            this._onSlotChange(slot);
         }
 
         this._updateLabel();
@@ -40,13 +44,17 @@ export class SegmentedSwitch extends Component {
 
     get value() { return this.getAttribute('value') || ""; }
     set value(v) {
-        if (v === this.value) return;
-        
-        this.setAttribute('value', v);
+        // Compare against the raw attribute (not the getter) so that the
+        // "already synced" check only short-circuits setAttribute — avoiding
+        // the attributeChangedCallback → setter → setAttribute loop. The
+        // side effects below must always run, otherwise an upgrade with a
+        // pre-set `value` attribute would silently skip form registration
+        // and slider positioning.
+        if (this.getAttribute('value') !== v) this.setAttribute('value', v);
         this._internals.setFormValue(v);
         this._updateSliderPosition();
         this._updateSlottedSelections(v);
-        
+
         this.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
@@ -65,6 +73,11 @@ export class SegmentedSwitch extends Component {
         });
 
         this._updateSliderPosition();
+        // If the value was set before the options were attached (e.g. via
+        // an attribute on the tag before appendChild), the earlier call to
+        // `_updateSlottedSelections` found nothing to mark. Re-run it now
+        // that the options are assigned.
+        this._updateSlottedSelections(this.value);
     }
 
     private _handleOptionClick(e: Event) {
