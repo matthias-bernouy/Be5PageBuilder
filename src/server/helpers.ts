@@ -11,9 +11,3 @@ export default function contains(o: any, key: string | string[]) {
         });
     }
 }
-
-export function not_found(content: string){
-    return new Response(content, {
-        status: 404
-    })
-}
