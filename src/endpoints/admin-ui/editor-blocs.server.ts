@@ -1,6 +1,6 @@
 import type { Cms } from "src/Cms";
 import { cachedResponseAsync, compress } from "src/server/compression";
-import { P9R_CACHE } from "types/p9r-constants";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 
 /**
  * Serves every registered bloc's editor JS as a single concatenated bundle.

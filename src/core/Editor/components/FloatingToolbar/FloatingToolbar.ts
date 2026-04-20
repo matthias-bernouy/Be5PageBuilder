@@ -1,5 +1,5 @@
-import "w13c/core/Dialog/LateralDialog/LateralDialog"
-import "w13c/core/Form/Checkbox/Checkbox"
+import "src/ui/core/Dialog/LateralDialog/LateralDialog"
+import "src/ui/core/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import { Component } from "src/core/Editor/core/Component";

@@ -10,7 +10,7 @@ import { renderPage } from "./server/renderPage";
 import { isReservedPath } from "./server/reservedPaths";
 import { isValidPathFormat } from "./shared/validation";
 import { ImageOptimizer } from "./server/imageOptimization/ImageOptimizer";
-import { P9R_CACHE } from "types/p9r-constants";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 
 type Configuration = {
     adminPathPrefix?: string;

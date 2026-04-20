@@ -9,7 +9,7 @@
  *
  *   - `index.ts`            — public entry
  *   - `src/`                — runtime source (scanned by the router)
- *   - `w13c/`               — built-in blocs + shared UI components
+ *   - `src/ui/`               — built-in blocs + shared UI components
  *   - `types/`              — ambient declarations + runtime constants
  *   - `dist/`               — `.d.ts` declaration files emitted by `tsc`
  *

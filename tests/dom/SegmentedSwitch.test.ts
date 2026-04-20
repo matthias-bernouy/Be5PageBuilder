@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { SegmentedSwitch } from "w13c/core/Form/SegmentedSwitch/SegmentedSwitch";
+import { SegmentedSwitch } from "src/ui/core/Form/SegmentedSwitch/SegmentedSwitch";
 
 /**
  * Replace the default `attachInternals` polyfill from setup.ts with one

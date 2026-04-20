@@ -1,6 +1,6 @@
 import type { Cms } from "src/Cms";
 import type { TSystem } from "src/contracts/Repository/TModels";
-import { P9R_CACHE } from "types/p9r-constants";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 
 export default async function updateSystem(req: Request, cms: Cms) {
     const body = await req.json() as Partial<TSystem>;

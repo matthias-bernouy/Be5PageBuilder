@@ -1,8 +1,8 @@
-import "w13c/core/Dialog/LateralDialog/LateralDialog"
-import "w13c/core/Form/Checkbox/Checkbox"
-import "w13c/core/Form/FormSection"
+import "src/ui/core/Dialog/LateralDialog/LateralDialog"
+import "src/ui/core/Form/Checkbox/Checkbox"
+import "src/ui/core/Form/FormSection"
 
-import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
+import type { LateralDialog } from "src/ui/core/Dialog/LateralDialog/LateralDialog";
 import { Component } from "src/core/Editor/core/Component";
 
 import "./Sync/AttrSync";

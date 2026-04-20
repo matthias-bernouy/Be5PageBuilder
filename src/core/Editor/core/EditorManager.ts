@@ -8,7 +8,7 @@ import { EditorToolbar } from "../components/RichTextBar/RichTextBar";
 import "../configuration/ConfigPanel";
 import { BlocActionGroup } from "../components/BlocActionGroup/BlocActionGroup";
 import { EDITOR_MANAGER_READY_EVENT } from "./editorManagerReady";
-import type { P9RMode } from "types/p9r-constants";
+import type { P9RMode } from "src/constants/p9r-constants";
 
 export type PageMode = P9RMode;
 

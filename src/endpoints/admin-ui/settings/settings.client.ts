@@ -1,8 +1,8 @@
 import "src/core/Editor/configuration/Inputs/P9rSelect";
 import "src/core/Editor/configuration/Inputs/P9rInput";
 import "src/core/Editor/components/MediaCenter/MediaCenter";
-import "w13c/core/Form/FormSection";
-import { showToast } from "w13c/core/Toast/ToastStack";
+import "src/ui/core/Form/FormSection";
+import { showToast } from "src/ui/core/Toast/ToastStack";
 
 type PageRef = { path: string; identifier: string } | null;
 

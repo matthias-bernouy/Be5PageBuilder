@@ -2,7 +2,7 @@ import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { Cms } from "src/Cms";
 import { cachedResponseAsync, compress } from "src/server/compression";
-import { P9R_CACHE } from "types/p9r-constants";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 
 // Mirrors the union accepted by socle's `Runner.addEndpoint`. Centralized
 // here so the API-folder router can validate filenames against it without

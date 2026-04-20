@@ -30,7 +30,6 @@
         "editor.ts",
         "build.ts",
         "src/",
-        "w13c/",
         "types/",
         "dist/",
         ".claude/skills/",

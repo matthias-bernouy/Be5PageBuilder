@@ -1,6 +1,6 @@
 import { parseHTML } from "linkedom";
 import type { Cms } from "src/Cms";
-import { P9R_ID } from "types/p9r-constants";
+import { P9R_ID } from "src/constants/p9r-constants";
 import { send_html } from "./send_html";
 
 /**

@@ -5,16 +5,16 @@ import "src/core/Media/components/CropSystem/CropSystem"
 import "src/core/Media/components/DetailMedia/DetailMedia"
 import "src/core/Media/components/GridMedia/GridMedia"
 
-import "w13c/core/Form/Button/Button"
+import "src/ui/core/Form/Button/Button"
 import "src/core/Editor/configuration/Inputs/P9rInput"
-import "w13c/core/Form/InputFile/InputFile"
-import "w13c/core/Form/SegmentedSwitch/SegmentedSwitch"
+import "src/ui/core/Form/InputFile/InputFile"
+import "src/ui/core/Form/SegmentedSwitch/SegmentedSwitch"
 
-import "w13c/core/Table/Table"
+import "src/ui/core/Table/Table"
 
-import "w13c/core/Tag/Tag"
+import "src/ui/core/Tag/Tag"
 
-import "w13c/core/Dialog/FormDialog/FormDialog"
+import "src/ui/core/Dialog/FormDialog/FormDialog"
 
 
 document.addEventListener('click', (e: any) => {

@@ -1,7 +1,7 @@
-import "w13c/core/Dialog/LateralDialog/LateralDialog";
-import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
-import "w13c/core/Form/TagSuggest/TagSuggest";
-import type { TagSuggest } from "w13c/core/Form/TagSuggest/TagSuggest";
+import "src/ui/core/Dialog/LateralDialog/LateralDialog";
+import type { LateralDialog } from "src/ui/core/Dialog/LateralDialog/LateralDialog";
+import "src/ui/core/Form/TagSuggest/TagSuggest";
+import type { TagSuggest } from "src/ui/core/Form/TagSuggest/TagSuggest";
 
 type PageRow = {
     title: string;

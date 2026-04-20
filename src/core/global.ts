@@ -1,5 +1,5 @@
-import { P9R_ATTR } from "types/editor-attributs";
-import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "types/p9r-constants";
+import { P9R_ATTR } from "src/constants/editor-attributes";
+import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/constants/p9r-constants";
 import { Component } from "src/core/Editor/core/Component";
 import { Editor } from "src/core/Editor/core/Editor";
 import { registerEditor, registerEditor_opaque } from "src/core/Editor/core/registerEditor";

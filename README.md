@@ -111,7 +111,7 @@ The guard lives in `src/endpoints/registerEndpoints.ts` — any request under `a
 - `GET /media/*` — public file serving via the media repository.
 - Static assets from `src/endpoints/public/`.
 
-Responses are cached (pre-compressed gzip + brotli) keyed by `(path, identifier)`. Edits invalidate automatically via the cache keys declared in `types/p9r-constants.ts`.
+Responses are cached (pre-compressed gzip + brotli) keyed by `(path, identifier)`. Edits invalidate automatically via the cache keys declared in `src/constants/p9r-constants.ts`.
 
 ### REST API (admin, JSON)
 
@@ -432,7 +432,7 @@ src/
 │   └── admin-css/          Design tokens (oklch, reset)
 └── server/                 renderPage, routing, compression, editorShell
 
-w13c/
+src/ui/
 ├── core/                   Reusable UI (Form, Dialog, Menu, Layout, Table)
 └── blocs/                  Built-in editable blocs (Layout, Form, Presentation)
 ```

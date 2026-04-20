@@ -1,6 +1,6 @@
 import { GlobalRegistrator } from "@happy-dom/global-registrator";
-import { P9R_ATTR } from "types/editor-attributs";
-import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "types/p9r-constants";
+import { P9R_ATTR } from "src/constants/editor-attributes";
+import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/constants/p9r-constants";
 
 // Save Bun's network primitives before happy-dom replaces them. Happy-dom's
 // Response auto-decodes bodies based on Content-Encoding, which breaks tests

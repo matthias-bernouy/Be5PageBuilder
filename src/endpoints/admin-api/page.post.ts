@@ -3,7 +3,7 @@ import contains from "src/server/helpers";
 import type { TPage } from "src/contracts/Repository/TModels";
 import { isReservedPath } from "src/server/reservedPaths";
 import { isValidPathFormat } from "src/shared/validation";
-import { P9R_CACHE } from "types/p9r-constants";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 
 export default async function updatePage(req: Request, cms: Cms) {
 

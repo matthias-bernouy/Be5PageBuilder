@@ -1,15 +1,15 @@
-import "w13c/core/Dialog/LateralDialog/LateralDialog";
-import "w13c/core/Form/Button/Button";
-import "w13c/core/Form/TagSuggest/TagSuggest";
-import "w13c/core/Form/FormSection";
+import "src/ui/core/Dialog/LateralDialog/LateralDialog";
+import "src/ui/core/Form/Button/Button";
+import "src/ui/core/Form/TagSuggest/TagSuggest";
+import "src/ui/core/Form/FormSection";
 import "src/core/Editor/configuration/Inputs/P9rInput";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
+import type { LateralDialog } from "src/ui/core/Dialog/LateralDialog/LateralDialog";
 import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 import { Component } from "src/core/Editor/core/Component";
-import { showToast } from "w13c/core/Toast/ToastStack";
+import { showToast } from "src/ui/core/Toast/ToastStack";
 import { isValidSnippetIdentifier } from "src/shared/validation";
 
 export class SnippetConfiguration extends Component {

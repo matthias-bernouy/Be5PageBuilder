@@ -1,5 +1,5 @@
 import type { Cms } from "src/Cms";
-import { P9R_CACHE } from "types/p9r-constants";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 import { OptimizationQueue, type OptimizeJob } from "./OptimizationQueue";
 import { PlaywrightSession } from "./PlaywrightSession";
 import { optimizePage, type OptimizePagePayload } from "./optimizePage";
