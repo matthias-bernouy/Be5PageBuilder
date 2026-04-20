@@ -8,7 +8,7 @@ import { computeGroupPosition, positionInsertButtons, type VAnchor } from './pos
 import { resolveActionBarAnchor } from './anchor';
 import { duplicateSibling, insertBlankSibling, openChangeComponentPicker } from './actions';
 import { ICON_PARENT, ICON_PIN } from '../../icons';
-import type { StateSync } from '../../configuration/Sync/StateSync';
+import type { StateSync } from '../../configuration/sync/StateSync';
 
 export class BlocActionGroup extends HorizontalActionGroup {
 

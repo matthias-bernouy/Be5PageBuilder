@@ -5,14 +5,14 @@ import "src/ui/Form/FormSection"
 import type { LateralDialog } from "src/ui/Dialog/LateralDialog/LateralDialog";
 import { Component } from "src/core/Editor/runtime/Component";
 
-import "./Sync/AttrSync";
-import "./Sync/CompSync";
-import "./Sync/ImageSync";
-import "./Sync/StateSync";
-import "./Inputs/P9rSelect";
-import "./Inputs/P9rRange";
-import "./Inputs/P9rLink";
-import "./Inputs/P9rSizesSelect";
+import "./sync/AttrSync";
+import "./sync/CompSync";
+import "./sync/ImageSync";
+import "./sync/StateSync";
+import "src/ui/Form/P9rSelect";
+import "src/ui/Form/P9rRange";
+import "./P9rLink";
+import "src/ui/Form/P9rSizesSelect";
 
 export class ConfigPanel extends Component {
 

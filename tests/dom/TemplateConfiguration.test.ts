@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from "bun:test";
 import { TemplateConfiguration } from "src/core/Editor/components/TemplateConfiguration/TemplateConfiguration";
-import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
+import type { P9rInput } from "src/ui/Form/P9rInput";
 
 function mount(attrs: Record<string, string> = {}): TemplateConfiguration {
     document.body.innerHTML = "";

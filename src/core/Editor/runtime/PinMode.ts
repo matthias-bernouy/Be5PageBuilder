@@ -1,4 +1,4 @@
-import type { StateSync } from "../configuration/Sync/StateSync";
+import type { StateSync } from "../configuration/sync/StateSync";
 import { ICON_PIN } from "../icons";
 
 /**

@@ -6,7 +6,7 @@ import "src/core/Media/components/DetailMedia/DetailMedia"
 import "src/core/Media/components/GridMedia/GridMedia"
 
 import "src/ui/Form/Button/Button"
-import "src/core/Editor/configuration/Inputs/P9rInput"
+import "src/ui/Form/P9rInput"
 import "src/ui/Form/InputFile/InputFile"
 import "src/ui/Form/SegmentedSwitch/SegmentedSwitch"
 

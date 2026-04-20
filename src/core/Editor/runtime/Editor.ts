@@ -1,5 +1,5 @@
 import { ConfigPanel } from "../configuration/ConfigPanel";
-import type { StateSync } from "../configuration/Sync/StateSync";
+import type { StateSync } from "../configuration/sync/StateSync";
 import { PinMode } from "./PinMode";
 
 export type CustomAction = {
