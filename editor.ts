@@ -1,5 +1,5 @@
 /**
- * be5-pagebuilder — editor-side authoring entry point.
+ * @bernouy/cms — editor-side authoring entry point.
  *
  * `BlocEditor.ts` files import from `@bernouy/cms/editor`. This entry
  * exposes the `Editor` base class and the `registerEditor` / `registerEditor_opaque`

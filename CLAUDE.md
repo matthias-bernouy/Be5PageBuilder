@@ -34,9 +34,9 @@
 
 ## Data layer
 
-- Repository interface: `src/contracts/Repository/PageBuilderRepository.ts`
+- Repository interface: `src/contracts/Repository/CmsRepository.ts`
 - Models: `TPage`, `TBloc`, `TTemplate`, `TSystem` in `TModels.ts`. `TBloc = { id, name, group, description, viewJS, editorJS }` — `group` and `description` are persisted alongside the compiled JS so queries like `getBlocsList()` can answer without parsing the editor bundle. `group` is still also baked into `editorJS` via the `BE5_GROUP_TO_BE_REPLACED` placeholder so the in-browser BlocLibrary keeps working at runtime; the DB column is the queryable copy.
-- Default implementation uses MongoDB: `DefaultPagebuilderRepository.ts`
+- Default implementation uses MongoDB: `DefaultCmsRepository.ts`
 - Media is a separate repository: `MediaRepository.ts` with `DefaultMediaRepository.ts`
 - API endpoints follow file-based routing: `resource.METHOD.ts` (e.g. `template.post.ts`, `templates.get.ts`). The router splits filenames on `.` so `blocs-list.get.ts` becomes `GET /api/blocs-list`.
 

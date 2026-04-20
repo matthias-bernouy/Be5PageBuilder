@@ -1,5 +1,5 @@
 import { MongoClient, type Db } from "mongodb";
-import type { PageBuilderRepository } from "src/contracts/Repository/PageBuilderRepository";
+import type { CmsRepository } from "src/contracts/Repository/CmsRepository";
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/contracts/Repository/TModels";
 import { BlocsRepository } from "./collections/BlocsRepository";
 import { PagesRepository } from "./collections/PagesRepository";
@@ -13,12 +13,12 @@ type DefaultDatastoreConfig = {
 }
 
 /**
- * Default MongoDB-backed implementation of PageBuilderRepository. Acts as a
+ * Default MongoDB-backed implementation of CmsRepository. Acts as a
  * composition root over one sub-repository per collection — all persistence
  * logic lives in `./collections/*`. This class just delegates and owns the
  * Mongo connection lifecycle.
  */
-export class DefaultPageBuilderRepository implements PageBuilderRepository {
+export class DefaultCmsRepository implements CmsRepository {
 
     private _database: Db;
     private _blocs:     BlocsRepository;
@@ -36,10 +36,10 @@ export class DefaultPageBuilderRepository implements PageBuilderRepository {
         this._snippets  = new SnippetsRepository(this._database);
     }
 
-    static create(config: DefaultDatastoreConfig): Promise<DefaultPageBuilderRepository> {
+    static create(config: DefaultDatastoreConfig): Promise<DefaultCmsRepository> {
         return new Promise((resolve, reject) => {
             new MongoClient(config.uri).connect().then(client => {
-                resolve(new DefaultPageBuilderRepository(client, config.databaseName));
+                resolve(new DefaultCmsRepository(client, config.databaseName));
             }).catch(err => {
                 console.error("Failed to connect to the database", err);
                 reject(err);

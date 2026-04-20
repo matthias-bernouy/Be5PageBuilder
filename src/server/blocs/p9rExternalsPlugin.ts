@@ -11,7 +11,7 @@ export const p9rExternalsPlugin: BunPlugin = {
     name: "p9r-externals",
     setup(build) {
         build.onResolve(
-            { filter: /^@bernouy\/pagebuilder\/(component|editor)$/ },
+            { filter: /^@bernouy\/cms\/(component|editor)$/ },
             (args) => ({ path: args.path, namespace: "p9r-extern" }),
         );
 

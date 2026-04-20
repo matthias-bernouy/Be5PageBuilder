@@ -1,7 +1,7 @@
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "./TModels";
 
 
-export interface PageBuilderRepository {
+export interface CmsRepository {
 
     // BLOC
     createBloc(bloc: TBloc): Promise<TBloc>;

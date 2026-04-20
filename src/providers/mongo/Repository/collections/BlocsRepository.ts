@@ -2,7 +2,7 @@ import type { Collection, Db } from "mongodb";
 import type { TBloc } from "src/contracts/Repository/TModels";
 
 /**
- * MongoDB-backed persistence for blocs. Owned by DefaultPageBuilderRepository;
+ * MongoDB-backed persistence for blocs. Owned by DefaultCmsRepository;
  * not exported as part of the public contract.
  */
 export class BlocsRepository {

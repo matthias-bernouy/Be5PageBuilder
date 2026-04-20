@@ -1,7 +1,7 @@
 /**
- * be5-pagebuilder — public entry point.
+ * @bernouy/cms — public entry point.
  *
- * Consumers import from `be5-pagebuilder` and get the `Cms` class
+ * Consumers import from `@bernouy/cms` and get the `Cms` class
  * plus the default MongoDB-backed providers. Host apps wire their own
  * `Be5_Runner` + `Authentication` (from `@bernouy/socle`) and pass them in.
  *
@@ -12,7 +12,7 @@
 export { Cms } from "./src/Cms";
 
 // ── Default providers (MongoDB + in-memory cache) ──────────────────────
-export { DefaultPageBuilderRepository } from "./src/providers/mongo/Repository/DefaultPagebuilderRepository";
+export { DefaultCmsRepository } from "./src/providers/mongo/Repository/DefaultCmsRepository";
 export { DefaultMediaRepository } from "./src/providers/mongo/Media/DefaultMediaRepository";
 export { InMemoryCache } from "./src/providers/memory/Cache/InMemoryCache";
 
@@ -30,7 +30,7 @@ export { InMemoryCache } from "./src/providers/memory/Cache/InMemoryCache";
 // every browser bundle.
 
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
-export type { PageBuilderRepository } from "./src/contracts/Repository/PageBuilderRepository";
+export type { CmsRepository } from "./src/contracts/Repository/CmsRepository";
 export type { MediaRepository } from "./src/contracts/Media/MediaRepository";
 export type { Cache } from "./src/contracts/Cache/Cache";
 export type {

@@ -2,7 +2,7 @@ import { AuthRepositoryProvider, Be5_Authentication, Be5_Runner } from "@bernouy
 import { MongoClient } from "mongodb";
 import { resolve } from "node:path";
 import { Cms } from "../../src/Cms";
-import { DefaultPageBuilderRepository } from "../../src/providers/mongo/Repository/DefaultPagebuilderRepository";
+import { DefaultCmsRepository } from "../../src/providers/mongo/Repository/DefaultCmsRepository";
 import { DefaultMediaRepository } from "../../src/providers/mongo/Media/DefaultMediaRepository";
 import { scanDevBlocs } from "../../src/cli/dev-server/scan";
 import { buildAllDevBlocs } from "../../src/cli/dev-server/build";
@@ -22,7 +22,7 @@ export async function startPerfServer(opts: { port?: number; dbName?: string; mo
     await mongoClient.db(dbName).dropDatabase();
 
     const runner = new Be5_Runner();
-    const repository = new DefaultPageBuilderRepository(mongoClient, dbName);
+    const repository = new DefaultCmsRepository(mongoClient, dbName);
     const authRepository = new AuthRepositoryProvider(mongoClient, dbName);
     const mediaRepository = new DefaultMediaRepository("default", mongoClient, dbName, runner);
 
@@ -55,7 +55,7 @@ export async function startPerfServer(opts: { port?: number; dbName?: string; mo
     };
 }
 
-async function registerPerfBlocs(repository: DefaultPageBuilderRepository) {
+async function registerPerfBlocs(repository: DefaultCmsRepository) {
     const dir = resolve(import.meta.dir, "components");
     const blocs = await scanDevBlocs(dir, { quiet: true });
     if (blocs.length === 0) return;

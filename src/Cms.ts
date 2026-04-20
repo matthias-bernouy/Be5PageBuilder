@@ -1,6 +1,6 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
 import type { Authentication, PasswordAuthentication, Runner, TokenAuthentication } from "@bernouy/socle";
-import type { PageBuilderRepository } from "./contracts/Repository/PageBuilderRepository";
+import type { CmsRepository } from "./contracts/Repository/CmsRepository";
 import type { MediaRepository } from "./contracts/Media/MediaRepository";
 import type { Cache } from "./contracts/Cache/Cache";
 import type { TPage, TPageRef } from "./contracts/Repository/TModels";
@@ -20,7 +20,7 @@ type Configuration = {
 export class Cms{
 
     private configuration: Configuration;
-    private _repository: PageBuilderRepository;
+    private _repository: CmsRepository;
     private _runner:     Runner;
     private _auth:       Authentication & TokenAuthentication & PasswordAuthentication;
     private _mediaRepository: MediaRepository;
@@ -37,7 +37,7 @@ export class Cms{
 
     constructor(
         runner: Runner,
-        repository: PageBuilderRepository,
+        repository: CmsRepository,
         auth: Authentication & TokenAuthentication & PasswordAuthentication,
         mediaRepository: MediaRepository,
         configuration: Configuration,

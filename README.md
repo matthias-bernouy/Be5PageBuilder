@@ -31,7 +31,7 @@ import { Authentication, AuthRepositoryProvider, Be5_Runner } from "@bernouy/soc
 import { MongoClient } from "mongodb";
 import {
     Cms,
-    DefaultPageBuilderRepository,
+    DefaultCmsRepository,
     DefaultMediaRepository,
 } from "@bernouy/cms";
 
@@ -40,7 +40,7 @@ const dbName = "my_site";
 
 const runner = new Be5_Runner();
 
-const pageRepo  = new DefaultPageBuilderRepository(mongoClient, dbName);
+const pageRepo  = new DefaultCmsRepository(mongoClient, dbName);
 const authRepo  = new AuthRepositoryProvider(mongoClient, dbName);
 const mediaRepo = new DefaultMediaRepository("MediaProvider 1", mongoClient, dbName, runner);
 
@@ -72,7 +72,7 @@ A full working example lives in [`App.ts`](./App.ts) at the root of this repo.
 ```ts
 new Cms(
     runner:          IBe5_Runner,           // from @bernouy/socle
-    repository:      PageBuilderRepository, // pages, blocs, templates, snippets, system
+    repository:      CmsRepository, // pages, blocs, templates, snippets, system
     auth:            IBe5_Authentication,   // from @bernouy/socle
     mediaRepository: MediaRepository,       // files, folders, images
     configuration: {
@@ -162,13 +162,13 @@ The defaults target MongoDB, but every collaborator is an interface. Implement t
 
 ```ts
 import type {
-    PageBuilderRepository,
+    CmsRepository,
     MediaRepository,
     Cache,
 } from "@bernouy/cms";
 ```
 
-- `PageBuilderRepository` — CRUD for pages, blocs, templates, snippets, system. Full contract in `src/contracts/Repository/PageBuilderRepository.ts`.
+- `CmsRepository` — CRUD for pages, blocs, templates, snippets, system. Full contract in `src/contracts/Repository/CmsRepository.ts`.
 - `MediaRepository` — `getItems`, `upload`, `getResponse`, `createFolder`, `deleteItem`, `moveItem`, `updateMetadata`. The `getResponse(id, { w, h })` method must return a ready-to-serve `Response`; the default provider uses `sharp` for on-the-fly resizing.
 - `Cache` — `get`/`set`/`invalidate` over pre-compressed entries. `InMemoryCache` is the default; swap in Redis or similar for a multi-instance deployment.
 
@@ -367,13 +367,13 @@ import {
     Cms,
 
     // Default providers
-    DefaultPageBuilderRepository,
+    DefaultCmsRepository,
     DefaultMediaRepository,
     InMemoryCache,
 } from "@bernouy/cms";
 
 import type {
-    PageBuilderRepository,
+    CmsRepository,
     MediaRepository,
     Cache,
     TPage, TBloc, TTemplate, TSnippet, TSystem,

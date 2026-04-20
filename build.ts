@@ -1,5 +1,5 @@
 /**
- * Build script for publishing `be5-pagebuilder` to an npm registry.
+ * Build script for publishing `@bernouy/cms` to an npm registry.
  *
  * Strategy: this is a Bun-first package. It uses `Bun.file`, `Bun.Glob`,
  * `Bun.build`, and `with { type: "text" }` import attributes at runtime,
