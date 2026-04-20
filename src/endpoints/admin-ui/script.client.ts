@@ -6,8 +6,7 @@ import "src/core/Media/components/DetailMedia/DetailMedia"
 import "src/core/Media/components/GridMedia/GridMedia"
 
 import "w13c/core/Form/Button/Button"
-import "w13c/core/Form/Input/Input"
-import "w13c/core/Form/InputTags/InputTags"
+import "src/core/Editor/configuration/Inputs/P9rInput"
 import "w13c/core/Form/InputFile/InputFile"
 import "w13c/core/Form/SegmentedSwitch/SegmentedSwitch"
 

@@ -1,4 +1,5 @@
 import "src/core/Editor/configuration/Inputs/P9rSelect";
+import "src/core/Editor/configuration/Inputs/P9rInput";
 import "src/core/Editor/components/MediaCenter/MediaCenter";
 import "w13c/core/Form/FormSection";
 import { showToast } from "w13c/core/Toast/ToastStack";
@@ -66,9 +67,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const form = document.getElementById("settings-form") as HTMLFormElement;
         const body: Record<string, Record<string, unknown>> = {};
 
-        // Text-like inputs (w13c-input), raw <textarea>, and plain hidden inputs
+        // Text-like inputs (p9r-input), raw <textarea>, and plain hidden inputs
         const textInputs = form.querySelectorAll<HTMLElement>(
-            "w13c-input, textarea, input"
+            "p9r-input, textarea, input"
         );
         textInputs.forEach(el => {
             const name = el.getAttribute("name");

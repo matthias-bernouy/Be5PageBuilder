@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
 import { SnippetConfiguration } from "src/core/Editor/components/SnippetConfiguration/SnippetConfiguration";
+import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 
 function mount(attrs: Record<string, string> = {}): SnippetConfiguration {
     document.body.innerHTML = "";
@@ -9,28 +10,29 @@ function mount(attrs: Record<string, string> = {}): SnippetConfiguration {
     return el;
 }
 
+function getInput(el: SnippetConfiguration, name: string): P9rInput {
+    const input = el.shadowRoot?.querySelector(`p9r-input[name=${name}]`) as P9rInput | null;
+    if (!input) throw new Error(`No p9r-input[name=${name}]`);
+    return input;
+}
+
 function setInputValue(el: SnippetConfiguration, name: string, value: string) {
-    const input = el.shadowRoot?.querySelector(`input[name=${name}]`) as HTMLInputElement;
-    if (!input) throw new Error(`No input[name=${name}]`);
+    const input = getInput(el, name);
     input.value = value;
     input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 function blurInput(el: SnippetConfiguration, name: string) {
-    const input = el.shadowRoot?.querySelector(`input[name=${name}]`) as HTMLInputElement;
-    input?.dispatchEvent(new Event("blur", { bubbles: true }));
+    getInput(el, name).dispatchEvent(new Event("blur", { bubbles: true }));
 }
 
+/** Identifier hint lives inside the identifier p9r-input's shadow DOM. */
 function getHint(el: SnippetConfiguration): HTMLElement {
-    return el.shadowRoot!.getElementById("identifier-hint") as HTMLElement;
+    return getInput(el, "identifier").shadowRoot!.querySelector(".hint") as HTMLElement;
 }
 
 function getSaveBtn(el: SnippetConfiguration): HTMLElement {
     return el.shadowRoot!.getElementById("save-btn") as HTMLElement;
-}
-
-function getIdentifierInput(el: SnippetConfiguration): HTMLInputElement {
-    return el.shadowRoot!.querySelector("input[name=identifier]") as HTMLInputElement;
 }
 
 /** Stubs all fetches; records only snippet-exists calls. */
@@ -146,7 +148,7 @@ describe("SnippetConfiguration", () => {
     test("editing an existing snippet locks the identifier and skips remote check", () => {
         const called = mockSnippetExistsFetch(() => ({ exists: true }));
         const el = mount({ "default-identifier": "hero-v1", "default-id": "abc" });
-        const input = getIdentifierInput(el);
+        const input = getInput(el, "identifier");
         expect(input.disabled).toBe(true);
         expect(input.value).toBe("hero-v1");
         // Blur on the locked input should NOT trigger a remote check.

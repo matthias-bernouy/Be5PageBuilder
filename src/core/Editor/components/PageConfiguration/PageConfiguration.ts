@@ -4,16 +4,15 @@ import "w13c/core/Form/Button/Button"
 import "w13c/core/Form/TagSuggest/TagSuggest";
 import "w13c/core/Form/FormSection";
 import "src/core/Editor/configuration/Inputs/P9rSelect";
+import "src/core/Editor/configuration/Inputs/P9rInput";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
+import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 
 import { Component } from "src/core/Editor/core/Component";
 import { showToast } from "w13c/core/Toast/ToastStack";
-
-const TITLE_MAX = 50;
-const DESCRIPTION_MAX = 120;
 
 /** Mirrors `isValidPathFormat` from server/reservedPaths.ts — duplicated for
  * instant client-side feedback. Server remains the source of truth. */
@@ -77,8 +76,6 @@ export class PageConfiguration extends Component {
             .map(attr => attr.name)
             .forEach(name => this.setDefaultValue(name));
 
-        this._wireCharCounter("title", TITLE_MAX);
-        this._wireCharCounter("description", DESCRIPTION_MAX);
         this._wirePathValidation();
         this._wireOpenInNewTab();
     }
@@ -107,9 +104,12 @@ export class PageConfiguration extends Component {
         };
     }
 
+    private _getInputElement(name: string): P9rInput | null {
+        return this.shadowRoot?.querySelector(`p9r-input[name=${name}]`) as P9rInput | null;
+    }
+
     private _getInputValue(name: string): string {
-        const input = this.shadowRoot?.querySelector(`input[name=${name}]`) as HTMLInputElement | null;
-        return input?.value.trim() ?? "";
+        return this._getInputElement(name)?.value.trim() ?? "";
     }
 
     private _getSelectValue(name: string): string {
@@ -128,12 +128,10 @@ export class PageConfiguration extends Component {
         if (defVal === null) return;
         const fieldName = name.replace("default-", "");
 
-        // Regular <input>
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`) as HTMLInputElement | null;
-        if (input) {
-            input.value = defVal;
-            if (fieldName === "title") this._updateCounter("title", TITLE_MAX);
-            if (fieldName === "description") this._updateCounter("description", DESCRIPTION_MAX);
+        // <p9r-input>
+        const pInput = this._getInputElement(fieldName);
+        if (pInput) {
+            pInput.value = defVal;
             if (fieldName === "path") this._updateUrlPreview();
             return;
         }
@@ -150,26 +148,6 @@ export class PageConfiguration extends Component {
         if (tagSuggest && "value" in tagSuggest) {
             tagSuggest.value = defVal;
         }
-    }
-
-    // --- Character counters -----------------------------------------------
-
-    private _wireCharCounter(fieldName: string, max: number) {
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`);
-        if (!input) return;
-        input.addEventListener("input", () => this._updateCounter(fieldName, max));
-        this._updateCounter(fieldName, max);
-    }
-
-    private _updateCounter(fieldName: string, max: number) {
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`) as HTMLInputElement | null;
-        const counter = this.shadowRoot?.querySelector(`.counter[data-for="${fieldName}"]`) as HTMLElement | null;
-        if (!input || !counter) return;
-
-        const len = input.value.length;
-        const countEl = counter.querySelector(".count");
-        if (countEl) countEl.textContent = String(len);
-        counter.dataset.over = String(len > max);
     }
 
     // --- Path validation + URL preview ------------------------------------
@@ -196,19 +174,16 @@ export class PageConfiguration extends Component {
         this._validatePathFormatSync();
     }
 
-    private _getPathInput(): HTMLInputElement | null {
-        return this.shadowRoot?.querySelector(`input[name=path]`) as HTMLInputElement | null;
+    private _getPathInput(): P9rInput | null {
+        return this._getInputElement("path");
     }
 
-    private _getIdentifierInput(): HTMLInputElement | null {
-        return this.shadowRoot?.querySelector(`input[name=identifier]`) as HTMLInputElement | null;
+    private _getIdentifierInput(): P9rInput | null {
+        return this._getInputElement("identifier");
     }
 
     private _setHint(level: "info" | "error" | "success", text: string) {
-        const hint = this.shadowRoot?.getElementById("path-hint") as HTMLElement | null;
-        if (!hint) return;
-        hint.textContent = text;
-        hint.dataset.level = level;
+        this._getPathInput()?.setHint(level, text);
     }
 
     private _setPathValid(valid: boolean) {
@@ -218,11 +193,7 @@ export class PageConfiguration extends Component {
             if (valid) btn.removeAttribute("aria-disabled");
             else btn.setAttribute("aria-disabled", "true");
         }
-        const input = this._getPathInput();
-        if (input) {
-            if (valid) input.removeAttribute("aria-invalid");
-            else input.setAttribute("aria-invalid", "true");
-        }
+        this._getPathInput()?.setInvalid(!valid);
     }
 
     /** Sync format check — runs on every keystroke. */

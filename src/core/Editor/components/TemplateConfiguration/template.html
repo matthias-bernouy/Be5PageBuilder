@@ -2,23 +2,21 @@
   <form action="">
 
     <p9r-section data-title="Information">
-      <div class="field">
-        <label class="label" for="f-tpl-name">Name</label>
-        <input class="input" id="f-tpl-name" name="name" type="text" placeholder="My hero section" />
-        <div class="meta">
-          <small class="hint" data-for="name">Displayed in the Templates library.</small>
-          <small class="counter" data-for="name"><span class="count">0</span>/50</small>
-        </div>
-      </div>
+      <p9r-input
+        name="name"
+        label="Name"
+        placeholder="My hero section"
+        hint="Displayed in the Templates library."
+        max-count="50"
+      ></p9r-input>
 
-      <div class="field">
-        <label class="label" for="f-tpl-description">Description</label>
-        <input class="input" id="f-tpl-description" name="description" type="text" placeholder="A short description" />
-        <div class="meta">
-          <small class="hint" data-for="description">Shown under the name in the library.</small>
-          <small class="counter" data-for="description"><span class="count">0</span>/120</small>
-        </div>
-      </div>
+      <p9r-input
+        name="description"
+        label="Description"
+        placeholder="A short description"
+        hint="Shown under the name in the library."
+        max-count="120"
+      ></p9r-input>
     </p9r-section>
 
     <p9r-section data-title="Taxonomy">

@@ -2,15 +2,14 @@ import "w13c/core/Dialog/LateralDialog/LateralDialog";
 import "w13c/core/Form/Button/Button";
 import "w13c/core/Form/TagSuggest/TagSuggest";
 import "w13c/core/Form/FormSection";
+import "src/core/Editor/configuration/Inputs/P9rInput";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
+import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 import { Component } from "src/core/Editor/core/Component";
 import { showToast } from "w13c/core/Toast/ToastStack";
-
-const NAME_MAX = 50;
-const DESCRIPTION_MAX = 120;
 
 /** Kebab-case check for snippet identifiers: lowercase letters, digits,
  * dashes; at least one character; no leading or trailing dash. */
@@ -91,8 +90,6 @@ export class SnippetConfiguration extends Component {
             .filter(attr => attr.name.startsWith("default-"))
             .forEach(attr => this._setDefaultValue(attr.name));
 
-        this._wireCharCounter("name", NAME_MAX);
-        this._wireCharCounter("description", DESCRIPTION_MAX);
         this._wireIdentifierValidation();
 
         // If editing an existing snippet, lock the identifier and load usages.
@@ -113,9 +110,12 @@ export class SnippetConfiguration extends Component {
         };
     }
 
+    private _getInputElement(name: string): P9rInput | null {
+        return this.shadowRoot?.querySelector(`p9r-input[name=${name}]`) as P9rInput | null;
+    }
+
     private _getInputValue(name: string): string {
-        const input = this.shadowRoot?.querySelector(`input[name=${name}]`) as HTMLInputElement | null;
-        return input?.value.trim() ?? "";
+        return this._getInputElement(name)?.value.trim() ?? "";
     }
 
     private _getTagSuggestValue(name: string): string {
@@ -128,11 +128,9 @@ export class SnippetConfiguration extends Component {
         if (defVal === null) return;
         const fieldName = name.replace("default-", "");
 
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`) as HTMLInputElement | null;
+        const input = this._getInputElement(fieldName);
         if (input) {
             input.value = defVal;
-            if (fieldName === "name") this._updateCounter("name", NAME_MAX);
-            if (fieldName === "description") this._updateCounter("description", DESCRIPTION_MAX);
             return;
         }
 
@@ -141,37 +139,17 @@ export class SnippetConfiguration extends Component {
     }
 
     private _lockIdentifier() {
-        const ele = this.shadowRoot?.querySelector("input[name=identifier]") as HTMLInputElement | null;
-        if (!ele) return;
-        ele.disabled = true;
+        const input = this._getInputElement("identifier");
+        if (!input) return;
+        input.disabled = true;
         this._setIdentifierHint("info", "Immutable after creation.");
         this._setIdentifierValid(true);
-    }
-
-    // --- Char counters ----------------------------------------------------
-
-    private _wireCharCounter(fieldName: string, max: number) {
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`);
-        if (!input) return;
-        input.addEventListener("input", () => this._updateCounter(fieldName, max));
-        this._updateCounter(fieldName, max);
-    }
-
-    private _updateCounter(fieldName: string, max: number) {
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`) as HTMLInputElement | null;
-        const counter = this.shadowRoot?.querySelector(`.counter[data-for="${fieldName}"]`) as HTMLElement | null;
-        if (!input || !counter) return;
-
-        const len = input.value.length;
-        const countEl = counter.querySelector(".count");
-        if (countEl) countEl.textContent = String(len);
-        counter.dataset.over = String(len > max);
     }
 
     // --- Identifier validation --------------------------------------------
 
     private _wireIdentifierValidation() {
-        const input = this.shadowRoot?.querySelector("input[name=identifier]") as HTMLInputElement | null;
+        const input = this._getInputElement("identifier");
         if (!input) return;
 
         // Locked identifier (edit mode) — skip wiring.
@@ -183,20 +161,13 @@ export class SnippetConfiguration extends Component {
     }
 
     private _setIdentifierHint(level: "info" | "error" | "success", text: string) {
-        const hint = this.shadowRoot?.getElementById("identifier-hint") as HTMLElement | null;
-        if (!hint) return;
-        hint.textContent = text;
-        hint.dataset.level = level;
+        this._getInputElement("identifier")?.setHint(level, text);
     }
 
     private _setIdentifierValid(valid: boolean) {
         this._identifierValid = valid;
-        const input = this.shadowRoot?.querySelector("input[name=identifier]") as HTMLInputElement | null;
+        this._getInputElement("identifier")?.setInvalid(!valid);
         const btn = this.shadowRoot?.getElementById("save-btn");
-        if (input) {
-            if (valid) input.removeAttribute("aria-invalid");
-            else input.setAttribute("aria-invalid", "true");
-        }
         if (btn) {
             if (valid) btn.removeAttribute("aria-disabled");
             else btn.setAttribute("aria-disabled", "true");
@@ -204,7 +175,7 @@ export class SnippetConfiguration extends Component {
     }
 
     private _validateIdentifierFormatSync() {
-        const input = this.shadowRoot?.querySelector("input[name=identifier]") as HTMLInputElement | null;
+        const input = this._getInputElement("identifier");
         if (!input) return;
         const id = input.value.trim();
 
@@ -226,7 +197,7 @@ export class SnippetConfiguration extends Component {
     }
 
     private async _validateIdentifierRemote() {
-        const input = this.shadowRoot?.querySelector("input[name=identifier]") as HTMLInputElement | null;
+        const input = this._getInputElement("identifier");
         if (!input) return;
         const id = input.value.trim();
         if (id === "" || !isValidIdentifier(id)) return;

@@ -220,15 +220,9 @@
 
     <p9r-form-dialog id="create-page-dialog" action="./editor">
         <span slot="title">Create a new page</span>
-        <w13c-input name="title">
-            <span slot="label">Name (e. g. My Beautiful Article)</span>
-        </w13c-input>
-        <w13c-input name="identifier">
-            <span slot="label">Identifier (e. g. my-beautiful-article)</span>
-        </w13c-input>
-        <w13c-input name="path">
-            <span slot="label">Path (e. g. /article)</span>
-        </w13c-input>
+        <p9r-input name="title" label="Name" placeholder="My Beautiful Article"></p9r-input>
+        <p9r-input name="identifier" label="Identifier" placeholder="my-beautiful-article"></p9r-input>
+        <p9r-input name="path" label="Path" placeholder="/article"></p9r-input>
     </p9r-form-dialog>
 
 </body>

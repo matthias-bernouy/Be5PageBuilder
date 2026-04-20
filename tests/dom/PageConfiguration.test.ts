@@ -1,9 +1,10 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
 import { PageConfiguration } from "src/core/Editor/components/PageConfiguration/PageConfiguration";
+import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 
 /**
  * Installs `element` and returns the chars needed to drive the form.
- * happy-dom doesn't fire the `w13c-input`'s synthetic `input` event when we
+ * happy-dom doesn't fire the `p9r-input`'s synthetic `input` event when we
  * set `.value` programmatically — we dispatch it manually.
  */
 function mountPageConfiguration(attrs: Record<string, string> = {}): PageConfiguration {
@@ -14,24 +15,31 @@ function mountPageConfiguration(attrs: Record<string, string> = {}): PageConfigu
     return el;
 }
 
+function getInput(el: PageConfiguration, name: string): P9rInput {
+    const input = el.shadowRoot?.querySelector(`p9r-input[name=${name}]`) as P9rInput | null;
+    if (!input) throw new Error(`No p9r-input[name="${name}"]`);
+    return input;
+}
+
 function setInputValue(el: PageConfiguration, name: string, value: string) {
-    const input = el.shadowRoot?.querySelector(`[name=${name}]`) as any;
-    if (!input) throw new Error(`No field named "${name}"`);
+    const input = getInput(el, name);
     input.value = value;
     input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 function blurInput(el: PageConfiguration, name: string) {
-    const input = el.shadowRoot?.querySelector(`[name=${name}]`) as any;
-    input?.dispatchEvent(new Event("blur", { bubbles: true }));
+    getInput(el, name).dispatchEvent(new Event("blur", { bubbles: true }));
 }
 
 function getCounter(el: PageConfiguration, fieldName: string): HTMLElement {
-    return el.shadowRoot!.querySelector(`.counter[data-for="${fieldName}"]`) as HTMLElement;
+    const input = getInput(el, fieldName);
+    return input.shadowRoot!.querySelector(".counter") as HTMLElement;
 }
 
+/** The path hint now lives inside the path p9r-input's shadow DOM. */
 function getHint(el: PageConfiguration): HTMLElement {
-    return el.shadowRoot!.getElementById("path-hint") as HTMLElement;
+    const pathInput = getInput(el, "path");
+    return pathInput.shadowRoot!.querySelector(".hint") as HTMLElement;
 }
 
 function getSaveBtn(el: PageConfiguration): HTMLElement {
@@ -85,7 +93,7 @@ describe("PageConfiguration", () => {
         expect(advanced).toBeTruthy();
         expect(advanced!.hasAttribute("data-collapsed")).toBe(true);
 
-        const identifier = advanced!.querySelector(`[name=identifier]`);
+        const identifier = advanced!.querySelector(`p9r-input[name=identifier]`);
         expect(identifier).toBeTruthy();
     });
 

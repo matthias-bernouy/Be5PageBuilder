@@ -2,30 +2,32 @@
   <form action="">
 
     <p9r-section data-title="SEO">
-      <div class="field">
-        <label class="label" for="f-title">Title</label>
-        <input class="input" id="f-title" name="title" type="text" placeholder="A beautiful title" />
-        <div class="meta">
-          <small class="hint" data-for="title">Used as &lt;title&gt; and SEO heading.</small>
-          <small class="counter" data-for="title"><span class="count">0</span>/50</small>
-        </div>
-      </div>
+      <p9r-input
+        name="title"
+        label="Title"
+        placeholder="A beautiful title"
+        hint="Used as &lt;title&gt; and SEO heading."
+        max-count="50"
+      ></p9r-input>
 
-      <div class="field">
-        <label class="label" for="f-description">Description</label>
-        <input class="input" id="f-description" name="description" type="text" placeholder="A beautiful description" />
-        <div class="meta">
-          <small class="hint" data-for="description">Used as meta description.</small>
-          <small class="counter" data-for="description"><span class="count">0</span>/120</small>
-        </div>
-      </div>
+      <p9r-input
+        name="description"
+        label="Description"
+        placeholder="A beautiful description"
+        hint="Used as meta description."
+        max-count="120"
+      ></p9r-input>
     </p9r-section>
 
     <p9r-section data-title="URL">
       <div class="field">
-        <label class="label" for="f-path">Path</label>
-        <input class="input" id="f-path" name="path" type="text" placeholder="/article" />
-        <small class="hint" id="path-hint">Letters, numbers, "-" and "/" allowed.</small>
+        <p9r-input
+          id="path-input"
+          name="path"
+          label="Path"
+          placeholder="/article"
+          hint='Letters, numbers, "-" and "/" allowed.'
+        ></p9r-input>
         <div class="url-row" id="url-row" hidden>
           <small class="url-preview" id="url-preview"></small>
           <button type="button" class="url-open" id="url-open" title="Open in new tab" aria-label="Open in new tab">
@@ -53,14 +55,12 @@
     </p9r-section>
 
     <p9r-section data-title="Advanced" data-collapsed>
-      <div class="field">
-        <label class="label" for="f-identifier">Identifier</label>
-        <input class="input" id="f-identifier" name="identifier" type="text" placeholder="optional" />
-        <small class="hint">
-          Optional discriminator for multiple pages sharing the same path
-          (e.g. <code>/article?identifier=v2</code>).
-        </small>
-      </div>
+      <p9r-input
+        name="identifier"
+        label="Identifier"
+        placeholder="optional"
+        hint="Optional discriminator for multiple pages sharing the same path (e.g. /article?identifier=v2)."
+      ></p9r-input>
     </p9r-section>
 
     <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">

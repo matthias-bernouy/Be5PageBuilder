@@ -1,5 +1,6 @@
 import { describe, test, expect, beforeEach } from "bun:test";
 import { TemplateConfiguration } from "src/core/Editor/components/TemplateConfiguration/TemplateConfiguration";
+import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 
 function mount(attrs: Record<string, string> = {}): TemplateConfiguration {
     document.body.innerHTML = "";
@@ -9,14 +10,18 @@ function mount(attrs: Record<string, string> = {}): TemplateConfiguration {
     return el;
 }
 
+function getInput(el: TemplateConfiguration, name: string): P9rInput {
+    return el.shadowRoot!.querySelector(`p9r-input[name=${name}]`) as P9rInput;
+}
+
 function setInputValue(el: TemplateConfiguration, name: string, value: string) {
-    const input = el.shadowRoot?.querySelector(`input[name=${name}]`) as HTMLInputElement;
+    const input = getInput(el, name);
     input.value = value;
     input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 function getCounter(el: TemplateConfiguration, fieldName: string): HTMLElement {
-    return el.shadowRoot!.querySelector(`.counter[data-for="${fieldName}"]`) as HTMLElement;
+    return getInput(el, fieldName).shadowRoot!.querySelector(".counter") as HTMLElement;
 }
 
 function stubFetch() {

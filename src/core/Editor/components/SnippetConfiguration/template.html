@@ -2,31 +2,31 @@
   <form action="">
 
     <p9r-section data-title="Identity">
-      <div class="field">
-        <label class="label" for="f-snp-identifier">Identifier</label>
-        <input class="input" id="f-snp-identifier" name="identifier" type="text" placeholder="hero-v1" required />
-        <small class="hint" id="identifier-hint">Lowercase letters, numbers and dashes. Immutable after creation.</small>
-      </div>
+      <p9r-input
+        name="identifier"
+        label="Identifier"
+        placeholder="hero-v1"
+        hint="Lowercase letters, numbers and dashes. Immutable after creation."
+        required
+      ></p9r-input>
 
-      <div class="field">
-        <label class="label" for="f-snp-name">Name</label>
-        <input class="input" id="f-snp-name" name="name" type="text" placeholder="My hero section" />
-        <div class="meta">
-          <small class="hint" data-for="name">Shown in the Snippets library.</small>
-          <small class="counter" data-for="name"><span class="count">0</span>/50</small>
-        </div>
-      </div>
+      <p9r-input
+        name="name"
+        label="Name"
+        placeholder="My hero section"
+        hint="Shown in the Snippets library."
+        max-count="50"
+      ></p9r-input>
     </p9r-section>
 
     <p9r-section data-title="Information">
-      <div class="field">
-        <label class="label" for="f-snp-description">Description</label>
-        <input class="input" id="f-snp-description" name="description" type="text" placeholder="A short description" />
-        <div class="meta">
-          <small class="hint" data-for="description">Shown under the name in the library.</small>
-          <small class="counter" data-for="description"><span class="count">0</span>/120</small>
-        </div>
-      </div>
+      <p9r-input
+        name="description"
+        label="Description"
+        placeholder="A short description"
+        hint="Shown under the name in the library."
+        max-count="120"
+      ></p9r-input>
     </p9r-section>
 
     <p9r-section data-title="Taxonomy">

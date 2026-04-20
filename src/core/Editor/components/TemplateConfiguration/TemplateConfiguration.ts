@@ -2,15 +2,14 @@ import "w13c/core/Dialog/LateralDialog/LateralDialog";
 import "w13c/core/Form/Button/Button";
 import "w13c/core/Form/TagSuggest/TagSuggest";
 import "w13c/core/Form/FormSection";
+import "src/core/Editor/configuration/Inputs/P9rInput";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog";
+import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 import { Component } from "src/core/Editor/core/Component";
 import { showToast } from "w13c/core/Toast/ToastStack";
-
-const NAME_MAX = 50;
-const DESCRIPTION_MAX = 120;
 
 export class TemplateConfiguration extends Component {
 
@@ -68,9 +67,6 @@ export class TemplateConfiguration extends Component {
         Array.from(this.attributes)
             .filter(attr => attr.name.startsWith("default-"))
             .forEach(attr => this._setDefaultValue(attr.name));
-
-        this._wireCharCounter("name", NAME_MAX);
-        this._wireCharCounter("description", DESCRIPTION_MAX);
     }
 
     private _collectFormData() {
@@ -81,9 +77,12 @@ export class TemplateConfiguration extends Component {
         };
     }
 
+    private _getInputElement(name: string): P9rInput | null {
+        return this.shadowRoot?.querySelector(`p9r-input[name=${name}]`) as P9rInput | null;
+    }
+
     private _getInputValue(name: string): string {
-        const input = this.shadowRoot?.querySelector(`input[name=${name}]`) as HTMLInputElement | null;
-        return input?.value.trim() ?? "";
+        return this._getInputElement(name)?.value.trim() ?? "";
     }
 
     private _getTagSuggestValue(name: string): string {
@@ -96,34 +95,14 @@ export class TemplateConfiguration extends Component {
         if (defVal === null) return;
         const fieldName = name.replace("default-", "");
 
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`) as HTMLInputElement | null;
+        const input = this._getInputElement(fieldName);
         if (input) {
             input.value = defVal;
-            if (fieldName === "name") this._updateCounter("name", NAME_MAX);
-            if (fieldName === "description") this._updateCounter("description", DESCRIPTION_MAX);
             return;
         }
 
         const tagSuggest = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${fieldName}]`) as any;
         if (tagSuggest && "value" in tagSuggest) tagSuggest.value = defVal;
-    }
-
-    private _wireCharCounter(fieldName: string, max: number) {
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`);
-        if (!input) return;
-        input.addEventListener("input", () => this._updateCounter(fieldName, max));
-        this._updateCounter(fieldName, max);
-    }
-
-    private _updateCounter(fieldName: string, max: number) {
-        const input = this.shadowRoot?.querySelector(`input[name=${fieldName}]`) as HTMLInputElement | null;
-        const counter = this.shadowRoot?.querySelector(`.counter[data-for="${fieldName}"]`) as HTMLElement | null;
-        if (!input || !counter) return;
-
-        const len = input.value.length;
-        const countEl = counter.querySelector(".count");
-        if (countEl) countEl.textContent = String(len);
-        counter.dataset.over = String(len > max);
     }
 
     show() {

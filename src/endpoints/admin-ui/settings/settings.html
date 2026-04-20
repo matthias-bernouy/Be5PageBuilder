@@ -153,9 +153,7 @@
 
             <p9r-section data-title="Site">
                 <div class="fields">
-                    <w13c-input name="site.name" id="site-name">
-                        <span slot="label">Site name</span>
-                    </w13c-input>
+                    <p9r-input name="site.name" id="site-name" label="Site name"></p9r-input>
                     <div class="field">
                         <label class="field-label">Favicon</label>
                         <button type="button" id="favicon-picker" class="favicon-picker" data-empty="true" aria-label="Choose favicon from Media Center">
@@ -173,9 +171,7 @@
                         </button>
                         <input type="hidden" id="site-favicon" name="site.favicon" value="">
                     </div>
-                    <w13c-input name="site.host" id="site-host">
-                        <span slot="label">Host (canonical base URL, e.g. https://example.com)</span>
-                    </w13c-input>
+                    <p9r-input name="site.host" id="site-host" label="Host" placeholder="https://example.com" hint="Canonical base URL used for sitemap and link rel=canonical."></p9r-input>
                     <p9r-select name="site.language" id="site-language" label="Language">
                         <option value="" selected>-- Not set --</option>
                         <option value="en">English (en)</option>
