@@ -12,6 +12,7 @@ import type { Input } from "w13c/core/Form/Input/Input";
 
 import { Checkbox } from "w13c/core/Form/Checkbox/Checkbox";
 import { Component } from "src/core/Editor/core/Component";
+import { showToast } from "w13c/core/Toast/ToastStack";
 
 export class PageConfiguration extends Component {
 
@@ -39,9 +40,11 @@ export class PageConfiguration extends Component {
                 identifier: data.identifier || "",
                 path: data.path || "",
                 tags: JSON.stringify(data.tags?.split(",") || [])
+            }).then(() => {
+                showToast("Page saved", { type: "success" });
             }).catch((err) => {
                 console.error(err);
-                alert("Failed to save page: " + (err?.message || err));
+                showToast("Failed to save page: " + (err?.message || err), { type: "error", duration: 6000 });
             });
             // Keep the admin URL in sync with the new (path, identifier) key
             // so a refresh re-opens the same page even after a rename.

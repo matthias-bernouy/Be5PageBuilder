@@ -1,5 +1,6 @@
 import "src/core/Editor/configuration/Inputs/P9rSelect";
 import "src/core/Editor/components/MediaCenter/MediaCenter";
+import { showToast } from "w13c/core/Toast/ToastStack";
 
 type PageRef = { path: string; identifier: string } | null;
 
@@ -103,9 +104,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (res.ok) {
-            alert("Settings saved");
+            showToast("Settings saved", { type: "success" });
         } else {
-            alert("Error saving settings");
+            showToast("Error saving settings", { type: "error", duration: 6000 });
         }
     });
 });
