@@ -3,7 +3,7 @@ import "w13c/core/Dialog/LateralDialog/LateralDialog"
 import "w13c/core/Form/Input/Input"
 import "w13c/core/Form/Checkbox/Checkbox"
 import "w13c/core/Form/Button/Button"
-import "w13c/core/Form/InputTags/InputTags";
+import "w13c/core/Form/TagSuggest/TagSuggest";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };

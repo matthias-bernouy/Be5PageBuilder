@@ -12,7 +12,9 @@
     <w13c-input placeholder="/article" name="path">
       <span slot="label">Path (a-zA-Z0-9-)</span>
     </w13c-input>
-    <w13c-tag-input name="tags"></w13c-tag-input>
+    <p9r-tag-suggest name="tags" mode="multiple" resource="pages" api="../api/tags" placeholder="Add a tag…">
+      <span slot="label">Tags</span>
+    </p9r-tag-suggest>
 
     <w13c-checkbox name="visible">
       Make visible
