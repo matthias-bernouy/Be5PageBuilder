@@ -1,8 +1,8 @@
 import { P9R_ATTR } from "src/constants/editor-attributes";
 import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/constants/p9r-constants";
-import { Component } from "src/core/Editor/core/Component";
-import { Editor } from "src/core/Editor/core/Editor";
-import { registerEditor, registerEditor_opaque } from "src/core/Editor/core/registerEditor";
+import { Component } from "src/core/Editor/runtime/Component";
+import { Editor } from "src/core/Editor/runtime/Editor";
+import { registerEditor, registerEditor_opaque } from "src/core/Editor/runtime/registerEditor";
 
 (window as any).p9r = {
     attr:  P9R_ATTR,

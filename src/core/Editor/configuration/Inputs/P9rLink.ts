@@ -1,6 +1,6 @@
 import css from "./P9rLink.style.css" with { type: "text" };
 import { buildOptionList, filterPages, type PageRef } from "./P9rLink.picker";
-import { whenEditorManagerReady } from "src/core/Editor/core/editorManagerReady";
+import { whenEditorManagerReady } from "src/core/Editor/runtime/editorManagerReady";
 
 type LinkMode = "page" | "external" | "media";
 

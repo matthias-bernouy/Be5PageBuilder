@@ -1,6 +1,6 @@
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { Component } from 'src/core/Editor/core/Component';
+import { Component } from 'src/core/Editor/runtime/Component';
 
 import "src/core/Media/components/CardMedia/CardMedia";
 import type { MediaItem, BreadcrumbEntry } from "src/core/Media/components/GridMedia/types";

@@ -1,5 +1,5 @@
 import { BlocLibrary } from "../components/BlocLibrary/BlocLibrary";
-import { Editor } from "../core/Editor";
+import { Editor } from "../runtime/Editor";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote, a):empty::before {

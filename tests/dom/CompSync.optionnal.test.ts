@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { Editor } from "src/core/Editor/core/Editor";
+import { Editor } from "src/core/Editor/runtime/Editor";
 import { CompSync } from "src/core/Editor/configuration/Sync/CompSync";
 
 // Exposes the live action-bar feature map populated by `Editor.viewEditor()`.

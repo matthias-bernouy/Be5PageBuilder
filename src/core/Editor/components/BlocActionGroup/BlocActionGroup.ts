@@ -1,5 +1,5 @@
-import { HorizontalActionGroup } from 'src/ui/core/HorizontalActionGroup/HorizontalActionGroup';
-import type { Editor } from '../../core/Editor';
+import { HorizontalActionGroup } from 'src/ui/HorizontalActionGroup/HorizontalActionGroup';
+import type { Editor } from '../../runtime/Editor';
 import css from './style.css' with { type: 'text' };
 import template from './template.html' with { type: 'text' };
 import insertBtnCss from './insert-btn.css' with { type: 'text' };

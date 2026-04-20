@@ -1,6 +1,6 @@
 import "src/core/global";
 
-import { EditorManager } from "src/core/Editor/core/EditorManager";
+import { EditorManager } from "src/core/Editor/runtime/EditorManager";
 import { BlocLibrary } from "src/core/Editor/components/BlocLibrary/BlocLibrary";
 
 import "src/core/Editor/components/PageConfiguration/PageConfiguration"

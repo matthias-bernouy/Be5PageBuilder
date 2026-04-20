@@ -1,6 +1,6 @@
 import "src/core/global";
 
-import { EditorManager } from "src/core/Editor/core/EditorManager";
+import { EditorManager } from "src/core/Editor/runtime/EditorManager";
 
 import "src/core/Editor/components/SnippetConfiguration/SnippetConfiguration";
 

@@ -1,4 +1,4 @@
-import type { TagElement } from '../../core/ObserverManager';
+import type { TagElement } from '../../runtime/ObserverManager';
 import {
     ICON_COMPONENT,
     ICON_SNIPPET,

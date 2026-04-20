@@ -1,9 +1,9 @@
-import "src/ui/core/Dialog/LateralDialog/LateralDialog"
-import "src/ui/core/Form/Checkbox/Checkbox"
-import "src/ui/core/Form/FormSection"
+import "src/ui/Dialog/LateralDialog/LateralDialog"
+import "src/ui/Form/Checkbox/Checkbox"
+import "src/ui/Form/FormSection"
 
-import type { LateralDialog } from "src/ui/core/Dialog/LateralDialog/LateralDialog";
-import { Component } from "src/core/Editor/core/Component";
+import type { LateralDialog } from "src/ui/Dialog/LateralDialog/LateralDialog";
+import { Component } from "src/core/Editor/runtime/Component";
 
 import "./Sync/AttrSync";
 import "./Sync/CompSync";

@@ -1,8 +1,8 @@
-import "src/ui/core/Dialog/LateralDialog/LateralDialog"
-import "src/ui/core/Form/Checkbox/Checkbox"
+import "src/ui/Dialog/LateralDialog/LateralDialog"
+import "src/ui/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { Component } from "src/core/Editor/core/Component";
+import { Component } from "src/core/Editor/runtime/Component";
 
 export class FloatingToolbar extends Component {
 

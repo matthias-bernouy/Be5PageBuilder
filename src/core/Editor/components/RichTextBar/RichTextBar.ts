@@ -1,4 +1,4 @@
-import { Component } from "src/core/Editor/core/Component";
+import { Component } from "src/core/Editor/runtime/Component";
 import "src/core/Editor/configuration/Inputs/P9rLink";
 
 import template from './template.html' with { type: 'text' };

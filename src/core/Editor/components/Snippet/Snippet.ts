@@ -1,5 +1,5 @@
-import { Component, type ComponentMetadata } from 'src/core/Editor/core/Component';
-import { whenEditorManagerReady } from 'src/core/Editor/core/editorManagerReady';
+import { Component, type ComponentMetadata } from 'src/core/Editor/runtime/Component';
+import { whenEditorManagerReady } from 'src/core/Editor/runtime/editorManagerReady';
 import { ICON_SNIPPET } from 'src/core/Editor/icons';
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };

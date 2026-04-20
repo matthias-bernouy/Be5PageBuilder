@@ -1,4 +1,4 @@
-import type { Component } from "src/core/Editor/core/Component";
+import type { Component } from "src/core/Editor/runtime/Component";
 import { ICON_UPLOAD } from "src/core/Editor/icons";
 import css from "./ImageSync.style.css" with { type: "text" };
 

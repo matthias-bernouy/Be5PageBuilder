@@ -6,7 +6,7 @@ mock.module("src/core/Editor/components/BlocLibrary/BlocLibrary", () => ({
 
 const { TextEditor } = await import("src/core/Editor/editors/TextEditor");
 const { BlocActionGroup } = await import("src/core/Editor/components/BlocActionGroup/BlocActionGroup");
-const { Editor } = await import("src/core/Editor/core/Editor");
+const { Editor } = await import("src/core/Editor/runtime/Editor");
 
 class BareEditor extends Editor {
     override init() {}

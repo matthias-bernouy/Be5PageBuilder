@@ -1,5 +1,5 @@
-import type { Component } from "src/core/Editor/core/Component";
-import type { Editor } from "src/core/Editor/core/Editor";
+import type { Component } from "src/core/Editor/runtime/Component";
+import type { Editor } from "src/core/Editor/runtime/Editor";
 
 /**
  * <p9r-state-sync target=".dropdown" attr="class" value="is-open" label="Dropdown" placement="left"></p9r-state-sync>
