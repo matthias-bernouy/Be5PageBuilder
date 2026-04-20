@@ -23,17 +23,17 @@ export default async function CLI_dev(args: string[]) {
         console.error("✖ P9R_TOKEN and P9R_URL must be set (in .env or the environment).");
         console.error("");
         console.error("Example .env:");
-        console.error("  P9R_URL=http://localhost:4999/page-builder");
+        console.error("  P9R_URL=http://localhost:4999/cms");
         console.error("  P9R_TOKEN=your-admin-bearer-token");
         console.error("");
-        console.error("P9R_URL must include the admin path prefix (e.g. /page-builder).");
+        console.error("P9R_URL must include the admin path prefix (e.g. /cms).");
         console.error("The public origin (for /bloc?tag=...) is derived automatically.");
         process.exit(1);
     }
 
     if (!/^https?:\/\//i.test(rawUrl)) {
         console.error(`✖ P9R_URL must start with http:// or https:// (got "${rawUrl}")`);
-        console.error(`  Example: P9R_URL=http://localhost:4999/page-builder`);
+        console.error(`  Example: P9R_URL=http://localhost:4999/cms`);
         process.exit(1);
     }
 
@@ -50,7 +50,7 @@ export default async function CLI_dev(args: string[]) {
     if (publicOrigin === "null" || !adminBase.pathname.startsWith("/")) {
         console.error(`✖ P9R_URL could not be parsed into a valid origin: "${rawUrl}"`);
         console.error(`  Parsed origin: ${publicOrigin}, pathname: ${adminBase.pathname}`);
-        console.error(`  Example: P9R_URL=http://localhost:4999/page-builder`);
+        console.error(`  Example: P9R_URL=http://localhost:4999/cms`);
         process.exit(1);
     }
 

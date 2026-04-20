@@ -1,22 +1,22 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import type { TSnippet } from "src/contracts/Repository/TModels";
 import { isValidSnippetIdentifier } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
 
-export default async function postSnippet(req: Request, system: PageBuilder) {
+export default async function postSnippet(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     const body = await req.json() as Partial<TSnippet>;
 
     if (id) {
         // Update — identifier is immutable, stripped in repository
-        const updated = await system.repository.updateSnippet(id, body);
+        const updated = await cms.repository.updateSnippet(id, body);
         if (!updated) return new Response("Not found", { status: 404 });
 
         // Invalidate rendered-page cache for every page that references this snippet
-        const usages = await system.repository.findPagesUsingSnippet(updated.identifier);
+        const usages = await cms.repository.findPagesUsingSnippet(updated.identifier);
         for (const page of usages) {
-            system.cache.delete(P9R_CACHE.page(page.path, page.identifier));
+            cms.cache.delete(P9R_CACHE.page(page.path, page.identifier));
         }
 
         return new Response(JSON.stringify(updated), {
@@ -33,7 +33,7 @@ export default async function postSnippet(req: Request, system: PageBuilder) {
         return new Response("Invalid identifier. Use kebab-case (lowercase letters, digits, hyphens).", { status: 400 });
     }
 
-    const existing = await system.repository.getSnippetByIdentifier(body.identifier);
+    const existing = await cms.repository.getSnippetByIdentifier(body.identifier);
     if (existing) {
         return new Response(`Snippet with identifier "${body.identifier}" already exists`, { status: 409 });
     }
@@ -49,7 +49,7 @@ export default async function postSnippet(req: Request, system: PageBuilder) {
         updatedAt: now
     };
 
-    const created = await system.repository.createSnippet(snippet);
+    const created = await cms.repository.createSnippet(snippet);
     return new Response(JSON.stringify(created), {
         status: 201,
         headers: { "Content-Type": "application/json" }

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { PageBuilder } from "src/PageBuilder";
+import { Cms } from "src/Cms";
 import { InMemoryCache } from "src/providers/memory/Cache/InMemoryCache";
 import type { TPage, TPageRef, TSnippet, TSystem } from "src/contracts/Repository/TModels";
 
@@ -47,15 +47,15 @@ function makeBuilder(opts: {
         getSnippetByIdentifier: async (_id: string): Promise<TSnippet | null> => null,
     };
 
-    const pb: any = Object.create(PageBuilder.prototype);
-    pb.configuration = { adminPathPrefix: "/page-builder" };
+    const pb: any = Object.create(Cms.prototype);
+    pb.configuration = { adminPathPrefix: "/cms" };
     pb._runner = fakeRunner;
     pb._repository = repository;
     pb._cache = new InMemoryCache();
     pb._registeredPagePaths = new Set<string>();
     pb._imageOptimizer = { enqueuePageOptimization: () => {} };
 
-    return { pb: pb as PageBuilder, endpoints };
+    return { pb: pb as Cms, endpoints };
 }
 
 function getHandler(endpoints: Endpoint[], path: string) {
@@ -81,7 +81,7 @@ const aboutPage = (over: Partial<TPage> = {}): TPage => ({
     ...over,
 });
 
-describe("PageBuilder.handlePageRequest (via registerPageRoute)", () => {
+describe("Cms.handlePageRequest (via registerPageRoute)", () => {
     test("renders the matching page when one exists at (path, identifier='')", async () => {
         const { pb, endpoints } = makeBuilder({ pages: [aboutPage()] });
         pb.registerPageRoute("/about");
@@ -135,7 +135,7 @@ describe("PageBuilder.handlePageRequest (via registerPageRoute)", () => {
     });
 });
 
-describe("PageBuilder home route (literal page at `/`)", () => {
+describe("Cms home route (literal page at `/`)", () => {
     test("a literal page at `/` is served via registerPageRoute", async () => {
         const literalRoot = aboutPage({ path: "/", content: "<p>literal root</p>" });
         const { pb, endpoints } = makeBuilder({ pages: [literalRoot] });

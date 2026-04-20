@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { compress, sendCompressed } from "src/server/compression";
 import { isReservedPath } from "src/server/reservedPaths";
 
@@ -14,15 +14,15 @@ function escapeXml(s: string): string {
     return s.replace(/[<>&'"]/g, (c) => XML_ESCAPE[c]!);
 }
 
-export default async function sitemapXml(req: Request, system: PageBuilder) {
+export default async function sitemapXml(req: Request, cms: Cms) {
     const origin = new URL(req.url).origin;
-    const pages = await system.repository.getAllPages();
+    const pages = await cms.repository.getAllPages();
 
     const urls: string[] = [];
 
     for (const p of pages) {
         if (!p.visible) continue;
-        if (isReservedPath(p.path, system)) continue;
+        if (isReservedPath(p.path, cms)) continue;
 
         const pathWithQuery = p.identifier
             ? `${p.path}?identifier=${encodeURIComponent(p.identifier)}`

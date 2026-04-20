@@ -1,4 +1,4 @@
-import { Editor } from '@bernouy/pagebuilder/editor';
+import { Editor } from '@bernouy/cms/editor';
 import Config from './configuration.html' with { type: 'text' };
 
 export class BlocEditor extends Editor {

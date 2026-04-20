@@ -17,7 +17,7 @@ type Configuration = {
     clientPathPrefix?: string;
 }
 
-export class PageBuilder{
+export class Cms{
 
     private configuration: Configuration;
     private _repository: PageBuilderRepository;

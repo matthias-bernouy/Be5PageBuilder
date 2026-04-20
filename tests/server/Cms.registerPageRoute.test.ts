@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { PageBuilder } from "src/PageBuilder";
+import { Cms } from "src/Cms";
 
-// Build a PageBuilder without running its heavy constructor (which would
+// Build a Cms without running its heavy constructor (which would
 // walk src/endpoints and hydrate routes from the DB). We only want to test
 // the `registerPageRoute` idempotence + guard logic.
 function makeBuilder(opts: { adminPathPrefix?: string } = {}) {
@@ -10,14 +10,14 @@ function makeBuilder(opts: { adminPathPrefix?: string } = {}) {
         addEndpoint: (_method: string, path: string) => { registered.push(path); },
     };
 
-    const pb = Object.create(PageBuilder.prototype);
-    pb.configuration = { adminPathPrefix: opts.adminPathPrefix ?? "/page-builder" };
+    const pb = Object.create(Cms.prototype);
+    pb.configuration = { adminPathPrefix: opts.adminPathPrefix ?? "/cms" };
     pb._runner = fakeRunner;
     pb._registeredPagePaths = new Set<string>();
-    return { pb: pb as PageBuilder, registered };
+    return { pb: pb as Cms, registered };
 }
 
-describe("PageBuilder.registerPageRoute", () => {
+describe("Cms.registerPageRoute", () => {
     let builder: ReturnType<typeof makeBuilder>;
 
     beforeEach(() => {
@@ -56,17 +56,17 @@ describe("PageBuilder.registerPageRoute", () => {
     });
 
     test("silently skips paths under the admin prefix", () => {
-        builder.pb.registerPageRoute("/page-builder");
-        builder.pb.registerPageRoute("/page-builder/pages");
+        builder.pb.registerPageRoute("/cms");
+        builder.pb.registerPageRoute("/cms/pages");
         expect(builder.registered).toEqual([]);
     });
 
     test("honours a custom admin prefix when checking reserved paths", () => {
-        const custom = makeBuilder({ adminPathPrefix: "/cms" });
-        custom.pb.registerPageRoute("/cms");
-        custom.pb.registerPageRoute("/cms/foo");
-        custom.pb.registerPageRoute("/page-builder"); // not reserved under /cms
-        expect(custom.registered).toEqual(["/page-builder"]);
+        const custom = makeBuilder({ adminPathPrefix: "/backend" });
+        custom.pb.registerPageRoute("/backend");
+        custom.pb.registerPageRoute("/backend/foo");
+        custom.pb.registerPageRoute("/cms"); // not reserved under /backend
+        expect(custom.registered).toEqual(["/cms"]);
     });
 
     test("independent paths are registered independently", () => {

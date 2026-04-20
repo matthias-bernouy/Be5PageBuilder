@@ -25,7 +25,7 @@ function resolveAdminBase(): { adminBase: URL; token: string } {
         console.error("✖ P9R_TOKEN and P9R_URL must be set (in .env or the environment).");
         console.error("");
         console.error("Example .env:");
-        console.error("  P9R_URL=http://localhost:4999/page-builder");
+        console.error("  P9R_URL=http://localhost:4999/cms");
         console.error("  P9R_TOKEN=your-admin-bearer-token");
         process.exit(1);
     }
@@ -98,7 +98,7 @@ function printHuman(blocs: RemoteBlocMeta[], adminBase: URL) {
         console.log("");
     }
 
-    console.log("Reserved prefixes: `w13c-*` and `p9r-*` are reserved by the PageBuilder system.");
+    console.log("Reserved prefixes: `w13c-*` and `p9r-*` are reserved by the Cms system.");
     console.log("Do not create blocs using those prefixes.");
 }
 

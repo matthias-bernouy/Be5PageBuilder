@@ -1,7 +1,7 @@
 import { AuthRepositoryProvider, Be5_Authentication, Be5_Runner } from "@bernouy/socle";
 import { MongoClient } from "mongodb";
 import { resolve } from "node:path";
-import { PageBuilder } from "../../src/PageBuilder";
+import { Cms } from "../../src/Cms";
 import { DefaultPageBuilderRepository } from "../../src/providers/mongo/Repository/DefaultPagebuilderRepository";
 import { DefaultMediaRepository } from "../../src/providers/mongo/Media/DefaultMediaRepository";
 import { scanDevBlocs } from "../../src/cli/dev-server/scan";
@@ -28,12 +28,12 @@ export async function startPerfServer(opts: { port?: number; dbName?: string; mo
 
     const auth = new Be5_Authentication(authRepository, runner, {
         basePath: "/auth",
-        defaultRedirection: "/page-builder/admin/pages",
+        defaultRedirection: "/cms/admin/pages",
         registerDisabled: false,
     });
 
-    new PageBuilder(runner, repository, auth, mediaRepository, {
-        adminPathPrefix: "/page-builder",
+    new Cms(runner, repository, auth, mediaRepository, {
+        adminPathPrefix: "/cms",
         clientPathPrefix: "/",
     });
 

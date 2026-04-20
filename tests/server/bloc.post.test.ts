@@ -33,7 +33,7 @@ function makeSystem(opts: {
     const createBlocCalls: CreateBlocCall[] = [];
     const deleteSpy: string[] = [];
     const cache = new Map<string, unknown>();
-    const system: any = {
+    const cms: any = {
         repository: {
             getBlocViewJS: async (tag: string) => {
                 return (opts.existingTags ?? []).includes(tag) ? "/*existing*/" : null;
@@ -51,7 +51,7 @@ function makeSystem(opts: {
             clear: () => { cache.clear(); },
         },
     };
-    return { system, createBlocCalls, deleteSpy };
+    return { cms, createBlocCalls, deleteSpy };
 }
 
 function makeRequest(fields: Record<string, string | File | null>) {
@@ -60,7 +60,7 @@ function makeRequest(fields: Record<string, string | File | null>) {
         if (v === null) continue;
         form.append(k, v as any);
     }
-    return new Request("http://localhost/page-builder/api/bloc", {
+    return new Request("http://localhost/cms/api/bloc", {
         method: "POST",
         body: form,
     });
@@ -70,37 +70,37 @@ const viewFile = () => new File(["/*view*/"], "Bloc.js", { type: "application/ja
 
 describe("bloc.post", () => {
     test("400 when name is missing", async () => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const res = await importBloc(
             makeRequest({ tag: "my-bloc", viewJS: viewFile(), group: "g" }),
-            system
+            cms
         );
         expect(res.status).toBe(400);
     });
 
     test("400 when viewJS is missing", async () => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const res = await importBloc(
             makeRequest({ name: "My", tag: "my-bloc", group: "g" }),
-            system
+            cms
         );
         expect(res.status).toBe(400);
     });
 
     test("400 when tag is missing", async () => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const res = await importBloc(
             makeRequest({ name: "My", viewJS: viewFile(), group: "g" }),
-            system
+            cms
         );
         expect(res.status).toBe(400);
     });
 
     test("409 when a bloc with the same tag already exists", async () => {
-        const { system, createBlocCalls } = makeSystem({ existingTags: ["my-bloc"] });
+        const { cms, createBlocCalls } = makeSystem({ existingTags: ["my-bloc"] });
         const res = await importBloc(
             makeRequest({ name: "My", tag: "my-bloc", group: "g", viewJS: viewFile() }),
-            system
+            cms
         );
         expect(res.status).toBe(409);
         expect(await res.text()).toContain("already exists");
@@ -108,29 +108,29 @@ describe("bloc.post", () => {
     });
 
     test("409 on race: createBloc throws Mongo duplicate-key (11000)", async () => {
-        const { system } = makeSystem({ throwOnCreate: { code: 11000 } });
+        const { cms } = makeSystem({ throwOnCreate: { code: 11000 } });
         const res = await importBloc(
             makeRequest({ name: "My", tag: "my-bloc", group: "g", viewJS: viewFile() }),
-            system
+            cms
         );
         expect(res.status).toBe(409);
     });
 
     test("rethrows non-duplicate-key errors", async () => {
-        const { system } = makeSystem({ throwOnCreate: { code: 9999 } });
+        const { cms } = makeSystem({ throwOnCreate: { code: 9999 } });
         expect(
             importBloc(
                 makeRequest({ name: "My", tag: "my-bloc", group: "g", viewJS: viewFile() }),
-                system
+                cms
             )
         ).rejects.toBeDefined();
     });
 
     test("happy path: creates bloc and invalidates its cache key", async () => {
-        const { system, createBlocCalls, deleteSpy } = makeSystem();
+        const { cms, createBlocCalls, deleteSpy } = makeSystem();
         const res = await importBloc(
             makeRequest({ name: "My", tag: "my-bloc", group: "cards", description: "d", viewJS: viewFile() }),
-            system
+            cms
         );
         expect(res.status).toBe(200);
         expect(createBlocCalls).toHaveLength(1);
@@ -141,10 +141,10 @@ describe("bloc.post", () => {
     });
 
     test("description defaults to empty string when omitted", async () => {
-        const { system, createBlocCalls } = makeSystem();
+        const { cms, createBlocCalls } = makeSystem();
         await importBloc(
             makeRequest({ name: "My", tag: "my-bloc", group: "g", viewJS: viewFile() }),
-            system
+            cms
         );
         expect(createBlocCalls[0]?.bloc.description).toBe("");
     });

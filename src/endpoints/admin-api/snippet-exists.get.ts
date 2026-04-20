@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 /**
  * Cheap availability check for a snippet identifier. Used by the snippet
@@ -11,14 +11,14 @@ import type { PageBuilder } from "src/PageBuilder";
  *
  * Response: `{ exists: boolean }`
  */
-export default async function snippetExists(req: Request, system: PageBuilder) {
+export default async function snippetExists(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const identifier = url.searchParams.get("identifier");
     if (!identifier) {
         return new Response("Missing argument `identifier`", { status: 400 });
     }
 
-    const match = await system.repository.getSnippetByIdentifier(identifier);
+    const match = await cms.repository.getSnippetByIdentifier(identifier);
     return new Response(JSON.stringify({ exists: match !== null }), {
         headers: { "Content-Type": "application/json" },
     });

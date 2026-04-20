@@ -15,7 +15,7 @@ function makeSystem(captureMime: { value?: string }) {
 function makeReq(file: File) {
     const form = new FormData();
     form.append("file", file);
-    return new Request("http://x/page-builder/api/media/file", { method: "POST", body: form });
+    return new Request("http://x/cms/api/media/file", { method: "POST", body: form });
 }
 
 describe("media upload validation", () => {

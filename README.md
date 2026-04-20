@@ -1,4 +1,4 @@
-# @bernouy/pagebuilder
+# @bernouy/cms
 
 Modular CMS built on Web Components with an inline visual editing system. Runs on **Bun** and ships as a Bun-first package — no transpile, consumers execute the TypeScript source directly.
 
@@ -9,7 +9,7 @@ This README is written as a consumer guide: how to wire the package into another
 ## Installation
 
 ```bash
-bun add @bernouy/pagebuilder @bernouy/socle mongodb sharp linkedom
+bun add @bernouy/cms @bernouy/socle mongodb sharp linkedom
 ```
 
 `@bernouy/socle` provides the HTTP runner (`Be5_Runner`) and the authentication layer (`Authentication`, `AuthRepositoryProvider`). It is a runtime dependency of the host app, not of this package.
@@ -23,17 +23,17 @@ bun add @bernouy/pagebuilder @bernouy/socle mongodb sharp linkedom
 
 ## Quick start — minimal wiring
 
-The package exports a single `PageBuilder` class that you instantiate with four collaborators: a runner, a repository, an auth system, and a media repository. Here is the smallest viable host app:
+The package exports a single `Cms` class that you instantiate with four collaborators: a runner, a repository, an auth system, and a media repository. Here is the smallest viable host app:
 
 ```ts
 // app.ts
 import { Authentication, AuthRepositoryProvider, Be5_Runner } from "@bernouy/socle";
 import { MongoClient } from "mongodb";
 import {
-    PageBuilder,
+    Cms,
     DefaultPageBuilderRepository,
     DefaultMediaRepository,
-} from "@bernouy/pagebuilder";
+} from "@bernouy/cms";
 
 const mongoClient = await new MongoClient("mongodb://localhost:27017").connect();
 const dbName = "my_site";
@@ -45,12 +45,12 @@ const authRepo  = new AuthRepositoryProvider(mongoClient, dbName);
 const mediaRepo = new DefaultMediaRepository("MediaProvider 1", mongoClient, dbName, runner);
 
 const auth = new Authentication(authRepo, runner, {
-    defaultRedirection: "/page-builder/admin/pages",
+    defaultRedirection: "/cms/admin/pages",
     basePath: "/auth",
 });
 
-new PageBuilder(runner, pageRepo, auth, mediaRepo, {
-    adminPathPrefix:  "",   // admin UI mounted under "/page-builder/..."
+new Cms(runner, pageRepo, auth, mediaRepo, {
+    adminPathPrefix:  "",   // admin UI mounted under "/cms/..."
     clientPathPrefix: "",   // public pages mounted under "/..."
 });
 
@@ -70,13 +70,13 @@ A full working example lives in [`App.ts`](./App.ts) at the root of this repo.
 ## Constructor signature
 
 ```ts
-new PageBuilder(
+new Cms(
     runner:          IBe5_Runner,           // from @bernouy/socle
     repository:      PageBuilderRepository, // pages, blocs, templates, snippets, system
     auth:            IBe5_Authentication,   // from @bernouy/socle
     mediaRepository: MediaRepository,       // files, folders, images
     configuration: {
-        adminPathPrefix?:  string;  // default "/page-builder"
+        adminPathPrefix?:  string;  // default "/cms"
         clientPathPrefix?: string;  // default "/"
     },
     cache?: Cache                           // optional, defaults to InMemoryCache
@@ -89,7 +89,7 @@ The constructor has side effects: it registers every endpoint on the runner, ins
 
 ## What it exposes on the runner
 
-### Admin (auth-guarded, under `adminPathPrefix`, default `/page-builder`)
+### Admin (auth-guarded, under `adminPathPrefix`, default `/cms`)
 
 | Group | Kind | Notes |
 |---|---|---|
@@ -145,11 +145,11 @@ Exported from the public entry point as `type`-only imports:
 ```ts
 import type {
     TPage, TBloc, TTemplate, TSnippet, TSystem,
-} from "@bernouy/pagebuilder";
+} from "@bernouy/cms";
 ```
 
 - **`TPage`** — `{ path, identifier, content, title, description, visible, tags }`. The compound key `(path, identifier)` allows multiple variants on the same URL, disambiguated by `?identifier=`.
-- **`TBloc`** — `{ id, name, group, description, viewJS, editorJS }`. A registered page-builder component. `viewJS` is the public-facing bundle, `editorJS` is loaded in the admin editor — they are **separate bundles**, never cross-import. `group` and `description` are persisted alongside the bundles so `GET /api/blocs-list` can answer without parsing any JS.
+- **`TBloc`** — `{ id, name, group, description, viewJS, editorJS }`. A registered CMS component. `viewJS` is the public-facing bundle, `editorJS` is loaded in the admin editor — they are **separate bundles**, never cross-import. `group` and `description` are persisted alongside the bundles so `GET /api/blocs-list` can answer without parsing any JS.
 - **`TSnippet`** — a reusable HTML fragment keyed by a stable `identifier`. Unlike templates, editing a snippet propagates to every page that uses it.
 - **`TTemplate`** — a reusable HTML fragment. When inserted into a page it becomes an independent copy (no live link).
 - **`TSystem`** — site-wide settings: `site.{name, favicon, host, language, theme, notFound, serverError}`, `editor.layoutCategory`, and an `initializationStep` for the onboarding flow. `notFound/serverError` are `TPageRef = { path, identifier } | null`.
@@ -165,14 +165,14 @@ import type {
     PageBuilderRepository,
     MediaRepository,
     Cache,
-} from "@bernouy/pagebuilder";
+} from "@bernouy/cms";
 ```
 
 - `PageBuilderRepository` — CRUD for pages, blocs, templates, snippets, system. Full contract in `src/contracts/Repository/PageBuilderRepository.ts`.
 - `MediaRepository` — `getItems`, `upload`, `getResponse`, `createFolder`, `deleteItem`, `moveItem`, `updateMetadata`. The `getResponse(id, { w, h })` method must return a ready-to-serve `Response`; the default provider uses `sharp` for on-the-fly resizing.
 - `Cache` — `get`/`set`/`invalidate` over pre-compressed entries. `InMemoryCache` is the default; swap in Redis or similar for a multi-instance deployment.
 
-Pass the custom implementations into the `PageBuilder` constructor as you would the defaults.
+Pass the custom implementations into the `Cms` constructor as you would the defaults.
 
 ---
 
@@ -193,7 +193,7 @@ bunx p9r help
 
 | Var | Purpose |
 |---|---|
-| `P9R_URL` | Base URL of the remote CMS, including the admin path prefix — e.g. `http://localhost:4999/page-builder` |
+| `P9R_URL` | Base URL of the remote CMS, including the admin path prefix — e.g. `http://localhost:4999/cms` |
 | `P9R_TOKEN` | Bearer token used to authenticate as an admin against that CMS |
 
 `p9r init` and `p9r install-skill` do not need either variable — they only touch the local filesystem.
@@ -216,7 +216,7 @@ To create an opaque bloc (no editor, sealed subtree, parent-level action bar onl
 
 ### `p9r install-skill` — install the bloc-creator Claude Code skill
 
-`p9r install-skill` copies the `bloc-creator` Claude Code skill that ships inside the package into `./.claude/skills/bloc-creator/` in the current project. Once installed, Claude Code discovers it automatically and triggers it whenever you ask Claude to "create a bloc" (or component, widget, card, section…) inside a `@bernouy/pagebuilder` project — Claude will scaffold the manifest, the view and editor entries, the template, the stylesheet and the configuration panel in one go, following the project's conventions.
+`p9r install-skill` copies the `bloc-creator` Claude Code skill that ships inside the package into `./.claude/skills/bloc-creator/` in the current project. Once installed, Claude Code discovers it automatically and triggers it whenever you ask Claude to "create a bloc" (or component, widget, card, section…) inside a `@bernouy/cms` project — Claude will scaffold the manifest, the view and editor entries, the template, the stylesheet and the configuration panel in one go, following the project's conventions.
 
 The skill is a self-contained folder of instructions and templates; it has no runtime footprint and is only read by Claude Code on demand.
 
@@ -267,7 +267,7 @@ Flags:
 
 The command calls `GET {P9R_URL}/api/blocs-list`, a lightweight endpoint that projects bloc metadata only (no `viewJS` / `editorJS` payloads), so it is cheap to call repeatedly. Output is grouped by `group` and sorted by tag.
 
-Reserved prefixes `w13c-*` and `p9r-*` are system-only — do **not** create blocs with those prefixes, they are reserved for internal PageBuilder components to avoid tag collisions.
+Reserved prefixes `w13c-*` and `p9r-*` are system-only — do **not** create blocs with those prefixes, they are reserved for internal CMS components to avoid tag collisions.
 
 Flags:
 
@@ -284,14 +284,14 @@ A bloc lives in its own folder and is described by a `manifest.json` at its root
 ```
 MyBloc/
 ├── manifest.json       // declares tag, group, entry files
-├── Bloc.ts             // imports Component from @bernouy/pagebuilder/component
-├── BlocEditor.ts       // imports Editor  from @bernouy/pagebuilder/editor    (optional: omit for opaque blocs)
+├── Bloc.ts             // imports Component from @bernouy/cms/component
+├── BlocEditor.ts       // imports Editor  from @bernouy/cms/editor    (optional: omit for opaque blocs)
 ├── template.html       // semantic HTML with <slot>, imported by Bloc.ts
 ├── style.css           // self-contained, uses global design tokens
 └── configuration.html  // declarative config panel, imported by BlocEditor.ts
 ```
 
-The two sub-entries are isolated on purpose: `@bernouy/pagebuilder/component` reaches none of the editor code, so the view bundle that site visitors download never contains `Editor`, `ObserverManager`, `ConfigPanel`, or anything from the admin surface. Keep `Bloc.ts` strictly on `/component` and `BlocEditor.ts` strictly on `/editor`.
+The two sub-entries are isolated on purpose: `@bernouy/cms/component` reaches none of the editor code, so the view bundle that site visitors download never contains `Editor`, `ObserverManager`, `ConfigPanel`, or anything from the admin surface. Keep `Bloc.ts` strictly on `/component` and `BlocEditor.ts` strictly on `/editor`.
 
 `manifest.json` is the single source of truth for the bloc's identity:
 
@@ -364,30 +364,30 @@ Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 ```ts
 import {
     // Core
-    PageBuilder,
+    Cms,
 
     // Default providers
     DefaultPageBuilderRepository,
     DefaultMediaRepository,
     InMemoryCache,
-} from "@bernouy/pagebuilder";
+} from "@bernouy/cms";
 
 import type {
     PageBuilderRepository,
     MediaRepository,
     Cache,
     TPage, TBloc, TTemplate, TSnippet, TSystem,
-} from "@bernouy/pagebuilder";
+} from "@bernouy/cms";
 ```
 
 Bloc authoring symbols live in two **separate sub-entries** so the view bundle visitors download never contains editor code:
 
 ```ts
 // View side — imported by Bloc.ts
-import { Component } from "@bernouy/pagebuilder/component";
+import { Component } from "@bernouy/cms/component";
 
 // Editor side — imported by BlocEditor.ts
-import { Editor, registerEditor, registerEditor_opaque } from "@bernouy/pagebuilder/editor";
+import { Editor, registerEditor, registerEditor_opaque } from "@bernouy/cms/editor";
 ```
 
 See [Writing your own bloc](#writing-your-own-bloc).

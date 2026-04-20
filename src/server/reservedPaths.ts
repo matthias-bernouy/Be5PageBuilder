@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 /**
  * Paths that are always reserved by the framework and cannot be used as page
@@ -25,8 +25,8 @@ function normalizePath(path: string): string {
     return "/" + stack.join("/");
 }
 
-export function isReservedPath(path: string, system: PageBuilder): boolean {
-    const adminPrefix = system.config.adminPathPrefix || "/page-builder";
+export function isReservedPath(path: string, cms: Cms): boolean {
+    const adminPrefix = cms.config.adminPathPrefix || "/cms";
     const candidates = [path, normalizePath(path)];
     for (const p of candidates) {
         if (p === adminPrefix || p.startsWith(adminPrefix + "/")) return true;

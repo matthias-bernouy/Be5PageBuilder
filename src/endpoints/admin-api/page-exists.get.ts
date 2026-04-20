@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { isReservedPath } from "src/server/reservedPaths";
 
 /**
@@ -20,7 +20,7 @@ import { isReservedPath } from "src/server/reservedPaths";
  *   - `{ exists: true, reason: "taken" }`       : another page uses this key
  *   - `{ exists: true, reason: "reserved" }`    : path is reserved by the framework
  */
-export default async function pageExists(req: Request, system: PageBuilder) {
+export default async function pageExists(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const path = url.searchParams.get("path");
     if (!path) {
@@ -38,11 +38,11 @@ export default async function pageExists(req: Request, system: PageBuilder) {
         return json({ exists: false });
     }
 
-    if (isReservedPath(path, system)) {
+    if (isReservedPath(path, cms)) {
         return json({ exists: true, reason: "reserved" });
     }
 
-    const match = await system.repository.getPage(path, identifier);
+    const match = await cms.repository.getPage(path, identifier);
     if (match !== null) return json({ exists: true, reason: "taken" });
     return json({ exists: false });
 }

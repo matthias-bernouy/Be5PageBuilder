@@ -2,13 +2,13 @@ import { describe, test, expect } from "bun:test";
 import { createAuthGuard } from "src/endpoints/registerEndpoints";
 
 // If the admin auth relies on cookies (via @bernouy/socle), POST routes under
-// /page-builder/api/* are CSRF-vulnerable unless the guard checks Origin /
+// /cms/api/* are CSRF-vulnerable unless the guard checks Origin /
 // Referer or a fetch-only header like X-Requested-With. This test asserts SOME
 // form of CSRF mitigation runs for mutating methods on the admin prefix.
 describe("admin CSRF protection", () => {
     test("mutating request without matching Origin must be rejected", async () => {
         const system: any = {
-            config: { adminPathPrefix: "/page-builder" },
+            config: { adminPathPrefix: "/cms" },
             auth: {
                 guardAuthenticated: async () => ({ role: "admin" }),
                 loginPage: "/login",
@@ -21,7 +21,7 @@ describe("admin CSRF protection", () => {
         const next = async () => { nextCalled = true; return new Response("ok"); };
 
         // Cross-origin POST (attacker.com) with valid session should not reach `next`.
-        const req = new Request("http://site.com/page-builder/api/page", {
+        const req = new Request("http://site.com/cms/api/page", {
             method: "POST",
             headers: { "Origin": "http://attacker.com" },
         });

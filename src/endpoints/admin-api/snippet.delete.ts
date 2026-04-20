@@ -1,17 +1,17 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { P9R_CACHE } from "types/p9r-constants";
 
-export default async function deleteSnippet(req: Request, system: PageBuilder) {
+export default async function deleteSnippet(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     const force = url.searchParams.get("force") === "true";
 
     if (!id) return new Response("Missing id", { status: 400 });
 
-    const snippet = await system.repository.getSnippetById(id);
+    const snippet = await cms.repository.getSnippetById(id);
     if (!snippet) return new Response("Not found", { status: 404 });
 
-    const usages = await system.repository.findPagesUsingSnippet(snippet.identifier);
+    const usages = await cms.repository.findPagesUsingSnippet(snippet.identifier);
 
     if (!force && usages.length > 0) {
         return new Response(JSON.stringify({
@@ -23,11 +23,11 @@ export default async function deleteSnippet(req: Request, system: PageBuilder) {
         });
     }
 
-    await system.repository.deleteSnippet(id);
+    await cms.repository.deleteSnippet(id);
 
     // Invalidate rendered-page cache for every page that referenced this snippet
     for (const page of usages) {
-        system.cache.delete(P9R_CACHE.page(page.path, page.identifier));
+        cms.cache.delete(P9R_CACHE.page(page.path, page.identifier));
     }
 
     return new Response("Deleted", { status: 200 });

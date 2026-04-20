@@ -1,6 +1,6 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-export default async function patchMediaItem(req: Request, system: PageBuilder) {
+export default async function patchMediaItem(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
 
@@ -10,7 +10,7 @@ export default async function patchMediaItem(req: Request, system: PageBuilder) 
 
     const data = await req.json();
 
-    await system.mediaRepository.updateMetadata(id, data);
+    await cms.mediaRepository.updateMetadata(id, data);
 
     return new Response("Updated", { status: 200 });
 }

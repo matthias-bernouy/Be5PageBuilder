@@ -1,9 +1,9 @@
 import { describe, test, expect } from "bun:test";
 import robotsTxt from "src/endpoints/public/robots.txt.server";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-function makeSystem(adminPathPrefix?: string): PageBuilder {
-    return { config: { adminPathPrefix } } as unknown as PageBuilder;
+function makeSystem(adminPathPrefix?: string): Cms {
+    return { config: { adminPathPrefix } } as unknown as Cms;
 }
 
 function makeRequest(url: string): Request {
@@ -22,7 +22,7 @@ describe("robots.txt", () => {
         const body = await res.text();
         expect(body).toContain("User-agent: *");
         expect(body).toContain("Allow: /");
-        expect(body).toContain("Disallow: /page-builder/");
+        expect(body).toContain("Disallow: /cms/");
     });
 
     test("Sitemap line uses the request origin (absolute URL)", async () => {
@@ -32,10 +32,10 @@ describe("robots.txt", () => {
     });
 
     test("Disallow line honours a custom admin prefix", async () => {
-        const res = await robotsTxt(makeRequest("http://example.com/robots.txt"), makeSystem("/cms"));
+        const res = await robotsTxt(makeRequest("http://example.com/robots.txt"), makeSystem("/backend"));
         const body = await res.text();
-        expect(body).toContain("Disallow: /cms/");
-        expect(body).not.toContain("Disallow: /page-builder/");
+        expect(body).toContain("Disallow: /backend/");
+        expect(body).not.toContain("Disallow: /cms/");
     });
 
     test("sets nosniff to prevent content-type guessing", async () => {

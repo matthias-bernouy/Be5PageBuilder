@@ -29,7 +29,7 @@ function makeReq(tag: string) {
     form.append("name", "x");
     form.append("tag", tag);
     form.append("viewJS", new File(["/*v*/"], "v.js", { type: "application/javascript" }));
-    return new Request("http://localhost/page-builder/api/bloc", { method: "POST", body: form });
+    return new Request("http://localhost/cms/api/bloc", { method: "POST", body: form });
 }
 
 describe("bloc.post tag validation", () => {

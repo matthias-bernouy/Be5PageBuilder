@@ -10,7 +10,7 @@ function makeSystem(opts: {
 } = {}) {
     const createCalls: CreateCall[] = [];
     const updateCalls: UpdateCall[] = [];
-    const system: any = {
+    const cms: any = {
         repository: {
             createTemplate: async (template: TTemplate) => {
                 createCalls.push({ template });
@@ -23,11 +23,11 @@ function makeSystem(opts: {
             },
         },
     };
-    return { system, createCalls, updateCalls };
+    return { cms, createCalls, updateCalls };
 }
 
 function makeRequest(query: Record<string, string>, body: Partial<TTemplate>) {
-    const url = new URL("http://localhost/page-builder/api/template");
+    const url = new URL("http://localhost/cms/api/template");
     for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
     return new Request(url.toString(), {
         method: "POST",
@@ -38,23 +38,23 @@ function makeRequest(query: Record<string, string>, body: Partial<TTemplate>) {
 
 describe("template.post", () => {
     test("400 when creating without name", async () => {
-        const { system, createCalls } = makeSystem();
-        const res = await postTemplate(makeRequest({}, { content: "c" }), system);
+        const { cms, createCalls } = makeSystem();
+        const res = await postTemplate(makeRequest({}, { content: "c" }), cms);
         expect(res.status).toBe(400);
         expect(createCalls).toHaveLength(0);
     });
 
     test("400 when creating without content", async () => {
-        const { system } = makeSystem();
-        const res = await postTemplate(makeRequest({}, { name: "n" }), system);
+        const { cms } = makeSystem();
+        const res = await postTemplate(makeRequest({}, { name: "n" }), cms);
         expect(res.status).toBe(400);
     });
 
     test("201 on successful create with default description / category", async () => {
-        const { system, createCalls } = makeSystem();
+        const { cms, createCalls } = makeSystem();
         const res = await postTemplate(
             makeRequest({}, { name: "Card", content: "<div/>" }),
-            system
+            cms
         );
         expect(res.status).toBe(201);
         const body = await res.json();
@@ -66,7 +66,7 @@ describe("template.post", () => {
     });
 
     test("update path: calls updateTemplate when ?id is set", async () => {
-        const { system, updateCalls, createCalls } = makeSystem({
+        const { cms, updateCalls, createCalls } = makeSystem({
             existingTemplate: {
                 name: "old",
                 description: "",
@@ -77,7 +77,7 @@ describe("template.post", () => {
         });
         const res = await postTemplate(
             makeRequest({ id: "tpl-1" }, { name: "new" }),
-            system
+            cms
         );
         expect(res.status).toBe(200);
         expect(updateCalls).toHaveLength(1);
@@ -87,17 +87,17 @@ describe("template.post", () => {
     });
 
     test("update path: 404 when template does not exist", async () => {
-        const { system } = makeSystem({ existingTemplate: null });
+        const { cms } = makeSystem({ existingTemplate: null });
         const res = await postTemplate(
             makeRequest({ id: "missing" }, { name: "new" }),
-            system
+            cms
         );
         expect(res.status).toBe(404);
     });
 
     test("update path: does NOT run create-time validation", async () => {
         // Update must be allowed even when the partial body omits name/content.
-        const { system, updateCalls } = makeSystem({
+        const { cms, updateCalls } = makeSystem({
             existingTemplate: {
                 name: "old",
                 description: "",
@@ -108,7 +108,7 @@ describe("template.post", () => {
         });
         const res = await postTemplate(
             makeRequest({ id: "tpl-1" }, { description: "just a touch" }),
-            system
+            cms
         );
         expect(res.status).toBe(200);
         expect(updateCalls[0]?.data.description).toBe("just a touch");

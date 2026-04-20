@@ -1,9 +1,9 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { compress, sendCompressed } from "src/server/compression";
 
-export default async function robotsTxt(req: Request, system: PageBuilder) {
+export default async function robotsTxt(req: Request, cms: Cms) {
     const origin = new URL(req.url).origin;
-    const adminPrefix = system.config.adminPathPrefix || "/page-builder";
+    const adminPrefix = cms.config.adminPathPrefix || "/cms";
 
     const body = [
         "User-agent: *",

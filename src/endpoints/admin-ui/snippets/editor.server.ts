@@ -1,16 +1,16 @@
 import { join } from 'node:path';
-import type { PageBuilder } from 'src/PageBuilder';
+import type { Cms } from 'src/Cms';
 import { renderEditorShell } from 'src/server/editorShell';
 
-export default async function SnippetEditorServer(req: Request, system: PageBuilder) {
+export default async function SnippetEditorServer(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
     const identifier = url.searchParams.get("identifier");
 
     const snippet = id
-        ? await system.repository.getSnippetById(id)
+        ? await cms.repository.getSnippetById(id)
         : identifier
-            ? await system.repository.getSnippetByIdentifier(identifier)
+            ? await cms.repository.getSnippetByIdentifier(identifier)
             : null;
 
     const configAttributes: Record<string, string> = {};
@@ -24,7 +24,7 @@ export default async function SnippetEditorServer(req: Request, system: PageBuil
 
     return renderEditorShell({
         htmlFilePath: join(__dirname, "./editor.html"),
-        system,
+        cms,
         content: snippet?.content || "<p></p>",
         configElement: "w13c-snippet-information",
         configAttributes,

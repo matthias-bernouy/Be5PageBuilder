@@ -1,15 +1,15 @@
 import { send_html } from 'src/server/send_html';
 import { parseHTML } from 'linkedom';
 import { join } from "node:path";
-import type { PageBuilder } from 'src/PageBuilder';
+import type { Cms } from 'src/Cms';
 
 const DELETE_ICON = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>`;
 
-export default async function SnippetsPage(_req: Request, system: PageBuilder) {
+export default async function SnippetsPage(_req: Request, cms: Cms) {
     const html = await Bun.file(join(__dirname, "./snippets.html")).text();
     const { document } = parseHTML(html);
 
-    const snippets = await system.repository.getAllSnippets();
+    const snippets = await cms.repository.getAllSnippets();
     const tableBody = document.querySelector("p9r-table")!;
 
     for (const snippet of snippets) {

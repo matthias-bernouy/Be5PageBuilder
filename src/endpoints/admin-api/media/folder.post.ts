@@ -1,10 +1,10 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-export default async function postFolder(req: Request, system: PageBuilder) {
+export default async function postFolder(req: Request, cms: Cms) {
     
     const data = await req.json();
 
-    await system.mediaRepository.createFolder(data.label, data.parent);
+    await cms.mediaRepository.createFolder(data.label, data.parent);
 
     return new Response("Folder created");
 }

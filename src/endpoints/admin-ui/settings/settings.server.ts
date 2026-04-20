@@ -1,7 +1,7 @@
 import { send_html } from 'src/server/send_html';
 import { escapeHtml } from 'src/server/escapeHtml';
 import { parseHTML } from 'linkedom';
-import type { PageBuilder } from 'src/PageBuilder';
+import type { Cms } from 'src/Cms';
 import type { TPageRef } from 'src/contracts/Repository/TModels';
 import template from "./settings.html";
 
@@ -11,12 +11,12 @@ function encodeRef(ref: TPageRef): string {
     return `${ref.path}::${ref.identifier}`;
 }
 
-export default async function Server(_req: Request, system: PageBuilder) {
+export default async function Server(_req: Request, cms: Cms) {
     const { document } = parseHTML(await Bun.file(template.index).text());
 
-    const settings = await system.repository.getSystem();
-    const pages = await system.repository.getAllPages();
-    const templates = await system.repository.getAllTemplates();
+    const settings = await cms.repository.getSystem();
+    const pages = await cms.repository.getAllPages();
+    const templates = await cms.repository.getAllTemplates();
 
     // ── Page-reference selects (notFound / serverError) ─────────────────
     const pageSelects: { id: string; current: TPageRef }[] = [
@@ -123,8 +123,8 @@ export default async function Server(_req: Request, system: PageBuilder) {
     // doesn't need an EditorManager on this page.
     const mc = document.getElementById("favicon-mediacenter");
     if (mc) {
-        const adminPrefix = system.config.adminPathPrefix || "/page-builder";
-        const clientPrefix = system.config.clientPathPrefix || "/";
+        const adminPrefix = cms.config.adminPathPrefix || "/cms";
+        const clientPrefix = cms.config.clientPathPrefix || "/";
         mc.setAttribute("api-base", `${adminPrefix}/api`);
         mc.setAttribute("public-root", clientPrefix);
     }

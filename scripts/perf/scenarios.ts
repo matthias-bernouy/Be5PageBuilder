@@ -1027,7 +1027,7 @@ async () => {
         visible: true,
         tags: '',
     };
-    const target = '/page-builder/api/page?path=' + encodeURIComponent(path) + '&identifier=' + encodeURIComponent(identifier);
+    const target = '/cms/api/page?path=' + encodeURIComponent(path) + '&identifier=' + encodeURIComponent(identifier);
 
     const samples = [];
     const payloadBytes = JSON.stringify(body).length;
@@ -1071,7 +1071,7 @@ async () => {
     const samples = [];
     for (let i = 0; i < 5; i++) {
         const t = now();
-        const res = await fetch('/page-builder/api/template', {
+        const res = await fetch('/cms/api/template', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: payload,
@@ -1764,7 +1764,7 @@ async () => {
     root.className = '__perf_landing__';
     root.innerHTML = \`
         <perf-hero align="center">
-            <h1>Build faster with PageBuilder</h1>
+            <h1>Build faster with Cms</h1>
             <p slot="subtitle">Compose pages from vetted blocs — ship in minutes.</p>
             <perf-button slot="ctas">Get started</perf-button>
             <perf-button slot="ctas" variant="ghost">Learn more</perf-button>
@@ -1885,7 +1885,7 @@ async () => {
     const REPEAT = 3;
     const unit = \`
         <perf-hero align="center">
-            <h1>Build faster with PageBuilder</h1>
+            <h1>Build faster with Cms</h1>
             <p slot="subtitle">Compose pages from vetted blocs — ship in minutes.</p>
             <perf-button slot="ctas">Get started</perf-button>
             <perf-button slot="ctas" variant="ghost">Learn more</perf-button>

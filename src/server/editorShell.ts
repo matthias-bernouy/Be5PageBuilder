@@ -1,35 +1,35 @@
 import { parseHTML } from "linkedom";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { P9R_ID } from "types/p9r-constants";
 import { send_html } from "./send_html";
 
 /**
  * Shared logic for the three editor flavors (page / template / snippet).
  *
- * PageBuilder is a plugin the host app mounts under a configurable prefix, so
+ * Cms is a plugin the host app mounts under a configurable prefix, so
  * the HTML shell cannot use absolute paths. Each flavor keeps its own
  * `editor.html` next to its `editor.server.ts` with depth-appropriate relative
  * URLs, and this helper takes care of the shared server-side work: injecting
- * the bloc editor scripts, stamping attributes on `#editor-system`, creating
+ * the bloc editor scripts, stamping attributes on `#editor-cms`, creating
  * the configuration element and hydrating `#editor` with the content.
  */
 export type EditorShellOptions = {
     /** Absolute path to the flavor's `editor.html` file. */
     htmlFilePath: string;
-    system: PageBuilder;
+    cms: Cms;
     /** HTML that becomes `#editor.innerHTML` — must already be snippet-expanded. */
     content: string;
-    /** Tag name of the configuration element to append to `#editor-system`. */
+    /** Tag name of the configuration element to append to `#editor-cms`. */
     configElement: string;
     /** Attributes to set on the configuration element. */
     configAttributes: Record<string, string>;
-    /** Optional attributes to set on `#editor-system` (e.g. data-layout-category). */
+    /** Optional attributes to set on `#editor-cms` (e.g. data-layout-category). */
     editorSystemAttributes?: Record<string, string>;
 };
 
 /**
  * Builds the editor page for any flavor: injects bloc editor scripts, stamps
- * any requested attributes on `#editor-system`, creates the configuration
+ * any requested attributes on `#editor-cms`, creates the configuration
  * element and hydrates `#editor` with `content`.
  */
 export async function renderEditorShell(options: EditorShellOptions): Promise<Response> {
@@ -37,10 +37,10 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     const { document } = parseHTML(html);
 
     // ── API base path meta tag ──────────────────────────────────────────
-    // PageBuilder is mounted under a host-configurable prefix, so the client
-    // cannot hardcode `/page-builder/api/`. We bake the resolved prefix into
+    // Cms is mounted under a host-configurable prefix, so the client
+    // cannot hardcode `/cms/api/`. We bake the resolved prefix into
     // a <meta> tag that `EditorManager.getApiBasePath()` reads at runtime.
-    const adminPrefix = options.system.config.adminPathPrefix || "/page-builder";
+    const adminPrefix = options.cms.config.adminPathPrefix || "/cms";
     const apiBaseMeta = document.createElement("meta");
     apiBaseMeta.setAttribute("name", "p9r-api-base");
     apiBaseMeta.setAttribute("content", `${adminPrefix}/api/`);
@@ -56,7 +56,7 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     // so the CSP can stay strict (no inline). Each bloc's view-side code is
     // loaded via a separate <script src="/bloc?tag=..."> so the editor preview
     // renders the real component.
-    const blocs = await options.system.repository.getBlocsEditorJS();
+    const blocs = await options.cms.repository.getBlocsEditorJS();
 
     const editorBlocsScript = document.createElement("script");
     editorBlocsScript.src = `${adminPrefix}/admin/editor-blocs`;
@@ -75,7 +75,7 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
         document.head.appendChild(s);
     }
 
-    // ── #editor-system + configuration element ─────────────────────────
+    // ── #editor-cms + configuration element ─────────────────────────
     const editorSystem = document.getElementById(P9R_ID.EDITOR_SYSTEM)!;
     const editor = document.getElementById(P9R_ID.EDITOR)!;
 

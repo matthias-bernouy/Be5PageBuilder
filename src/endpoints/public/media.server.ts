@@ -1,7 +1,7 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 
-export async function MediaServer(req: Request, system: PageBuilder){
+export async function MediaServer(req: Request, cms: Cms){
 
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
@@ -15,7 +15,7 @@ export async function MediaServer(req: Request, system: PageBuilder){
     const h = url.searchParams.get("h");
 
 
-    const response = system.mediaRepository.getResponse(id, {
+    const response = cms.mediaRepository.getResponse(id, {
         w: w ? parseInt(w) : undefined,
         h: h ? parseInt(h) : undefined,
     })

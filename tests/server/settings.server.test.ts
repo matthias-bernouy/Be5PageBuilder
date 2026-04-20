@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { parseHTML } from "linkedom";
 import Server from "src/endpoints/admin-ui/settings/settings.server";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import type { TPage, TSystem, TTemplate } from "src/contracts/Repository/TModels";
 
 /**
@@ -24,7 +24,7 @@ type MockOpts = {
     system?: { site?: Partial<TSystem["site"]>; editor?: Partial<TSystem["editor"]> };
 };
 
-function mockSystem(opts: MockOpts = {}): PageBuilder {
+function mockSystem(opts: MockOpts = {}): Cms {
     const system: TSystem = {
         initializationStep: 0,
         site: {
@@ -47,8 +47,8 @@ function mockSystem(opts: MockOpts = {}): PageBuilder {
             getAllPages: async () => opts.pages ?? [],
             getAllTemplates: async () => opts.templates ?? [],
         },
-        config: { adminPathPrefix: "/page-builder", clientPathPrefix: "/" },
-    } as unknown as PageBuilder;
+        config: { adminPathPrefix: "/cms", clientPathPrefix: "/" },
+    } as unknown as Cms;
 }
 
 const page = (over: Partial<TPage> = {}): TPage => ({
@@ -72,7 +72,7 @@ const tpl = (over: Partial<TTemplate> = {}): TTemplate => ({
 });
 
 async function render(opts: MockOpts = {}): Promise<string> {
-    const req = new Request("http://localhost/page-builder/admin/settings");
+    const req = new Request("http://localhost/cms/admin/settings");
     const res = await Server(req, mockSystem(opts));
     return res.text();
 }

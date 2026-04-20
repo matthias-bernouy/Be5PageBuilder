@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { compress } from "src/server/compression";
 import type { MediaImage } from "src/contracts/Media/MediaRepository";
 import { computeSrcset } from "./computeSrcset";
@@ -21,7 +21,7 @@ export type OptimizePagePayload = {
 /**
  * One end-to-end optimization pass. Steps:
  *  1. Drive Playwright to the page URL and measure every `<img>` at every
- *     viewport. This same navigation also warms `system.cache` for the
+ *     viewport. This same navigation also warms `cms.cache` for the
  *     page (renderPage runs server-side as part of serving the request),
  *     which we rely on in step 2.
  *  2. Read the cache entry that the navigation populated. If it's still
@@ -36,7 +36,7 @@ export type OptimizePagePayload = {
 export async function optimizePage(
     payload: OptimizePagePayload,
     session: PlaywrightSession,
-    system: PageBuilder,
+    cms: Cms,
     isCurrent: () => boolean,
 ): Promise<void> {
     const url = `${payload.origin}${buildPath(payload.path, payload.identifier)}`;
@@ -44,11 +44,11 @@ export async function optimizePage(
     if (!measurements || measurements.length === 0) return;
     if (!isCurrent()) return;
 
-    const baseEntry = system.cache.get(payload.cacheKey);
+    const baseEntry = cms.cache.get(payload.cacheKey);
     if (!baseEntry) return;
     const sourceHtml = new TextDecoder().decode(baseEntry.raw);
 
-    const rewrites = await buildRewrites(measurements, system);
+    const rewrites = await buildRewrites(measurements, cms);
     if (rewrites.length === 0) return;
 
     const optimizedHtml = rewriteHTML(sourceHtml, rewrites);
@@ -60,7 +60,7 @@ export async function optimizePage(
     await preWarmVariants(rewrites, measurements, payload.origin);
 
     if (!isCurrent()) return;
-    system.cache.set(payload.cacheKey, optimizedEntry);
+    cms.cache.set(payload.cacheKey, optimizedEntry);
 }
 
 function buildPath(path: string, identifier: string): string {
@@ -71,7 +71,7 @@ function buildPath(path: string, identifier: string): string {
 
 async function buildRewrites(
     measurements: readonly ImageMeasurement[],
-    system: PageBuilder,
+    cms: Cms,
 ): Promise<ImageRewrite[]> {
     const classifications = classifyImages(measurements, VIEWPORT_HEIGHT);
     const out: ImageRewrite[] = [];
@@ -93,7 +93,7 @@ async function buildRewrites(
             if (itemCache.has(id)) {
                 item = itemCache.get(id)!;
             } else {
-                const raw = await system.mediaRepository.getItem(id).catch(() => null);
+                const raw = await cms.mediaRepository.getItem(id).catch(() => null);
                 item = raw && raw.type === "image" ? (raw as MediaImage) : null;
                 itemCache.set(id, item);
             }

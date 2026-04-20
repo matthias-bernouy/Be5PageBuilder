@@ -89,21 +89,21 @@ export class EditorManager{
     /**
      * Absolute API base URL for this editor.
      *
-     * PageBuilder is a plugin mounted under a host-configurable prefix, so
-     * the client cannot hardcode `/page-builder/api/`. The server bakes the
+     * Cms is a plugin mounted under a host-configurable prefix, so
+     * the client cannot hardcode `/cms/api/`. The server bakes the
      * resolved prefix into a `<meta name="p9r-api-base">` tag in the editor
      * shell (see `src/server/editorShell.ts`); we read it here and resolve
      * it against the current document URL so the result is always absolute.
      */
     getApiBasePath(){
         const meta = document.querySelector('meta[name="p9r-api-base"]') as HTMLMetaElement | null;
-        const base = meta?.content || "/page-builder/api/";
+        const base = meta?.content || "/cms/api/";
         return new URL(base, window.location.href).href;
     }
 
     get basePath(){
         const meta = document.querySelector('meta[name="p9r-base-path"]') as HTMLMetaElement | null;
-        return meta?.content || "/page-builder"
+        return meta?.content || "/cms"
     }
 
     switchMode(mode?: PageMode){

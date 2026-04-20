@@ -1,5 +1,5 @@
 {
-    "name": "@bernouy/pagebuilder",
+    "name": "@bernouy/cms",
     "version": "1.0.2",
     "description": "Modular CMS built on Web Components with an inline visual editing system. Bun + MongoDB.",
     "license": "UNLICENSED",

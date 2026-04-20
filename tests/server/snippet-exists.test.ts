@@ -3,7 +3,7 @@ import snippetExists from "src/endpoints/admin-api/snippet-exists.get";
 import type { TSnippet } from "src/contracts/Repository/TModels";
 
 function makeSystem(identifiers: string[]) {
-    const system: any = {
+    const cms: any = {
         repository: {
             getSnippetByIdentifier: async (identifier: string): Promise<TSnippet | null> => {
                 if (!identifiers.includes(identifier)) return null;
@@ -19,11 +19,11 @@ function makeSystem(identifiers: string[]) {
             },
         },
     };
-    return system;
+    return cms;
 }
 
 function makeRequest(query: Record<string, string>): Request {
-    const url = new URL("http://localhost/page-builder/api/snippet-exists");
+    const url = new URL("http://localhost/cms/api/snippet-exists");
     for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
     return new Request(url.toString());
 }
@@ -36,21 +36,21 @@ describe("GET /api/snippet-exists", () => {
     });
 
     test("returns { exists: true } when a snippet with that identifier exists", async () => {
-        const system = makeSystem(["hero-v1"]);
-        const res = await snippetExists(makeRequest({ identifier: "hero-v1" }), system);
+        const cms = makeSystem(["hero-v1"]);
+        const res = await snippetExists(makeRequest({ identifier: "hero-v1" }), cms);
         expect(res.status).toBe(200);
         expect(await res.json()).toEqual({ exists: true });
     });
 
     test("returns { exists: false } when no snippet matches", async () => {
-        const system = makeSystem(["hero-v1"]);
-        const res = await snippetExists(makeRequest({ identifier: "hero-v2" }), system);
+        const cms = makeSystem(["hero-v1"]);
+        const res = await snippetExists(makeRequest({ identifier: "hero-v2" }), cms);
         expect(await res.json()).toEqual({ exists: false });
     });
 
     test("match is case-sensitive", async () => {
-        const system = makeSystem(["hero-v1"]);
-        const res = await snippetExists(makeRequest({ identifier: "HERO-V1" }), system);
+        const cms = makeSystem(["hero-v1"]);
+        const res = await snippetExists(makeRequest({ identifier: "HERO-V1" }), cms);
         expect(await res.json()).toEqual({ exists: false });
     });
 });

@@ -1,6 +1,6 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-export default async function deleteMedia(req: Request, system: PageBuilder) {
+export default async function deleteMedia(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
 
@@ -8,7 +8,7 @@ export default async function deleteMedia(req: Request, system: PageBuilder) {
         return new Response("Missing id", { status: 400 });
     }
 
-    await system.mediaRepository.deleteItem(id);
+    await cms.mediaRepository.deleteItem(id);
 
     return new Response("Deleted", { status: 200 });
 }

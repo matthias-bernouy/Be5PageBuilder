@@ -8,7 +8,7 @@ import CLI_listBlocs from "./CLI_listBlocs";
 const [command, ...rest] = process.argv.slice(2);
 
 function printHelp() {
-    console.log(`p9r — PageBuilder CLI
+    console.log(`p9r — Cms CLI
 
 Usage:
   p9r init <folder> [--force]      Scaffold a new bloc in <folder> from the
@@ -36,8 +36,8 @@ Behaviour of 'p9r import':
   • Existing blocs are never overwritten — delete them from the admin UI first
 
 Env (loaded from .env or the environment):
-  P9R_URL      Base URL of the remote PageBuilder CMS
-               e.g. http://localhost:4999/page-builder
+  P9R_URL      Base URL of the remote Cms CMS
+               e.g. http://localhost:4999/cms
   P9R_TOKEN    Bearer token used to authenticate as an admin
 `);
 }

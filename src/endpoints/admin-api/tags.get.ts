@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 /**
  * Returns the list of tags (pages) or categories (snippets/templates)
@@ -8,7 +8,7 @@ import type { PageBuilder } from "src/PageBuilder";
  * Query: `?resource=pages|snippets|templates`
  * Response: `[{ value: string, count: number }]` sorted by count desc.
  */
-export default async function getTags(req: Request, system: PageBuilder) {
+export default async function getTags(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const resource = url.searchParams.get("resource");
 
@@ -22,18 +22,18 @@ export default async function getTags(req: Request, system: PageBuilder) {
     const counts = new Map<string, number>();
 
     if (resource === "pages") {
-        const pages = await system.repository.getAllPages();
+        const pages = await cms.repository.getAllPages();
         for (const page of pages) {
             const tags = normalizeTags(page.tags);
             for (const tag of tags) counts.set(tag, (counts.get(tag) || 0) + 1);
         }
     } else if (resource === "snippets") {
-        const snippets = await system.repository.getAllSnippets();
+        const snippets = await cms.repository.getAllSnippets();
         for (const snippet of snippets) {
             if (snippet.category) counts.set(snippet.category, (counts.get(snippet.category) || 0) + 1);
         }
     } else {
-        const templates = await system.repository.getAllTemplates();
+        const templates = await cms.repository.getAllTemplates();
         for (const template of templates) {
             if (template.category) counts.set(template.category, (counts.get(template.category) || 0) + 1);
         }

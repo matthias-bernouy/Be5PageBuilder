@@ -1,5 +1,5 @@
 import { parseHTML } from 'linkedom';
-import type { PageBuilder } from 'src/PageBuilder';
+import type { Cms } from 'src/Cms';
 import template from "./pages.html";
 import { send_html } from 'src/server/send_html';
 
@@ -17,10 +17,10 @@ type PagesData = {
     pages: PageRow[];
 };
 
-export default async function Server(req: Request, system: PageBuilder) {
+export default async function Server(req: Request, cms: Cms) {
     const { document } = parseHTML(await Bun.file(template.index).text());
 
-    const pageList = await system.repository.getAllPages();
+    const pageList = await cms.repository.getAllPages();
 
     const pages: PageRow[] = pageList.map(page => {
         let tags: string[];

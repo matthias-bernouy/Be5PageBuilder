@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 /**
  * Replace `<w13c-snippet identifier="...">...</w13c-snippet>` wrappers with
@@ -12,7 +12,7 @@ import type { PageBuilder } from "src/PageBuilder";
  *
  * v1 note: nested snippets are not supported. Single pass, no recursion.
  */
-export async function expandSnippets(content: string, system: PageBuilder): Promise<string> {
+export async function expandSnippets(content: string, cms: Cms): Promise<string> {
     const regex = /<w13c-snippet\b([^>]*)>([\s\S]*?)<\/w13c-snippet>/gi;
     const matches = [...content.matchAll(regex)];
     if (matches.length === 0) return content;
@@ -26,7 +26,7 @@ export async function expandSnippets(content: string, system: PageBuilder): Prom
 
     const entries = await Promise.all(
         [...identifiers].map(async id => {
-            const snippet = await system.repository.getSnippetByIdentifier(id);
+            const snippet = await cms.repository.getSnippetByIdentifier(id);
             return [id, snippet?.content ?? ""] as const;
         })
     );

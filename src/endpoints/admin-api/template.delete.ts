@@ -1,11 +1,11 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-export default async function deleteTemplate(req: Request, system: PageBuilder) {
+export default async function deleteTemplate(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
 
     if (!id) return new Response("Missing id", { status: 400 });
 
-    await system.repository.deleteTemplate(id);
+    await cms.repository.deleteTemplate(id);
     return new Response("Deleted", { status: 200 });
 }

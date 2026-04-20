@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import sitemapXml from "src/endpoints/public/sitemap.xml.server";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import type { TPage, TSystem } from "src/contracts/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
@@ -19,9 +19,9 @@ function page(over: Partial<TPage> = {}): TPage {
 function makeSystem(opts: {
     pages?: TPage[];
     adminPathPrefix?: string;
-} = {}): PageBuilder {
+} = {}): Cms {
     const sys: any = {
-        config: { adminPathPrefix: opts.adminPathPrefix ?? "/page-builder" },
+        config: { adminPathPrefix: opts.adminPathPrefix ?? "/cms" },
         repository: {
             getAllPages: async () => opts.pages ?? [],
             getSystem: async (): Promise<TSystem> => ({
@@ -40,7 +40,7 @@ function makeSystem(opts: {
             }),
         },
     };
-    return sys as PageBuilder;
+    return sys as Cms;
 }
 
 function makeRequest(url = "https://example.com/sitemap.xml"): Request {
@@ -91,13 +91,13 @@ describe("sitemap.xml", () => {
             pages: [
                 page({ path: "/about" }),
                 page({ path: "/bloc" }),
-                page({ path: "/page-builder/leak" }),
+                page({ path: "/cms/leak" }),
             ],
         }));
         const body = await res.text();
         expect(body).toContain("/about");
         expect(body).not.toContain("/bloc<");
-        expect(body).not.toContain("/page-builder/leak");
+        expect(body).not.toContain("/cms/leak");
     });
 
     test("encodes identifier as a query parameter when present", async () => {

@@ -1,7 +1,7 @@
 # Perf suite
 
 End-to-end browser-based perf regression tests. Each run spins up a fresh
-MongoDB database (`p9r_perf_test`, dropped at start), boots the PageBuilder
+MongoDB database (`p9r_perf_test`, dropped at start), boots the Cms
 server in-process, launches Playwright's chromium, opens a blank editor page,
 and runs each scenario.
 

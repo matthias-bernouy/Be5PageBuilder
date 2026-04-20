@@ -12,7 +12,7 @@ import { registerEditor, registerEditor_opaque } from "src/core/Editor/core/regi
     cache: P9R_CACHE,
 
     // Runtime exposed to bloc bundles. The CLI/server build marks
-    // `@bernouy/pagebuilder/component` and `/editor` as external and rewrites
+    // `@bernouy/cms/component` and `/editor` as external and rewrites
     // them to read from this global, so every bloc shares a single copy of
     // these base classes instead of re-bundling them.
     Component,

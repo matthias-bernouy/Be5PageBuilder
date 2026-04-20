@@ -79,7 +79,7 @@ async function setupAccountAndPage(page: Page, baseUrl: string) {
 
 async function openEditor(page: Page, baseUrl: string) {
     await page.goto(
-        `${baseUrl}/page-builder/admin/editor?title=Perf+Test&identifier=perf-test&path=%2Fperf-test`,
+        `${baseUrl}/cms/admin/editor?title=Perf+Test&identifier=perf-test&path=%2Fperf-test`,
         { waitUntil: "domcontentloaded" },
     );
     await page.waitForSelector("main p", { timeout: 10000 });

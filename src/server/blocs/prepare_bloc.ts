@@ -4,7 +4,7 @@ import { p9rExternalsPlugin } from "./p9rExternalsPlugin";
  *  The bloc is registered as opaque: it still gets the default parent-level
  *  action bar, but its subtree is sealed at runtime. */
 const OPAQUE_EDITOR_SRC = `
-import { registerEditor_opaque } from "@bernouy/pagebuilder/editor";
+import { registerEditor_opaque } from "@bernouy/cms/editor";
 registerEditor_opaque();
 `;
 

@@ -1,7 +1,7 @@
 import type { BunPlugin } from "bun";
 
 /**
- * Bloc bundles must not re-bundle `@bernouy/pagebuilder/component` or
+ * Bloc bundles must not re-bundle `@bernouy/cms/component` or
  * `/editor`. Those base classes are shipped once per page via
  * `src/core/global.ts`, which installs them on `window.p9r`. This plugin
  * rewrites the two import specifiers to read from that global, so each
@@ -18,7 +18,7 @@ export const p9rExternalsPlugin: BunPlugin = {
         build.onLoad(
             { filter: /.*/, namespace: "p9r-extern" },
             (args) => {
-                if (args.path === "@bernouy/pagebuilder/component") {
+                if (args.path === "@bernouy/cms/component") {
                     return {
                         contents: `export const Component = window.p9r.Component;`,
                         loader: "js",

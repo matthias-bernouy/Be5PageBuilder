@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import { renderPage } from "src/server/renderPage";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import type { TPage, TSnippet, TSystem } from "src/contracts/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
@@ -20,7 +20,7 @@ function makeSystem(opts: {
     blocs?: { id: string; name: string; group: string; description: string }[];
     snippets?: Record<string, string>;
     settings?: Partial<TSystem["site"]>;
-} = {}): PageBuilder {
+} = {}): Cms {
     const site: TSystem["site"] = {
         name: "",
         favicon: "",
@@ -32,14 +32,14 @@ function makeSystem(opts: {
         serverError: null,
         ...opts.settings,
     };
-    const system: TSystem = {
+    const cms: TSystem = {
         initializationStep: 0,
         site,
         editor: { layoutCategory: "" },
     };
     return {
         repository: {
-            getSystem: async () => system,
+            getSystem: async () => cms,
             getBlocsList: async () => opts.blocs ?? [],
             getSnippetByIdentifier: async (id: string): Promise<TSnippet | null> => {
                 if (!opts.snippets || !(id in opts.snippets)) return null;
@@ -54,11 +54,11 @@ function makeSystem(opts: {
                 };
             },
         },
-    } as unknown as PageBuilder;
+    } as unknown as Cms;
 }
 
-async function renderToString(p: TPage, system: PageBuilder): Promise<string> {
-    const entry = await renderPage(p, system);
+async function renderToString(p: TPage, cms: Cms): Promise<string> {
+    const entry = await renderPage(p, cms);
     return new TextDecoder().decode(entry.raw);
 }
 

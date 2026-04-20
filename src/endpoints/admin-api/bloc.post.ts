@@ -1,9 +1,9 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { prepare_bloc } from "src/server/blocs/prepare_bloc";
 import { isValidCustomElementTag } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
 
-export default async function importBloc(req: Request, system: PageBuilder) {
+export default async function importBloc(req: Request, cms: Cms) {
 
     const formData = await req.formData();
 
@@ -27,7 +27,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
         );
     }
 
-    const existing = await system.repository.getBlocViewJS(tag);
+    const existing = await cms.repository.getBlocViewJS(tag);
     if (existing !== null && !force) {
         return new Response(`Bloc with tag "${tag}" already exists`, { status: 409 });
     }
@@ -35,8 +35,8 @@ export default async function importBloc(req: Request, system: PageBuilder) {
     const bloc = await prepare_bloc(viewFile, editorFile, name, group, description, tag);
 
     try {
-        if (force) await system.repository.replaceBloc(bloc);
-        else       await system.repository.createBloc(bloc);
+        if (force) await cms.repository.replaceBloc(bloc);
+        else       await cms.repository.createBloc(bloc);
     } catch (e) {
         if (!force && (e as { code?: number }).code === 11000) {
             return new Response(`Bloc with tag "${bloc.id}" already exists`, { status: 409 });
@@ -46,8 +46,8 @@ export default async function importBloc(req: Request, system: PageBuilder) {
 
     // Invalidate caches: per-bloc view bundle, and the editor-blocs
     // concatenation that bundles every bloc's editorJS into one script.
-    system.cache.delete(P9R_CACHE.bloc(bloc.id));
-    system.cache.delete(P9R_CACHE.EDITOR_BLOCS);
+    cms.cache.delete(P9R_CACHE.bloc(bloc.id));
+    cms.cache.delete(P9R_CACHE.EDITOR_BLOCS);
 
     return new Response("Bloc imported");
 }

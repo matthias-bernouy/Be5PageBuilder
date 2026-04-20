@@ -1,16 +1,16 @@
 import { registerUIFolder, registerCSSFolder, registerAPIFolder, registerFontsFolder } from "src/server/routing";
 import { join } from "node:path"
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import type { Middleware } from "@bernouy/socle";
 
 function res(str: string){
     return join(import.meta.dir, str);
 }
 
-export const createAuthGuard = (system: PageBuilder): Middleware => {
+export const createAuthGuard = (cms: Cms): Middleware => {
     return async (req, next) => {
         const url = new URL(req.url);
-        if ( !url.pathname.startsWith(system.config.adminPathPrefix || "/page-builder") ) return await next();
+        if ( !url.pathname.startsWith(cms.config.adminPathPrefix || "/cms") ) return await next();
 
         // CSRF: mutating methods must come from the same origin.
         const method = req.method.toUpperCase();
@@ -29,13 +29,13 @@ export const createAuthGuard = (system: PageBuilder): Middleware => {
         }
 
         try {
-            const subject = await system.auth.guardAuthenticated(req);
+            const subject = await cms.auth.guardAuthenticated(req);
             if (subject.role !== "admin") throw new Error("Not connected")
             return await next();
         } catch (error) {
             console.log(error)
             const currentPath = new URL(req.url).pathname;
-            const loginUrl = system.auth.withRedirect(system.auth.loginPage, currentPath);
+            const loginUrl = cms.auth.withRedirect(cms.auth.loginPage, currentPath);
             
             return new Response(null, {
                 status: 302,
@@ -45,19 +45,19 @@ export const createAuthGuard = (system: PageBuilder): Middleware => {
     };
 };
 
-export function registerEndpoints(system: PageBuilder){
+export function registerEndpoints(cms: Cms){
 
-    system.runner.group(system.config.adminPathPrefix || "/page-builder", (r) => {
+    cms.runner.group(cms.config.adminPathPrefix || "/cms", (r) => {
 
-        registerUIFolder   ("/admin", res("admin-ui"),    system, r);
-        registerAPIFolder  ("/api",   res("admin-api"),   system, r);
-        registerCSSFolder  ("/css",   res("admin-css"),   system, r);
-        registerFontsFolder("/fonts", res("admin-fonts"), system, r);
+        registerUIFolder   ("/admin", res("admin-ui"),    cms, r);
+        registerAPIFolder  ("/api",   res("admin-api"),   cms, r);
+        registerCSSFolder  ("/css",   res("admin-css"),   cms, r);
+        registerFontsFolder("/fonts", res("admin-fonts"), cms, r);
 
-    }, [createAuthGuard(system)]);
+    }, [createAuthGuard(cms)]);
 
 
-    registerUIFolder(system.config.clientPathPrefix || "/", res("public"), system, system.runner);
+    registerUIFolder(cms.config.clientPathPrefix || "/", res("public"), cms, cms.runner);
 
 }
 

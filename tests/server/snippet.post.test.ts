@@ -11,7 +11,7 @@ function makeSystem(opts: {
     const createCalls: TSnippet[] = [];
     const updateCalls: { id: string; data: Partial<TSnippet> }[] = [];
     const deleteSpy: string[] = [];
-    const system: any = {
+    const cms: any = {
         repository: {
             getSnippetByIdentifier: async (id: string) => {
                 return opts.existingByIdentifier?.[id] ?? null;
@@ -47,11 +47,11 @@ function makeSystem(opts: {
             clear: () => {},
         },
     };
-    return { system, createCalls, updateCalls, deleteSpy };
+    return { cms, createCalls, updateCalls, deleteSpy };
 }
 
 function makeRequest(query: Record<string, string>, body: Partial<TSnippet>) {
-    const url = new URL("http://localhost/page-builder/api/snippet");
+    const url = new URL("http://localhost/cms/api/snippet");
     for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
     return new Request(url.toString(), {
         method: "POST",
@@ -62,34 +62,34 @@ function makeRequest(query: Record<string, string>, body: Partial<TSnippet>) {
 
 describe("snippet.post — create", () => {
     test("400 when identifier missing", async () => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const res = await postSnippet(
             makeRequest({}, { name: "n", content: "c" }),
-            system
+            cms
         );
         expect(res.status).toBe(400);
     });
 
     test("400 when name missing", async () => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const res = await postSnippet(
             makeRequest({}, { identifier: "hero", content: "c" }),
-            system
+            cms
         );
         expect(res.status).toBe(400);
     });
 
     test("400 when content is undefined (but empty string is allowed)", async () => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const missing = await postSnippet(
             makeRequest({}, { identifier: "hero", name: "n" }),
-            system
+            cms
         );
         expect(missing.status).toBe(400);
 
         const empty = await postSnippet(
             makeRequest({}, { identifier: "hero", name: "n", content: "" }),
-            system
+            cms
         );
         expect(empty.status).toBe(201);
     });
@@ -103,10 +103,10 @@ describe("snippet.post — create", () => {
         ["double--dash"],
         [""],
     ])("400 on invalid kebab identifier %p", async (identifier) => {
-        const { system } = makeSystem();
+        const { cms } = makeSystem();
         const res = await postSnippet(
             makeRequest({}, { identifier, name: "n", content: "c" }),
-            system
+            cms
         );
         expect(res.status).toBe(400);
     });
@@ -114,17 +114,17 @@ describe("snippet.post — create", () => {
     test.each([["hero"], ["hero-section"], ["a1-b2-c3"], ["x"]])(
         "201 on valid kebab identifier %p",
         async (identifier) => {
-            const { system } = makeSystem();
+            const { cms } = makeSystem();
             const res = await postSnippet(
                 makeRequest({}, { identifier, name: "n", content: "c" }),
-                system
+                cms
             );
             expect(res.status).toBe(201);
         }
     );
 
     test("409 when identifier already exists", async () => {
-        const { system, createCalls } = makeSystem({
+        const { cms, createCalls } = makeSystem({
             existingByIdentifier: {
                 hero: {
                     identifier: "hero",
@@ -139,7 +139,7 @@ describe("snippet.post — create", () => {
         });
         const res = await postSnippet(
             makeRequest({}, { identifier: "hero", name: "n", content: "c" }),
-            system
+            cms
         );
         expect(res.status).toBe(409);
         expect(createCalls).toHaveLength(0);
@@ -148,16 +148,16 @@ describe("snippet.post — create", () => {
 
 describe("snippet.post — update", () => {
     test("404 when target does not exist", async () => {
-        const { system } = makeSystem({ existingSnippetById: null });
+        const { cms } = makeSystem({ existingSnippetById: null });
         const res = await postSnippet(
             makeRequest({ id: "missing" }, { name: "new" }),
-            system
+            cms
         );
         expect(res.status).toBe(404);
     });
 
     test("invalidates cache for every page using the snippet", async () => {
-        const { system, deleteSpy } = makeSystem({
+        const { cms, deleteSpy } = makeSystem({
             pagesUsingSnippet: {
                 "kept-identifier": [
                     { path: "/a", identifier: "", content: "", title: "", description: "", visible: true, tags: [] },
@@ -167,7 +167,7 @@ describe("snippet.post — update", () => {
         });
         const res = await postSnippet(
             makeRequest({ id: "snip-1" }, { content: "fresh" }),
-            system
+            cms
         );
         expect(res.status).toBe(200);
         expect(deleteSpy).toContain(P9R_CACHE.page("/a", ""));
@@ -175,10 +175,10 @@ describe("snippet.post — update", () => {
     });
 
     test("no cache deletes when no page references the snippet", async () => {
-        const { system, deleteSpy } = makeSystem();
+        const { cms, deleteSpy } = makeSystem();
         await postSnippet(
             makeRequest({ id: "snip-1" }, { content: "fresh" }),
-            system
+            cms
         );
         expect(deleteSpy).toHaveLength(0);
     });

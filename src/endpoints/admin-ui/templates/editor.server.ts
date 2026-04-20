@@ -1,13 +1,13 @@
 import { join } from 'node:path';
-import type { PageBuilder } from 'src/PageBuilder';
+import type { Cms } from 'src/Cms';
 import { expandSnippets } from 'src/server/expandSnippets';
 import { renderEditorShell } from 'src/server/editorShell';
 
-export default async function TemplateEditorServer(req: Request, system: PageBuilder) {
+export default async function TemplateEditorServer(req: Request, cms: Cms) {
     const url = new URL(req.url);
     const id = url.searchParams.get("id");
 
-    const template = id ? await system.repository.getTemplateById(id) : null;
+    const template = id ? await cms.repository.getTemplateById(id) : null;
 
     const configAttributes: Record<string, string> = {};
     if (template) {
@@ -18,11 +18,11 @@ export default async function TemplateEditorServer(req: Request, system: PageBui
 
     // SSR-expand snippet references so the ObserverManager picks up the
     // current content on load, without a client-side fetch race.
-    const content = await expandSnippets(template?.content || "<p></p>", system);
+    const content = await expandSnippets(template?.content || "<p></p>", cms);
 
     return renderEditorShell({
         htmlFilePath: join(__dirname, "./editor.html"),
-        system,
+        cms,
         content,
         configElement: "w13c-template-information",
         configAttributes,

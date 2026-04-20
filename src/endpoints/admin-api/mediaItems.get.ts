@@ -1,6 +1,6 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-export default async function mediaItems(req: Request, system: PageBuilder) {
+export default async function mediaItems(req: Request, cms: Cms) {
     const url = new URL(req.url);
 
     const parent = url.searchParams.get("parent") || undefined;
@@ -21,7 +21,7 @@ export default async function mediaItems(req: Request, system: PageBuilder) {
 
     const finalFilterTypes = Array.from(new Set([...allowedTypes, "folder"]));
 
-    const items = await system.mediaRepository.getItems(parent, {
+    const items = await cms.mediaRepository.getItems(parent, {
         type: finalFilterTypes as ("folder" | "image" | "other")[]
     });
 

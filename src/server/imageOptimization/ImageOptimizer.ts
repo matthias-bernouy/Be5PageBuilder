@@ -1,11 +1,11 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { P9R_CACHE } from "types/p9r-constants";
 import { OptimizationQueue, type OptimizeJob } from "./OptimizationQueue";
 import { PlaywrightSession } from "./PlaywrightSession";
 import { optimizePage, type OptimizePagePayload } from "./optimizePage";
 
 /**
- * Façade owned by `PageBuilder`. Handles the bookkeeping (queue, session
+ * Façade owned by `Cms`. Handles the bookkeeping (queue, session
  * lifecycle, cache key) so callers only need to know about
  * `enqueuePageOptimization(path, identifier, origin)`.
  *
@@ -17,7 +17,7 @@ export class ImageOptimizer {
     private _session = new PlaywrightSession();
     private _queue: OptimizationQueue;
 
-    constructor(private _system: PageBuilder) {
+    constructor(private _system: Cms) {
         this._queue = new OptimizationQueue((job, isCurrent) => this._run(job, isCurrent));
     }
 

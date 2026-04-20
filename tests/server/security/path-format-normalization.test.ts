@@ -14,9 +14,9 @@ describe("path format & reservation checks", () => {
     });
 
     test("traversal paths that normalize to a reserved prefix are rejected", () => {
-        const system: any = { config: { adminPathPrefix: "/page-builder" } };
-        // A path that collapses to /page-builder must be flagged reserved.
-        expect(isReservedPath("/page-builder/../page-builder", system)).toBe(true);
+        const system: any = { config: { adminPathPrefix: "/cms" } };
+        // A path that collapses to /cms must be flagged reserved.
+        expect(isReservedPath("/cms/../cms", system)).toBe(true);
         expect(isReservedPath("/foo/../bloc", system)).toBe(true);
     });
 });

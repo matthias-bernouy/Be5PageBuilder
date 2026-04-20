@@ -1,5 +1,5 @@
 import { parseHTML } from "linkedom";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import type { TPage } from "src/contracts/Repository/TModels";
 import type { CacheEntry } from "src/contracts/Cache/Cache";
 import { compress } from "src/server/compression";
@@ -25,7 +25,7 @@ function normalizeFaviconHref(href: string): string {
 
 /**
  * Render a page to a compressed CacheEntry. Shared between every page
- * route registered dynamically by `PageBuilder.registerPageRoute()`. Handles
+ * route registered dynamically by `Cms.registerPageRoute()`. Handles
  * snippet expansion and bloc script injection identically to how the old
  * file-based `/article` endpoint did.
  *
@@ -38,20 +38,20 @@ function normalizeFaviconHref(href: string): string {
  * Returns a CacheEntry (not a Response) because `cachedResponseAsync` is the
  * only caller and it expects the pre-compressed bytes.
  */
-export async function renderPage(page: TPage, system: PageBuilder): Promise<CacheEntry> {
+export async function renderPage(page: TPage, cms: Cms): Promise<CacheEntry> {
     const { document } = parseHTML("<!DOCTYPE html><html><head></head><body></body></html>");
 
-    const settings = await system.repository.getSystem();
+    const settings = await cms.repository.getSystem();
 
     // <html lang="..."> when the site language is configured.
     const language = settings.site?.language?.trim() ?? "";
     if (language) document.documentElement.setAttribute("lang", language);
 
     // ── Body & bloc-script discovery (needed upfront to emit preloads) ──
-    const expandedContent = await expandSnippets(page.content, system);
+    const expandedContent = await expandSnippets(page.content, cms);
     document.body.innerHTML = expandedContent;
 
-    const blocList = await system.repository.getBlocsList();
+    const blocList = await cms.repository.getBlocsList();
     const usedTags: string[] = [];
     for (const bloc of blocList) {
         const re = new RegExp(`<${bloc.id}(\\s|>|/)`, "i");
@@ -117,7 +117,7 @@ export async function renderPage(page: TPage, system: PageBuilder): Promise<Cach
 
     // Favicon: picked from settings.site.favicon (a media URL chosen via
     // the MediaCenter picker in the Settings admin UI). Falls back to the
-    // built-in PageBuilder icon at /assets/favicon when no favicon is set.
+    // built-in Cms icon at /assets/favicon when no favicon is set.
     const favicon = document.createElement("link");
     favicon.setAttribute("rel", "icon");
     const rawFavicon = settings.site?.favicon?.trim() || "/assets/favicon";

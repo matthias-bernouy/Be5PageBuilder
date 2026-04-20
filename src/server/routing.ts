@@ -1,6 +1,6 @@
 import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { cachedResponseAsync, compress } from "src/server/compression";
 import { P9R_CACHE } from "types/p9r-constants";
 
@@ -14,7 +14,7 @@ function isHTTPMethod(s: string): s is HTTPMethod {
     return (ALLOWED_METHODS as readonly string[]).includes(s);
 }
 
-export async function registerUIFolder(baseUrl: string, absolutePath: string, system: PageBuilder, runner: Runner) {
+export async function registerUIFolder(baseUrl: string, absolutePath: string, cms: Cms, runner: Runner) {
     type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
     const pages = new Map<string, PageEntry>();
 
@@ -38,14 +38,14 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
 
         if (serverFile) {
             const module = await import(serverFile);
-            const serverHandler = module.default as (req: Request, system: PageBuilder) => Promise<Response>;
+            const serverHandler = module.default as (req: Request, cms: Cms) => Promise<Response>;
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
-                return await serverHandler(req, system);
+                return await serverHandler(req, cms);
             });
         } else if (htmlFile) {
             const cacheKey = P9R_CACHE.html(urlPath);
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
-                return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+                return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
                     const content = await Bun.file(htmlFile).text();
                     return compress(content, "text/html");
                 });
@@ -55,7 +55,7 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, sy
         if (clientFile) {
             const cacheKey = P9R_CACHE.js(urlPath);
             runner.addEndpoint("GET", urlPath + ".js", async (req: Request) => {
-                return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+                return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
                     const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
                     return compress(await result.outputs[0]!.text(), "text/javascript");
                 });
@@ -75,7 +75,7 @@ function toRouteKey(filePath: string, suffix: string): string {
 }
 
 
-export async function registerCSSFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
+export async function registerCSSFolder(url: string, absoluteFolderPath: string, cms: Cms, runner: Runner) {
     const glob = new Bun.Glob("**/*.css");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -83,7 +83,7 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
         const endpointUrl = join(url, file).replace(/\\/g, '/');
         const cacheKey = P9R_CACHE.css(endpointUrl);
         runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
-            return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+            return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
                 const content = await Bun.file(fullPath).text();
                 return compress(content, "text/css");
             });
@@ -97,7 +97,7 @@ export async function registerCSSFolder(url: string, absoluteFolderPath: string,
  * done by `compress()` is a no-op in practice but keeps the asset pipeline
  * uniform (one cache shape, one response builder).
  */
-export async function registerFontsFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
+export async function registerFontsFolder(url: string, absoluteFolderPath: string, cms: Cms, runner: Runner) {
     const glob = new Bun.Glob("**/*.woff2");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -105,7 +105,7 @@ export async function registerFontsFolder(url: string, absoluteFolderPath: strin
         const endpointUrl = join(url, file).replace(/\\/g, '/');
         const cacheKey = P9R_CACHE.font(endpointUrl);
         runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
-            return cachedResponseAsync(req, cacheKey, system.cache, async () => {
+            return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
                 const content = await Bun.file(fullPath).arrayBuffer();
                 return compress(content, "font/woff2");
             });
@@ -113,7 +113,7 @@ export async function registerFontsFolder(url: string, absoluteFolderPath: strin
     }
 }
 
-export async function registerAPIFolder(url: string, absoluteFolderPath: string, system: PageBuilder, runner: Runner) {
+export async function registerAPIFolder(url: string, absoluteFolderPath: string, cms: Cms, runner: Runner) {
     const glob = new Bun.Glob("**/*.ts");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
@@ -135,7 +135,7 @@ export async function registerAPIFolder(url: string, absoluteFolderPath: string,
 
         if (typeof handler === 'function') {
             runner.addEndpoint(method, endpointUrl, (req: Request) => {
-                return handler(req, system)
+                return handler(req, cms)
             });
         } else {
             console.warn(`[API] No default export found in ${file}`);

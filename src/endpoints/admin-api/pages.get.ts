@@ -1,7 +1,7 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
-export default async function getPages(_req: Request, system: PageBuilder) {
-    const pages = await system.repository.getAllPages();
+export default async function getPages(_req: Request, cms: Cms) {
+    const pages = await cms.repository.getAllPages();
 
     const links = pages
         .filter(page => page.visible)

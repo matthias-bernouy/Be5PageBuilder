@@ -1,11 +1,11 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import contains from "src/server/helpers";
 import type { TPage } from "src/contracts/Repository/TModels";
 import { isReservedPath } from "src/server/reservedPaths";
 import { isValidPathFormat } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
 
-export default async function updatePage(req: Request, system: PageBuilder) {
+export default async function updatePage(req: Request, cms: Cms) {
 
     const body = await req.json() as TPage & { identifier?: string };
 
@@ -32,22 +32,22 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     if (!isValidPathFormat(newPath)) {
         return new Response("Invalid path format. Must start with '/' and contain no '?', '#' or ':'.", { status: 400 });
     }
-    if (isReservedPath(newPath, system)) {
+    if (isReservedPath(newPath, cms)) {
         return new Response(`Path "${newPath}" is reserved by the framework.`, { status: 400 });
     }
 
-    await system.repository.createPage(
+    await cms.repository.createPage(
         { ...body, identifier: newIdentifier },
         { path: oldPath, identifier: oldIdentifier }
     );
 
     // Dynamically expose the new path if it wasn't already a known route
-    system.registerPageRoute(newPath);
+    cms.registerPageRoute(newPath);
 
     // Invalidate cache for both the old and the new (path, identifier) in case
     // the user renamed the page — either key could be stale
-    system.cache.delete(P9R_CACHE.page(oldPath, oldIdentifier));
-    system.cache.delete(P9R_CACHE.page(newPath, newIdentifier));
+    cms.cache.delete(P9R_CACHE.page(oldPath, oldIdentifier));
+    cms.cache.delete(P9R_CACHE.page(newPath, newIdentifier));
 
     // Kick off image-srcset optimization in the background. Each enqueue
     // bumps the queue's generation counter for that key, so a fast double
@@ -55,7 +55,7 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     // The optimizer needs a real running server to navigate to — we trust
     // the request's origin since this endpoint already requires admin auth.
     const origin = url.origin;
-    system.imageOptimizer.enqueuePageOptimization(newPath, newIdentifier, origin);
+    cms.imageOptimizer.enqueuePageOptimization(newPath, newIdentifier, origin);
 
     return new Response("Page updated");
 }

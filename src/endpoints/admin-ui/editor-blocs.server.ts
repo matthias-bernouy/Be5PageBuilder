@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { cachedResponseAsync, compress } from "src/server/compression";
 import { P9R_CACHE } from "types/p9r-constants";
 
@@ -15,9 +15,9 @@ import { P9R_CACHE } from "types/p9r-constants";
  * bloc is created or replaced. There is no bloc-delete endpoint yet; add the
  * same invalidation there when one is introduced.
  */
-export default async function EditorBlocsScript(req: Request, system: PageBuilder) {
-    return cachedResponseAsync(req, P9R_CACHE.EDITOR_BLOCS, system.cache, async () => {
-        const blocs = await system.repository.getBlocsEditorJS();
+export default async function EditorBlocsScript(req: Request, cms: Cms) {
+    return cachedResponseAsync(req, P9R_CACHE.EDITOR_BLOCS, cms.cache, async () => {
+        const blocs = await cms.repository.getBlocsEditorJS();
 
         const js = blocs.map(bloc => `
 (function() {

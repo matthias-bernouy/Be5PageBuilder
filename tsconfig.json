@@ -27,9 +27,9 @@
 		"baseUrl": ".",
 
 		"paths": {
-			"@bernouy/pagebuilder":           ["index.ts"],
-			"@bernouy/pagebuilder/component": ["component.ts"],
-			"@bernouy/pagebuilder/editor":    ["editor.ts"]
+			"@bernouy/cms":           ["index.ts"],
+			"@bernouy/cms/component": ["component.ts"],
+			"@bernouy/cms/editor":    ["editor.ts"]
 		}
 
 	},

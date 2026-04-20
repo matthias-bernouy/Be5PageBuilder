@@ -1,8 +1,8 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 import { compress, sendCompressed } from "src/server/compression";
 
 /**
- * Default PageBuilder favicon served at `/assets/favicon`.
+ * Default Cms favicon served at `/assets/favicon`.
  *
  * Used by `renderPage` when `settings.site.favicon` is empty. Inline SVG so
  * we don't depend on a bundled binary asset and the bytes are gzip-friendly.
@@ -14,6 +14,6 @@ const SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">` +
     `<rect x="12" y="42" width="32" height="8" rx="2" fill="#ffffff" opacity="0.90"/>` +
     `</svg>`;
 
-export default async function defaultFavicon(req: Request, _system: PageBuilder) {
+export default async function defaultFavicon(req: Request, _system: Cms) {
     return sendCompressed(req, compress(SVG, "image/svg+xml"));
 }

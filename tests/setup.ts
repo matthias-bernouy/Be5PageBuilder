@@ -15,7 +15,7 @@ const BunFile = globalThis.File;
 const BunBlob = globalThis.Blob;
 
 GlobalRegistrator.register({
-    url: "http://localhost:4999/page-builder/admin/editor",
+    url: "http://localhost:4999/cms/admin/editor",
 });
 
 // happy-dom does not implement `attachInternals()` yet. Several w13c inputs

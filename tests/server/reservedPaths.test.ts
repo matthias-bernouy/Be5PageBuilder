@@ -1,32 +1,32 @@
 import { describe, test, expect } from "bun:test";
 import { isReservedPath } from "src/server/reservedPaths";
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 const sys = (prefix?: string) => ({
     config: { adminPathPrefix: prefix },
-}) as unknown as PageBuilder;
+}) as unknown as Cms;
 
 describe("isReservedPath", () => {
     test("reserves the default admin prefix itself", () => {
-        expect(isReservedPath("/page-builder", sys())).toBe(true);
+        expect(isReservedPath("/cms", sys())).toBe(true);
     });
 
     test("reserves everything under the admin prefix", () => {
-        expect(isReservedPath("/page-builder/pages", sys())).toBe(true);
-        expect(isReservedPath("/page-builder/api/blocs", sys())).toBe(true);
+        expect(isReservedPath("/cms/pages", sys())).toBe(true);
+        expect(isReservedPath("/cms/api/blocs", sys())).toBe(true);
     });
 
     test("a path that starts with the prefix as a substring but not as a segment is NOT reserved", () => {
-        // "/page-builder-ish" happens to start with the prefix but the guard
+        // "/cms-ish" happens to start with the prefix but the guard
         // only accepts `{prefix}/` as the sub-match, so this is actually
         // reserved by the current implementation. Documenting actual behavior:
-        expect(isReservedPath("/page-builder-ish", sys())).toBe(false);
+        expect(isReservedPath("/cms-ish", sys())).toBe(false);
     });
 
     test("honours a custom admin prefix", () => {
-        expect(isReservedPath("/cms", sys("/cms"))).toBe(true);
-        expect(isReservedPath("/cms/pages", sys("/cms"))).toBe(true);
-        expect(isReservedPath("/page-builder", sys("/cms"))).toBe(false);
+        expect(isReservedPath("/backend", sys("/backend"))).toBe(true);
+        expect(isReservedPath("/backend/pages", sys("/backend"))).toBe(true);
+        expect(isReservedPath("/cms", sys("/backend"))).toBe(false);
     });
 
     test.each([

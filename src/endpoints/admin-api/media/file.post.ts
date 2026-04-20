@@ -1,4 +1,4 @@
-import type { PageBuilder } from "src/PageBuilder";
+import type { Cms } from "src/Cms";
 
 const ALLOWED_MIMES = new Set([
     "image/png", "image/jpeg", "image/gif", "image/webp", "image/avif", "image/svg+xml",
@@ -15,7 +15,7 @@ function sanitizeFilename(name: string): string {
     return base.replace(/^\.+/, "").slice(0, 255) || "file";
 }
 
-export default async function postMedia(req: Request, system: PageBuilder) {
+export default async function postMedia(req: Request, cms: Cms) {
     const data = await req.formData();
 
     const file = data.get("file");
@@ -43,7 +43,7 @@ export default async function postMedia(req: Request, system: PageBuilder) {
         : new File([await file.arrayBuffer()], safeName, { type: file.type });
 
     try {
-        const uploadedItem = await system.mediaRepository.upload(safeFile, parent);
+        const uploadedItem = await cms.mediaRepository.upload(safeFile, parent);
 
         return new Response(JSON.stringify(uploadedItem), {
             status: 201,
