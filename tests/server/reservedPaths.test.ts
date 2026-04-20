@@ -40,6 +40,36 @@ describe("isValidPathFormat", () => {
         expect(isValidPathFormat("/a#top")).toBe(false);
         expect(isValidPathFormat("/a/:id")).toBe(false);
     });
+
+    test("rejects consecutive slashes", () => {
+        expect(isValidPathFormat("//")).toBe(false);
+        expect(isValidPathFormat("/a//b")).toBe(false);
+    });
+
+    test("rejects trailing slash (except the root)", () => {
+        expect(isValidPathFormat("/about/")).toBe(false);
+    });
+
+    test("rejects characters outside [a-zA-Z0-9-/]", () => {
+        expect(isValidPathFormat("/my_page")).toBe(false);   // underscore
+        expect(isValidPathFormat("/my page")).toBe(false);   // space
+        expect(isValidPathFormat("/robots.txt")).toBe(false); // dot
+        expect(isValidPathFormat("/café")).toBe(false);      // non-ASCII
+        expect(isValidPathFormat("/a+b")).toBe(false);       // plus
+        expect(isValidPathFormat("/a%20b")).toBe(false);     // percent
+    });
+
+    test("accepts dashes and mixed case", () => {
+        expect(isValidPathFormat("/MyPage")).toBe(true);
+        expect(isValidPathFormat("/my-page")).toBe(true);
+        expect(isValidPathFormat("/Page-123")).toBe(true);
+        expect(isValidPathFormat("/a-b/c-d")).toBe(true);
+    });
+
+    test("rejects relative path traversal", () => {
+        expect(isValidPathFormat("/..")).toBe(false);
+        expect(isValidPathFormat("/a/..")).toBe(false);
+    });
 });
 
 describe("isReservedPath", () => {

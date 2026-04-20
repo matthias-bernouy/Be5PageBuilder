@@ -14,7 +14,24 @@ const BunFormData = globalThis.FormData;
 const BunFile = globalThis.File;
 const BunBlob = globalThis.Blob;
 
-GlobalRegistrator.register();
+GlobalRegistrator.register({
+    url: "http://localhost:4999/page-builder/admin/editor",
+});
+
+// happy-dom does not implement `attachInternals()` yet. Several w13c inputs
+// rely on `formAssociated = true` and call `attachInternals()` in their
+// constructor — polyfill a no-op stub so they can be instantiated in tests.
+if (!(HTMLElement.prototype as any).attachInternals) {
+    (HTMLElement.prototype as any).attachInternals = function () {
+        return {
+            setFormValue: () => {},
+            setValidity: () => {},
+            states: { add: () => {}, delete: () => {}, has: () => false },
+            form: null,
+            labels: [],
+        };
+    };
+}
 
 (globalThis as any).Response = BunResponse;
 (globalThis as any).Request = BunRequest;

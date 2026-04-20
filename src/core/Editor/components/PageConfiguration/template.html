@@ -1,27 +1,69 @@
 <w13c-lateral-dialog>
   <form action="">
-    <w13c-input placeholder="A beautiful title" name="title">
-      <span slot="label">Title (max 50 characters)</span>
-    </w13c-input>
-    <w13c-input placeholder="A beautiful description" name="description">
-      <span slot="label">Description (max 120 characters)</span>
-    </w13c-input>
-    <w13c-input placeholder="my-beautiful-page" name="identifier">
-      <span slot="label">Identifier (a-zA-Z0-9-)</span>
-    </w13c-input>
-    <w13c-input placeholder="/article" name="path">
-      <span slot="label">Path (a-zA-Z0-9-)</span>
-    </w13c-input>
-    <p9r-tag-suggest name="tags" mode="multiple" resource="pages" api="../api/tags" placeholder="Add a tag…">
-      <span slot="label">Tags</span>
-    </p9r-tag-suggest>
 
-    <w13c-checkbox name="visible">
-      Make visible
-    </w13c-checkbox>
+    <p9r-section data-title="SEO">
+      <div class="field">
+        <label class="label" for="f-title">Title</label>
+        <input class="input" id="f-title" name="title" type="text" placeholder="A beautiful title" />
+        <div class="meta">
+          <small class="hint" data-for="title">Used as &lt;title&gt; and SEO heading.</small>
+          <small class="counter" data-for="title"><span class="count">0</span>/50</small>
+        </div>
+      </div>
 
-    <div></div>
-    <p9r-button fullwidth type="submit" variant="filled" color="primary">
+      <div class="field">
+        <label class="label" for="f-description">Description</label>
+        <input class="input" id="f-description" name="description" type="text" placeholder="A beautiful description" />
+        <div class="meta">
+          <small class="hint" data-for="description">Used as meta description.</small>
+          <small class="counter" data-for="description"><span class="count">0</span>/120</small>
+        </div>
+      </div>
+    </p9r-section>
+
+    <p9r-section data-title="URL">
+      <div class="field">
+        <label class="label" for="f-path">Path</label>
+        <input class="input" id="f-path" name="path" type="text" placeholder="/article" />
+        <small class="hint" id="path-hint">Letters, numbers, "-" and "/" allowed.</small>
+        <div class="url-row" id="url-row" hidden>
+          <small class="url-preview" id="url-preview"></small>
+          <button type="button" class="url-open" id="url-open" title="Open in new tab" aria-label="Open in new tab">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 3h6v6"/>
+              <path d="M10 14L21 3"/>
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </p9r-section>
+
+    <p9r-section data-title="Taxonomy">
+      <p9r-tag-suggest name="tags" mode="multiple" resource="pages" api="../api/tags" placeholder="Add a tag…">
+        <span slot="label">Tags</span>
+      </p9r-tag-suggest>
+    </p9r-section>
+
+    <p9r-section data-title="Publication">
+      <p9r-select name="visible" label="Status">
+        <option value="on" selected>Published</option>
+        <option value="">Draft</option>
+      </p9r-select>
+    </p9r-section>
+
+    <p9r-section data-title="Advanced" data-collapsed>
+      <div class="field">
+        <label class="label" for="f-identifier">Identifier</label>
+        <input class="input" id="f-identifier" name="identifier" type="text" placeholder="optional" />
+        <small class="hint">
+          Optional discriminator for multiple pages sharing the same path
+          (e.g. <code>/article?identifier=v2</code>).
+        </small>
+      </div>
+    </p9r-section>
+
+    <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">
       Save
     </p9r-button>
   </form>

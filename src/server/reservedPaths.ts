@@ -36,15 +36,13 @@ export function isReservedPath(path: string, system: PageBuilder): boolean {
 }
 
 /**
- * Basic format check: must start with a slash, no query string, no fragment,
- * no `:` (which Be5_Runner.matchPath would interpret as a route parameter).
+ * Format check for user page paths. Must start with `/`. Each segment is
+ * restricted to `[a-zA-Z0-9-]` so paths stay URL-safe without encoding and
+ * can never collide with framework-reserved extensions like `/robots.txt`.
+ * No consecutive slashes, no trailing slash (except the root `/` itself).
  */
 export function isValidPathFormat(path: string): boolean {
     if (!path || typeof path !== "string") return false;
-    if (!path.startsWith("/")) return false;
-    if (path.includes("?") || path.includes("#") || path.includes(":")) return false;
-    if (path.includes("//")) return false;
-    const segments = path.split("/");
-    if (segments.some(s => s === "..")) return false;
-    return true;
+    if (path === "/") return true;
+    return /^(?:\/[a-zA-Z0-9-]+)+$/.test(path);
 }
