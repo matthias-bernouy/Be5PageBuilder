@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -7,7 +7,148 @@
     <title>Be5 Page Builder</title>
     <link rel="stylesheet" href="../css/style.css">
 
+    <style>
+        .pages-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .pages-search {
+            position: relative;
+            flex: 1 1 auto;
+            max-width: 420px;
+        }
+
+        .pages-search svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: var(--text-body);
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .pages-search input {
+            width: 100%;
+            height: 36px;
+            padding: 0 12px 0 34px;
+            font-size: 13px;
+            font-family: inherit;
+            color: var(--text-main);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            outline: none;
+            box-sizing: border-box;
+            transition: border-color .15s, box-shadow .15s;
+        }
+
+        .pages-search input:focus {
+            border-color: var(--primary-base);
+            box-shadow: 0 0 0 3px var(--primary-muted);
+        }
+
+        .pages-filters-btn {
+            position: relative;
+            appearance: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 36px;
+            padding: 0 14px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color .15s, background .15s;
+        }
+
+        .pages-filters-btn:hover { background: var(--bg-base); }
+        .pages-filters-btn[data-active="true"] { border-color: var(--primary-base); color: var(--primary-base); }
+
+        .pages-filters-btn svg { width: 16px; height: 16px; }
+
+        .pages-filters-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 6px;
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+            color: var(--primary-contrasted, #fff);
+            background: var(--primary-base);
+            border-radius: 9px;
+        }
+
+        p9r-row[slot="header"] p9r-cell[data-sort] {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        p9r-row[slot="header"] p9r-cell[data-sort] .sort-arrow {
+            display: inline-block;
+            margin-left: 6px;
+            opacity: 0.3;
+            font-size: 11px;
+        }
+
+        p9r-row[slot="header"] p9r-cell[data-sort][data-direction] .sort-arrow {
+            opacity: 1;
+            color: var(--primary-base);
+        }
+
+        .pages-empty {
+            padding: 28px 20px;
+            text-align: center;
+            color: var(--text-body);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            font-size: 13px;
+        }
+
+        .filters-panel__section {
+            margin-bottom: 24px;
+        }
+
+        .filters-panel__section:last-child { margin-bottom: 0; }
+
+        .filters-panel__clear {
+            appearance: none;
+            background: transparent;
+            border: 1px solid var(--border-default);
+            padding: 8px 14px;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .filters-panel__clear:hover { background: var(--bg-base); }
+
+        .filters-panel__clear:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    </style>
+
     <script src="./script.js"></script>
+    <script src="./pages.js" defer></script>
 
 </head>
 
@@ -18,15 +159,64 @@
 
         <p9r-button slot="action" data-modal="create-page-dialog" color="primary">+ New page</p9r-button>
 
+        <div class="pages-toolbar">
+            <div class="pages-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="7"/>
+                    <path d="m20 20-3.5-3.5"/>
+                </svg>
+                <input id="pages-search" type="search" placeholder="Search title, path or identifier…" autocomplete="off">
+            </div>
+
+            <button type="button" id="pages-filters-btn" class="pages-filters-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="6" x2="20" y2="6"/>
+                    <line x1="7" y1="12" x2="17" y2="12"/>
+                    <line x1="10" y1="18" x2="14" y2="18"/>
+                </svg>
+                Filters
+                <span id="pages-filters-badge" class="pages-filters-badge" hidden>0</span>
+            </button>
+        </div>
+
         <p9r-table>
             <p9r-row slot="header">
-                <p9r-cell><strong>Page title</strong></p9r-cell>
-                <p9r-cell><strong>Path</strong></p9r-cell>
+                <p9r-cell data-sort="title"><strong>Page title</strong><span class="sort-arrow">↕</span></p9r-cell>
+                <p9r-cell data-sort="path"><strong>Path</strong><span class="sort-arrow">↕</span></p9r-cell>
                 <p9r-cell><strong>Tags</strong></p9r-cell>
-                <p9r-cell><strong>Visibility</strong></p9r-cell>
+                <p9r-cell data-sort="visibility"><strong>Visibility</strong><span class="sort-arrow">↕</span></p9r-cell>
             </p9r-row>
         </p9r-table>
+
+        <div class="pages-empty" id="pages-empty" hidden>
+            No page matches the current filters.
+        </div>
     </w13c-fixed-admin-layout>
+
+    <w13c-lateral-dialog id="pages-filters-panel">
+        <span slot="title">Filters</span>
+
+        <div class="filters-panel__section">
+            <p9r-segmented-switch id="pages-visibility" label="Visibility" value="all">
+                <option value="all">All</option>
+                <option value="published">Published</option>
+                <option value="draft">Draft</option>
+            </p9r-segmented-switch>
+        </div>
+
+        <div class="filters-panel__section">
+            <p9r-tag-suggest
+                id="pages-tag-filter"
+                mode="multiple"
+                resource="pages"
+                api="../api/tags"
+                placeholder="Add a tag…">
+                <span slot="label">Tags</span>
+            </p9r-tag-suggest>
+        </div>
+
+        <button type="button" slot="footer" id="pages-clear" class="filters-panel__clear" disabled>Clear all</button>
+    </w13c-lateral-dialog>
 
     <p9r-form-dialog id="create-page-dialog" action="./editor">
         <span slot="title">Create a new page</span>

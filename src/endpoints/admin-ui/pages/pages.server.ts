@@ -3,66 +3,68 @@ import type { PageBuilder } from 'src/PageBuilder';
 import template from "./pages.html";
 import { send_html } from 'src/server/send_html';
 
+type PageRow = {
+    title: string;
+    identifier: string;
+    path: string;
+    visible: boolean;
+    tags: string[];
+    editorHref: string;
+    publicUrl: string;
+};
+
+type PagesData = {
+    pages: PageRow[];
+};
+
 export default async function Server(req: Request, system: PageBuilder) {
     const { document } = parseHTML(await Bun.file(template.index).text());
 
     const pageList = await system.repository.getAllPages();
-    const tableBody = document.querySelector("p9r-table")!;
 
-    for (const page of pageList) {
-        const statusVariant = page.visible ? 'success' : 'danger';
-        const statusLabel = page.visible ? 'Published' : 'Draft';
-        let tags: unknown[];
+    const pages: PageRow[] = pageList.map(page => {
+        let tags: string[];
         if (Array.isArray(page.tags)) {
-            tags = page.tags;
-        } else if (typeof page.tags === "string" && page.tags.trim().startsWith("[")) {
-            try { tags = JSON.parse(page.tags); } catch { tags = []; }
+            tags = page.tags.map(String);
+        } else if (typeof page.tags === "string" && (page.tags as string).trim().startsWith("[")) {
+            try { tags = (JSON.parse(page.tags as unknown as string) as unknown[]).map(String); }
+            catch { tags = []; }
         } else {
             tags = [];
         }
 
-        const editorQuery = page.identifier
-            ? `path=${encodeURIComponent(page.path)}&identifier=${encodeURIComponent(page.identifier)}`
-            : `path=${encodeURIComponent(page.path)}`;
+        const editorHref = page.identifier
+            ? `./editor?path=${encodeURIComponent(page.path)}&identifier=${encodeURIComponent(page.identifier)}`
+            : `./editor?path=${encodeURIComponent(page.path)}`;
         const publicUrl = page.identifier
             ? `${page.path}?identifier=${encodeURIComponent(page.identifier)}`
             : page.path;
 
-        // DOM APIs rather than `innerHTML +=` so every DB-sourced field is
-        // serialized with proper HTML escaping (stored-XSS safe).
-        const row = document.createElement("p9r-row");
-        row.setAttribute("href", `./editor?${editorQuery}`);
+        return {
+            title: page.title || "",
+            identifier: page.identifier || "",
+            path: page.path,
+            visible: !!page.visible,
+            tags,
+            editorHref,
+            publicUrl,
+        };
+    });
 
-        const titleCell = document.createElement("p9r-cell");
-        const strong = document.createElement("strong");
-        strong.textContent = page.title || "Untitled";
-        titleCell.appendChild(strong);
-        row.appendChild(titleCell);
+    const data: PagesData = { pages };
 
-        const pathCell = document.createElement("p9r-cell");
-        const pathTag = document.createElement("p9r-tag");
-        pathTag.textContent = publicUrl;
-        pathCell.appendChild(pathTag);
-        row.appendChild(pathCell);
+    // `<script type="application/json">` is a data island (not executed), so
+    // it is not subject to the strict `script-src 'self'` CSP. Still escape
+    // `</script` and `<` to prevent HTML-parser breakout via stored values.
+    const json = JSON.stringify(data)
+        .replace(/<\/script/gi, '<\\/script')
+        .replace(/</g, '\\u003c');
 
-        const tagsCell = document.createElement("p9r-cell");
-        for (const t of tags) {
-            const tagEl = document.createElement("p9r-tag");
-            tagEl.setAttribute("style", "background: var(--primary-muted); border:none; color: var(--primary-contrasted);");
-            tagEl.textContent = String(t);
-            tagsCell.appendChild(tagEl);
-        }
-        row.appendChild(tagsCell);
-
-        const statusCell = document.createElement("p9r-cell");
-        const statusTag = document.createElement("p9r-tag");
-        statusTag.setAttribute("color", statusVariant);
-        statusTag.textContent = statusLabel;
-        statusCell.appendChild(statusTag);
-        row.appendChild(statusCell);
-
-        tableBody.appendChild(row);
-    }
+    const dataScript = document.createElement("script");
+    dataScript.setAttribute("id", "pages-data");
+    dataScript.setAttribute("type", "application/json");
+    dataScript.textContent = json;
+    document.body.appendChild(dataScript);
 
     return send_html(document.toString());
 }
