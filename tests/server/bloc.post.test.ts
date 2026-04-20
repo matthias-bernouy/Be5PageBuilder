@@ -4,7 +4,7 @@ import type { TBloc } from "src/contracts/Repository/TModels";
 
 // Stub prepare_bloc so tests never touch the filesystem or run Bun.build.
 // Must be registered before importBloc is imported.
-mock.module("src/server/blocs/prepare_bloc", () => ({
+mock.module("src/blocs/prepare_bloc", () => ({
     prepare_bloc: async (
         _view: File,
         _editor: File | null,

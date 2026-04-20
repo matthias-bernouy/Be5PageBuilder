@@ -3,7 +3,7 @@ import { describe, test, expect, mock } from "bun:test";
 // Capture the blocId prepare_bloc receives so we can assert the handler
 // rejects dangerous tags BEFORE any filesystem work happens.
 const prepareBlocCalls: string[] = [];
-mock.module("src/server/blocs/prepare_bloc", () => ({
+mock.module("src/blocs/prepare_bloc", () => ({
     prepare_bloc: async (
         _v: File, _e: File | null, label: string, group: string, description: string, blocId: string,
     ) => {

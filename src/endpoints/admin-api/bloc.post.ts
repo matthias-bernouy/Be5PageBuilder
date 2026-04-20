@@ -1,5 +1,5 @@
 import type { Cms } from "src/Cms";
-import { prepare_bloc } from "src/server/blocs/prepare_bloc";
+import { prepare_bloc } from "src/blocs/prepare_bloc";
 import { isValidCustomElementTag } from "src/utils/validation";
 import { P9R_CACHE } from "src/constants/p9r-constants";
 
