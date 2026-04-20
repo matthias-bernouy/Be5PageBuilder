@@ -34,15 +34,3 @@ export function isReservedPath(path: string, system: PageBuilder): boolean {
     }
     return false;
 }
-
-/**
- * Format check for user page paths. Must start with `/`. Each segment is
- * restricted to `[a-zA-Z0-9-]` so paths stay URL-safe without encoding and
- * can never collide with framework-reserved extensions like `/robots.txt`.
- * No consecutive slashes, no trailing slash (except the root `/` itself).
- */
-export function isValidPathFormat(path: string): boolean {
-    if (!path || typeof path !== "string") return false;
-    if (path === "/") return true;
-    return /^(?:\/[a-zA-Z0-9-]+)+$/.test(path);
-}

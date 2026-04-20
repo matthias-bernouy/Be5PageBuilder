@@ -13,14 +13,7 @@ import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 
 import { Component } from "src/core/Editor/core/Component";
 import { showToast } from "w13c/core/Toast/ToastStack";
-
-/** Mirrors `isValidPathFormat` from server/reservedPaths.ts — duplicated for
- * instant client-side feedback. Server remains the source of truth. */
-function isValidPathFormat(path: string): boolean {
-    if (!path || typeof path !== "string") return false;
-    if (path === "/") return true;
-    return /^(?:\/[a-zA-Z0-9-]+)+$/.test(path);
-}
+import { isValidPathFormat } from "src/shared/validation";
 
 export class PageConfiguration extends Component {
 

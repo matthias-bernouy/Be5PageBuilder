@@ -1,8 +1,7 @@
 import type { PageBuilder } from "src/PageBuilder";
 import type { TSnippet } from "src/interfaces/contract/Repository/TModels";
+import { isValidSnippetIdentifier } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
-
-const IDENTIFIER_REGEX = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 export default async function postSnippet(req: Request, system: PageBuilder) {
     const url = new URL(req.url);
@@ -30,7 +29,7 @@ export default async function postSnippet(req: Request, system: PageBuilder) {
         return new Response("Missing required fields: identifier, name, content", { status: 400 });
     }
 
-    if (!IDENTIFIER_REGEX.test(body.identifier)) {
+    if (!isValidSnippetIdentifier(body.identifier)) {
         return new Response("Invalid identifier. Use kebab-case (lowercase letters, digits, hyphens).", { status: 400 });
     }
 

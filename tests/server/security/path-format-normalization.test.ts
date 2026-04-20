@@ -1,5 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import { isValidPathFormat, isReservedPath } from "src/server/reservedPaths";
+import { isReservedPath } from "src/server/reservedPaths";
+import { isValidPathFormat } from "src/shared/validation";
 
 describe("path format & reservation checks", () => {
     test("isValidPathFormat rejects paths with traversal segments", () => {

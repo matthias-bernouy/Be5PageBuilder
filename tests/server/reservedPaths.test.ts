@@ -1,76 +1,10 @@
 import { describe, test, expect } from "bun:test";
-import { isReservedPath, isValidPathFormat } from "src/server/reservedPaths";
+import { isReservedPath } from "src/server/reservedPaths";
 import type { PageBuilder } from "src/PageBuilder";
 
 const sys = (prefix?: string) => ({
     config: { adminPathPrefix: prefix },
 }) as unknown as PageBuilder;
-
-describe("isValidPathFormat", () => {
-    test("accepts root", () => {
-        expect(isValidPathFormat("/")).toBe(true);
-    });
-
-    test.each([
-        ["/about"],
-        ["/a/b/c"],
-        ["/docs/2024/post"],
-        ["/trailing-dash-ok"],
-    ])("accepts %s", (path) => {
-        expect(isValidPathFormat(path)).toBe(true);
-    });
-
-    test("rejects empty string", () => {
-        expect(isValidPathFormat("")).toBe(false);
-    });
-
-    test("rejects non-string", () => {
-        expect(isValidPathFormat(null as unknown as string)).toBe(false);
-        expect(isValidPathFormat(undefined as unknown as string)).toBe(false);
-        expect(isValidPathFormat(123 as unknown as string)).toBe(false);
-    });
-
-    test("rejects paths that don't start with /", () => {
-        expect(isValidPathFormat("about")).toBe(false);
-        expect(isValidPathFormat("./about")).toBe(false);
-    });
-
-    test("rejects query / fragment / route params", () => {
-        expect(isValidPathFormat("/a?b=1")).toBe(false);
-        expect(isValidPathFormat("/a#top")).toBe(false);
-        expect(isValidPathFormat("/a/:id")).toBe(false);
-    });
-
-    test("rejects consecutive slashes", () => {
-        expect(isValidPathFormat("//")).toBe(false);
-        expect(isValidPathFormat("/a//b")).toBe(false);
-    });
-
-    test("rejects trailing slash (except the root)", () => {
-        expect(isValidPathFormat("/about/")).toBe(false);
-    });
-
-    test("rejects characters outside [a-zA-Z0-9-/]", () => {
-        expect(isValidPathFormat("/my_page")).toBe(false);   // underscore
-        expect(isValidPathFormat("/my page")).toBe(false);   // space
-        expect(isValidPathFormat("/robots.txt")).toBe(false); // dot
-        expect(isValidPathFormat("/café")).toBe(false);      // non-ASCII
-        expect(isValidPathFormat("/a+b")).toBe(false);       // plus
-        expect(isValidPathFormat("/a%20b")).toBe(false);     // percent
-    });
-
-    test("accepts dashes and mixed case", () => {
-        expect(isValidPathFormat("/MyPage")).toBe(true);
-        expect(isValidPathFormat("/my-page")).toBe(true);
-        expect(isValidPathFormat("/Page-123")).toBe(true);
-        expect(isValidPathFormat("/a-b/c-d")).toBe(true);
-    });
-
-    test("rejects relative path traversal", () => {
-        expect(isValidPathFormat("/..")).toBe(false);
-        expect(isValidPathFormat("/a/..")).toBe(false);
-    });
-});
 
 describe("isReservedPath", () => {
     test("reserves the default admin prefix itself", () => {

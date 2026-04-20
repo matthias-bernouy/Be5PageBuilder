@@ -1,11 +1,7 @@
 import type { PageBuilder } from "src/PageBuilder";
 import { prepare_bloc } from "src/server/blocs/prepare_bloc";
+import { isValidCustomElementTag } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
-
-// Custom-element name rules (HTML spec) — lowercase start letter, at least
-// one dash, alnum/dash after. Locked to a conservative subset so the tag
-// can also be used safely as a filesystem path by `prepare_bloc`.
-const CUSTOM_ELEMENT_TAG = /^[a-z][a-z0-9]*(-[a-z0-9]+)+$/;
 
 export default async function importBloc(req: Request, system: PageBuilder) {
 
@@ -24,7 +20,7 @@ export default async function importBloc(req: Request, system: PageBuilder) {
         return new Response("Missing argument (name, tag, viewJS required)", { status: 400 });
     }
 
-    if (!CUSTOM_ELEMENT_TAG.test(tag)) {
+    if (!isValidCustomElementTag(tag)) {
         return new Response(
             `Invalid tag "${tag}" — must be a lowercase custom-element name (e.g. "my-card").`,
             { status: 400 },

@@ -7,7 +7,8 @@ import type { TPage, TPageRef } from "./interfaces/contract/Repository/TModels";
 import { InMemoryCache } from "./interfaces/default-provider/Cache/InMemoryCache";
 import { cachedResponseAsync } from "./server/compression";
 import { renderPage } from "./server/renderPage";
-import { isReservedPath, isValidPathFormat } from "./server/reservedPaths";
+import { isReservedPath } from "./server/reservedPaths";
+import { isValidPathFormat } from "./shared/validation";
 import { ImageOptimizer } from "./server/imageOptimization/ImageOptimizer";
 import { P9R_CACHE } from "types/p9r-constants";
 

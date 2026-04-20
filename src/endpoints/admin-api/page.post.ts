@@ -1,7 +1,8 @@
 import type { PageBuilder } from "src/PageBuilder";
 import contains from "src/server/helpers";
 import type { TPage } from "src/interfaces/contract/Repository/TModels";
-import { isReservedPath, isValidPathFormat } from "src/server/reservedPaths";
+import { isReservedPath } from "src/server/reservedPaths";
+import { isValidPathFormat } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
 
 export default async function updatePage(req: Request, system: PageBuilder) {

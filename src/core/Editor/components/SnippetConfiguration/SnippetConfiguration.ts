@@ -10,12 +10,7 @@ import type { LateralDialog } from "w13c/core/Dialog/LateralDialog/LateralDialog
 import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 import { Component } from "src/core/Editor/core/Component";
 import { showToast } from "w13c/core/Toast/ToastStack";
-
-/** Kebab-case check for snippet identifiers: lowercase letters, digits,
- * dashes; at least one character; no leading or trailing dash. */
-function isValidIdentifier(id: string): boolean {
-    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id);
-}
+import { isValidSnippetIdentifier } from "src/shared/validation";
 
 export class SnippetConfiguration extends Component {
 
@@ -184,7 +179,7 @@ export class SnippetConfiguration extends Component {
             this._setIdentifierValid(false);
             return;
         }
-        if (!isValidIdentifier(id)) {
+        if (!isValidSnippetIdentifier(id)) {
             this._setIdentifierHint(
                 "error",
                 "Lowercase letters, digits and dashes only (e.g. hero-v1).",
@@ -200,7 +195,7 @@ export class SnippetConfiguration extends Component {
         const input = this._getInputElement("identifier");
         if (!input) return;
         const id = input.value.trim();
-        if (id === "" || !isValidIdentifier(id)) return;
+        if (id === "" || !isValidSnippetIdentifier(id)) return;
 
         const token = ++this._identifierCheckToken;
         try {
