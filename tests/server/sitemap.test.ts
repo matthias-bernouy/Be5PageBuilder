@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import sitemapXml from "src/endpoints/public/sitemap.xml.server";
 import type { PageBuilder } from "src/PageBuilder";
-import type { TPage, TPageRef, TSystem } from "src/interfaces/contract/Repository/TModels";
+import type { TPage, TSystem } from "src/interfaces/contract/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
     return {
@@ -18,7 +18,6 @@ function page(over: Partial<TPage> = {}): TPage {
 
 function makeSystem(opts: {
     pages?: TPage[];
-    home?: TPageRef;
     adminPathPrefix?: string;
 } = {}): PageBuilder {
     const sys: any = {
@@ -34,11 +33,9 @@ function makeSystem(opts: {
                     host: "",
                     language: "",
                     theme: "",
-                    home: opts.home ?? null,
                     notFound: null,
                     serverError: null,
                 },
-                seo: { titleTemplate: "", defaultDescription: "", defaultOgImage: "" },
                 editor: { layoutCategory: "" },
             }),
         },
@@ -146,35 +143,24 @@ describe("sitemap.xml", () => {
         expect(body).toContain("<loc>https://acme.io/article?identifier=v2</loc>");
     });
 
-    test("adds `/` when site.home is configured and no literal `/` page exists", async () => {
-        const res = await sitemapXml(makeRequest("https://acme.io/sitemap.xml"), makeSystem({
-            pages: [page({ path: "/about" })],
-            home: { path: "/about", identifier: "" },
-        }));
-        const body = await res.text();
-        expect(body).toContain("<loc>https://acme.io/</loc>");
-    });
-
-    test("does NOT add `/` when site.home is not configured", async () => {
-        const res = await sitemapXml(makeRequest("https://acme.io/sitemap.xml"), makeSystem({
-            pages: [page({ path: "/about" })],
-            home: null,
-        }));
-        const body = await res.text();
-        expect(body).not.toContain("<loc>https://acme.io/</loc>");
-    });
-
-    test("does NOT duplicate `/` when a literal page at `/` already exists", async () => {
+    test("emits `/` exactly once when a literal page at `/` exists", async () => {
         const res = await sitemapXml(makeRequest("https://acme.io/sitemap.xml"), makeSystem({
             pages: [page({ path: "/" })],
-            home: { path: "/", identifier: "" },
         }));
         const body = await res.text();
         const matches = body.match(/<loc>https:\/\/acme\.io\/<\/loc>/g) ?? [];
         expect(matches).toHaveLength(1);
     });
 
-    test("returns an empty <urlset> when no pages exist and no home is set", async () => {
+    test("does NOT emit `/` when no literal page at `/` exists", async () => {
+        const res = await sitemapXml(makeRequest("https://acme.io/sitemap.xml"), makeSystem({
+            pages: [page({ path: "/about" })],
+        }));
+        const body = await res.text();
+        expect(body).not.toContain("<loc>https://acme.io/</loc>");
+    });
+
+    test("returns an empty <urlset> when no pages exist", async () => {
         const res = await sitemapXml(makeRequest(), makeSystem());
         const body = await res.text();
         expect(body).not.toContain("<url>");

@@ -74,18 +74,10 @@ export type TSystem = {
         language: string;
         /** Raw CSS served at `/style` and linked by every rendered public page. */
         theme: string;
-        /** Page served at `/` (unless a page exists with literal path `/`). */
-        home: TPageRef;
         /** Page rendered when a dynamic route matches but the page is missing. */
         notFound: TPageRef;
         /** Page rendered when `renderPage` throws. */
         serverError: TPageRef;
-    },
-
-    seo: {
-        titleTemplate: string;
-        defaultDescription: string;
-        defaultOgImage: string;
     },
 
     editor: {

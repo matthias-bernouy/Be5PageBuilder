@@ -28,7 +28,6 @@ function makeSystem(opts: {
         host: "",
         language: "",
         theme: "",
-        home: null,
         notFound: null,
         serverError: null,
         ...opts.settings,
@@ -36,7 +35,6 @@ function makeSystem(opts: {
     const system: TSystem = {
         initializationStep: 0,
         site,
-        seo: { titleTemplate: "%s", defaultDescription: "", defaultOgImage: "" },
         editor: { layoutCategory: "" },
     };
     return {

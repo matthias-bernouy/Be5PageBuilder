@@ -2,13 +2,12 @@ import { describe, test, expect } from "bun:test";
 import updatePage from "src/endpoints/admin-api/page.post";
 import { InMemoryCache } from "src/interfaces/default-provider/Cache/InMemoryCache";
 import { P9R_CACHE } from "types/p9r-constants";
-import type { TPage, TSystem, TPageRef } from "src/interfaces/contract/Repository/TModels";
+import type { TPage, TSystem } from "src/interfaces/contract/Repository/TModels";
 
 type CreatePageCall = { page: TPage; oldKey?: { path: string; identifier: string } };
 
 function makeSystem(opts: {
     adminPathPrefix?: string;
-    home?: TPageRef;
 } = {}) {
     const createPageCalls: CreatePageCall[] = [];
     const registeredRoutes: string[] = [];
@@ -37,11 +36,9 @@ function makeSystem(opts: {
                     host: "",
                     language: "",
                     theme: "",
-                    home: opts.home ?? null,
                     notFound: null,
                     serverError: null,
                 },
-                seo: { titleTemplate: "", defaultDescription: "", defaultOgImage: "" },
                 editor: { layoutCategory: "" },
             }),
         },
@@ -142,35 +139,5 @@ describe("page.post", () => {
         await updatePage(req, system);
         expect(deleteSpy).toContain(P9R_CACHE.page("/old", "a"));
         expect(deleteSpy).toContain(P9R_CACHE.page("/new", "b"));
-    });
-
-    test("home ref: invalidates `/` cache when the saved page is the configured home", async () => {
-        const { system, deleteSpy } = makeSystem({
-            home: { path: "/about", identifier: "" },
-        });
-        const req = makeRequest({ path: "/about" }, fullBody({ path: "/about" }));
-        await updatePage(req, system);
-        expect(deleteSpy).toContain(P9R_CACHE.page("/", ""));
-    });
-
-    test("home ref: invalidates `/` cache when renaming INTO the home path", async () => {
-        const { system, deleteSpy } = makeSystem({
-            home: { path: "/new", identifier: "" },
-        });
-        const req = makeRequest(
-            { path: "/old", identifier: "" },
-            fullBody({ path: "/new", identifier: "" })
-        );
-        await updatePage(req, system);
-        expect(deleteSpy).toContain(P9R_CACHE.page("/", ""));
-    });
-
-    test("home ref: does NOT invalidate `/` when saved page is unrelated to home", async () => {
-        const { system, deleteSpy } = makeSystem({
-            home: { path: "/somewhere", identifier: "" },
-        });
-        const req = makeRequest({ path: "/about" }, fullBody({ path: "/about" }));
-        await updatePage(req, system);
-        expect(deleteSpy).not.toContain(P9R_CACHE.page("/", ""));
     });
 });

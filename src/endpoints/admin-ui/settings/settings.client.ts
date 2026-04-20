@@ -1,5 +1,6 @@
 import "src/core/Editor/configuration/Inputs/P9rSelect";
 import "src/core/Editor/components/MediaCenter/MediaCenter";
+import "w13c/core/Form/FormSection";
 import { showToast } from "w13c/core/Toast/ToastStack";
 
 type PageRef = { path: string; identifier: string } | null;
@@ -20,7 +21,6 @@ function decodePageRef(raw: string): PageRef {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // ── Favicon picker ─────────────────────────────────────────────────
     const mc = document.getElementById("favicon-mediacenter") as any;
     const faviconHidden = document.getElementById("site-favicon") as HTMLInputElement | null;
     const faviconPicker = document.getElementById("favicon-picker");
@@ -89,11 +89,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!body[section]) body[section] = {};
             const rawValue = (el as any).value ?? "";
 
-            // site.home / site.notFound / site.serverError are PageRefs;
-            // everything else is a plain string (e.g. editor.layoutCategory).
+            // site.notFound / site.serverError are PageRefs; everything else
+            // is a plain string (e.g. site.language, editor.layoutCategory).
             const isPageRef =
-                section === "site" &&
-                (key === "home" || key === "notFound" || key === "serverError");
+                section === "site" && (key === "notFound" || key === "serverError");
             body[section]![key] = isPageRef ? decodePageRef(rawValue) : rawValue;
         });
 

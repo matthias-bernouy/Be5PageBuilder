@@ -48,17 +48,6 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     system.cache.delete(P9R_CACHE.page(oldPath, oldIdentifier));
     system.cache.delete(P9R_CACHE.page(newPath, newIdentifier));
 
-    // If this page is the current home ref, the `/` cache also holds a stale
-    // render of its previous content. Invalidate it so the next visit to `/`
-    // re-renders with the fresh body.
-    const settings = await system.repository.getSystem();
-    const home = settings.site?.home;
-    const isHome = home && ((home.path === oldPath && home.identifier === oldIdentifier) ||
-                            (home.path === newPath && home.identifier === newIdentifier));
-    if (isHome) {
-        system.cache.delete(P9R_CACHE.page("/", ""));
-    }
-
     // Kick off image-srcset optimization in the background. Each enqueue
     // bumps the queue's generation counter for that key, so a fast double
     // save just triggers one final optimization rather than racing.
@@ -66,9 +55,6 @@ export default async function updatePage(req: Request, system: PageBuilder) {
     // the request's origin since this endpoint already requires admin auth.
     const origin = url.origin;
     system.imageOptimizer.enqueuePageOptimization(newPath, newIdentifier, origin);
-    if (isHome) {
-        system.imageOptimizer.enqueuePageOptimization("/", "", origin);
-    }
 
     return new Response("Page updated");
 }

@@ -17,9 +17,8 @@ export default async function Server(_req: Request, system: PageBuilder) {
     const pages = await system.repository.getAllPages();
     const templates = await system.repository.getAllTemplates();
 
-    // ── Page-reference selects (home / notFound / serverError) ──────────
+    // ── Page-reference selects (notFound / serverError) ─────────────────
     const pageSelects: { id: string; current: TPageRef }[] = [
-        { id: "site-home",        current: settings.site?.home ?? null },
         { id: "site-notFound",    current: settings.site?.notFound ?? null },
         { id: "site-serverError", current: settings.site?.serverError ?? null },
     ];
@@ -70,15 +69,31 @@ export default async function Server(_req: Request, system: PageBuilder) {
         }
     }
 
+    // ── Language select: mark the saved BCP-47 tag as selected ──────────
+    const languageSelect = document.getElementById("site-language");
+    const currentLanguage = settings.site?.language ?? "";
+    if (languageSelect) {
+        const options = languageSelect.querySelectorAll("option");
+        let matched = false;
+        options.forEach(opt => {
+            opt.removeAttribute("selected");
+            if (opt.getAttribute("value") === currentLanguage) {
+                opt.setAttribute("selected", "");
+                matched = true;
+            }
+        });
+        // Preserve a legacy tag that isn't in the curated list so the user
+        // can still see and clear it instead of silently losing it.
+        if (!matched && currentLanguage) {
+            languageSelect.innerHTML += `<option value="${currentLanguage}" selected>${currentLanguage} (custom)</option>`;
+        }
+    }
+
     // ── Plain string values ─────────────────────────────────────────────
     const stringValues: Record<string, string> = {
-        "site-name":               settings.site?.name ?? "",
-        "site-favicon":            settings.site?.favicon ?? "",
-        "site-host":               settings.site?.host ?? "",
-        "site-language":           settings.site?.language ?? "",
-        "seo-titleTemplate":       settings.seo?.titleTemplate ?? "%s",
-        "seo-defaultDescription":  settings.seo?.defaultDescription ?? "",
-        "seo-defaultOgImage":      settings.seo?.defaultOgImage ?? "",
+        "site-name":    settings.site?.name ?? "",
+        "site-favicon": settings.site?.favicon ?? "",
+        "site-host":    settings.site?.host ?? "",
     };
 
     for (const [id, value] of Object.entries(stringValues)) {

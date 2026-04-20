@@ -83,7 +83,7 @@ new PageBuilder(
 );
 ```
 
-The constructor has side effects: it registers every endpoint on the runner, installs an auth guard in front of admin routes, sets up `GET /`, and hydrates one dynamic GET route per distinct page path found in the repository. After boot, newly created pages register their routes on the fly via `registerPageRoute`.
+The constructor has side effects: it registers every endpoint on the runner, installs an auth guard in front of admin routes, and hydrates one dynamic GET route per distinct page path found in the repository (including `/` when a page with that path exists). After boot, newly created pages register their routes on the fly via `registerPageRoute`.
 
 ---
 
@@ -97,7 +97,7 @@ The constructor has side effects: it registers every endpoint on the runner, ins
 | `/admin/templates` | UI | Manage reusable template compositions |
 | `/admin/snippets` | UI | Synchronized fragments shared across pages |
 | `/admin/media` | UI | Files, folders, upload, crop |
-| `/admin/settings` | UI | Site name, favicon, theme CSS, home/404/500 refs, SEO |
+| `/admin/settings` | UI | Site name, favicon, theme CSS, 404/500 refs |
 | `/admin/editor` | UI | Inline visual editor (used by pages, templates, snippets) |
 | `/api/*` | REST | JSON API backing the admin UI (see below) |
 | `/css/*` | Static | Design tokens + reset |
@@ -106,8 +106,7 @@ The guard lives in `src/endpoints/registerEndpoints.ts` — any request under `a
 
 ### Public (under `clientPathPrefix`, default `/`)
 
-- `GET /` — resolves the home page (literal `/` wins, otherwise `system.site.home`).
-- `GET /:pagePath` — dynamic route registered per page at startup and when pages are created.
+- `GET /:pagePath` — dynamic route registered per page at startup and when pages are created. Create a page with `path: "/"` to serve the home page.
 - `GET /style` — the raw CSS stored in `system.site.theme`, linked from every rendered page.
 - `GET /media/*` — public file serving via the media repository.
 - Static assets from `src/endpoints/public/`.
@@ -153,7 +152,7 @@ import type {
 - **`TBloc`** — `{ id, name, group, description, viewJS, editorJS }`. A registered page-builder component. `viewJS` is the public-facing bundle, `editorJS` is loaded in the admin editor — they are **separate bundles**, never cross-import. `group` and `description` are persisted alongside the bundles so `GET /api/blocs-list` can answer without parsing any JS.
 - **`TSnippet`** — a reusable HTML fragment keyed by a stable `identifier`. Unlike templates, editing a snippet propagates to every page that uses it.
 - **`TTemplate`** — a reusable HTML fragment. When inserted into a page it becomes an independent copy (no live link).
-- **`TSystem`** — site-wide settings: `site.{name, favicon, theme, home, notFound, serverError}`, `seo.*`, `editor.layoutCategory`, and an `initializationStep` for the onboarding flow. `home/notFound/serverError` are `TPageRef = { path, identifier } | null`.
+- **`TSystem`** — site-wide settings: `site.{name, favicon, host, language, theme, notFound, serverError}`, `editor.layoutCategory`, and an `initializationStep` for the onboarding flow. `notFound/serverError` are `TPageRef = { path, identifier } | null`.
 
 ---
 
@@ -356,7 +355,7 @@ Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 4. If `renderPage` throws, `system.site.serverError` is served with status 500 — if *that* also throws, plain text is returned to avoid recursion.
 5. `renderPage` produces a `CacheEntry { raw, gzip, brotli, contentType }`, and the response honors the client's `Accept-Encoding`.
 
-`renderPage` uses `linkedom` to parse the stored HTML and inject the `<link rel="stylesheet" href="/style">` tag plus SEO metadata from `TSystem.seo`.
+`renderPage` uses `linkedom` to build the `<head>`, emitting the page's `<title>` / `<meta description>`, the `<link rel="stylesheet" href="/style">` tag, and a `<link rel="canonical">` built from `TSystem.site.host`.
 
 ---
 

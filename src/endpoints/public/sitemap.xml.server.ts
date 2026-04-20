@@ -19,25 +19,15 @@ export default async function sitemapXml(req: Request, system: PageBuilder) {
     const pages = await system.repository.getAllPages();
 
     const urls: string[] = [];
-    let hasLiteralRoot = false;
 
     for (const p of pages) {
         if (!p.visible) continue;
         if (isReservedPath(p.path, system)) continue;
-        if (p.path === "/") hasLiteralRoot = true;
 
         const pathWithQuery = p.identifier
             ? `${p.path}?identifier=${encodeURIComponent(p.identifier)}`
             : p.path;
         urls.push(`  <url><loc>${escapeXml(origin + pathWithQuery)}</loc></url>`);
-    }
-
-    // The home route resolves through site.home when no literal `/` page exists.
-    if (!hasLiteralRoot) {
-        const settings = await system.repository.getSystem();
-        if (settings.site?.home) {
-            urls.unshift(`  <url><loc>${escapeXml(origin + "/")}</loc></url>`);
-        }
     }
 
     const xml = [

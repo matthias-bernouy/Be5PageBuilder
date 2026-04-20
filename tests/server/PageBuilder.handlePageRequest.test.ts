@@ -7,7 +7,6 @@ type Endpoint = { method: string; path: string; handler: (req: Request) => Promi
 
 function makeBuilder(opts: {
     pages?: TPage[];
-    home?: TPageRef;
     notFound?: TPageRef;
     serverError?: TPageRef;
     onRender?: () => void;
@@ -34,11 +33,9 @@ function makeBuilder(opts: {
             host: "",
             language: "",
             theme: "",
-            home: opts.home ?? null,
             notFound: opts.notFound ?? null,
             serverError: opts.serverError ?? null,
         },
-        seo: { titleTemplate: "", defaultDescription: "", defaultOgImage: "" },
         editor: { layoutCategory: "" },
     };
 
@@ -138,53 +135,15 @@ describe("PageBuilder.handlePageRequest (via registerPageRoute)", () => {
     });
 });
 
-describe("PageBuilder.registerHomeRoute", () => {
-    test("registers GET / on construction (called manually here to bypass constructor)", () => {
-        const { pb, endpoints } = makeBuilder();
-        (pb as any).registerHomeRoute();
-        expect(endpoints.find((e) => e.path === "/")).toBeDefined();
-    });
-
-    test("a literal page at `/` wins over the configured site.home", async () => {
+describe("PageBuilder home route (literal page at `/`)", () => {
+    test("a literal page at `/` is served via registerPageRoute", async () => {
         const literalRoot = aboutPage({ path: "/", content: "<p>literal root</p>" });
-        const otherPage = aboutPage({ path: "/about", content: "<p>about as home</p>" });
-        const { pb, endpoints } = makeBuilder({
-            pages: [literalRoot, otherPage],
-            home: { path: "/about", identifier: "" },
-        });
-        (pb as any).registerHomeRoute();
-
-        const res = await getHandler(endpoints, "/")(reqFor("/"));
-        expect(await res.text()).toContain("literal root");
-    });
-
-    test("falls back to site.home when no literal `/` page exists", async () => {
-        const homePage = aboutPage({ path: "/welcome", content: "<p>welcome home</p>" });
-        const { pb, endpoints } = makeBuilder({
-            pages: [homePage],
-            home: { path: "/welcome", identifier: "" },
-        });
-        (pb as any).registerHomeRoute();
+        const { pb, endpoints } = makeBuilder({ pages: [literalRoot] });
+        pb.registerPageRoute("/");
 
         const res = await getHandler(endpoints, "/")(reqFor("/"));
         expect(res.status).toBe(200);
-        expect(await res.text()).toContain("welcome home");
-    });
-
-    test("returns 404 when neither a literal `/` nor a configured site.home exists", async () => {
-        const { pb, endpoints } = makeBuilder();
-        (pb as any).registerHomeRoute();
-
-        const res = await getHandler(endpoints, "/")(reqFor("/"));
-        expect(res.status).toBe(404);
-    });
-
-    test("registerHomeRoute is idempotent — a second call does not double-register", () => {
-        const { pb, endpoints } = makeBuilder();
-        (pb as any).registerHomeRoute();
-        (pb as any).registerHomeRoute();
-        const rootEndpoints = endpoints.filter((e) => e.path === "/");
-        expect(rootEndpoints).toHaveLength(1);
+        expect(await res.text()).toContain("literal root");
     });
 
     test("identifier on `/` is honored when picking the literal page variant", async () => {
@@ -194,7 +153,7 @@ describe("PageBuilder.registerHomeRoute", () => {
                 aboutPage({ path: "/", identifier: "preview", content: "<p>preview root</p>" }),
             ],
         });
-        (pb as any).registerHomeRoute();
+        pb.registerPageRoute("/");
 
         const handler = getHandler(endpoints, "/");
         const def = await handler(reqFor("/"));

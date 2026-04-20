@@ -9,30 +9,26 @@
     <script src="./script.js"></script>
     <script src="./settings.js" defer></script>
     <style>
-        .settings-grid {
+        #settings-form {
             display: grid;
-            gap: 2rem;
+            gap: 12px;
             max-width: 760px;
-        }
-        .settings-section {
-            border: 1px solid var(--border-default, #e2e8f0);
-            border-radius: var(--radius-m, 8px);
-            padding: 1.5rem;
-            background: var(--bg-surface, #fff);
-        }
-        .settings-section h2 {
-            margin: 0 0 0.35rem;
-            font-size: 1.05rem;
-            font-weight: 600;
-        }
-        .settings-section p.section-hint {
-            margin: 0 0 1.25rem;
-            font-size: 0.8rem;
-            color: var(--text-muted, #94a3b8);
         }
         .fields {
             display: grid;
-            gap: 1rem;
+            gap: 14px;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .field-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted, #94a3b8);
         }
         .favicon-picker {
             position: relative;
@@ -138,31 +134,11 @@
             resize: vertical;
             outline: none;
             transition: border-color 0.15s, box-shadow 0.15s;
+            box-sizing: border-box;
         }
         textarea[name="site.theme"]:focus {
             border-color: var(--primary-base, #4361ee);
             box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
-        }
-        .theme-label {
-            display: block;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted, #94a3b8);
-            margin-bottom: 6px;
-        }
-        .save-bar {
-            position: sticky;
-            bottom: 1rem;
-            display: flex;
-            justify-content: flex-end;
-            padding: 1rem;
-            background: var(--bg-surface, #fff);
-            border: 1px solid var(--border-default, #e2e8f0);
-            border-radius: var(--radius-m, 8px);
-            max-width: 760px;
-            margin-top: 1rem;
         }
     </style>
 </head>
@@ -171,19 +147,17 @@
 
     <w13c-fixed-admin-layout>
         <span slot="title">Settings</span>
+        <p9r-button slot="action" id="save-btn" color="primary">Save</p9r-button>
 
-        <form id="settings-form" class="settings-grid">
+        <form id="settings-form">
 
-            <!-- Site -->
-            <div class="settings-section">
-                <h2>Site</h2>
-                <p class="section-hint">General site configuration</p>
+            <p9r-section data-title="Site">
                 <div class="fields">
                     <w13c-input name="site.name" id="site-name">
                         <span slot="label">Site name</span>
                     </w13c-input>
-                    <div>
-                        <label class="theme-label">Favicon</label>
+                    <div class="field">
+                        <label class="field-label">Favicon</label>
                         <button type="button" id="favicon-picker" class="favicon-picker" data-empty="true" aria-label="Choose favicon from Media Center">
                             <span class="tile">
                                 <img id="favicon-preview" alt="">
@@ -202,68 +176,64 @@
                     <w13c-input name="site.host" id="site-host">
                         <span slot="label">Host (canonical base URL, e.g. https://example.com)</span>
                     </w13c-input>
-                    <w13c-input name="site.language" id="site-language">
-                        <span slot="label">Language (BCP-47 tag, e.g. en, fr, fr-FR)</span>
-                    </w13c-input>
+                    <p9r-select name="site.language" id="site-language" label="Language">
+                        <option value="" selected>-- Not set --</option>
+                        <option value="en">English (en)</option>
+                        <option value="en-US">English — United States (en-US)</option>
+                        <option value="en-GB">English — United Kingdom (en-GB)</option>
+                        <option value="fr">Français (fr)</option>
+                        <option value="fr-FR">Français — France (fr-FR)</option>
+                        <option value="fr-BE">Français — Belgique (fr-BE)</option>
+                        <option value="fr-CA">Français — Canada (fr-CA)</option>
+                        <option value="fr-CH">Français — Suisse (fr-CH)</option>
+                        <option value="de">Deutsch (de)</option>
+                        <option value="de-DE">Deutsch — Deutschland (de-DE)</option>
+                        <option value="de-AT">Deutsch — Österreich (de-AT)</option>
+                        <option value="de-CH">Deutsch — Schweiz (de-CH)</option>
+                        <option value="es">Español (es)</option>
+                        <option value="es-ES">Español — España (es-ES)</option>
+                        <option value="es-MX">Español — México (es-MX)</option>
+                        <option value="it">Italiano (it)</option>
+                        <option value="nl">Nederlands (nl)</option>
+                        <option value="nl-BE">Nederlands — België (nl-BE)</option>
+                        <option value="pt">Português (pt)</option>
+                        <option value="pt-BR">Português — Brasil (pt-BR)</option>
+                        <option value="pl">Polski (pl)</option>
+                        <option value="ru">Русский (ru)</option>
+                        <option value="ja">日本語 (ja)</option>
+                        <option value="zh">中文 (zh)</option>
+                        <option value="zh-CN">中文 — 简体 (zh-CN)</option>
+                        <option value="zh-TW">中文 — 繁體 (zh-TW)</option>
+                        <option value="ar">العربية (ar)</option>
+                    </p9r-select>
                 </div>
-            </div>
+            </p9r-section>
 
-            <!-- Pages -->
-            <div class="settings-section">
-                <h2>System pages</h2>
-                <p class="section-hint">Pick which page is served at <code>/</code> and which pages handle 404 / 500 errors. Option values are composite <code>path::identifier</code>.</p>
+            <p9r-section data-title="System pages">
                 <div class="fields">
-                    <p9r-select name="site.home" id="site-home" label="Home page (served at /)"></p9r-select>
                     <p9r-select name="site.notFound" id="site-notFound" label="Not Found (404)"></p9r-select>
                     <p9r-select name="site.serverError" id="site-serverError" label="Server Error (500)"></p9r-select>
                 </div>
-            </div>
+            </p9r-section>
 
-            <!-- Theme -->
-            <div class="settings-section">
-                <h2>Theme</h2>
-                <p class="section-hint">Raw CSS served at <code>/style</code> and linked by every public page. Use CSS variables or selectors freely.</p>
+            <p9r-section data-title="Theme" data-collapsed>
                 <div class="fields">
-                    <div>
-                        <label class="theme-label" for="site-theme">Theme CSS</label>
+                    <div class="field">
+                        <label class="field-label" for="site-theme">Theme CSS (served at <code>/style</code>)</label>
                         <textarea name="site.theme" id="site-theme" spellcheck="false"></textarea>
                     </div>
                 </div>
-            </div>
+            </p9r-section>
 
-            <!-- SEO -->
-            <div class="settings-section">
-                <h2>SEO</h2>
-                <p class="section-hint">Default SEO values for pages that don't override them</p>
-                <div class="fields">
-                    <w13c-input name="seo.titleTemplate" id="seo-titleTemplate">
-                        <span slot="label">Title template (use %s for page title)</span>
-                    </w13c-input>
-                    <w13c-input name="seo.defaultDescription" id="seo-defaultDescription">
-                        <span slot="label">Default meta description</span>
-                    </w13c-input>
-                    <w13c-input name="seo.defaultOgImage" id="seo-defaultOgImage">
-                        <span slot="label">Default OG image URL</span>
-                    </w13c-input>
-                </div>
-            </div>
-
-            <!-- Editor -->
-            <div class="settings-section">
-                <h2>Editor</h2>
-                <p class="section-hint">Behavior of the page editor</p>
+            <p9r-section data-title="Editor">
                 <div class="fields">
                     <p9r-select name="editor.layoutCategory" id="editor-layoutCategory" label="Layout category (shown at page creation)"></p9r-select>
                 </div>
-            </div>
+            </p9r-section>
 
         </form>
 
         <w13c-mediacenter id="favicon-mediacenter"></w13c-mediacenter>
-
-        <div class="save-bar">
-            <p9r-button id="save-btn" color="primary">Save settings</p9r-button>
-        </div>
 
     </w13c-fixed-admin-layout>
 

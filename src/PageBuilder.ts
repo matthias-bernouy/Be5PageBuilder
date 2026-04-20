@@ -50,7 +50,6 @@ export class PageBuilder{
         this._cache = cache || new InMemoryCache();
         this._imageOptimizer = new ImageOptimizer(this);
         registerEndpoints(this);
-        this.registerHomeRoute();
         this.hydratePageRoutes().catch(err => {
             console.error("Failed to hydrate page routes from DB:", err);
         });
@@ -100,42 +99,6 @@ export class PageBuilder{
         this._registeredPagePaths.add(path);
 
         this._runner.addEndpoint("GET", path, (req: Request) => this.handlePageRequest(req));
-    }
-
-    /**
-     * Register `GET /` so the home page can be picked in settings. Prefers a
-     * real page with literal path `/` if one exists; otherwise resolves the
-     * `site.home` reference. Always registered so the user can configure a
-     * home without creating a page at `/`.
-     */
-    private registerHomeRoute(): void {
-        if (this._registeredPagePaths.has("/")) return;
-        this._registeredPagePaths.add("/");
-
-        this._runner.addEndpoint("GET", "/", async (req: Request) => {
-            const url = new URL(req.url);
-            const identifier = url.searchParams.get("identifier") || "";
-
-            // A literal page at `/` always wins over the home ref.
-            const direct = await this._repository.getPage("/", identifier);
-            if (direct) {
-                return this.renderWithFallbacks(req, direct, "/", identifier);
-            }
-
-            const settings = await this._repository.getSystem();
-            const homeRef = settings.site?.home;
-            if (homeRef) {
-                const target = await this._repository.getPage(homeRef.path, homeRef.identifier);
-                if (target) {
-                    // Cache under `/` so edits to the referenced page don't
-                    // poison the home cache — its own route invalidates its
-                    // own key, and editing settings invalidates `/`.
-                    return this.renderWithFallbacks(req, target, "/", "");
-                }
-            }
-
-            return this.renderNotFound(req);
-        });
     }
 
     /**

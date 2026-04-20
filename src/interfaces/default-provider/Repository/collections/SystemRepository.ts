@@ -1,14 +1,6 @@
 import type { Collection, Db } from "mongodb";
 import type { TSystem } from "src/interfaces/contract/Repository/TModels";
 
-/**
- * MongoDB-backed persistence for the single system-settings document.
- *
- * `get()` performs an in-place migration that strips legacy fields
- * (`homePage`/`page404`/`page500` as strings, `editor.blocAtPageCreation`)
- * and fills in any missing fields from the defaults. This is pre-v1 dev-DB
- * maintenance — see CLEAN.md section 4 for removal once dev DBs are clean.
- */
 export class SystemRepository {
 
     private _collection: Collection<TSystem>;
@@ -31,11 +23,9 @@ export class SystemRepository {
                 host: "",
                 language: "",
                 theme: "",
-                home: null,
                 notFound: null,
                 serverError: null,
             },
-            seo: { titleTemplate: "%s", defaultDescription: "", defaultOgImage: "" },
             editor: { layoutCategory: "" },
         };
 
@@ -46,8 +36,6 @@ export class SystemRepository {
         }
 
         const legacy = doc.site || {};
-        const hasLegacySite = "homePage" in legacy || "page404" in legacy || "page500" in legacy;
-        const hasLegacyEditor = doc.editor && "blocAtPageCreation" in doc.editor;
 
         const merged: TSystem = {
             initializationStep: doc.initializationStep ?? 0,
@@ -58,26 +46,29 @@ export class SystemRepository {
                 host: legacy.host ?? "",
                 language: legacy.language ?? "",
                 theme: legacy.theme ?? "",
-                home: legacy.home ?? null,
                 notFound: legacy.notFound ?? null,
                 serverError: legacy.serverError ?? null,
-            },
-            seo: {
-                titleTemplate: doc.seo?.titleTemplate ?? "%s",
-                defaultDescription: doc.seo?.defaultDescription ?? "",
-                defaultOgImage: doc.seo?.defaultOgImage ?? "",
             },
             editor: {
                 layoutCategory: doc.editor?.layoutCategory ?? "",
             },
         };
 
-        if (hasLegacySite || hasLegacyEditor) {
-            // Replace entire `site` and `editor` subdocs so legacy fields
-            // (homePage/page404/page500, blocAtPageCreation) are dropped.
+        const hasStaleSubdocs =
+            "home" in legacy ||
+            "homePage" in legacy ||
+            "page404" in legacy ||
+            "page500" in legacy ||
+            "seo" in doc ||
+            (doc.editor && "blocAtPageCreation" in doc.editor);
+
+        if (hasStaleSubdocs) {
             await this._collection.updateOne(
                 {},
-                { $set: { site: merged.site, editor: merged.editor } }
+                {
+                    $set: { site: merged.site, editor: merged.editor },
+                    $unset: { seo: "" },
+                }
             );
         }
 
