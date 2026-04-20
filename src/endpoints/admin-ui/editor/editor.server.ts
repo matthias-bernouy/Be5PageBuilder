@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type { Cms } from 'src/Cms';
-import { expandSnippets } from 'src/server/expandSnippets';
-import { renderEditorShell } from 'src/server/editorShell';
+import { expandSnippets } from 'src/server/rendering/expandSnippets';
+import { renderEditorShell } from 'src/server/rendering/editorShell';
 
 export default async function ArticleServerAdmin(req: Request, cms: Cms) {
     const url = new URL(req.url);

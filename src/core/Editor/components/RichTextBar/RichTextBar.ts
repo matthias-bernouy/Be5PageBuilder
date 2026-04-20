@@ -81,7 +81,7 @@ export class EditorToolbar extends Component {
         }
     }
 
-    override disconnectedCallback() {
+    disconnectedCallback() {
         document.removeEventListener("selectionchange", this._onSelectionChange);
         document.removeEventListener("mousedown", this._onOutsideMousedown);
     }

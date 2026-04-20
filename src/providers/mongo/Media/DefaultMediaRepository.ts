@@ -11,7 +11,7 @@ import type {
 } from "src/contracts/Media/MediaRepository";
 import MediaEndpoints from "./MediaEndpoints";
 import { VariantCache } from "./VariantCache";
-import { LADDER_SET } from "src/server/imageLadder";
+import { LADDER_SET } from "src/server/imageOptimization/imageLadder";
 
 type Config = {
     uri: string;
@@ -124,7 +124,7 @@ export class DefaultMediaRepository implements MediaRepository {
         const coll = (this as any)._collection?.() ?? this._mediaCollection;
         const docs = await coll.find(query, { projection: { content: 0 } }).toArray();
 
-        return docs.map(doc => {
+        return docs.map((doc: { _id: ObjectId } & Record<string, unknown>) => {
             const { _id, ...rest } = doc;
             return {
                 ...rest,

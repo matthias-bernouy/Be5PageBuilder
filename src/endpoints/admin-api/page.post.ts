@@ -1,8 +1,8 @@
 import type { Cms } from "src/Cms";
-import contains from "src/server/helpers";
+import contains from "src/server/formData";
 import type { TPage } from "src/contracts/Repository/TModels";
 import { isReservedPath } from "src/server/reservedPaths";
-import { isValidPathFormat } from "src/shared/validation";
+import { isValidPathFormat } from "src/utils/validation";
 import { P9R_CACHE } from "src/constants/p9r-constants";
 
 export default async function updatePage(req: Request, cms: Cms) {

@@ -14,7 +14,6 @@ export async function MediaServer(req: Request, cms: Cms){
     const w = url.searchParams.get("w");
     const h = url.searchParams.get("h");
 
-
     const response = cms.mediaRepository.getResponse(id, {
         w: w ? parseInt(w) : undefined,
         h: h ? parseInt(h) : undefined,

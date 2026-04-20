@@ -48,7 +48,7 @@ export default async function SnippetsPage(_req: Request, cms: Cms) {
         // does not escape `<` / `>` inside attribute values, so unencoded
         // content could still surface raw `<script>` text in the serialized
         // HTML (valid but alarming and trips automated XSS scanners).
-        btn.setAttribute("data-id", encodeURIComponent(snippet.id));
+        btn.setAttribute("data-id", encodeURIComponent(snippet.id!));
         btn.innerHTML = DELETE_ICON;
         actCell.appendChild(btn);
         row.appendChild(actCell);

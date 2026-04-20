@@ -1,7 +1,7 @@
 import { parseHTML } from "linkedom";
 import type { Cms } from "src/Cms";
 import { P9R_ID } from "src/constants/p9r-constants";
-import { send_html } from "./send_html";
+import { send_html } from "../send_html";
 
 /**
  * Shared logic for the three editor flavors (page / template / snippet).

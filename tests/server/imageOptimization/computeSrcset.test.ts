@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import { computeSrcset, type Measurement } from "src/server/imageOptimization/computeSrcset";
-import { LADDER_WIDTHS } from "src/server/imageLadder";
+import { LADDER_WIDTHS } from "src/server/imageOptimization/imageLadder";
 
 const m = (viewport: number, cssWidth: number): Measurement => ({ viewport, cssWidth });
 

@@ -1,6 +1,6 @@
 import type { Cms } from "src/Cms";
 import { prepare_bloc } from "src/server/blocs/prepare_bloc";
-import { isValidCustomElementTag } from "src/shared/validation";
+import { isValidCustomElementTag } from "src/utils/validation";
 import { P9R_CACHE } from "src/constants/p9r-constants";
 
 export default async function importBloc(req: Request, cms: Cms) {

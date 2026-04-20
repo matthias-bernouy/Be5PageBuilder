@@ -3,7 +3,7 @@ import {
     isValidPathFormat,
     isValidSnippetIdentifier,
     isValidCustomElementTag,
-} from "src/shared/validation";
+} from "src/utils/validation";
 
 describe("isValidPathFormat", () => {
     test("accepts root", () => {

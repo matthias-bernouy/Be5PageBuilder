@@ -3,7 +3,7 @@ import type { Cms } from "src/Cms";
 import type { TPage } from "src/contracts/Repository/TModels";
 import type { CacheEntry } from "src/contracts/Cache/Cache";
 import { compress } from "src/server/compression";
-import { expandSnippets } from "src/server/expandSnippets";
+import { expandSnippets } from "src/server/rendering/expandSnippets";
 
 const COMPONENT_JS = "/assets/component.js";
 

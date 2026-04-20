@@ -1,6 +1,6 @@
 import type { Cms } from "src/Cms";
 import type { TSnippet } from "src/contracts/Repository/TModels";
-import { isValidSnippetIdentifier } from "src/shared/validation";
+import { isValidSnippetIdentifier } from "src/utils/validation";
 import { P9R_CACHE } from "src/constants/p9r-constants";
 
 export default async function postSnippet(req: Request, cms: Cms) {

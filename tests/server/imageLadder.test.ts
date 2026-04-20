@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { LADDER_WIDTHS, LADDER_SET, isLadderDimension } from "src/server/imageLadder";
+import { LADDER_WIDTHS, LADDER_SET, isLadderDimension } from "src/server/imageOptimization/imageLadder";
 
 const ICON_RUNGS = [16, 32, 64, 128] as const;
 

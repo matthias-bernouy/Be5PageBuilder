@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import type { Cms } from 'src/Cms';
-import { renderEditorShell } from 'src/server/editorShell';
+import { renderEditorShell } from 'src/server/rendering/editorShell';
 
 export default async function SnippetEditorServer(req: Request, cms: Cms) {
     const url = new URL(req.url);

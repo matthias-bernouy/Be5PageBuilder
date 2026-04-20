@@ -1,5 +1,5 @@
 import { send_html } from 'src/server/send_html';
-import { escapeHtml } from 'src/server/escapeHtml';
+import { escapeHtml } from 'src/utils/escapeHtml';
 import { parseHTML } from 'linkedom';
 import type { Cms } from 'src/Cms';
 import type { TPageRef } from 'src/contracts/Repository/TModels';

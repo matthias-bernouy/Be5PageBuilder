@@ -1,4 +1,4 @@
-import { LADDER_WIDTHS } from "src/server/imageLadder";
+import { LADDER_WIDTHS } from "src/server/imageOptimization/imageLadder";
 import { DPR_MULTIPLIERS } from "./viewports";
 
 export type Measurement = { viewport: number; cssWidth: number };

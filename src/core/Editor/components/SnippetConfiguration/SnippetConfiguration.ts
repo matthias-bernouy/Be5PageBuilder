@@ -10,7 +10,7 @@ import type { LateralDialog } from "src/ui/Dialog/LateralDialog/LateralDialog";
 import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 import { Component } from "src/core/Editor/runtime/Component";
 import { showToast } from "src/ui/Toast/ToastStack";
-import { isValidSnippetIdentifier } from "src/shared/validation";
+import { isValidSnippetIdentifier } from "src/utils/validation";
 
 export class SnippetConfiguration extends Component {
 

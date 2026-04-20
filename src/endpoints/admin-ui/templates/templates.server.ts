@@ -20,7 +20,7 @@ export default async function TemplatesPage(_req: Request, cms: Cms) {
         // DOM APIs rather than `innerHTML +=` so every DB-sourced field is
         // serialized with proper HTML escaping (stored-XSS safe).
         const row = document.createElement("p9r-row");
-        row.setAttribute("href", `./templates/editor?id=${encodeURIComponent(tpl.id)}`);
+        row.setAttribute("href", `./templates/editor?id=${encodeURIComponent(tpl.id!)}`);
 
         const nameCell = document.createElement("p9r-cell");
         nameCell.textContent = tpl.name;
@@ -39,7 +39,7 @@ export default async function TemplatesPage(_req: Request, cms: Cms) {
         btn.setAttribute("class", "btn-delete-tpl");
         // Pre-URL-encode so `<` cannot appear raw inside the attribute
         // (linkedom leaves `<` unescaped in attribute values).
-        btn.setAttribute("data-id", encodeURIComponent(tpl.id));
+        btn.setAttribute("data-id", encodeURIComponent(tpl.id!));
         btn.innerHTML = DELETE_ICON;
         actCell.appendChild(btn);
         row.appendChild(actCell);

@@ -13,7 +13,7 @@ import type { P9rInput } from "src/core/Editor/configuration/Inputs/P9rInput";
 
 import { Component } from "src/core/Editor/runtime/Component";
 import { showToast } from "src/ui/Toast/ToastStack";
-import { isValidPathFormat } from "src/shared/validation";
+import { isValidPathFormat } from "src/utils/validation";
 
 export class PageConfiguration extends Component {
 
