@@ -19,7 +19,7 @@ const cssStyle = `
     }
 `
 
-export const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "a"]);
+export const textTags = new Set(["p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "a", "b", "i", "u"]);
 
 export type TextEditorOptions = {
     createBloc: boolean;
