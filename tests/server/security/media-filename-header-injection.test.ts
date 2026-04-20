@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { DefaultMediaRepository } from "src/interfaces/default-provider/Media/DefaultMediaRepository";
+import { DefaultMediaRepository } from "src/providers/mongo/Media/DefaultMediaRepository";
 
 describe("media filename header injection", () => {
     test("Content-Disposition filename is safely encoded", async () => {

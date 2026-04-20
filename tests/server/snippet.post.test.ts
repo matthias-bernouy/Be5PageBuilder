@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import postSnippet from "src/endpoints/admin-api/snippet.post";
 import { P9R_CACHE } from "types/p9r-constants";
-import type { TSnippet, TPage } from "src/interfaces/contract/Repository/TModels";
+import type { TSnippet, TPage } from "src/contracts/Repository/TModels";
 
 function makeSystem(opts: {
     existingByIdentifier?: Record<string, TSnippet | null>;

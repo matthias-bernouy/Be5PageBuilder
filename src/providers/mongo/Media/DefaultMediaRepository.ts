@@ -8,7 +8,7 @@ import type {
     MediaImage,
     MediaItem,
     MediaRepository
-} from "src/interfaces/contract/Media/MediaRepository";
+} from "src/contracts/Media/MediaRepository";
 import MediaEndpoints from "./MediaEndpoints";
 import { VariantCache } from "./VariantCache";
 import { LADDER_SET } from "src/server/imageLadder";

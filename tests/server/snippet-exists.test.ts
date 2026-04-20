@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import snippetExists from "src/endpoints/admin-api/snippet-exists.get";
-import type { TSnippet } from "src/interfaces/contract/Repository/TModels";
+import type { TSnippet } from "src/contracts/Repository/TModels";
 
 function makeSystem(identifiers: string[]) {
     const system: any = {

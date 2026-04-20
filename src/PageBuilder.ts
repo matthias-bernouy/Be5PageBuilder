@@ -1,10 +1,10 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
 import type { Authentication, PasswordAuthentication, Runner, TokenAuthentication } from "@bernouy/socle";
-import type { PageBuilderRepository } from "./interfaces/contract/Repository/PageBuilderRepository";
-import type { MediaRepository } from "./interfaces/contract/Media/MediaRepository";
-import type { Cache } from "./interfaces/contract/Cache/Cache";
-import type { TPage, TPageRef } from "./interfaces/contract/Repository/TModels";
-import { InMemoryCache } from "./interfaces/default-provider/Cache/InMemoryCache";
+import type { PageBuilderRepository } from "./contracts/Repository/PageBuilderRepository";
+import type { MediaRepository } from "./contracts/Media/MediaRepository";
+import type { Cache } from "./contracts/Cache/Cache";
+import type { TPage, TPageRef } from "./contracts/Repository/TModels";
+import { InMemoryCache } from "./providers/memory/Cache/InMemoryCache";
 import { cachedResponseAsync } from "./server/compression";
 import { renderPage } from "./server/renderPage";
 import { isReservedPath } from "./server/reservedPaths";

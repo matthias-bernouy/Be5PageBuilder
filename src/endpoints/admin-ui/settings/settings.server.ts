@@ -2,7 +2,7 @@ import { send_html } from 'src/server/send_html';
 import { escapeHtml } from 'src/server/escapeHtml';
 import { parseHTML } from 'linkedom';
 import type { PageBuilder } from 'src/PageBuilder';
-import type { TPageRef } from 'src/interfaces/contract/Repository/TModels';
+import type { TPageRef } from 'src/contracts/Repository/TModels';
 import template from "./settings.html";
 
 /** Composite value used in option[value] for page selects. */

@@ -1,4 +1,4 @@
-import type { MediaDocument, MediaImage } from "src/interfaces/contract/Media/MediaRepository";
+import type { MediaDocument, MediaImage } from "src/contracts/Media/MediaRepository";
 import type { PageBuilder } from "src/PageBuilder";
 
 export default async function getMediaItem(req: Request, system: PageBuilder) {

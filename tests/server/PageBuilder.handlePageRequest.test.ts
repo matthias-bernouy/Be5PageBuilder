@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { PageBuilder } from "src/PageBuilder";
-import { InMemoryCache } from "src/interfaces/default-provider/Cache/InMemoryCache";
-import type { TPage, TPageRef, TSnippet, TSystem } from "src/interfaces/contract/Repository/TModels";
+import { InMemoryCache } from "src/providers/memory/Cache/InMemoryCache";
+import type { TPage, TPageRef, TSnippet, TSystem } from "src/contracts/Repository/TModels";
 
 type Endpoint = { method: string; path: string; handler: (req: Request) => Promise<Response> };
 

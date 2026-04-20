@@ -1,5 +1,5 @@
 import { ObjectId, type Collection, type Db } from "mongodb";
-import type { TTemplate } from "src/interfaces/contract/Repository/TModels";
+import type { TTemplate } from "src/contracts/Repository/TModels";
 
 /**
  * MongoDB-backed persistence for page templates. Templates are keyed by

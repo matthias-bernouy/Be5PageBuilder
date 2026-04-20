@@ -168,7 +168,7 @@ import type {
 } from "@bernouy/pagebuilder";
 ```
 
-- `PageBuilderRepository` — CRUD for pages, blocs, templates, snippets, system. Full contract in `src/interfaces/contract/Repository/PageBuilderRepository.ts`.
+- `PageBuilderRepository` — CRUD for pages, blocs, templates, snippets, system. Full contract in `src/contracts/Repository/PageBuilderRepository.ts`.
 - `MediaRepository` — `getItems`, `upload`, `getResponse`, `createFolder`, `deleteItem`, `moveItem`, `updateMetadata`. The `getResponse(id, { w, h })` method must return a ready-to-serve `Response`; the default provider uses `sharp` for on-the-fly resizing.
 - `Cache` — `get`/`set`/`invalidate` over pre-compressed entries. `InMemoryCache` is the default; swap in Redis or similar for a multi-instance deployment.
 
@@ -422,9 +422,10 @@ src/
 │   │   │   └── ConfigItem.ts
 │   │   └── editors/        TextEditor, ImageEditor, ListEditor, SnippetEditor
 │   └── Domain/Media/       CardMedia, GridMedia, DetailMedia, CropSystem
-├── interfaces/
-│   ├── contract/           Repository interfaces, data models (TPage, TBloc, …)
-│   └── default-provider/   MongoDB implementations
+├── contracts/              Repository interfaces, data models (TPage, TBloc, …)
+├── providers/
+│   ├── mongo/              MongoDB implementations (Repository, Media)
+│   └── memory/             In-memory Cache implementation
 ├── endpoints/
 │   ├── admin-ui/           Server-rendered admin pages (pages, templates, editor, settings, media)
 │   ├── admin-api/          REST JSON API

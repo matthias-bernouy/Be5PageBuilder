@@ -1,6 +1,6 @@
 import { describe, test, expect, mock } from "bun:test";
 import { P9R_CACHE } from "types/p9r-constants";
-import type { TBloc } from "src/interfaces/contract/Repository/TModels";
+import type { TBloc } from "src/contracts/Repository/TModels";
 
 // Stub prepare_bloc so tests never touch the filesystem or run Bun.build.
 // Must be registered before importBloc is imported.

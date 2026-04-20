@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import { compress, cachedResponse, cachedResponseAsync } from "src/server/compression";
-import type { Cache, CacheEntry } from "src/interfaces/contract/Cache/Cache";
+import type { Cache, CacheEntry } from "src/contracts/Cache/Cache";
 
 class MemCache implements Cache {
     store = new Map<string, CacheEntry>();

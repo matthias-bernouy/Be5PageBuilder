@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { VariantCache } from "src/interfaces/default-provider/Media/VariantCache";
+import { VariantCache } from "src/providers/mongo/Media/VariantCache";
 
 const u8 = (n: number) => new Uint8Array(n);
 

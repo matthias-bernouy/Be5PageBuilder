@@ -1,5 +1,5 @@
 import type { Collection, Db } from "mongodb";
-import type { TSystem } from "src/interfaces/contract/Repository/TModels";
+import type { TSystem } from "src/contracts/Repository/TModels";
 
 export class SystemRepository {
 

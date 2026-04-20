@@ -1,5 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
-import type { TTemplate } from "src/interfaces/contract/Repository/TModels";
+import type { TTemplate } from "src/contracts/Repository/TModels";
 
 export default async function postTemplate(req: Request, system: PageBuilder) {
     const url = new URL(req.url);

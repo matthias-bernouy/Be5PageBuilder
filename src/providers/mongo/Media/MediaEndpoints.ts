@@ -1,6 +1,6 @@
 import type { Be5_Runner, Runner } from "@bernouy/socle";
 import type { DefaultMediaRepository } from "./DefaultMediaRepository";
-import type { MediaDocument } from "src/interfaces/contract/Media/MediaRepository";
+import type { MediaDocument } from "src/contracts/Media/MediaRepository";
 import sharp from "sharp";
 import { LADDER_SET } from "src/server/imageLadder";
 import { VariantCache } from "./VariantCache";

@@ -2,8 +2,8 @@ import { AuthRepositoryProvider, Be5_Authentication, Be5_Runner } from "@bernouy
 import { MongoClient } from "mongodb";
 import { resolve } from "node:path";
 import { PageBuilder } from "../../src/PageBuilder";
-import { DefaultPageBuilderRepository } from "../../src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
-import { DefaultMediaRepository } from "../../src/interfaces/default-provider/Media/DefaultMediaRepository";
+import { DefaultPageBuilderRepository } from "../../src/providers/mongo/Repository/DefaultPagebuilderRepository";
+import { DefaultMediaRepository } from "../../src/providers/mongo/Media/DefaultMediaRepository";
 import { scanDevBlocs } from "../../src/cli/dev-server/scan";
 import { buildAllDevBlocs } from "../../src/cli/dev-server/build";
 

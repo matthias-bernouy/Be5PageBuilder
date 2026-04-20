@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { renderPage } from "src/server/renderPage";
 import type { PageBuilder } from "src/PageBuilder";
-import type { TPage, TSnippet, TSystem } from "src/interfaces/contract/Repository/TModels";
+import type { TPage, TSnippet, TSystem } from "src/contracts/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
     return {

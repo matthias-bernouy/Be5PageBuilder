@@ -1,6 +1,6 @@
 import type { PageBuilder } from "src/PageBuilder";
 import contains from "src/server/helpers";
-import type { TPage } from "src/interfaces/contract/Repository/TModels";
+import type { TPage } from "src/contracts/Repository/TModels";
 import { isReservedPath } from "src/server/reservedPaths";
 import { isValidPathFormat } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";

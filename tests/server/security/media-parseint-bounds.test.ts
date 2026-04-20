@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import MediaEndpoints from "src/interfaces/default-provider/Media/MediaEndpoints";
+import MediaEndpoints from "src/providers/mongo/Media/MediaEndpoints";
 
 function runner() {
     const handlers = new Map<string, (req: Request) => Promise<Response>>();

@@ -1,6 +1,6 @@
 import type { PageBuilder } from "src/PageBuilder";
 import { compress } from "src/server/compression";
-import type { MediaImage } from "src/interfaces/contract/Media/MediaRepository";
+import type { MediaImage } from "src/contracts/Media/MediaRepository";
 import { computeSrcset } from "./computeSrcset";
 import { rewriteHTML, extractMediaId, type ImageRewrite } from "./rewriteHTML";
 import { classifyImages } from "./classifyImage";

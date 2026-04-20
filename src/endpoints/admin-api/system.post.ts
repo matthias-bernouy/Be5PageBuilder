@@ -1,5 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
-import type { TSystem } from "src/interfaces/contract/Repository/TModels";
+import type { TSystem } from "src/contracts/Repository/TModels";
 import { P9R_CACHE } from "types/p9r-constants";
 
 export default async function updateSystem(req: Request, system: PageBuilder) {

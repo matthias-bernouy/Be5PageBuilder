@@ -1,8 +1,8 @@
 import { AuthRepositoryProvider, Be5_Authentication, Be5_Runner } from "@bernouy/socle";
 import { MongoClient } from "mongodb";
 import { PageBuilder } from "src/PageBuilder";
-import { DefaultPageBuilderRepository } from "src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
-import { DefaultMediaRepository } from "src/interfaces/default-provider/Media/DefaultMediaRepository";
+import { DefaultPageBuilderRepository } from "src/providers/mongo/Repository/DefaultPagebuilderRepository";
+import { DefaultMediaRepository } from "src/providers/mongo/Media/DefaultMediaRepository";
 
 const dbName = process.env.P9R_DB_NAME || "p9r_dev";
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017";

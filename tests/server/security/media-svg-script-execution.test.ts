@@ -4,7 +4,7 @@ import { describe, test, expect } from "bun:test";
 // user-uploaded bytes with the user-provided mimetype — a SVG containing
 // <script> will execute in the page origin when fetched by <img src> users
 // follow, or when opened in a new tab.
-import MediaEndpoints from "src/interfaces/default-provider/Media/MediaEndpoints";
+import MediaEndpoints from "src/providers/mongo/Media/MediaEndpoints";
 
 function makeRunner() {
     const handlers = new Map<string, (req: Request) => Promise<Response>>();

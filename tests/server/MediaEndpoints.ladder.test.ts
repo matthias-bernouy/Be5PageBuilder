@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import MediaEndpoints from "src/interfaces/default-provider/Media/MediaEndpoints";
-import { VariantCache } from "src/interfaces/default-provider/Media/VariantCache";
+import MediaEndpoints from "src/providers/mongo/Media/MediaEndpoints";
+import { VariantCache } from "src/providers/mongo/Media/VariantCache";
 
 // 1×1 transparent PNG.
 const onePxPng = Buffer.from(

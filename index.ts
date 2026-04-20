@@ -12,9 +12,9 @@
 export { PageBuilder } from "./src/PageBuilder";
 
 // ── Default providers (MongoDB + in-memory cache) ──────────────────────
-export { DefaultPageBuilderRepository } from "./src/interfaces/default-provider/Repository/DefaultPagebuilderRepository";
-export { DefaultMediaRepository } from "./src/interfaces/default-provider/Media/DefaultMediaRepository";
-export { InMemoryCache } from "./src/interfaces/default-provider/Cache/InMemoryCache";
+export { DefaultPageBuilderRepository } from "./src/providers/mongo/Repository/DefaultPagebuilderRepository";
+export { DefaultMediaRepository } from "./src/providers/mongo/Media/DefaultMediaRepository";
+export { InMemoryCache } from "./src/providers/memory/Cache/InMemoryCache";
 
 // Browser-safe bloc authoring symbols are deliberately split into two
 // sub-entries:
@@ -30,16 +30,16 @@ export { InMemoryCache } from "./src/interfaces/default-provider/Cache/InMemoryC
 // every browser bundle.
 
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
-export type { PageBuilderRepository } from "./src/interfaces/contract/Repository/PageBuilderRepository";
-export type { MediaRepository } from "./src/interfaces/contract/Media/MediaRepository";
-export type { Cache } from "./src/interfaces/contract/Cache/Cache";
+export type { PageBuilderRepository } from "./src/contracts/Repository/PageBuilderRepository";
+export type { MediaRepository } from "./src/contracts/Media/MediaRepository";
+export type { Cache } from "./src/contracts/Cache/Cache";
 export type {
     TPage,
     TBloc,
     TTemplate,
     TSnippet,
     TSystem,
-} from "./src/interfaces/contract/Repository/TModels";
+} from "./src/contracts/Repository/TModels";
 
 // ── Seeding CLI (importable for programmatic use) ──────────────────────
 export { default as importBlocs } from "./src/cli/CLI_importBloc";

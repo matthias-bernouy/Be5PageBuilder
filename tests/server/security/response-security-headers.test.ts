@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import BlocServer from "src/endpoints/public/bloc.server";
-import MediaEndpoints from "src/interfaces/default-provider/Media/MediaEndpoints";
+import MediaEndpoints from "src/providers/mongo/Media/MediaEndpoints";
 import { compress, sendCompressed } from "src/server/compression";
 import { send_html } from "src/server/send_html";
 

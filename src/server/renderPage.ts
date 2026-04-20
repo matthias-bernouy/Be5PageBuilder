@@ -1,7 +1,7 @@
 import { parseHTML } from "linkedom";
 import type { PageBuilder } from "src/PageBuilder";
-import type { TPage } from "src/interfaces/contract/Repository/TModels";
-import type { CacheEntry } from "src/interfaces/contract/Cache/Cache";
+import type { TPage } from "src/contracts/Repository/TModels";
+import type { CacheEntry } from "src/contracts/Cache/Cache";
 import { compress } from "src/server/compression";
 import { expandSnippets } from "src/server/expandSnippets";
 

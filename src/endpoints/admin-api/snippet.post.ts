@@ -1,5 +1,5 @@
 import type { PageBuilder } from "src/PageBuilder";
-import type { TSnippet } from "src/interfaces/contract/Repository/TModels";
+import type { TSnippet } from "src/contracts/Repository/TModels";
 import { isValidSnippetIdentifier } from "src/shared/validation";
 import { P9R_CACHE } from "types/p9r-constants";
 

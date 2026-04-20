@@ -1,6 +1,6 @@
 import { MongoClient, type Db } from "mongodb";
-import type { PageBuilderRepository } from "src/interfaces/contract/Repository/PageBuilderRepository";
-import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/interfaces/contract/Repository/TModels";
+import type { PageBuilderRepository } from "src/contracts/Repository/PageBuilderRepository";
+import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/contracts/Repository/TModels";
 import { BlocsRepository } from "./collections/BlocsRepository";
 import { PagesRepository } from "./collections/PagesRepository";
 import { SystemRepository } from "./collections/SystemRepository";
