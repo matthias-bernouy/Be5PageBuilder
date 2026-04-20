@@ -5,7 +5,7 @@ export const P9R_ATTR = {
         DISABLE_ADD_AFTER:        "p9r-action-disable-add-after",
         DISABLE_DRAGGING:         "p9r-action-disable-dragging",
         DISABLE_DUPLICATE:        "p9r-action-disable-duplicate",
-        DISABLE_SAVE_AS_TEMPLATE:  "p9r-action-disable-save-as-template",
+        DISABLE_SAVE_AS_TEMPLATE: "p9r-action-disable-save-as-template",
         DISABLE_CHANGE_COMPONENT: "p9r-action-disable-change-component",
         INLINE_ADDING:            "inline-adding",
         ALLOW_RESIZE_IMAGE:       "p9r-allow-resize-image",
@@ -25,11 +25,11 @@ export const P9R_ATTR = {
     },
 
     EDITOR: {
-        IDENTIFIER:        "p9r-identifier",
-        PARENT_IDENTIFIER: "p9r-parent-identifier",
-        IS_EDITOR:         "p9r-is-editor",
-        OPAQUE:            "p9r-opaque",
-        IS_CREATING:       "p9r-is-creating",
+        IDENTIFIER:            "p9r-identifier",
+        PARENT_IDENTIFIER:     "p9r-parent-identifier",
+        IS_EDITOR:             "p9r-is-editor",
+        OPAQUE:                "p9r-opaque",
+        IS_CREATING:           "p9r-is-creating",
         PERSISTENT_IDENTIFIER: "p9r-persistent-identifier"
     }
 

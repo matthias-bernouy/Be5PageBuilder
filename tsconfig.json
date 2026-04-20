@@ -44,6 +44,10 @@
 		"types/**/*.d.ts",
 		"types/editor-attributs.ts",
 		"tests/**/*.ts"
+	],
+
+	"exclude": [
+		"tests/perf/**/*"
 	]
 
 }

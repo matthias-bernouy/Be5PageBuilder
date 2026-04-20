@@ -2,10 +2,10 @@
  * Perf runner.
  *
  * Usage:
- *   bun run scripts/perf/run.ts                  # run all scenarios, print report
- *   bun run scripts/perf/run.ts --save           # also overwrite the baseline
- *   bun run scripts/perf/run.ts --only=hover-cost,typing-cost
- *   bun run scripts/perf/run.ts --headed         # show browser window
+ *   bun run tests/perf/run.ts                  # run all scenarios, print report
+ *   bun run tests/perf/run.ts --save           # also overwrite the baseline
+ *   bun run tests/perf/run.ts --only=hover-cost,typing-cost
+ *   bun run tests/perf/run.ts --headed         # show browser window
  *
  * A fresh `p9r_perf_test` MongoDB database is created for each run, so results
  * are deterministic. Requires a local MongoDB on 27017 and Playwright's chromium

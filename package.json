@@ -43,7 +43,7 @@
         "build": "bun run build.ts",
         "typecheck": "bun x tsc --noEmit",
         "test": "bun test",
-        "perf": "bun run scripts/perf/run.ts",
+        "perf": "bun run tests/perf/run.ts",
         "prepublishOnly": "bun run build"
     },
     "devDependencies": {

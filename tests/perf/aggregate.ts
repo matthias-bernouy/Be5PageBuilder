@@ -2,7 +2,7 @@
  * Runs the perf suite N times, drops the min & max per metric (outliers),
  * and writes the averaged report to baseline.json.
  *
- * Usage: bun run scripts/perf/aggregate.ts [--runs=10]
+ * Usage: bun run tests/perf/aggregate.ts [--runs=10]
  */
 
 import { spawn } from "node:child_process";
