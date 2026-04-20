@@ -17,7 +17,6 @@
         <span slot="title">Pages</span>
 
         <p9r-button slot="action" data-modal="create-page-dialog" color="primary">+ New page</p9r-button>
-        <p9r-button slot="action" data-modal="import-block-dialog" variant="outlined" color="info">Import Block</p9r-button>
 
         <p9r-table>
             <p9r-row slot="header">
@@ -40,22 +39,6 @@
         <w13c-input name="path">
             <span slot="label">Path (e. g. /article)</span>
         </w13c-input>
-    </p9r-form-dialog>
-
-    <p9r-form-dialog id="import-block-dialog" action="../api/bloc" method="post" enctype="multipart/form-data">
-        <span slot="title">Import a block</span>
-        <w13c-input name="name">
-            <span slot="label">Name (e. g. ArticleLayout)</span>
-        </w13c-input>
-        <w13c-input name="group">
-            <span slot="label">Group (e. g. Layout)</span>
-        </w13c-input>
-        <w13c-input-file name="viewJS">
-            <span slot="label">View Code JS</span>
-        </w13c-input-file>
-        <w13c-input-file name="editorJS">
-            <span slot="label">Editor Code JS</span>
-        </w13c-input-file>
     </p9r-form-dialog>
 
 </body>
