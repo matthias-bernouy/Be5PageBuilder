@@ -1,4 +1,5 @@
 import { send_html } from 'src/server/send_html';
+import { escapeHtml } from 'src/server/escapeHtml';
 import { parseHTML } from 'linkedom';
 import type { PageBuilder } from 'src/PageBuilder';
 import type { TPageRef } from 'src/interfaces/contract/Repository/TModels';
@@ -42,7 +43,7 @@ export default async function Server(_req: Request, system: PageBuilder) {
                 ? `${page.title || "(untitled)"} — ${page.path}?identifier=${page.identifier}`
                 : `${page.title || "(untitled)"} — ${page.path}`;
             const selected = value === currentValue ? " selected" : "";
-            select.innerHTML += `<option value="${value}"${selected}>${label}</option>`;
+            select.innerHTML += `<option value="${escapeHtml(value)}"${selected}>${escapeHtml(label)}</option>`;
         }
     }
 
@@ -59,13 +60,13 @@ export default async function Server(_req: Request, system: PageBuilder) {
 
         for (const cat of categories) {
             const selected = cat === currentLayout ? " selected" : "";
-            layoutSelect.innerHTML += `<option value="${cat}"${selected}>${cat}</option>`;
+            layoutSelect.innerHTML += `<option value="${escapeHtml(cat)}"${selected}>${escapeHtml(cat)}</option>`;
         }
 
         // If the saved value is a category that no longer exists (template
         // renamed), still expose it so the user sees/can clear it.
         if (currentLayout && !categories.includes(currentLayout)) {
-            layoutSelect.innerHTML += `<option value="${currentLayout}" selected>${currentLayout} (missing)</option>`;
+            layoutSelect.innerHTML += `<option value="${escapeHtml(currentLayout)}" selected>${escapeHtml(currentLayout)} (missing)</option>`;
         }
     }
 
@@ -85,7 +86,7 @@ export default async function Server(_req: Request, system: PageBuilder) {
         // Preserve a legacy tag that isn't in the curated list so the user
         // can still see and clear it instead of silently losing it.
         if (!matched && currentLanguage) {
-            languageSelect.innerHTML += `<option value="${currentLanguage}" selected>${currentLanguage} (custom)</option>`;
+            languageSelect.innerHTML += `<option value="${escapeHtml(currentLanguage)}" selected>${escapeHtml(currentLanguage)} (custom)</option>`;
         }
     }
 
