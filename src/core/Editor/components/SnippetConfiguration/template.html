@@ -1,29 +1,47 @@
 <w13c-lateral-dialog>
   <form action="">
-    <w13c-input placeholder="hero-v1" name="identifier" required>
-      <span slot="label">Identifier</span>
-      <span slot="hint">Kebab-case. Immutable after creation.</span>
-    </w13c-input>
-    <w13c-input placeholder="My hero section" name="name">
-      <span slot="label">Name</span>
-    </w13c-input>
-    <w13c-input placeholder="A short description" name="description">
-      <span slot="label">Description</span>
-    </w13c-input>
-    <p9r-tag-suggest name="category" mode="single" resource="snippets" api="../../api/tags" placeholder="hero, layout, cta…">
-      <span slot="label">Category</span>
-    </p9r-tag-suggest>
 
-    <section class="usages" hidden>
-      <h3>Used on</h3>
+    <p9r-section data-title="Identity">
+      <div class="field">
+        <label class="label" for="f-snp-identifier">Identifier</label>
+        <input class="input" id="f-snp-identifier" name="identifier" type="text" placeholder="hero-v1" required />
+        <small class="hint" id="identifier-hint">Lowercase letters, numbers and dashes. Immutable after creation.</small>
+      </div>
+
+      <div class="field">
+        <label class="label" for="f-snp-name">Name</label>
+        <input class="input" id="f-snp-name" name="name" type="text" placeholder="My hero section" />
+        <div class="meta">
+          <small class="hint" data-for="name">Shown in the Snippets library.</small>
+          <small class="counter" data-for="name"><span class="count">0</span>/50</small>
+        </div>
+      </div>
+    </p9r-section>
+
+    <p9r-section data-title="Information">
+      <div class="field">
+        <label class="label" for="f-snp-description">Description</label>
+        <input class="input" id="f-snp-description" name="description" type="text" placeholder="A short description" />
+        <div class="meta">
+          <small class="hint" data-for="description">Shown under the name in the library.</small>
+          <small class="counter" data-for="description"><span class="count">0</span>/120</small>
+        </div>
+      </div>
+    </p9r-section>
+
+    <p9r-section data-title="Taxonomy">
+      <p9r-tag-suggest name="category" mode="single" resource="snippets" api="../../api/tags" placeholder="hero, layout, cta…">
+        <span slot="label">Category</span>
+      </p9r-tag-suggest>
+    </p9r-section>
+
+    <p9r-section data-title="Usages" data-collapsed>
       <ul class="usages-list"></ul>
-    </section>
+    </p9r-section>
 
-    <div></div>
-    <p9r-button fullwidth type="submit" variant="filled" color="primary">
+    <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">
       Save
     </p9r-button>
-    <p class="error-message" hidden></p>
   </form>
   <span slot="title">Snippet configuration</span>
 </w13c-lateral-dialog>

@@ -1,19 +1,36 @@
 <w13c-lateral-dialog>
   <form action="">
-    <w13c-input placeholder="My hero section" name="name">
-      <span slot="label">Name</span>
-    </w13c-input>
-    <w13c-input placeholder="A short description" name="description">
-      <span slot="label">Description</span>
-    </w13c-input>
-    <p9r-tag-suggest name="category" mode="single" resource="templates" api="../../api/tags" placeholder="hero, layout, cta…">
-      <span slot="label">Category</span>
-    </p9r-tag-suggest>
 
-    <div></div>
-    <p9r-button fullwidth type="submit" variant="filled" color="primary">
+    <p9r-section data-title="Information">
+      <div class="field">
+        <label class="label" for="f-tpl-name">Name</label>
+        <input class="input" id="f-tpl-name" name="name" type="text" placeholder="My hero section" />
+        <div class="meta">
+          <small class="hint" data-for="name">Displayed in the Templates library.</small>
+          <small class="counter" data-for="name"><span class="count">0</span>/50</small>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="label" for="f-tpl-description">Description</label>
+        <input class="input" id="f-tpl-description" name="description" type="text" placeholder="A short description" />
+        <div class="meta">
+          <small class="hint" data-for="description">Shown under the name in the library.</small>
+          <small class="counter" data-for="description"><span class="count">0</span>/120</small>
+        </div>
+      </div>
+    </p9r-section>
+
+    <p9r-section data-title="Taxonomy">
+      <p9r-tag-suggest name="category" mode="single" resource="templates" api="../../api/tags" placeholder="hero, layout, cta…">
+        <span slot="label">Category</span>
+      </p9r-tag-suggest>
+    </p9r-section>
+
+    <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">
       Save
     </p9r-button>
+    <p class="error-message" hidden></p>
   </form>
   <span slot="title">Template configuration</span>
 </w13c-lateral-dialog>
