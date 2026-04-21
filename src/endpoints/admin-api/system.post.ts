@@ -1,6 +1,7 @@
 import type { Cms } from "src/Cms";
 import type { TSystem } from "src/contracts/Repository/TModels";
 import { P9R_CACHE } from "src/constants/p9r-constants";
+import { invalidateAllPages } from "src/server/cache/invalidation";
 
 export default async function updateSystem(req: Request, cms: Cms) {
     const body = await req.json() as Partial<TSystem>;
@@ -13,10 +14,11 @@ export default async function updateSystem(req: Request, cms: Cms) {
 
     // Theme CSS is served from `/style` through a single cache entry.
     cms.cache.delete(P9R_CACHE.STYLE);
-    // `/` is the home route — its cached rendering may now point to a
-    // different page (or a different theme link). 404/500 fallbacks are
-    // rendered without caching so nothing else to invalidate here.
-    cms.cache.delete(P9R_CACHE.page("/", ""));
+    // Every rendered page carries `<link href="/style?v=<hash>">`, and the
+    // hash depends on the theme's content. Any system change can shift the
+    // hash (or the lang / favicon / host / 404-500 refs baked into the HTML),
+    // so every cached page must be re-rendered on its next hit.
+    invalidateAllPages(cms);
 
     return new Response(JSON.stringify(updated), {
         headers: { "Content-Type": "application/json" },

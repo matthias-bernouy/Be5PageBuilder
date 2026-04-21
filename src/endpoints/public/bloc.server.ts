@@ -1,6 +1,13 @@
 import type { Cms } from 'src/Cms';
-import { cachedResponseAsync, compress } from 'src/server/compression';
+import type { CacheEntry } from 'src/contracts/Cache/Cache';
+import { cachedResponseAsync, compress, publicAssetCacheControl } from 'src/server/compression';
 import { P9R_CACHE } from 'src/constants/p9r-constants';
+
+export async function generateBlocEntry(tag: string, cms: Cms): Promise<CacheEntry> {
+    const js = await cms.repository.getBlocViewJS(tag);
+    if (!js) throw new Error(`Bloc not found: ${tag}`);
+    return compress(js, "text/javascript");
+}
 
 export default async function BlocServerClient(req: Request, cms: Cms){
 
@@ -9,10 +16,12 @@ export default async function BlocServerClient(req: Request, cms: Cms){
 
     if (!tag) return Response.error();
 
-    return cachedResponseAsync(req, P9R_CACHE.bloc(tag), cms.cache, async () => {
-        const js = await cms.repository.getBlocViewJS(tag);
-        if (!js) throw new Error("Bloc not found");
-        return compress(js, "text/javascript");
-    }).catch(() => Response.error());
+    return cachedResponseAsync(
+        req,
+        P9R_CACHE.bloc(tag),
+        cms.cache,
+        () => generateBlocEntry(tag, cms),
+        publicAssetCacheControl(req),
+    ).catch(() => Response.error());
 
 }

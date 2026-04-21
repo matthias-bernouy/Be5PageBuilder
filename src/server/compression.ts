@@ -1,4 +1,4 @@
-import { gzipSync } from "bun";
+import { CryptoHasher, gzipSync } from "bun";
 import { brotliCompressSync } from "node:zlib";
 import type { Cache, CacheEntry } from "src/contracts/Cache/Cache";
 
@@ -84,54 +84,106 @@ function withCspIfHtml(contentType: string): Record<string, string> {
     return HTML_CSP_HEADER;
 }
 
+/**
+ * Cache-Control for public static-ish assets (bloc bundles, theme CSS,
+ * component.js).
+ *
+ * - DEV (`MODE=DEV`): `no-store` — the in-memory server cache is also
+ *   bypassed, so edits are immediately visible.
+ * - Prod, hashed URL (`?v=<hash>` present): `immutable` + 1 year. The
+ *   hash is the invalidation mechanism — any content change produces a
+ *   new hash, hence a new URL, so the old bytes at the old URL can stay
+ *   in browser caches forever without ever being referenced again.
+ *   `renderPage` injects these hashes; visitors only ever reach hashed
+ *   URLs.
+ * - Prod, non-hashed URL: `no-cache` (always revalidate). The editor
+ *   shell and the dev CLI still reference `/bloc?tag=X` without a hash
+ *   because they need the freshest bloc every time — a bloc being
+ *   actively edited must never be served from stale cache.
+ */
+export function publicAssetCacheControl(req: Request): string {
+    if (process.env.MODE === "DEV") return "no-cache, no-store, must-revalidate";
+    const hasVersion = new URL(req.url).searchParams.has("v");
+    return hasVersion
+        ? "public, max-age=31536000, immutable"
+        : "no-cache, must-revalidate";
+}
+
 export function compress(raw: string | ArrayBuffer | Uint8Array, contentType: string): CacheEntry {
     const rawBytes = typeof raw === "string" ? new TextEncoder().encode(raw) : new Uint8Array(raw);
     const brotliResult = brotliCompressSync(rawBytes);
+
+    // 10 hex chars = 40 bits of sha256. Collision-resistant enough for a
+    // cache-busting token: a collision would only cause a single stale asset
+    // for one specific content pair, not a correctness bug.
+    const hash = new CryptoHasher("sha256").update(rawBytes).digest("hex").slice(0, 10);
 
     return {
         raw: rawBytes,
         brotli: new Uint8Array(brotliResult.buffer, brotliResult.byteOffset, brotliResult.byteLength),
         gzip: new Uint8Array(gzipSync(rawBytes)),
         contentType,
+        hash,
     };
+}
+
+/**
+ * Returns the cache entry for `key`, generating it on miss. Shared by
+ * `cachedResponse(Async)` (which builds a Response on top) and by renderers
+ * that only need the entry's hash to emit content-addressed URLs without
+ * actually sending the bytes to the client.
+ */
+export function getOrGenerateEntry(
+    key: string,
+    cache: Cache,
+    generate: () => CacheEntry
+): CacheEntry {
+    let entry = cache.get(key);
+    if (!entry) {
+        entry = generate();
+        cache.set(key, entry);
+    }
+    return entry;
+}
+
+export async function getOrGenerateEntryAsync(
+    key: string,
+    cache: Cache,
+    generate: () => Promise<CacheEntry>
+): Promise<CacheEntry> {
+    let entry = cache.get(key);
+    if (!entry) {
+        entry = await generate();
+        cache.set(key, entry);
+    }
+    return entry;
 }
 
 export function cachedResponse(
     req: Request,
     key: string,
     cache: Cache,
-    generate: () => CacheEntry
+    generate: () => CacheEntry,
+    cacheControl?: string
 ): Response {
-    let entry = cache.get(key);
-
-    if (!entry) {
-        entry = generate();
-        cache.set(key, entry);
-    }
-
-    return sendCompressed(req, entry);
+    return sendCompressed(req, getOrGenerateEntry(key, cache, generate), cacheControl);
 }
 
 export async function cachedResponseAsync(
     req: Request,
     key: string,
     cache: Cache,
-    generate: () => Promise<CacheEntry>
+    generate: () => Promise<CacheEntry>,
+    cacheControl?: string
 ): Promise<Response> {
-    let entry = cache.get(key);
-
-    if (!entry) {
-        entry = await generate();
-        cache.set(key, entry);
-    }
-
-    return sendCompressed(req, entry);
+    return sendCompressed(req, await getOrGenerateEntryAsync(key, cache, generate), cacheControl);
 }
 
-export function sendCompressed(req: Request, entry: CacheEntry): Response {
+export function sendCompressed(req: Request, entry: CacheEntry, cacheControl?: string): Response {
     const accept = req.headers.get("accept-encoding") || "";
 
     const csp = withCspIfHtml(entry.contentType);
+    const cc: Record<string, string> = cacheControl ? { "Cache-Control": cacheControl } : {};
 
     if (accept.includes("br")) {
         return new Response(entry.brotli as BodyInit, {
@@ -140,6 +192,7 @@ export function sendCompressed(req: Request, entry: CacheEntry): Response {
                 "Content-Encoding": "br",
                 ...SECURITY_HEADERS,
                 ...csp,
+                ...cc,
             },
         });
     }
@@ -151,6 +204,7 @@ export function sendCompressed(req: Request, entry: CacheEntry): Response {
                 "Content-Encoding": "gzip",
                 ...SECURITY_HEADERS,
                 ...csp,
+                ...cc,
             },
         });
     }
@@ -160,6 +214,7 @@ export function sendCompressed(req: Request, entry: CacheEntry): Response {
             "Content-Type": entry.contentType,
             ...SECURITY_HEADERS,
             ...csp,
+            ...cc,
         },
     });
 }

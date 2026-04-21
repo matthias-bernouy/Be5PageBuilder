@@ -2,6 +2,7 @@ import type { Cms } from "src/Cms";
 import { prepare_bloc } from "src/blocs/prepare_bloc";
 import { isValidCustomElementTag } from "src/utils/validation";
 import { P9R_CACHE } from "src/constants/p9r-constants";
+import { invalidatePagesReferencingBloc } from "src/server/cache/invalidation";
 
 export default async function importBloc(req: Request, cms: Cms) {
 
@@ -48,6 +49,12 @@ export default async function importBloc(req: Request, cms: Cms) {
     // concatenation that bundles every bloc's editorJS into one script.
     cms.cache.delete(P9R_CACHE.bloc(bloc.id));
     cms.cache.delete(P9R_CACHE.EDITOR_BLOCS);
+
+    // Rendered pages embedding this bloc now carry a stale `?v=<hash>` in
+    // their `<script src="/bloc?tag=...">` tag — re-render them on next hit.
+    // Pages that don't reference this bloc keep their cached HTML (and the
+    // image-optimization srcsets already baked in).
+    await invalidatePagesReferencingBloc(cms, bloc.id);
 
     return new Response("Bloc imported");
 }

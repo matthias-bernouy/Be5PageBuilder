@@ -19,6 +19,12 @@ export class InMemoryCache implements Cache {
         this.store.delete(key);
     }
 
+    deleteMatching(predicate: (key: string) => boolean): void {
+        for (const key of this.store.keys()) {
+            if (predicate(key)) this.store.delete(key);
+        }
+    }
+
     clear(): void {
         this.store.clear();
     }

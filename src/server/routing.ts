@@ -1,8 +1,16 @@
 import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { Cms } from "src/Cms";
-import { cachedResponseAsync, compress } from "src/server/compression";
+import { cachedResponseAsync, compress, publicAssetCacheControl } from "src/server/compression";
 import { P9R_CACHE } from "src/constants/p9r-constants";
+
+/**
+ * Compiled client bundles referenced from rendered public pages with a
+ * content hash (`?v=...`). The endpoint checks the presence of `?v=` via
+ * `publicAssetCacheControl` and picks between `immutable` (hashed) and
+ * `no-cache` (unhashed, editor/dev contexts).
+ */
+const HASHED_CLIENT_ASSETS = new Set(["/assets/component"]);
 
 // Mirrors the union accepted by socle's `Runner.addEndpoint`. Centralized
 // here so the API-folder router can validate filenames against it without
@@ -54,11 +62,18 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, cm
 
         if (clientFile) {
             const cacheKey = P9R_CACHE.js(urlPath);
+            const hashed = HASHED_CLIENT_ASSETS.has(urlPath);
             runner.addEndpoint("GET", urlPath + ".js", async (req: Request) => {
-                return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
-                    const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
-                    return compress(await result.outputs[0]!.text(), "text/javascript");
-                });
+                return cachedResponseAsync(
+                    req,
+                    cacheKey,
+                    cms.cache,
+                    async () => {
+                        const result = await Bun.build({ entrypoints: [clientFile], format: "iife" });
+                        return compress(await result.outputs[0]!.text(), "text/javascript");
+                    },
+                    hashed ? publicAssetCacheControl(req) : undefined,
+                );
             });
         }
     }

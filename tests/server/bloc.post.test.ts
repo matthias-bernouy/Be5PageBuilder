@@ -43,6 +43,8 @@ function makeSystem(opts: {
                 createBlocCalls.push({ bloc });
                 return bloc;
             },
+            getAllPages: async () => [],
+            getAllSnippets: async () => [],
         },
         cache: {
             get: (k: string) => cache.get(k) ?? null,

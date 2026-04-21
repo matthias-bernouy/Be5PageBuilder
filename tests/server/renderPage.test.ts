@@ -1,6 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { renderPage } from "src/server/rendering/renderPage";
 import type { Cms } from "src/Cms";
+import type { CacheEntry } from "src/contracts/Cache/Cache";
 import type { TPage, TSnippet, TSystem } from "src/contracts/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
@@ -13,6 +14,25 @@ function page(over: Partial<TPage> = {}): TPage {
         visible: true,
         tags: [],
         ...over,
+    };
+}
+
+/**
+ * Test-friendly cache: always stores (unlike `InMemoryCache` which bypasses
+ * in DEV). Without this, every `getOrGenerateEntryAsync` call inside
+ * `renderPage` would re-invoke the generators (including `Bun.build` for
+ * component.js) on every request, making the suite painfully slow.
+ */
+function testCache() {
+    const store = new Map<string, CacheEntry>();
+    return {
+        get: (k: string) => store.get(k) ?? null,
+        set: (k: string, v: CacheEntry) => { store.set(k, v); },
+        delete: (k: string) => { store.delete(k); },
+        deleteMatching: (p: (k: string) => boolean) => {
+            for (const k of store.keys()) if (p(k)) store.delete(k);
+        },
+        clear: () => { store.clear(); },
     };
 }
 
@@ -38,9 +58,14 @@ function makeSystem(opts: {
         editor: { layoutCategory: "" },
     };
     return {
+        cache: testCache(),
         repository: {
             getSystem: async () => cms,
             getBlocsList: async () => opts.blocs ?? [],
+            getBlocViewJS: async (tag: string) => {
+                const known = (opts.blocs ?? []).some(b => b.id === tag);
+                return known ? `/* ${tag} */` : null;
+            },
             getSnippetByIdentifier: async (id: string): Promise<TSnippet | null> => {
                 if (!opts.snippets || !(id in opts.snippets)) return null;
                 return {
@@ -88,7 +113,8 @@ describe("renderPage — meta", () => {
         // Default favicon when the settings.site.favicon is empty.
         expect(html).toContain('href="/assets/favicon"');
         expect(html).toMatch(/<link\b[^>]*\brel="stylesheet"[^>]*>/);
-        expect(html).toContain('href="/style"');
+        // /style now carries a ?v=<hash> cache-busting query.
+        expect(html).toMatch(/href="\/style\?v=[a-f0-9]+"/);
     });
 
     test("uses the configured site favicon when one is set and pins the icon-tier width", async () => {
@@ -139,14 +165,14 @@ describe("renderPage — meta", () => {
     test("emits a <link rel=preload as=script> for the global runtime", async () => {
         const html = await renderToString(page(), makeSystem());
         expect(html).toMatch(
-            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="script")(?=[^>]*\bhref="\/assets\/component\.js")[^>]*>/
+            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="script")(?=[^>]*\bhref="\/assets\/component\.js\?v=[a-f0-9]+")[^>]*>/
         );
     });
 
     test("emits a <link rel=preload as=style> for the theme stylesheet", async () => {
         const html = await renderToString(page(), makeSystem());
         expect(html).toMatch(
-            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="style")(?=[^>]*\bhref="\/style")[^>]*>/
+            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="style")(?=[^>]*\bhref="\/style\?v=[a-f0-9]+")[^>]*>/
         );
     });
 
@@ -158,7 +184,7 @@ describe("renderPage — meta", () => {
             }),
         );
         expect(html).toMatch(
-            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="script")(?=[^>]*\bhref="\/bloc\?tag=my-card")[^>]*>/
+            /<link\b(?=[^>]*\brel="preload")(?=[^>]*\bas="script")(?=[^>]*\bhref="\/bloc\?tag=my-card&v=[a-f0-9]+")[^>]*>/
         );
     });
 
@@ -190,9 +216,9 @@ describe("renderPage — meta", () => {
         for (const tag of scriptTags) expect(tag).toContain("defer");
         // Document order → execution order: component.js must come first so
         // the bloc IIFEs can read `window.p9r.Component`.
-        const componentIdx = html.search(/<script\b[^>]*\bsrc="\/assets\/component\.js"/);
-        const myCardIdx    = html.search(/<script\b[^>]*\bsrc="\/bloc\?tag=my-card"/);
-        const otherIdx     = html.search(/<script\b[^>]*\bsrc="\/bloc\?tag=other-bloc"/);
+        const componentIdx = html.search(/<script\b[^>]*\bsrc="\/assets\/component\.js\?v=[a-f0-9]+"/);
+        const myCardIdx    = html.search(/<script\b[^>]*\bsrc="\/bloc\?tag=my-card&v=[a-f0-9]+"/);
+        const otherIdx     = html.search(/<script\b[^>]*\bsrc="\/bloc\?tag=other-bloc&v=[a-f0-9]+"/);
         expect(componentIdx).toBeGreaterThan(-1);
         expect(myCardIdx).toBeGreaterThan(componentIdx);
         expect(otherIdx).toBeGreaterThan(componentIdx);
@@ -272,11 +298,11 @@ describe("renderPage — bloc script injection", () => {
                 ],
             }),
         );
-        expect(html).toContain('src="/bloc?tag=my-card"');
-        expect(html).toContain('src="/bloc?tag=other-bloc"');
+        expect(html).toMatch(/src="\/bloc\?tag=my-card&v=[a-f0-9]+"/);
+        expect(html).toMatch(/src="\/bloc\?tag=other-bloc&v=[a-f0-9]+"/);
         // Unused tag is registered but never appears in content — must NOT
         // be injected (otherwise every page downloads every bloc bundle).
-        expect(html).not.toContain('src="/bloc?tag=unused-bloc"');
+        expect(html).not.toContain('src="/bloc?tag=unused-bloc');
     });
 
     test("matches tags case-insensitively but does not double-count", async () => {
@@ -286,7 +312,7 @@ describe("renderPage — bloc script injection", () => {
                 blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
             }),
         );
-        const matches = html.match(/src="\/bloc\?tag=my-card"/g) ?? [];
+        const matches = html.match(/src="\/bloc\?tag=my-card&v=[a-f0-9]+"/g) ?? [];
         expect(matches).toHaveLength(1);
     });
 
@@ -297,7 +323,7 @@ describe("renderPage — bloc script injection", () => {
                 blocs: [{ id: "hero-image", name: "Hero", group: "g", description: "" }],
             }),
         );
-        expect(html).toContain('src="/bloc?tag=hero-image"');
+        expect(html).toMatch(/src="\/bloc\?tag=hero-image&v=[a-f0-9]+"/);
     });
 
     test("a tag that appears only as a substring is NOT injected", async () => {
@@ -309,7 +335,7 @@ describe("renderPage — bloc script injection", () => {
                 blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
             }),
         );
-        expect(html).not.toContain('src="/bloc?tag=my-card"');
+        expect(html).not.toContain('src="/bloc?tag=my-card');
     });
 
     test("injects scripts also for tags that appear inside an expanded snippet", async () => {
@@ -320,6 +346,6 @@ describe("renderPage — bloc script injection", () => {
                 blocs: [{ id: "my-card", name: "Card", group: "g", description: "" }],
             }),
         );
-        expect(html).toContain('src="/bloc?tag=my-card"');
+        expect(html).toMatch(/src="\/bloc\?tag=my-card&v=[a-f0-9]+"/);
     });
 });

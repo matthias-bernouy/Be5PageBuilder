@@ -1,11 +1,29 @@
 import { parseHTML } from "linkedom";
+import { join } from "node:path";
 import type { Cms } from "src/Cms";
 import type { TPage } from "src/contracts/Repository/TModels";
 import type { CacheEntry } from "src/contracts/Cache/Cache";
-import { compress } from "src/server/compression";
+import { compress, getOrGenerateEntryAsync } from "src/server/compression";
 import { expandSnippets } from "src/server/rendering/expandSnippets";
+import { generateBlocEntry } from "src/endpoints/public/bloc.server";
+import { generateStyleEntry } from "src/endpoints/public/style.server";
+import { P9R_CACHE } from "src/constants/p9r-constants";
 
 const COMPONENT_JS = "/assets/component.js";
+const COMPONENT_JS_CACHE_KEY = P9R_CACHE.js("/assets/component");
+const COMPONENT_JS_SOURCE = join(import.meta.dir, "../../endpoints/public/assets/component.client.ts");
+
+/**
+ * Mirrors the generator used by the generic client-bundle route (see
+ * `registerUIFolder`). Duplicated here so `renderPage` can warm the cache
+ * and read the hash at render time without depending on the route handler.
+ * Both sites share the same cache key, so whichever runs first populates
+ * the shared entry for the other.
+ */
+async function generateComponentJsEntry(): Promise<CacheEntry> {
+    const result = await Bun.build({ entrypoints: [COMPONENT_JS_SOURCE], format: "iife" });
+    return compress(await result.outputs[0]!.text(), "text/javascript");
+}
 
 /**
  * Force any favicon URL that targets the `/media` endpoint to request the
@@ -57,7 +75,25 @@ export async function renderPage(page: TPage, cms: Cms): Promise<CacheEntry> {
         const re = new RegExp(`<${bloc.id}(\\s|>|/)`, "i");
         if (re.test(expandedContent)) usedTags.push(bloc.id);
     }
-    const scriptUrls = [COMPONENT_JS, ...usedTags.map(tag => `/bloc?tag=${tag}`)];
+
+    // Content-addressed URLs for every asset this page references. The hash
+    // is the entry's sha256 digest — a content change produces a new hash,
+    // hence a new URL, which lets the endpoints serve these assets with
+    // `Cache-Control: immutable` (1-year browser cache, zero revalidation).
+    // Resolving in parallel is a no-op in the warm path (cache hits) and
+    // only pays when the server just started.
+    const [componentEntry, styleEntry, ...blocEntries] = await Promise.all([
+        getOrGenerateEntryAsync(COMPONENT_JS_CACHE_KEY, cms.cache, generateComponentJsEntry),
+        getOrGenerateEntryAsync(P9R_CACHE.STYLE, cms.cache, () => generateStyleEntry(cms)),
+        ...usedTags.map(tag => getOrGenerateEntryAsync(
+            P9R_CACHE.bloc(tag), cms.cache, () => generateBlocEntry(tag, cms),
+        )),
+    ]);
+
+    const componentUrl = `${COMPONENT_JS}?v=${componentEntry!.hash}`;
+    const styleUrl     = `/style?v=${styleEntry!.hash}`;
+    const blocUrls     = usedTags.map((tag, i) => `/bloc?tag=${tag}&v=${blocEntries[i]!.hash}`);
+    const scriptUrls   = [componentUrl, ...blocUrls];
 
     // ── <head> assembly, in exact document order ──
     const head = document.head;
@@ -79,7 +115,7 @@ export async function renderPage(page: TPage, cms: Cms): Promise<CacheEntry> {
     const stylePreload = document.createElement("link");
     stylePreload.setAttribute("rel", "preload");
     stylePreload.setAttribute("as", "style");
-    stylePreload.setAttribute("href", "/style");
+    stylePreload.setAttribute("href", styleUrl);
     head.appendChild(stylePreload);
 
     for (const src of scriptUrls) {
@@ -140,7 +176,7 @@ export async function renderPage(page: TPage, cms: Cms): Promise<CacheEntry> {
     // Theme CSS
     const themeLink = document.createElement("link");
     themeLink.setAttribute("rel", "stylesheet");
-    themeLink.setAttribute("href", "/style");
+    themeLink.setAttribute("href", styleUrl);
     head.appendChild(themeLink);
 
     // Deferred scripts — downloaded in parallel, executed in document order

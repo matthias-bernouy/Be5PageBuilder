@@ -9,6 +9,9 @@ class MemCache implements Cache {
     get(k: string) { this.getCalls++; return this.store.get(k) ?? null; }
     set(k: string, v: CacheEntry) { this.setCalls++; this.store.set(k, v); }
     delete(k: string) { this.store.delete(k); }
+    deleteMatching(p: (k: string) => boolean) {
+        for (const k of this.store.keys()) if (p(k)) this.store.delete(k);
+    }
     clear() { this.store.clear(); }
 }
 

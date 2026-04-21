@@ -19,6 +19,8 @@ function makeSystem() {
         repository: {
             getBlocViewJS: async () => null,
             createBloc: async (b: any) => b,
+            getAllPages: async () => [],
+            getAllSnippets: async () => [],
         },
         cache: { delete: () => {} },
     } as any;
