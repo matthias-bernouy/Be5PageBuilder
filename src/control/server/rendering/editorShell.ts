@@ -6,12 +6,12 @@ import { send_html } from "../send_html";
 /**
  * Shared logic for the three editor flavors (page / template / snippet).
  *
- * Cms is a plugin the host app mounts under a configurable prefix, so
- * the HTML shell cannot use absolute paths. Each flavor keeps its own
- * `editor.html` next to its `editor.server.ts` with depth-appropriate relative
- * URLs, and this helper takes care of the shared server-side work: injecting
- * the bloc editor scripts, stamping attributes on `#editor-cms`, creating
- * the configuration element and hydrating `#editor` with the content.
+ * Control mounts under whatever `basePath` the runner carries, so the HTML
+ * shell cannot use absolute paths. Each flavor keeps its own `editor.html`
+ * next to its `editor.server.ts` with depth-appropriate relative URLs; this
+ * helper takes care of the shared server-side work: injecting the bloc
+ * editor scripts, stamping attributes on `#editor-cms`, creating the
+ * configuration element and hydrating `#editor` with the content.
  */
 export type EditorShellOptions = {
     /** Absolute path to the flavor's `editor.html` file. */
@@ -31,13 +31,22 @@ export type EditorShellOptions = {
  * Builds the editor page for any flavor: injects bloc editor scripts, stamps
  * any requested attributes on `#editor-cms`, creates the configuration
  * element and hydrates `#editor` with `content`.
+ *
+ * Script ordering — every script in `<head>` is deferred, so execution
+ * happens in document order after HTML parsing:
+ *   1. `./editor.js` (from the HTML)           — installs `window.p9r.*`
+ *   2. `./script.js` (from the HTML)           — admin-shell widgets
+ *   3. `<basePath>/admin/editor-blocs`         — concatenated editor bundles
+ *   4. `<basePath>/api/bloc?tag=<id>` × N      — per-bloc view bundles
+ * The bloc bundles read `window.p9r.Component` at execution time; the
+ * defer-order guarantees `editor.js` has run first.
  */
 export async function renderEditorShell(options: EditorShellOptions): Promise<Response> {
     const html = await Bun.file(options.htmlFilePath).text();
     const { document } = parseHTML(html);
 
     // ── API base path meta tag ──────────────────────────────────────────
-    // Cms is mounted under whatever basePath the runner carries, so the
+    // Control mounts under whatever basePath the runner carries, so the
     // client cannot hardcode `/cms/api/`. We bake the resolved basePath
     // into <meta> tags that `EditorManager.getApiBasePath()` reads at
     // runtime.
@@ -52,11 +61,11 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     document.head.appendChild(basPathMeta);
 
     // ── Bloc editor scripts ─────────────────────────────────────────────
-    // Each bloc ships an editorJS snippet that must run once `document.EditorManager`
-    // is ready. The concatenated script is served from <admin>/admin/editor-blocs
-    // so the CSP can stay strict (no inline). Each bloc's view-side code is
-    // loaded via a separate <script src="/bloc?tag=..."> so the editor preview
-    // renders the real component.
+    // Each bloc ships an editorJS snippet that must run once
+    // `document.EditorManager` is ready, and a view-JS that defines the
+    // real custom element. Both are served from this Control instance so
+    // the editor never has to cross over to Delivery (avoids CORS and the
+    // need for an absolute `deliveryUrl`).
     const blocs = await options.cms.repository.getBlocsEditorJS();
 
     const editorBlocsScript = document.createElement("script");
@@ -64,15 +73,10 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     editorBlocsScript.defer = true;
     document.head.appendChild(editorBlocsScript);
 
-    // Synchronous global runtime: installs `window.p9r.Component` / `Editor`
-    // etc. before any bloc `<script>` evaluates. Must come first in <head>.
-    const globalScript = document.createElement("script");
-    globalScript.src = "/assets/component.js";
-    document.head.prepend(globalScript);
-
     for (const bloc of blocs) {
         const s = document.createElement("script");
-        s.src = `/bloc?tag=${bloc.id}`;
+        s.src = `${basePath}/api/bloc?tag=${bloc.id}`;
+        s.defer = true;
         document.head.appendChild(s);
     }
 
