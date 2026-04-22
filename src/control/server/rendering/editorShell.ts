@@ -37,16 +37,17 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     const { document } = parseHTML(html);
 
     // ── API base path meta tag ──────────────────────────────────────────
-    // Cms is mounted under a host-configurable prefix, so the client
-    // cannot hardcode `/cms/api/`. We bake the resolved prefix into
-    // a <meta> tag that `EditorManager.getApiBasePath()` reads at runtime.
-    const adminPrefix = options.cms.config.adminPathPrefix || "/cms";
+    // Cms is mounted under whatever basePath the runner carries, so the
+    // client cannot hardcode `/cms/api/`. We bake the resolved basePath
+    // into <meta> tags that `EditorManager.getApiBasePath()` reads at
+    // runtime.
+    const basePath = options.cms.basePath;
     const apiBaseMeta = document.createElement("meta");
     apiBaseMeta.setAttribute("name", "p9r-api-base");
-    apiBaseMeta.setAttribute("content", `${adminPrefix}/api/`);
+    apiBaseMeta.setAttribute("content", `${basePath}/api/`);
     const basPathMeta = document.createElement("meta");
     basPathMeta.setAttribute("name", "p9r-base-path");
-    basPathMeta.setAttribute("content", `${adminPrefix}/`);
+    basPathMeta.setAttribute("content", `${basePath}/`);
     document.head.appendChild(apiBaseMeta);
     document.head.appendChild(basPathMeta);
 
@@ -59,7 +60,7 @@ export async function renderEditorShell(options: EditorShellOptions): Promise<Re
     const blocs = await options.cms.repository.getBlocsEditorJS();
 
     const editorBlocsScript = document.createElement("script");
-    editorBlocsScript.src = `${adminPrefix}/admin/editor-blocs`;
+    editorBlocsScript.src = `${basePath}/admin/editor-blocs`;
     editorBlocsScript.defer = true;
     document.head.appendChild(editorBlocsScript);
 

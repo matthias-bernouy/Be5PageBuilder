@@ -7,8 +7,6 @@ import { InMemoryCache } from "../socle/providers/memory/Cache/InMemoryCache";
 import type { CMS_ROLES } from "types/roles";
 
 type Configuration = {
-    adminPathPrefix?: string;
-    clientPathPrefix?: string;
     /**
      * Absolute URL to the external token management interface. Surfaced on
      * the admin Profile page as the "Manage tokens" button; left undefined
@@ -17,9 +15,34 @@ type Configuration = {
      * ambiguous (profile vs tokens vs account management).
      */
     tokensUrl?: string;
+    /**
+     * Absolute URL of the Delivery service paired with this Control instance.
+     * Used by admin UI surfaces that need to construct public-facing URLs
+     * (Settings' MediaCenter preview, page share links…). In multi-tenant
+     * setups each tenant's Control points at its own Delivery. Left
+     * undefined when admin-only previews are not needed.
+     */
+    deliveryUrl?: string;
 }
 
-export class ControlCms{
+/**
+ * Admin + API layer of the CMS. Mounts under whatever `basePath` the runner
+ * carries — the consumer scopes the runner before passing it in:
+ *
+ *   rootRunner.group("/cms", (scoped) => {
+ *       const control = new ControlCms(scoped, ...);
+ *   });
+ *
+ * Multi-tenant follows the same pattern:
+ *
+ *   rootRunner.group(`/tenant-${id}/cms`, (scoped) => {
+ *       const control = new ControlCms(scoped, ...);
+ *   });
+ *
+ * `basePath` is exposed so admin-UI code can build absolute API URLs
+ * without hard-coding any prefix.
+ */
+export class ControlCms {
 
     private configuration:    Configuration;
     private _repository:      CmsRepository;
@@ -33,7 +56,7 @@ export class ControlCms{
         repository: CmsRepository,
         auth: Authentication<CMS_ROLES>,
         mediaRepository: MediaRepository,
-        configuration: Configuration,
+        configuration: Configuration = {},
         cache?: Cache
     ){
         this.configuration = configuration;
@@ -69,5 +92,15 @@ export class ControlCms{
         return this._cache;
     }
 
+    /**
+     * Tenant-level prefix, derived from `runner.basePath`. `"/"` (root-scoped
+     * runner) becomes `""` so admin-UI code concatenating `${basePath}/api`
+     * doesn't emit a double slash. Anything else (`"/cms"`, `"/tenant-1/cms"`)
+     * is returned verbatim.
+     */
+    get basePath(){
+        const base = this._runner.basePath;
+        return base === "/" ? "" : base;
+    }
 
 }

@@ -2,9 +2,8 @@ import { describe, test, expect } from "bun:test";
 import pageExists from "src/control/endpoints/admin-api/page-exists.get";
 import type { TPage } from "src/socle/contracts/Repository/TModels";
 
-function makeSystem(pages: Array<{ path: string; identifier: string }>, adminPathPrefix = "/cms") {
+function makeSystem(pages: Array<{ path: string; identifier: string }>) {
     const cms: any = {
-        config: { adminPathPrefix },
         repository: {
             getPage: async (path: string, identifier: string): Promise<TPage | null> => {
                 const match = pages.find(p => p.path === path && p.identifier === identifier);

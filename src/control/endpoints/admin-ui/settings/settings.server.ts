@@ -119,14 +119,15 @@ export default async function Server(_req: Request, cms: ControlCms) {
         if (faviconSubtitle) faviconSubtitle.textContent = currentFavicon;
     }
 
-    // Point the standalone MediaCenter at the current plugin prefix so it
-    // doesn't need an EditorManager on this page.
+    // Point the standalone MediaCenter at the current Control basePath so
+    // it doesn't need an EditorManager on this page. `public-root` comes
+    // from `config.deliveryUrl` — the admin-facing preview needs an
+    // absolute URL to the paired Delivery service. Empty when not set so
+    // the MediaCenter knows to skip the preview.
     const mc = document.getElementById("favicon-mediacenter");
     if (mc) {
-        const adminPrefix = cms.config.adminPathPrefix || "/cms";
-        const clientPrefix = cms.config.clientPathPrefix || "/";
-        mc.setAttribute("api-base", `${adminPrefix}/api`);
-        mc.setAttribute("public-root", clientPrefix);
+        mc.setAttribute("api-base", `${cms.basePath}/api`);
+        mc.setAttribute("public-root", cms.config.deliveryUrl ?? "");
     }
 
     // Theme CSS goes into the <textarea> body, not a `value` attribute.

@@ -7,10 +7,17 @@ function res(str: string){
     return join(import.meta.dir, str);
 }
 
+/**
+ * Auth + CSRF guard applied to every endpoint registered by Control. Assumes
+ * the runner is already scoped — all requests reaching this middleware are
+ * admin-scope by construction, so no path-prefix check is needed.
+ *
+ * Non-admin authenticated users receive 403 (no redirect). Unauthenticated
+ * users are redirected to the auth provider's login URL.
+ */
 export const createAuthGuard = (cms: ControlCms): Middleware => {
     return async (req, next) => {
         const url = new URL(req.url);
-        if ( !url.pathname.startsWith(cms.config.adminPathPrefix || "/cms") ) return await next();
 
         // CSRF: mutating methods must come from the same origin.
         const method = req.method.toUpperCase();
@@ -34,18 +41,11 @@ export const createAuthGuard = (cms: ControlCms): Middleware => {
                 if ( subject.role === "admin" ) {
                     return await next();
                 }
-                else {
-                    return new Response(null, {
-                        status: 302,
-                        headers: { "Location": cms.config.clientPathPrefix || "/" }
-                    });
-                }
-            } else {
-                throw new Error("Not connected")
+                return new Response("Forbidden", { status: 403 });
             }
+            throw new Error("Not connected");
         } catch (error) {
-            const currentPath = new URL(req.url).pathname;
-            const loginUrl = cms.auth.buildLoginUrl(currentPath);
+            const loginUrl = cms.auth.buildLoginUrl(url.pathname);
             return new Response(null, {
                 status: 302,
                 headers: { "Location": loginUrl }
@@ -54,16 +54,20 @@ export const createAuthGuard = (cms: ControlCms): Middleware => {
     };
 };
 
+/**
+ * Wire every Control endpoint onto `cms.runner`. The runner is already
+ * scoped (consumer called `rootRunner.group(prefix, ...)` before passing
+ * it in), so routes are registered at paths relative to `basePath`. The
+ * inner `group("", ...)` is used purely to attach `authGuard` to every
+ * endpoint without shifting paths.
+ */
 export function registerEndpoints(cms: ControlCms){
 
-    cms.runner.group(cms.config.adminPathPrefix || "/cms", (r) => {
-
+    cms.runner.group("", (r) => {
         registerUIFolder   ("/admin", res("admin-ui"),    cms, r);
         registerAPIFolder  ("/api",   res("admin-api"),   cms, r);
         registerCSSFolder  ("/css",   res("admin-css"),   cms, r);
         registerFontsFolder("/fonts", res("admin-fonts"), cms, r);
-
     }, [createAuthGuard(cms)]);
 
 }
-

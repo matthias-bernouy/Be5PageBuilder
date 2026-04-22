@@ -6,9 +6,7 @@ import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
 
 type CreatePageCall = { page: TPage; oldKey?: { path: string; identifier: string } };
 
-function makeSystem(opts: {
-    adminPathPrefix?: string;
-} = {}) {
+function makeSystem() {
     const createPageCalls: CreatePageCall[] = [];
     const cache = new InMemoryCache();
     const deleteSpy: string[] = [];
@@ -19,7 +17,6 @@ function makeSystem(opts: {
     };
 
     const cms: any = {
-        config: { adminPathPrefix: opts.adminPathPrefix ?? "/cms" },
         cache,
         repository: {
             createPage: async (page: TPage, oldKey?: { path: string; identifier: string }) => {

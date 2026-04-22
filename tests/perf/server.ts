@@ -32,9 +32,8 @@ export async function startPerfServer(opts: { port?: number; dbName?: string; mo
         registerDisabled: false,
     });
 
-    new Cms(runner, repository, auth, mediaRepository, {
-        adminPathPrefix: "/cms",
-        clientPathPrefix: "/",
+    runner.group("/cms", (scoped) => {
+        new Cms(scoped, repository, auth, mediaRepository, {});
     });
 
     // Build + register the perf-scenario blocs so the BlocLibrary has real

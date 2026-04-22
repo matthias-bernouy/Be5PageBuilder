@@ -47,7 +47,8 @@ function mockSystem(opts: MockOpts = {}): ControlCms {
             getAllPages: async () => opts.pages ?? [],
             getAllTemplates: async () => opts.templates ?? [],
         },
-        config: { adminPathPrefix: "/cms", clientPathPrefix: "/" },
+        config: {},
+        basePath: "/cms",
     } as unknown as ControlCms;
 }
 

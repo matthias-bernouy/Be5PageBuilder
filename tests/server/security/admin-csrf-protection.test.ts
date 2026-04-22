@@ -8,7 +8,6 @@ import { createAuthGuard } from "src/control/endpoints/registerEndpoints";
 describe("admin CSRF protection", () => {
     test("mutating request without matching Origin must be rejected", async () => {
         const system: any = {
-            config: { adminPathPrefix: "/cms" },
             auth: {
                 guardAuthenticated: async () => ({ role: "admin" }),
                 loginPage: "/login",
