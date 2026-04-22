@@ -87,23 +87,42 @@ export class EditorManager{
     }
 
     /**
-     * Absolute API base URL for this editor.
+     * Absolute API base URL for this editor. Control mounts under whatever
+     * `basePath` the runner carries, so the client cannot hardcode any
+     * prefix: the server bakes the resolved path into a
+     * `<meta name="p9r-api-base">` tag in the editor shell (see
+     * `src/control/server/rendering/editorShell.ts`). Resolved against the
+     * current document URL so the result is always absolute.
      *
-     * Cms is a plugin mounted under a host-configurable prefix, so
-     * the client cannot hardcode `/cms/api/`. The server bakes the
-     * resolved prefix into a `<meta name="p9r-api-base">` tag in the editor
-     * shell (see `src/control/server/rendering/editorShell.ts`); we read it here and resolve
-     * it against the current document URL so the result is always absolute.
+     * Throws when the meta tag is missing — that means `EditorManager` was
+     * instantiated outside a page rendered by `renderEditorShell`, which is
+     * a consumer bug rather than something to silently paper over.
      */
     getApiBasePath(){
         const meta = document.querySelector('meta[name="p9r-api-base"]') as HTMLMetaElement | null;
-        const base = meta?.content || "/cms/api/";
-        return new URL(base, window.location.href).href;
+        if (!meta?.content) {
+            throw new Error(
+                `EditorManager: <meta name="p9r-api-base"> is missing. ` +
+                `The editor can only run inside a page served by renderEditorShell.`,
+            );
+        }
+        return new URL(meta.content, window.location.href).href;
     }
 
+    /**
+     * Tenant basePath for this editor, baked by the server into
+     * `<meta name="p9r-base-path">`. Throws when missing for the same
+     * reason as `getApiBasePath`.
+     */
     get basePath(){
         const meta = document.querySelector('meta[name="p9r-base-path"]') as HTMLMetaElement | null;
-        return meta?.content || "/cms"
+        if (!meta?.content) {
+            throw new Error(
+                `EditorManager: <meta name="p9r-base-path"> is missing. ` +
+                `The editor can only run inside a page served by renderEditorShell.`,
+            );
+        }
+        return meta.content;
     }
 
     switchMode(mode?: PageMode){
