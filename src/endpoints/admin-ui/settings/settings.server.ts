@@ -1,8 +1,8 @@
 import { send_html } from 'src/server/send_html';
-import { escapeHtml } from 'src/utils/escapeHtml';
+import { escapeHtml } from 'src/socle/utils/escapeHtml';
 import { parseHTML } from 'linkedom';
 import type { Cms } from 'src/Cms';
-import type { TPageRef } from 'src/contracts/Repository/TModels';
+import type { TPageRef } from 'src/socle/contracts/Repository/TModels';
 import template from "./settings.html";
 
 /** Composite value used in option[value] for page selects. */

@@ -1,7 +1,7 @@
 import type { Cms } from 'src/Cms';
-import type { CacheEntry } from 'src/contracts/Cache/Cache';
+import type { CacheEntry } from 'src/socle/contracts/Cache/Cache';
 import { cachedResponseAsync, compress, publicAssetCacheControl } from 'src/server/compression';
-import { P9R_CACHE } from 'src/constants/p9r-constants';
+import { P9R_CACHE } from 'src/socle/constants/p9r-constants';
 
 export async function generateBlocEntry(tag: string, cms: Cms): Promise<CacheEntry> {
     const js = await cms.repository.getBlocViewJS(tag);

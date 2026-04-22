@@ -1,8 +1,8 @@
 import { describe, test, expect } from "bun:test";
 import updatePage from "src/endpoints/admin-api/page.post";
 import { InMemoryCache } from "src/providers/memory/Cache/InMemoryCache";
-import { P9R_CACHE } from "src/constants/p9r-constants";
-import type { TPage, TSystem } from "src/contracts/Repository/TModels";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
+import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
 
 type CreatePageCall = { page: TPage; oldKey?: { path: string; identifier: string } };
 

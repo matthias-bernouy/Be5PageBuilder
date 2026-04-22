@@ -1,4 +1,4 @@
-import "src/core/global";
+import "src/control/global";
 
 import { EditorManager } from "src/core/Editor/runtime/EditorManager";
 

@@ -1,5 +1,5 @@
 import { ObjectId, type Collection, type Db } from "mongodb";
-import type { TSnippet } from "src/contracts/Repository/TModels";
+import type { TSnippet } from "src/socle/contracts/Repository/TModels";
 
 /**
  * MongoDB-backed persistence for snippets. Identifiers are unique

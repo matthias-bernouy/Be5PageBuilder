@@ -11,6 +11,18 @@
 // ── Core ────────────────────────────────────────────────────────────────
 export { Cms } from "./src/Cms";
 
+// ── Delivery (public-facing rendering, deployable alone) ───────────────
+// Consumers wire DeliveryCms on its own runner/port alongside Cms. The
+// repository contract is a strict subset of CmsRepository, so a Mongo-
+// backed `DefaultCmsRepository` satisfies `DeliveryRepository` by
+// structural typing — no adapter needed.
+export { default as DeliveryCms } from "./src/delivery/DeliveryCms";
+export { DeliveryCache } from "./src/delivery/core/DeliveryCache";
+export { PlaywrightSession } from "./src/delivery/core/enhance/PlaywrightSession";
+export { registerDeliveryEndpoints } from "./src/delivery/registerDeliveryEndpoints";
+export type { DeliveryRepository } from "./src/delivery/interfaces/DeliveryRepository";
+export type { DeliveryCmsConfig } from "./src/delivery/DeliveryCms";
+
 // ── Default providers (MongoDB + in-memory cache) ──────────────────────
 export { DefaultCmsRepository } from "./src/providers/mongo/Repository/DefaultCmsRepository";
 export { DefaultMediaRepository } from "./src/providers/mongo/Media/DefaultMediaRepository";
@@ -30,16 +42,16 @@ export { InMemoryCache } from "./src/providers/memory/Cache/InMemoryCache";
 // every browser bundle.
 
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
-export type { CmsRepository } from "./src/contracts/Repository/CmsRepository";
-export type { MediaRepository } from "./src/contracts/Media/MediaRepository";
-export type { Cache } from "./src/contracts/Cache/Cache";
+export type { CmsRepository } from "./src/socle/contracts/Repository/CmsRepository";
+export type { MediaRepository } from "./src/socle/contracts/Media/MediaRepository";
+export type { Cache } from "./src/socle/contracts/Cache/Cache";
 export type {
     TPage,
     TBloc,
     TTemplate,
     TSnippet,
     TSystem,
-} from "./src/contracts/Repository/TModels";
+} from "./src/socle/contracts/Repository/TModels";
 
 // ── Seeding CLI (importable for programmatic use) ──────────────────────
 export { default as importBlocs } from "./src/cli/CLI_importBloc";

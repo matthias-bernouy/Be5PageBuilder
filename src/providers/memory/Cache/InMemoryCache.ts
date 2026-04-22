@@ -1,4 +1,4 @@
-import type { Cache, CacheEntry } from "src/contracts/Cache/Cache";
+import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
 
 export class InMemoryCache implements Cache {
 

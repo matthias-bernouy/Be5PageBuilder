@@ -1,7 +1,7 @@
 import { writeFile, unlink } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { DevBloc } from "./scan";
-import { p9rExternalsPlugin } from "src/blocs/p9rExternalsPlugin";
+import { p9rExternalsPlugin } from "src/socle/blocs/p9rExternalsPlugin";
 
 export type BuiltBloc = {
     tag: string;

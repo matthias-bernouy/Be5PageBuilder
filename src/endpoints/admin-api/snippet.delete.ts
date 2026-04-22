@@ -1,5 +1,5 @@
 import type { Cms } from "src/Cms";
-import { P9R_CACHE } from "src/constants/p9r-constants";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 export default async function deleteSnippet(req: Request, cms: Cms) {
     const url = new URL(req.url);

@@ -1,5 +1,5 @@
 import type { Cms } from "src/Cms";
-import type { TTemplate } from "src/contracts/Repository/TModels";
+import type { TTemplate } from "src/socle/contracts/Repository/TModels";
 
 export default async function postTemplate(req: Request, cms: Cms) {
     const url = new URL(req.url);

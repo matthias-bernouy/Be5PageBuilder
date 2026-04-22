@@ -1,5 +1,5 @@
 import type { Collection, Db } from "mongodb";
-import type { TPage } from "src/contracts/Repository/TModels";
+import type { TPage } from "src/socle/contracts/Repository/TModels";
 
 /**
  * MongoDB-backed persistence for pages. Pages are uniquely identified by

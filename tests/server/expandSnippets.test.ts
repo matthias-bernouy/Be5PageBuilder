@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { expandSnippets } from "src/server/rendering/expandSnippets";
 import type { Cms } from "src/Cms";
-import type { TSnippet } from "src/contracts/Repository/TModels";
+import type { TSnippet } from "src/socle/contracts/Repository/TModels";
 
 function makeSystem(snippets: Record<string, string>) {
     const fetchLog: string[] = [];

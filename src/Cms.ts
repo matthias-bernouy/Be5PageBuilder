@@ -1,16 +1,16 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
 import type { Authentication, Runner } from "@bernouy/socle";
-import type { CmsRepository } from "./contracts/Repository/CmsRepository";
-import type { MediaRepository } from "./contracts/Media/MediaRepository";
-import type { Cache } from "./contracts/Cache/Cache";
-import type { TPage, TPageRef } from "./contracts/Repository/TModels";
+import type { CmsRepository } from "./socle/contracts/Repository/CmsRepository";
+import type { MediaRepository } from "./socle/contracts/Media/MediaRepository";
+import type { Cache } from "./socle/contracts/Cache/Cache";
+import type { TPage, TPageRef } from "./socle/contracts/Repository/TModels";
 import { InMemoryCache } from "./providers/memory/Cache/InMemoryCache";
 import { cachedResponseAsync } from "./server/compression";
 import { renderPage } from "./server/rendering/renderPage";
 import { isReservedPath } from "./server/reservedPaths";
-import { isValidPathFormat } from "./utils/validation";
+import { isValidPathFormat } from "./socle/utils/validation";
 import { ImageOptimizer } from "./server/imageOptimization/ImageOptimizer";
-import { P9R_CACHE } from "src/constants/p9r-constants";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 import type { CMS_ROLES } from "types/roles";
 
 type Configuration = {

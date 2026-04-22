@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import sitemapXml from "src/endpoints/public/sitemap.xml.server";
 import type { Cms } from "src/Cms";
-import type { TPage, TSystem } from "src/contracts/Repository/TModels";
+import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
     return {

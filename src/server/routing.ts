@@ -2,7 +2,7 @@ import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { Cms } from "src/Cms";
 import { cachedResponseAsync, compress, publicAssetCacheControl } from "src/server/compression";
-import { P9R_CACHE } from "src/constants/p9r-constants";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 /**
  * Compiled client bundles referenced from rendered public pages with a

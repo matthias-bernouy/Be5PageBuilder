@@ -1,13 +1,13 @@
 import { parseHTML } from "linkedom";
 import { join } from "node:path";
 import type { Cms } from "src/Cms";
-import type { TPage } from "src/contracts/Repository/TModels";
-import type { CacheEntry } from "src/contracts/Cache/Cache";
+import type { TPage } from "src/socle/contracts/Repository/TModels";
+import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
 import { compress, getOrGenerateEntryAsync } from "src/server/compression";
 import { expandSnippets } from "src/server/rendering/expandSnippets";
 import { generateBlocEntry } from "src/endpoints/public/bloc.server";
 import { generateStyleEntry } from "src/endpoints/public/style.server";
-import { P9R_CACHE } from "src/constants/p9r-constants";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 const COMPONENT_JS = "/assets/component.js";
 const COMPONENT_JS_CACHE_KEY = P9R_CACHE.js("/assets/component");

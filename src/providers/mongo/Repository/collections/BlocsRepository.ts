@@ -1,5 +1,5 @@
 import type { Collection, Db } from "mongodb";
-import type { TBloc } from "src/contracts/Repository/TModels";
+import type { TBloc } from "src/socle/contracts/Repository/TModels";
 
 /**
  * MongoDB-backed persistence for blocs. Owned by DefaultCmsRepository;

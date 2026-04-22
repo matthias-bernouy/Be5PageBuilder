@@ -2,7 +2,7 @@ import { describe, test, expect } from "bun:test";
 import { parseHTML } from "linkedom";
 import Server from "src/endpoints/admin-ui/settings/settings.server";
 import type { Cms } from "src/Cms";
-import type { TPage, TSystem, TTemplate } from "src/contracts/Repository/TModels";
+import type { TPage, TSystem, TTemplate } from "src/socle/contracts/Repository/TModels";
 
 /**
  * The Settings admin page builds <option> elements by concatenating DB-sourced

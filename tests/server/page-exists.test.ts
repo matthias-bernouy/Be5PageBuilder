@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import pageExists from "src/endpoints/admin-api/page-exists.get";
-import type { TPage } from "src/contracts/Repository/TModels";
+import type { TPage } from "src/socle/contracts/Repository/TModels";
 
 function makeSystem(pages: Array<{ path: string; identifier: string }>, adminPathPrefix = "/cms") {
     const cms: any = {

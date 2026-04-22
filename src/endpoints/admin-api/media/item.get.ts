@@ -1,4 +1,4 @@
-import type { MediaDocument, MediaImage } from "src/contracts/Media/MediaRepository";
+import type { MediaDocument, MediaImage } from "src/socle/contracts/Media/MediaRepository";
 import type { Cms } from "src/Cms";
 
 export default async function getMediaItem(req: Request, cms: Cms) {

@@ -1,9 +1,9 @@
-import "src/core/Admin/components/AdminLayout/AdminLayout"
+import "src/control/components/admin/AdminLayout/AdminLayout"
 
-import "src/core/Media/components/CardMedia/CardMedia"
-import "src/core/Media/components/CropSystem/CropSystem"
-import "src/core/Media/components/DetailMedia/DetailMedia"
-import "src/core/Media/components/GridMedia/GridMedia"
+import "src/control/components/media/CardMedia/CardMedia"
+import "src/control/components/media/CropSystem/CropSystem"
+import "src/control/components/media/DetailMedia/DetailMedia"
+import "src/control/components/media/GridMedia/GridMedia"
 
 import "src/ui/Form/Button/Button"
 import "src/ui/Form/P9rInput"

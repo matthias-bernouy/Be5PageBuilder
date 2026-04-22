@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { Cms } from "src/Cms";
 import { InMemoryCache } from "src/providers/memory/Cache/InMemoryCache";
-import type { TPage, TPageRef, TSnippet, TSystem } from "src/contracts/Repository/TModels";
+import type { TPage, TPageRef, TSnippet, TSystem } from "src/socle/contracts/Repository/TModels";
 
 type Endpoint = { method: string; path: string; handler: (req: Request) => Promise<Response> };
 

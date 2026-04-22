@@ -1,4 +1,4 @@
-import type { KVStore } from "src/contracts/KVStore/KVStore";
+import type { KVStore } from "src/socle/interfaces/KVStore";
 
 type Entry = { value: string; expiresAt: number | null };
 

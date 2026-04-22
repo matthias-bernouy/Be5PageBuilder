@@ -1,6 +1,6 @@
 import type { Cms } from "src/Cms";
-import type { TSystem } from "src/contracts/Repository/TModels";
-import { P9R_CACHE } from "src/constants/p9r-constants";
+import type { TSystem } from "src/socle/contracts/Repository/TModels";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 import { invalidateAllPages } from "src/server/cache/invalidation";
 
 export default async function updateSystem(req: Request, cms: Cms) {

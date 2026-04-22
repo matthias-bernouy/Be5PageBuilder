@@ -1,5 +1,5 @@
 import type { Cms } from "src/Cms";
-import { P9R_CACHE } from "src/constants/p9r-constants";
+import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 /**
  * Invalidate every cached rendered page that references a given bloc tag —

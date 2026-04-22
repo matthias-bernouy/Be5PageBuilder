@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import postTemplate from "src/endpoints/admin-api/template.post";
-import type { TTemplate } from "src/contracts/Repository/TModels";
+import type { TTemplate } from "src/socle/contracts/Repository/TModels";
 
 type CreateCall = { template: TTemplate };
 type UpdateCall = { id: string; data: Partial<TTemplate> };

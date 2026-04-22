@@ -1,8 +1,8 @@
 import { describe, test, expect } from "bun:test";
 import { renderPage } from "src/server/rendering/renderPage";
 import type { Cms } from "src/Cms";
-import type { CacheEntry } from "src/contracts/Cache/Cache";
-import type { TPage, TSnippet, TSystem } from "src/contracts/Repository/TModels";
+import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { TPage, TSnippet, TSystem } from "src/socle/contracts/Repository/TModels";
 
 function page(over: Partial<TPage> = {}): TPage {
     return {
