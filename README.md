@@ -2,32 +2,38 @@
 
 Modular CMS built on Web Components with an inline visual editing system. Runs on **Bun** and ships as a Bun-first package — no transpile, consumers execute the TypeScript source directly.
 
-This README is written as a consumer guide: how to wire the package into another app, what it exposes, and what you need to provide.
+The package is split into two deployables that share one codebase:
+
+- **Control** — admin UI + REST API + visual editor. Authenticated.
+- **Delivery** — public rendering. Anonymous. Deployable alone or alongside Control. Serves rendered pages, bloc bundles, theme CSS and the component runtime.
+
+This README is written as a consumer guide: how to wire each layer into your host app, what URLs they expose, and what you need to provide.
 
 ---
 
 ## Installation
 
 ```bash
-bun add @bernouy/cms @bernouy/socle mongodb sharp linkedom
+bun add @bernouy/cms @bernouy/socle mongodb sharp linkedom playwright
 ```
 
-`@bernouy/socle` provides the HTTP runner (`Be5_Runner`) and the authentication layer (`Authentication`, `AuthRepositoryProvider`). It is a runtime dependency of the host app, not of this package.
+`@bernouy/socle` provides the HTTP runner (`DefaultRunner`), the authentication interface, and the `MediaUrlBuilder` contract Delivery uses to derive image variant URLs. It's a runtime dependency of the host app, not of this package.
 
 **Requirements:**
 - Bun >= 1.3
 - MongoDB (used by the default providers)
 - TypeScript >= 5.9 (peer dep)
+- Playwright browsers if you want Delivery's image enhancement: `bunx playwright install chromium`
 
 ---
 
-## Quick start — minimal wiring
+## Quick start — Control only
 
-The package exports a single `Cms` class that you instantiate with four collaborators: a runner, a repository, an auth system, and a media repository. Here is the smallest viable host app:
+The simplest setup runs just the admin layer. Pages are authored but not served publicly.
 
 ```ts
 // app.ts
-import { Authentication, AuthRepositoryProvider, Be5_Runner } from "@bernouy/socle";
+import { Authentication, AuthRepositoryProvider, DefaultRunner } from "@bernouy/socle";
 import { MongoClient } from "mongodb";
 import {
     Cms,
@@ -35,26 +41,27 @@ import {
     DefaultMediaRepository,
 } from "@bernouy/cms";
 
-const mongoClient = await new MongoClient("mongodb://localhost:27017").connect();
+const mongo = await new MongoClient("mongodb://localhost:27017").connect();
 const dbName = "my_site";
 
-const runner = new Be5_Runner();
+const runner = new DefaultRunner();
 
-const pageRepo  = new DefaultCmsRepository(mongoClient, dbName);
-const authRepo  = new AuthRepositoryProvider(mongoClient, dbName);
-const mediaRepo = new DefaultMediaRepository("MediaProvider 1", mongoClient, dbName, runner);
+const cmsRepo   = new DefaultCmsRepository(mongo, dbName);
+const authRepo  = new AuthRepositoryProvider(mongo, dbName);
+const mediaRepo = new DefaultMediaRepository("default", mongo, dbName, runner);
 
 const auth = new Authentication(authRepo, runner, {
     defaultRedirection: "/cms/admin/pages",
     basePath: "/auth",
 });
 
-new Cms(runner, pageRepo, auth, mediaRepo, {
-    adminPathPrefix:  "",   // admin UI mounted under "/cms/..."
-    clientPathPrefix: "",   // public pages mounted under "/..."
+// Scope the runner BEFORE instantiating Cms — Control reads its mount
+// prefix from `runner.basePath`.
+runner.group("/cms", (scoped) => {
+    new Cms(scoped, cmsRepo, auth, mediaRepo);
 });
 
-runner.start();
+runner.start(4999);
 ```
 
 Run it:
@@ -63,33 +70,123 @@ Run it:
 bun --hot run app.ts
 ```
 
-A full working example lives in [`App.ts`](./App.ts) at the root of this repo.
+Open `http://localhost:4999/cms/admin/pages` and sign in.
 
 ---
 
-## Constructor signature
+## Quick start — Control + Delivery
+
+Production setups pair Control with Delivery on the same host (or on different hosts when your infra prefers it). The two layers share the same Mongo store — the admin reads/writes, Delivery reads.
+
+```ts
+import {
+    Cms,
+    DeliveryCms,
+    PlaywrightSession,
+    registerDeliveryEndpoints,
+    DefaultCmsRepository,
+    DefaultMediaRepository,
+} from "@bernouy/cms";
+
+// … (socle + mongo setup as above) …
+
+// Admin under /cms (authenticated)
+runner.group("/cms", (scoped) => {
+    new Cms(scoped, cmsRepo, auth, mediaRepo);
+});
+
+// Delivery at the root (public pages + static bundles)
+const session = new PlaywrightSession();
+runner.group("/", (scoped) => {
+    const delivery = new DeliveryCms({
+        runner:            scoped,
+        repository:        cmsRepo,          // structural typing — same Mongo store
+        media:             socleMedia,       // a MediaUrlBuilder from your storage layer
+        playwrightSession: session,
+    });
+    registerDeliveryEndpoints(delivery);
+});
+
+runner.start(4999);
+```
+
+`DefaultCmsRepository` satisfies `DeliveryRepository` by structural typing — Delivery only needs the read methods. No adapter is required.
+
+---
+
+## Multi-tenant
+
+Because both `Cms` and `DeliveryCms` derive their prefix from `runner.basePath`, hosting many tenants under one server is a matter of scoping:
+
+```ts
+const session = new PlaywrightSession();   // one Chromium for every tenant
+
+for (const id of tenantIds) {
+    runner.group(`/tenant-${id}/cms`, (scoped) => {
+        new Cms(scoped, repoFor(id), auth, mediaFor(id), {
+            deliveryUrl: `https://tenant-${id}.delivery.example.com`,
+        });
+    });
+    runner.group(`/tenant-${id}`, (scoped) => {
+        const delivery = new DeliveryCms({
+            runner:            scoped,
+            repository:        repoFor(id),
+            media:             mediaFor(id),
+            playwrightSession: session,
+        });
+        registerDeliveryEndpoints(delivery);
+    });
+}
+```
+
+The `PlaywrightSession` is shared across tenants; each `DeliveryCms` has its own in-flight dedup map so cache keys don't collide between tenants.
+
+---
+
+## Constructor signatures
+
+### `Cms` (Control)
 
 ```ts
 new Cms(
-    runner:          IBe5_Runner,           // from @bernouy/socle
-    repository:      CmsRepository, // pages, blocs, templates, snippets, system
-    auth:            IBe5_Authentication,   // from @bernouy/socle
-    mediaRepository: MediaRepository,       // files, folders, images
-    configuration: {
-        adminPathPrefix?:  string;  // default "/cms"
-        clientPathPrefix?: string;  // default "/"
+    runner:          Runner,           // from @bernouy/socle, already scoped
+    repository:      CmsRepository,    // pages, blocs, templates, snippets, system
+    auth:            Authentication,   // from @bernouy/socle
+    mediaRepository: MediaRepository,  // admin media provider (files, folders, crops)
+    configuration?: {
+        tokensUrl?:   string;          // admin "Manage tokens" link target
+        deliveryUrl?: string;          // public URL of the paired Delivery service
     },
-    cache?: Cache                           // optional, defaults to InMemoryCache
+    cache?: Cache                      // optional, defaults to InMemoryCache
 );
 ```
 
-The constructor has side effects: it registers every endpoint on the runner, installs an auth guard in front of admin routes, and hydrates one dynamic GET route per distinct page path found in the repository (including `/` when a page with that path exists). After boot, newly created pages register their routes on the fly via `registerPageRoute`.
+The constructor registers every admin endpoint on the runner and attaches the auth guard via `runner.group("", cb, [authGuard])`. It does **not** do any work on pages — page routing is Delivery's job.
+
+### `DeliveryCms`
+
+```ts
+new DeliveryCms({
+    runner?:            Runner;           // defaults to new DefaultRunner()
+    media:              MediaUrlBuilder;  // from @bernouy/socle
+    repository:         DeliveryRepository;
+    cache?:             Cache;            // defaults to DeliveryCache
+    playwrightSession?: PlaywrightSession; // share one across tenants; Delivery creates its own if absent
+});
+
+registerDeliveryEndpoints(delivery);
+```
+
+`registerDeliveryEndpoints` wires:
+- Four specific GET routes for asset bundles under `<basePath>/.cms/`
+- `<basePath>/robots.txt` and `<basePath>/sitemap.xml`
+- A default GET endpoint that resolves any other path against `repository.getPage(pathname)` — pages are served on-demand, there is no boot-time hydration.
 
 ---
 
-## What it exposes on the runner
+## What each layer exposes
 
-### Admin (auth-guarded, under `adminPathPrefix`, default `/cms`)
+### Control (under the scoped runner's `basePath`, typically `/cms`)
 
 | Group | Kind | Notes |
 |---|---|---|
@@ -99,26 +196,38 @@ The constructor has side effects: it registers every endpoint on the runner, ins
 | `/admin/media` | UI | Files, folders, upload, crop |
 | `/admin/settings` | UI | Site name, favicon, theme CSS, 404/500 refs |
 | `/admin/editor` | UI | Inline visual editor (used by pages, templates, snippets) |
-| `/api/*` | REST | JSON API backing the admin UI (see below) |
-| `/css/*` | Static | Design tokens + reset |
+| `/admin/editor-blocs` | Static | Concatenated editor-side bloc bundles |
+| `/api/*` | REST | JSON API backing the admin UI |
+| `/api/bloc?tag=X` | Static | View-side bloc bundle (consumed by the editor preview) |
+| `/resources/{css,fonts}/*` | Static | Admin UI stylesheets and web fonts |
 
-The guard lives in `src/endpoints/registerEndpoints.ts` — any request under `adminPathPrefix` must be authenticated with `role === "admin"` or it is redirected to the login page configured on the `Authentication` instance.
+The auth guard lives in `src/control/endpoints/registerEndpoints.ts`. Any request reaching Control must be authenticated with `role === "admin"` or it is redirected to the login page configured on the `Authentication` instance. Non-admin authenticated users get plain 403 (no cross-service redirect).
 
-### Public (under `clientPathPrefix`, default `/`)
+### Delivery (under the scoped runner's `basePath`, typically `/`)
 
-- `GET /:pagePath` — dynamic route registered per page at startup and when pages are created. Create a page with `path: "/"` to serve the home page.
-- `GET /style` — the raw CSS stored in `system.site.theme`, linked from every rendered page.
-- `GET /media/*` — public file serving via the media repository.
-- Static assets from `src/endpoints/public/`.
+| Route | Purpose |
+|---|---|
+| `/<pagePath>` | Rendered public page, resolved via `repository.getPage()` on demand |
+| `/.cms/bloc?tag=X` | Compiled view bundle for a bloc, content-addressed via `?v=<hash>` |
+| `/.cms/style` | Theme CSS, content-addressed |
+| `/.cms/assets/component.js` | Component runtime bundle shared by every bloc IIFE |
+| `/.cms/assets/favicon` | Default SVG favicon used when `site.favicon` is empty |
+| `/robots.txt` | Auto-generated, references `/.cms/` as `Disallow` |
+| `/sitemap.xml` | Lists every visible page with an absolute URL from the request origin |
 
-Responses are cached (pre-compressed gzip + brotli) keyed by `(path, identifier)`. Edits invalidate automatically via the cache keys declared in `src/constants/p9r-constants.ts`.
+Responses are cached in `DeliveryCache` (in-memory, pre-compressed gzip + brotli). Edits invalidate via cache keys declared in `src/socle/constants/p9r-constants.ts`.
+
+On a cold cache miss, the page handler **blocks on enhancement**: it runs the full render, then awaits `enhancer.enhance(path, origin)` before serving. Enhancement loads the just-rendered URL in a headless Chromium, measures every `<img>` at every viewport, computes `srcset` + `sizes` via the Socle `MediaUrlBuilder`, rewrites the cached HTML in place, and returns. First request is slow (5-15s); every subsequent request hits a warm cache. This is the property that lets a CDN cache the optimized HTML from its very first fetch, rather than the un-enhanced first pass for the duration of its TTL.
+
+Delivery **never serves media bytes**. Images embedded in page content are expected to be absolute URLs served by Socle's storage backend; Delivery rewrites them into variant URLs at render time via `MediaUrlBuilder.formatImageUrl({ url, width })`.
 
 ### REST API (admin, JSON)
 
 | Method | Route | Purpose |
 |---|---|---|
 | `GET` | `/api/pages` | List pages |
-| `POST` | `/api/page?identifier=X` | Create or update a page |
+| `POST` | `/api/page?path=<current>` | Create or update a page (query `path` is the current key; body carries the new value for renames) |
+| `GET` | `/api/page-exists?path=<p>` | Cheap availability check |
 | `GET` | `/api/templates` | List templates |
 | `POST` | `/api/template` | Create a template |
 | `POST` | `/api/template?id=X` | Update a template |
@@ -134,7 +243,8 @@ Responses are cached (pre-compressed gzip + brotli) keyed by `(path, identifier)
 | `DELETE` | `/api/media/item?id=X` | Delete media |
 | `GET` | `/api/system` | Read system config |
 | `POST` | `/api/system` | Update system config |
-| `GET` | `/api/blocs` | List registered blocs (used by the editor's BlocLibrary) |
+| `GET` | `/api/blocs` | List registered blocs (editor-facing, includes editorJS) |
+| `GET` | `/api/blocs-list` | Cheap bloc metadata listing (no bundles) |
 
 ---
 
@@ -148,31 +258,33 @@ import type {
 } from "@bernouy/cms";
 ```
 
-- **`TPage`** — `{ path, identifier, content, title, description, visible, tags }`. The compound key `(path, identifier)` allows multiple variants on the same URL, disambiguated by `?identifier=`.
+- **`TPage`** — `{ path, content, title, description, visible, tags }`. Keyed by `path` alone (one page per URL — the legacy `identifier` compound key was removed).
 - **`TBloc`** — `{ id, name, group, description, viewJS, editorJS }`. A registered CMS component. `viewJS` is the public-facing bundle, `editorJS` is loaded in the admin editor — they are **separate bundles**, never cross-import. `group` and `description` are persisted alongside the bundles so `GET /api/blocs-list` can answer without parsing any JS.
 - **`TSnippet`** — a reusable HTML fragment keyed by a stable `identifier`. Unlike templates, editing a snippet propagates to every page that uses it.
 - **`TTemplate`** — a reusable HTML fragment. When inserted into a page it becomes an independent copy (no live link).
-- **`TSystem`** — site-wide settings: `site.{name, favicon, host, language, theme, notFound, serverError}`, `editor.layoutCategory`, and an `initializationStep` for the onboarding flow. `notFound/serverError` are `TPageRef = { path, identifier } | null`.
+- **`TSystem`** — site-wide settings: `site.{name, favicon, host, language, theme, notFound, serverError}`, `editor.layoutCategory`, and an `initializationStep` for the onboarding flow. `notFound/serverError` are `TPageRef = { path } | null`.
 
 ---
 
 ## Swapping in a custom backend
 
-The defaults target MongoDB, but every collaborator is an interface. Implement these to run against another store:
+The defaults target MongoDB, but every collaborator is an interface.
 
 ```ts
 import type {
-    CmsRepository,
-    MediaRepository,
-    Cache,
+    CmsRepository,       // admin-side CRUD — src/socle/contracts/Repository/CmsRepository.ts
+    DeliveryRepository,  // delivery-side read-only — src/delivery/interfaces/DeliveryRepository.ts
+    MediaRepository,     // admin media provider — src/socle/contracts/Media/MediaRepository.ts
+    Cache,               // cache entry store — src/socle/contracts/Cache/Cache.ts
 } from "@bernouy/cms";
 ```
 
-- `CmsRepository` — CRUD for pages, blocs, templates, snippets, system. Full contract in `src/contracts/Repository/CmsRepository.ts`.
-- `MediaRepository` — `getItems`, `upload`, `getResponse`, `createFolder`, `deleteItem`, `moveItem`, `updateMetadata`. The `getResponse(id, { w, h })` method must return a ready-to-serve `Response`; the default provider uses `sharp` for on-the-fly resizing.
-- `Cache` — `get`/`set`/`invalidate` over pre-compressed entries. `InMemoryCache` is the default; swap in Redis or similar for a multi-instance deployment.
+- `CmsRepository` — CRUD for pages, blocs, templates, snippets, system.
+- `DeliveryRepository` — strict read-only subset consumed by Delivery. Any `CmsRepository` implementation satisfies it via structural typing (same method shapes), so you typically don't implement it separately.
+- `MediaRepository` — admin media CRUD (`upload`, `createFolder`, `moveItem`, …). The default provider is `DefaultMediaRepository` (Mongo GridFS + `sharp` for resize).
+- `Cache` — `get/set/delete/deleteMatching/clear` over `CacheEntry` (pre-compressed `raw + gzip + brotli + hash`). `InMemoryCache` is the default. Swap in Redis or similar for a multi-instance deployment.
 
-Pass the custom implementations into the `Cms` constructor as you would the defaults.
+Delivery additionally takes a Socle `MediaUrlBuilder` — the contract that derives variant URLs (`formatImageUrl({ url, width })`) from absolute storage URLs. Ship whatever implementation wraps your storage backend.
 
 ---
 
@@ -277,7 +389,7 @@ Flags:
 
 ---
 
-### Writing your own bloc
+## Writing your own bloc
 
 A bloc lives in its own folder and is described by a `manifest.json` at its root. The CLI discovers blocs by walking the current working directory looking for that manifest.
 
@@ -323,7 +435,7 @@ The two sub-entries are isolated on purpose: `@bernouy/cms/component` reaches no
 Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 
 - The component bundle and the editor bundle are built **separately**. Never cross-import between `Bloc.ts` and `BlocEditor.ts`.
-- Placeholders `BE5_TAG_TO_BE_REPLACED`, `BE5_LABEL_TO_BE_REPLACED`, `BE5_GROUP_TO_BE_REPLACED` are substituted at build time by the wrapper the CLI injects — your own source does **not** need to reference them (the CLI wraps your entry file with a tiny synthetic file that calls `customElements.define` and `registerEditor` for you).
+- Placeholders `BE5_TAG_TO_BE_REPLACED`, `BE5_LABEL_TO_BE_REPLACED`, `BE5_GROUP_TO_BE_REPLACED` are substituted at build time by the wrapper the CLI injects — your own source does **not** need to reference them.
 - Do **not** call `super.connectedCallback()` in components.
 - Sub-components never own their own editor — their parent editor drives them via `<p9r-comp-sync>`.
 - Use `:host([attr="value"])` selectors for enum-like configuration; CSS `attr()` only works for numeric values with a `px` fallback.
@@ -347,15 +459,15 @@ Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 
 ---
 
-## Rendering pipeline
+## Delivery rendering pipeline
 
-1. A request hits `GET :pagePath`.
-2. `handlePageRequest` looks up `(path, identifier)` in the repository.
-3. On a hit, `renderWithFallbacks` calls `renderPage` behind the cache; on a miss, it resolves `system.site.notFound` and serves it with status 404.
-4. If `renderPage` throws, `system.site.serverError` is served with status 500 — if *that* also throws, plain text is returned to avoid recursion.
-5. `renderPage` produces a `CacheEntry { raw, gzip, brotli, contentType }`, and the response honors the client's `Accept-Encoding`.
-
-`renderPage` uses `linkedom` to build the `<head>`, emitting the page's `<title>` / `<meta description>`, the `<link rel="stylesheet" href="/style">` tag, and a `<link rel="canonical">` built from `TSystem.site.host`.
+1. A request hits the Delivery runner at `<basePath>/<pagePath>`.
+2. The runner's default GET endpoint invokes `handlePageRequest(req, delivery)`.
+3. Paths under `<cmsPathPrefix>/` short-circuit to a plain 404 (unknown assets; no DB lookup).
+4. Otherwise, `repository.getPage(pathname)` resolves the page. A miss falls back to `site.notFound`; a render exception falls back to `site.serverError`. If those fail too, plain text is returned to avoid recursion.
+5. On a cache miss, `renderPage` produces a `CacheEntry { raw, gzip, brotli, contentType, hash }` via `linkedom`. The head is composed by the helpers in `src/delivery/core/head/` and `src/delivery/core/seo/`.
+6. Before returning, the handler **awaits** `enhancer.enhance(path, origin)` — Playwright loads the just-rendered URL (which hits the now-warm cache inside), measures every image at every viewport, classifies `loading`/`fetchpriority`, computes `srcset` with the Socle `MediaUrlBuilder.imageConfig.ladderWidths`, rewrites the cached HTML in place, and pre-warms the variant URLs. The response the outer caller receives is the enhanced HTML.
+7. Subsequent requests serve the enhanced bytes directly from cache, negotiating `Accept-Encoding` for the right compression variant.
 
 ---
 
@@ -363,17 +475,25 @@ Rules worth knowing when writing blocs (mirror of `CLAUDE.md`):
 
 ```ts
 import {
-    // Core
-    Cms,
+    // Control
+    Cms,                            // admin + API + editor
+    InMemoryCache,
+
+    // Delivery
+    DeliveryCms,
+    DeliveryCache,
+    PlaywrightSession,
+    registerDeliveryEndpoints,
 
     // Default providers
     DefaultCmsRepository,
     DefaultMediaRepository,
-    InMemoryCache,
 } from "@bernouy/cms";
 
 import type {
     CmsRepository,
+    DeliveryRepository,
+    DeliveryCmsConfig,
     MediaRepository,
     Cache,
     TPage, TBloc, TTemplate, TSnippet, TSystem,
@@ -401,6 +521,7 @@ See [Writing your own bloc](#writing-your-own-bloc).
 | `bun run dev` | Run the bundled reference host (`App.ts`) with `--hot` |
 | `bun run build` | Emit `.d.ts` declarations into `dist/` (no JS bundling — this is a Bun-first source package) |
 | `bun run typecheck` | `tsc --noEmit` over the whole package |
+| `bun test` | Run the full test suite |
 
 ---
 
@@ -408,33 +529,50 @@ See [Writing your own bloc](#writing-your-own-bloc).
 
 ```
 src/
-├── core/
-│   ├── Component/          Base Component class (HTMLElement + Shadow DOM)
-│   ├── Editor/
-│   │   ├── core/           EditorManager, Editor, ObserverManager, DragManager
-│   │   ├── components/     BlocActionGroup, BlocLibrary, FloatingToolbar, RichTextBar,
-│   │   │                   PageConfiguration, TemplateConfiguration, SnippetConfiguration,
-│   │   │                   AdminLayout, MediaCenter
-│   │   ├── configuration/
-│   │   │   ├── Sync/       AttrSync, CompSync, ImageSync, StateSync
-│   │   │   ├── Inputs/     P9rSelect, P9rRange, P9rLink
-│   │   │   ├── ConfigPanel.ts
-│   │   │   └── ConfigItem.ts
-│   │   └── editors/        TextEditor, ImageEditor, ListEditor, SnippetEditor
-│   └── Domain/Media/       CardMedia, GridMedia, DetailMedia, CropSystem
-├── contracts/              Repository interfaces, data models (TPage, TBloc, …)
-├── providers/
-│   ├── mongo/              MongoDB implementations (Repository, Media)
-│   └── memory/             In-memory Cache implementation
-├── endpoints/
-│   ├── admin-ui/           Server-rendered admin pages (pages, templates, editor, settings, media)
-│   ├── admin-api/          REST JSON API
-│   └── admin-css/          Design tokens (oklch, reset)
-└── server/                 renderPage, routing, compression, editorShell
-
-src/ui/
-├── core/                   Reusable UI (Form, Dialog, Menu, Layout, Table)
-└── blocs/                  Built-in editable blocs (Layout, Form, Presentation)
+├── control/                        — Admin + API + editor (authenticated surface)
+│   ├── ControlCms.ts                  Cms class (exported as Cms from the public entry)
+│   ├── editor/
+│   │   ├── runtime/                   EditorManager, Editor, Component, ObserverManager,
+│   │   │                              DragManager, PinMode, registerEditor, ResizeInstance
+│   │   ├── components/                BlocActionGroup, BlocLibrary, FloatingToolbar,
+│   │   │                              MediaCenter, PageConfiguration, RichTextBar,
+│   │   │                              Snippet, SnippetConfiguration, TemplateConfiguration
+│   │   ├── configuration/             ConfigPanel, ConfigItem, P9rLink, sync/{Attr,Comp,Image,State}
+│   │   ├── editors/                   TextEditor, ImageEditor, ListEditor, SnippetEditor
+│   │   └── icons.ts
+│   ├── components/                    Reusable admin UI primitives (base/*, admin/*, media/*)
+│   ├── endpoints/
+│   │   ├── admin-ui/                  Server-rendered admin pages (pages, templates, editor, …)
+│   │   ├── admin-api/                 REST JSON API (+ GET /api/bloc for the editor preview)
+│   │   ├── admin-resources/           CSS + fonts, served verbatim at /resources/*
+│   │   └── registerEndpoints.ts
+│   └── server/                        compression-less helpers, editorShell, expandSnippets,
+│                                      cache/invalidation, routing, send_html, formData
+├── delivery/                       — Public rendering layer (anonymous surface)
+│   ├── DeliveryCms.ts
+│   ├── core/
+│   │   ├── html/                      renderPage, expandSnippets
+│   │   ├── pages/                     handlePageRequest, renderRef
+│   │   ├── head/                      findUsedBlocs, buildHtmlBasics, buildAssets,
+│   │   │                              buildPreconnect, buildScriptTags
+│   │   ├── seo/                       defineMetaTags
+│   │   ├── assets/                    resolveAssets, buildStyle, buildComponent
+│   │   ├── blocs/                     buildBloc
+│   │   ├── enhance/                   PageEnhancer, PlaywrightSession, enhancePage,
+│   │   │                              classifyImage, computeSrcset, rewriteHTML, viewports
+│   │   └── DeliveryCache.ts
+│   ├── endpoints/                     bloc, style, robots, sitemap, assets/{component, favicon}
+│   ├── interfaces/DeliveryRepository.ts
+│   └── registerDeliveryEndpoints.ts
+├── socle/                          — Shared contracts + infrastructure (no runtime state)
+│   ├── contracts/                     Repository, Media, Cache
+│   ├── providers/mongo/               DefaultCmsRepository, DefaultMediaRepository, MediaEndpoints
+│   ├── providers/memory/              InMemoryCache
+│   ├── constants/                     p9r-constants, editorAttributes
+│   ├── utils/                         validation, escapeHtml, getMimeType, searchDoc
+│   ├── blocs/                         prepare_bloc, p9rExternalsPlugin
+│   └── server/                        compression.ts (shared by Control and Delivery)
+└── cli/                            — p9r CLI (dev, import, init, install-skill, list-blocs)
 ```
 
 See [`CLAUDE.md`](./CLAUDE.md) for the full set of project conventions that apply when extending this package.
