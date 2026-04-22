@@ -1,5 +1,5 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
-import { cachedResponseAsync, publicAssetCacheControl } from "src/control/server/compression";
+import { cachedResponseAsync, publicAssetCacheControl } from "src/socle/server/compression";
 import { generateComponentJsEntry } from "src/delivery/core/assets/buildComponent";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 

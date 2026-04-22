@@ -1,7 +1,7 @@
 import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { ControlCms } from "src/control/ControlCms";
-import { cachedResponseAsync, compress, publicAssetCacheControl } from "src/control/server/compression";
+import { cachedResponseAsync, compress, publicAssetCacheControl } from "src/socle/server/compression";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 /**

@@ -1,5 +1,5 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
-import { getOrGenerateEntryAsync } from "src/control/server/compression";
+import { getOrGenerateEntryAsync } from "src/socle/server/compression";
 import { generateBlocEntry } from "src/delivery/core/blocs/buildBloc";
 import { generateStyleEntry } from "src/delivery/core/assets/buildStyle";
 import { generateComponentJsEntry } from "src/delivery/core/assets/buildComponent";

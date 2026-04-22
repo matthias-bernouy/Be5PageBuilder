@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { compress, cachedResponse, cachedResponseAsync } from "src/control/server/compression";
+import { compress, cachedResponse, cachedResponseAsync } from "src/socle/server/compression";
 import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
 
 class MemCache implements Cache {

@@ -1,5 +1,5 @@
 import type { ControlCms } from "src/control/ControlCms";
-import { cachedResponseAsync, compress } from "src/control/server/compression";
+import { cachedResponseAsync, compress } from "src/socle/server/compression";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 /**

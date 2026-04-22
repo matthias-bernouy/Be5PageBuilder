@@ -1,6 +1,6 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
 import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
-import { compress } from "src/control/server/compression";
+import { compress } from "src/socle/server/compression";
 
 /**
  * Build the view bundle entry for a bloc. The repository returns the raw

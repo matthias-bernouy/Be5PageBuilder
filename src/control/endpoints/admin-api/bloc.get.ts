@@ -1,6 +1,6 @@
 import type { ControlCms } from "src/control/ControlCms";
 import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
-import { cachedResponseAsync, compress, publicAssetCacheControl } from "src/control/server/compression";
+import { cachedResponseAsync, compress, publicAssetCacheControl } from "src/socle/server/compression";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 /**

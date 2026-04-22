@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { compress, sendCompressed } from "src/control/server/compression";
+import { compress, sendCompressed } from "src/socle/server/compression";
 import { send_html } from "src/control/server/send_html";
 
 function runner() {

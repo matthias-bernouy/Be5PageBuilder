@@ -1,6 +1,6 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
 import type { TPage } from "src/socle/contracts/Repository/TModels";
-import { cachedResponseAsync } from "src/control/server/compression";
+import { cachedResponseAsync } from "src/socle/server/compression";
 import { renderPage } from "src/delivery/core/html/renderPage";
 import { renderRef } from "src/delivery/core/pages/renderRef";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
