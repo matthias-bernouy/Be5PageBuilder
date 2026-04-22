@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { PageConfiguration } from "src/core/Editor/components/PageConfiguration/PageConfiguration";
-import type { P9rInput } from "src/ui/Form/P9rInput";
+import { PageConfiguration } from "src/control/editor/components/PageConfiguration/PageConfiguration";
+import type { P9rInput } from "src/control/components/base/Form/P9rInput";
 
 /**
  * Installs `element` and returns the chars needed to drive the form.

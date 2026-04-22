@@ -1,4 +1,4 @@
-import { HorizontalActionGroup } from 'src/ui/HorizontalActionGroup/HorizontalActionGroup';
+import { HorizontalActionGroup } from 'src/control/components/base/HorizontalActionGroup/HorizontalActionGroup';
 import type { Editor } from '../../runtime/Editor';
 import css from './style.css' with { type: 'text' };
 import template from './template.html' with { type: 'text' };

@@ -1,6 +1,6 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
 import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
-import { compress } from "src/server/compression";
+import { compress } from "src/control/server/compression";
 
 /**
  * Build the theme stylesheet entry served at `<cmsPathPrefix>/style`. For

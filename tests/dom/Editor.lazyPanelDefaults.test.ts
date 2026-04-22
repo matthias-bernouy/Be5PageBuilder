@@ -1,8 +1,8 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { Editor } from "src/core/Editor/runtime/Editor";
-import "src/core/Editor/configuration/sync/CompSync";
-import "src/core/Editor/configuration/sync/ImageSync";
-import "src/core/Editor/configuration/sync/AttrSync";
+import { Editor } from "src/control/editor/runtime/Editor";
+import "src/control/editor/configuration/sync/CompSync";
+import "src/control/editor/configuration/sync/ImageSync";
+import "src/control/editor/configuration/sync/AttrSync";
 
 class BareEditor extends Editor {
     override init() {}

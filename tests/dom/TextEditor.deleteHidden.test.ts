@@ -1,10 +1,10 @@
 import { describe, test, expect, beforeEach, mock } from "bun:test";
 
-mock.module("src/core/Editor/components/BlocLibrary/BlocLibrary", () => ({
+mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: { open: () => new EventTarget() },
 }));
 
-const { TextEditor } = await import("src/core/Editor/editors/TextEditor");
+const { TextEditor } = await import("src/control/editor/editors/TextEditor");
 
 function reset() {
     (document as any).compIdentifierToEditor = new Map();

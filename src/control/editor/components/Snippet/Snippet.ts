@@ -1,6 +1,6 @@
-import { Component, type ComponentMetadata } from 'src/core/Editor/runtime/Component';
-import { whenEditorManagerReady } from 'src/core/Editor/runtime/editorManagerReady';
-import { ICON_SNIPPET } from 'src/core/Editor/icons';
+import { Component, type ComponentMetadata } from 'src/control/editor/runtime/Component';
+import { whenEditorManagerReady } from 'src/control/editor/runtime/editorManagerReady';
+import { ICON_SNIPPET } from 'src/control/editor/icons';
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 
@@ -13,7 +13,7 @@ const SnippetMetadata: ComponentMetadata = {
  * Custom element that renders a synchronized snippet.
  *
  * In editor mode, the snippet content is SSR-expanded in the light DOM by
- * `expandSnippets()` (see `src/server/rendering/expandSnippets.ts`). On upgrade we
+ * `expandSnippets()` (see `src/control/server/rendering/expandSnippets.ts`). On upgrade we
  * move that content into the shadow DOM so the ObserverManager (which walks
  * the light DOM) cannot pick it up for inline editing, then we clear the
  * light DOM so that serialization via `EditorManager.getContent()` always

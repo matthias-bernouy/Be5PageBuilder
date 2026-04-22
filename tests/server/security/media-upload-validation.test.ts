@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import postMedia from "src/endpoints/admin-api/media/file.post";
+import postMedia from "src/control/endpoints/admin-api/media/file.post";
 
 function makeSystem(captureMime: { value?: string }) {
     return {

@@ -1,4 +1,4 @@
-import "src/core/Editor/components/MediaCenter/MediaCenter"
+import "src/control/editor/components/MediaCenter/MediaCenter"
 
 import { ImageEditor } from "../editors/ImageEditor";
 import { TextEditor, textTags } from "../editors/TextEditor";

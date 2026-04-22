@@ -9,7 +9,7 @@
  */
 
 // ── Core ────────────────────────────────────────────────────────────────
-export { Cms } from "./src/Cms";
+export { ControlCms as Cms } from "./src/control/ControlCms";
 
 // ── Delivery (public-facing rendering, deployable alone) ───────────────
 // Consumers wire DeliveryCms on its own runner/port alongside Cms. The
@@ -24,9 +24,9 @@ export type { DeliveryRepository } from "./src/delivery/interfaces/DeliveryRepos
 export type { DeliveryCmsConfig } from "./src/delivery/DeliveryCms";
 
 // ── Default providers (MongoDB + in-memory cache) ──────────────────────
-export { DefaultCmsRepository } from "./src/providers/mongo/Repository/DefaultCmsRepository";
-export { DefaultMediaRepository } from "./src/providers/mongo/Media/DefaultMediaRepository";
-export { InMemoryCache } from "./src/providers/memory/Cache/InMemoryCache";
+export { DefaultCmsRepository } from "./src/socle/providers/mongo/Repository/DefaultCmsRepository";
+export { DefaultMediaRepository } from "./src/socle/providers/mongo/Media/DefaultMediaRepository";
+export { InMemoryCache } from "./src/socle/providers/memory/Cache/InMemoryCache";
 
 // Browser-safe bloc authoring symbols are deliberately split into two
 // sub-entries:

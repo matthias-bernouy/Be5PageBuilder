@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import getPages from "src/endpoints/admin-api/pages.get";
+import getPages from "src/control/endpoints/admin-api/pages.get";
 
 describe("pages.get encodes identifiers for the URL", () => {
     test("special characters in identifier are URL-encoded", async () => {

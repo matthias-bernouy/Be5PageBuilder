@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { findUsedBlocTags } from "src/delivery/core/head/findUsedBlocs";
+import { findUsedBlocTags } from "src/delivery/core/blocs/findUsedBlocs";
 
 describe("findUsedBlocTags", () => {
     test("returns empty when the bloc list is empty", () => {

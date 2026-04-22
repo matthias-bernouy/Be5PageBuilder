@@ -1,5 +1,5 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
-import { compress } from "src/server/compression";
+import { compress } from "src/control/server/compression";
 import { computeSrcset } from "src/delivery/core/enhance/computeSrcset";
 import { rewriteHTML, isOptimizable, type ImageRewrite } from "src/delivery/core/enhance/rewriteHTML";
 import { classifyImages } from "src/delivery/core/enhance/classifyImage";

@@ -3,7 +3,7 @@ import { describe, test, expect } from "bun:test";
 // Verify the Mongo filter built for media search escapes the user-provided
 // free-text query rather than passing it raw to `$regex`. A raw pattern opens
 // ReDoS and could break the app with pathological input.
-import { DefaultMediaRepository } from "src/providers/mongo/Media/DefaultMediaRepository";
+import { DefaultMediaRepository } from "src/socle/providers/mongo/Media/DefaultMediaRepository";
 
 describe("media filter.text is escaped for $regex", () => {
     test("special regex chars are escaped in the built query", async () => {

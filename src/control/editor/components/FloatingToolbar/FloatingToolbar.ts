@@ -1,8 +1,8 @@
-import "src/ui/Dialog/LateralDialog/LateralDialog"
-import "src/ui/Form/Checkbox/Checkbox"
+import "src/control/components/base/Dialog/LateralDialog/LateralDialog"
+import "src/control/components/base/Form/Checkbox/Checkbox"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { Component } from "src/core/Editor/runtime/Component";
+import { Component } from "@bernouy/cms/component";
 
 export class FloatingToolbar extends Component {
 

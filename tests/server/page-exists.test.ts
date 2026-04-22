@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import pageExists from "src/endpoints/admin-api/page-exists.get";
+import pageExists from "src/control/endpoints/admin-api/page-exists.get";
 import type { TPage } from "src/socle/contracts/Repository/TModels";
 
 function makeSystem(pages: Array<{ path: string; identifier: string }>, adminPathPrefix = "/cms") {
@@ -60,36 +60,6 @@ describe("GET /api/page-exists", () => {
         const cms = makeSystem([{ path: "/article", identifier: "v1" }]);
         const res = await pageExists(
             makeRequest({ path: "/article", identifier: "v2" }),
-            cms,
-        );
-        expect(await res.json()).toEqual({ exists: false });
-    });
-
-    test("flags a path reserved by the framework as { exists: true, reason: 'reserved' }", async () => {
-        const cms = makeSystem([]);
-        const res = await pageExists(makeRequest({ path: "/bloc" }), cms);
-        expect(await res.json()).toEqual({ exists: true, reason: "reserved" });
-    });
-
-    test("flags a path under the admin prefix as reserved", async () => {
-        const cms = makeSystem([]);
-        const res = await pageExists(makeRequest({ path: "/cms/anything" }), cms);
-        expect(await res.json()).toEqual({ exists: true, reason: "reserved" });
-    });
-
-    test("reserved-path check honours a custom admin prefix", async () => {
-        const cms = makeSystem([], "/cms");
-        const res = await pageExists(makeRequest({ path: "/cms" }), cms);
-        expect(await res.json()).toEqual({ exists: true, reason: "reserved" });
-    });
-
-    test("self-match takes precedence over reserved (grandfathered path)", async () => {
-        const cms = makeSystem([]);
-        const res = await pageExists(
-            makeRequest({
-                path: "/bloc",
-                "current-path": "/bloc",
-            }),
             cms,
         );
         expect(await res.json()).toEqual({ exists: false });

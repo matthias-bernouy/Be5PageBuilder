@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import { parseHTML } from "linkedom";
-import Server from "src/endpoints/admin-ui/settings/settings.server";
-import type { Cms } from "src/Cms";
+import Server from "src/control/endpoints/admin-ui/settings/settings.server";
+import type { ControlCms } from "src/control/ControlCms";
 import type { TPage, TSystem, TTemplate } from "src/socle/contracts/Repository/TModels";
 
 /**
@@ -24,7 +24,7 @@ type MockOpts = {
     system?: { site?: Partial<TSystem["site"]>; editor?: Partial<TSystem["editor"]> };
 };
 
-function mockSystem(opts: MockOpts = {}): Cms {
+function mockSystem(opts: MockOpts = {}): ControlCms {
     const system: TSystem = {
         initializationStep: 0,
         site: {
@@ -48,7 +48,7 @@ function mockSystem(opts: MockOpts = {}): Cms {
             getAllTemplates: async () => opts.templates ?? [],
         },
         config: { adminPathPrefix: "/cms", clientPathPrefix: "/" },
-    } as unknown as Cms;
+    } as unknown as ControlCms;
 }
 
 const page = (over: Partial<TPage> = {}): TPage => ({

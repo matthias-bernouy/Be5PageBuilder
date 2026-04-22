@@ -1,5 +1,5 @@
 import { describe, test, expect, spyOn } from "bun:test";
-import postMedia from "src/endpoints/admin-api/media/file.post";
+import postMedia from "src/control/endpoints/admin-api/media/file.post";
 
 describe("error logs do not leak raw error objects in production paths", () => {
     test("upload error logs a short message, not the whole Error object with stack", async () => {

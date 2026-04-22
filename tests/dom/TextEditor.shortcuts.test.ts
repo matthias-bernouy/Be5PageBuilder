@@ -4,7 +4,7 @@ import { describe, test, expect, beforeEach, mock } from "bun:test";
 // full library UI (shadow DOM, Component base, etc).
 const openCalls: number[] = [];
 const fakeLibrary = new EventTarget();
-mock.module("src/core/Editor/components/BlocLibrary/BlocLibrary", () => ({
+mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: {
         open: () => {
             openCalls.push(Date.now());
@@ -13,7 +13,7 @@ mock.module("src/core/Editor/components/BlocLibrary/BlocLibrary", () => ({
     },
 }));
 
-const { TextEditor } = await import("src/core/Editor/editors/TextEditor");
+const { TextEditor } = await import("src/control/editor/editors/TextEditor");
 
 function reset() {
     openCalls.length = 0;

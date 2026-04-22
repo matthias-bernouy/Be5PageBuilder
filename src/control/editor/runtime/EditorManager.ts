@@ -1,5 +1,5 @@
 
-import "src/core/Editor/components/Snippet/Snippet"
+import "src/control/editor/components/Snippet/Snippet"
 import { DragManager } from "./DragManager";
 import { ObserverManager } from "./ObserverManager";
 import { MediaCenter } from "../components/MediaCenter/MediaCenter";
@@ -92,7 +92,7 @@ export class EditorManager{
      * Cms is a plugin mounted under a host-configurable prefix, so
      * the client cannot hardcode `/cms/api/`. The server bakes the
      * resolved prefix into a `<meta name="p9r-api-base">` tag in the editor
-     * shell (see `src/server/rendering/editorShell.ts`); we read it here and resolve
+     * shell (see `src/control/server/rendering/editorShell.ts`); we read it here and resolve
      * it against the current document URL so the result is always absolute.
      */
     getApiBasePath(){

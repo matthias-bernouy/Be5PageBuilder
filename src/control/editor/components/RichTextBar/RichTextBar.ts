@@ -1,5 +1,5 @@
-import { Component } from "src/core/Editor/runtime/Component";
-import "src/core/Editor/configuration/P9rLink";
+import { Component } from "@bernouy/cms/component";
+import "src/control/editor/configuration/P9rLink";
 
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };

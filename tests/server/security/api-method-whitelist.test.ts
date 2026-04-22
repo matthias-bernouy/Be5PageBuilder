@@ -6,7 +6,7 @@ import { describe, test, expect } from "bun:test";
 // write-guard logic. Assert the routing code guards against this.
 describe("API routing guards HTTP methods", () => {
     test("routing.ts whitelists HTTP methods", async () => {
-        const src = await Bun.file("src/server/routing.ts").text();
+        const src = await Bun.file("src/control/server/routing.ts").text();
 
         // Either a whitelist literal appears, or the code throws on unknown.
         const hasWhitelist =

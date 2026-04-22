@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import { expandSnippets } from "src/server/rendering/expandSnippets";
-import type { Cms } from "src/Cms";
+import { expandSnippets } from "src/control/server/rendering/expandSnippets";
+import type { ControlCms } from "src/control/ControlCms";
 import type { TSnippet } from "src/socle/contracts/Repository/TModels";
 
 function makeSystem(snippets: Record<string, string>) {
@@ -23,7 +23,7 @@ function makeSystem(snippets: Record<string, string>) {
                 return null;
             },
         },
-    } as unknown as Cms;
+    } as unknown as ControlCms;
     return { cms, fetchLog };
 }
 

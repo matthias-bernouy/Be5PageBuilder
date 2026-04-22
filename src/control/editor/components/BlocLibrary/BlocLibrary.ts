@@ -1,4 +1,4 @@
-import { Component, type ComponentMetadata } from 'src/core/Editor/runtime/Component';
+import { Component, type ComponentMetadata } from 'src/control/editor/runtime/Component';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import {

@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { ConfigPanel } from "src/core/Editor/configuration/ConfigPanel";
+import { ConfigPanel } from "src/control/editor/configuration/ConfigPanel";
 
 describe("ConfigPanel", () => {
     let panel: ConfigPanel;

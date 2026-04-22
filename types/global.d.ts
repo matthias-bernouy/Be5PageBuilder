@@ -1,9 +1,9 @@
-import type { EditorManager } from "src/core/Editor/runtime/EditorManager";
-import type { Editor } from "src/core/Editor/runtime/Editor";
-import type { Component } from "src/core/Editor/runtime/Component";
-import type { registerEditor, registerEditor_opaque } from "src/core/Editor/runtime/registerEditor";
-import { P9R_ATTR } from "./editor-attributs";
-import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "./p9r-constants";
+import type { EditorManager } from "src/control/editor/runtime/EditorManager";
+import type { Editor } from "src/control/editor/runtime/Editor";
+import type { Component } from "src/control/editor/runtime/Component";
+import type { registerEditor, registerEditor_opaque } from "src/control/editor/runtime/registerEditor";
+import { P9R_ATTR } from "src/socle/constants/editorAttributes";
+import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/socle/constants/p9r-constants";
 
 // NOTE: wildcard module declarations for `*.css` / `*.html` live in
 // `./assets.d.ts`, NOT here. This file has top-level imports and is

@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
-import { compress } from "src/server/compression";
+import { compress } from "src/control/server/compression";
 
 /**
  * Source of the component runtime bundle. Lives under `endpoints/assets/`

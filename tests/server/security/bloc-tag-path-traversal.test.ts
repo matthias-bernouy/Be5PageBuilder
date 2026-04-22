@@ -3,7 +3,7 @@ import { describe, test, expect, mock } from "bun:test";
 // Capture the blocId prepare_bloc receives so we can assert the handler
 // rejects dangerous tags BEFORE any filesystem work happens.
 const prepareBlocCalls: string[] = [];
-mock.module("src/blocs/prepare_bloc", () => ({
+mock.module("src/socle/blocs/prepare_bloc", () => ({
     prepare_bloc: async (
         _v: File, _e: File | null, label: string, group: string, description: string, blocId: string,
     ) => {
@@ -12,7 +12,7 @@ mock.module("src/blocs/prepare_bloc", () => ({
     },
 }));
 
-const { default: importBloc } = await import("src/endpoints/admin-api/bloc.post");
+const { default: importBloc } = await import("src/control/endpoints/admin-api/bloc.post");
 
 function makeSystem() {
     return {

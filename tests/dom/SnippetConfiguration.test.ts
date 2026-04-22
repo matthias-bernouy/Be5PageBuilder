@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { SnippetConfiguration } from "src/core/Editor/components/SnippetConfiguration/SnippetConfiguration";
-import type { P9rInput } from "src/ui/Form/P9rInput";
+import { SnippetConfiguration } from "src/control/editor/components/SnippetConfiguration/SnippetConfiguration";
+import type { P9rInput } from "src/control/components/base/Form/P9rInput";
 
 function mount(attrs: Record<string, string> = {}): SnippetConfiguration {
     document.body.innerHTML = "";

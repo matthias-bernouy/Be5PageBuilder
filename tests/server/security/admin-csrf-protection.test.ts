@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { createAuthGuard } from "src/endpoints/registerEndpoints";
+import { createAuthGuard } from "src/control/endpoints/registerEndpoints";
 
 // If the admin auth relies on cookies (via @bernouy/socle), POST routes under
 // /cms/api/* are CSRF-vulnerable unless the guard checks Origin /

@@ -1,8 +1,8 @@
 import { P9R_ATTR } from "src/socle/constants/editorAttributes";
 import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/socle/constants/p9r-constants";
-import { Component } from "src/core/Editor/runtime/Component";
-import { Editor } from "src/core/Editor/runtime/Editor";
-import { registerEditor, registerEditor_opaque } from "src/core/Editor/runtime/registerEditor";
+import { Component } from "@bernouy/cms/component";
+import { Editor } from "src/control/editor/runtime/Editor";
+import { registerEditor, registerEditor_opaque } from "src/control/editor/runtime/registerEditor";
 
 (window as any).p9r = {
     attr:  P9R_ATTR,

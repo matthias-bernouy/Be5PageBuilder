@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { ImageSync } from "src/core/Editor/configuration/sync/ImageSync";
-import { Editor } from "src/core/Editor/runtime/Editor";
+import { ImageSync } from "src/control/editor/configuration/sync/ImageSync";
+import { Editor } from "src/control/editor/runtime/Editor";
 
 class SlotEditor extends Editor {
     constructor(n: HTMLElement) { super(n, ""); }

@@ -1,5 +1,5 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
-import { compress, sendCompressed } from "src/server/compression";
+import { compress, sendCompressed } from "src/control/server/compression";
 
 /**
  * Default Delivery favicon served at `<cmsPathPrefix>/assets/favicon`.

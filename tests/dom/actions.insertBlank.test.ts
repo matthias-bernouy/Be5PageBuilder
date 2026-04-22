@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { insertBlankSibling, duplicateSibling } from "src/core/Editor/components/BlocActionGroup/actions";
+import { insertBlankSibling, duplicateSibling } from "src/control/editor/components/BlocActionGroup/actions";
 
 beforeEach(() => {
     document.body.innerHTML = "";

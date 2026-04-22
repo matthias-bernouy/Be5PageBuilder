@@ -1,15 +1,15 @@
-import "src/ui/Dialog/LateralDialog/LateralDialog";
-import "src/ui/Form/Button/Button";
-import "src/ui/Form/TagSuggest/TagSuggest";
-import "src/ui/Form/FormSection";
-import "src/ui/Form/P9rInput";
+import "src/control/components/base/Dialog/LateralDialog/LateralDialog";
+import "src/control/components/base/Form/Button/Button";
+import "src/control/components/base/Form/TagSuggest/TagSuggest";
+import "src/control/components/base/Form/FormSection";
+import "src/control/components/base/Form/P9rInput";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "src/ui/Dialog/LateralDialog/LateralDialog";
-import type { P9rInput } from "src/ui/Form/P9rInput";
-import { Component } from "src/core/Editor/runtime/Component";
-import { showToast } from "src/ui/Toast/ToastStack";
+import type { LateralDialog } from "src/control/components/base/Dialog/LateralDialog/LateralDialog";
+import type { P9rInput } from "src/control/components/base/Form/P9rInput";
+import { Component } from "@bernouy/cms/component";
+import { showToast } from "src/control/components/base/Toast/ToastStack";
 import { isValidSnippetIdentifier } from "src/socle/utils/validation";
 
 export class SnippetConfiguration extends Component {

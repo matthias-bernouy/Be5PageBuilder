@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { ImageSync } from "src/core/Editor/configuration/sync/ImageSync";
+import { ImageSync } from "src/control/editor/configuration/sync/ImageSync";
 
 function reset() {
     document.body.innerHTML = "";

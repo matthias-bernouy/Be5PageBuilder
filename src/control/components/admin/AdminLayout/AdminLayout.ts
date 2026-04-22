@@ -1,7 +1,7 @@
-import { Component } from "src/core/Editor/runtime/Component";
+import { Component } from "@bernouy/cms/component";
 
-import "src/ui/Menu/LateralMenu/LateralMenu"
-import "src/ui/Layout/LeftMenuLayout/LeftMenuLayout"
+import "src/control/components/base/Menu/LateralMenu/LateralMenu"
+import "src/control/components/base/Layout/LeftMenuLayout/LeftMenuLayout"
 
 import template from './template.html' with { type: 'text' };
 

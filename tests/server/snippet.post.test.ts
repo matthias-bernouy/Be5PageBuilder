@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import postSnippet from "src/endpoints/admin-api/snippet.post";
+import postSnippet from "src/control/endpoints/admin-api/snippet.post";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 import type { TSnippet, TPage } from "src/socle/contracts/Repository/TModels";
 

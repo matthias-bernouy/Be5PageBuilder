@@ -1,12 +1,12 @@
 import { describe, test, expect, beforeEach, mock } from "bun:test";
 
-mock.module("src/core/Editor/components/BlocLibrary/BlocLibrary", () => ({
+mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: { open: () => new EventTarget() },
 }));
 
-const { TextEditor } = await import("src/core/Editor/editors/TextEditor");
-const { BlocActionGroup } = await import("src/core/Editor/components/BlocActionGroup/BlocActionGroup");
-const { Editor } = await import("src/core/Editor/runtime/Editor");
+const { TextEditor } = await import("src/control/editor/editors/TextEditor");
+const { BlocActionGroup } = await import("src/control/editor/components/BlocActionGroup/BlocActionGroup");
+const { Editor } = await import("@bernouy/cms/editor");
 
 class BareEditor extends Editor {
     override init() {}

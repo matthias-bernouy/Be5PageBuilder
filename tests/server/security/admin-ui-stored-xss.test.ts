@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
-import SnippetsPage from "src/endpoints/admin-ui/snippets/snippets.server";
-import TemplatesPage from "src/endpoints/admin-ui/templates/templates.server";
-import PagesPage from "src/endpoints/admin-ui/pages/pages.server";
+import SnippetsPage from "src/control/endpoints/admin-ui/snippets/snippets.server";
+import TemplatesPage from "src/control/endpoints/admin-ui/templates/templates.server";
+import PagesPage from "src/control/endpoints/admin-ui/pages/pages.server";
 
 const XSS = `"><script>fetch('/pwned')</script><x "`;
 

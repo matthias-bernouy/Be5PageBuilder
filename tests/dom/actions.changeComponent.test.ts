@@ -5,11 +5,11 @@ import { describe, test, expect, beforeEach, mock } from "bun:test";
 class FakeLibrary extends EventTarget {}
 const fakeLibrary = new FakeLibrary();
 
-mock.module("src/core/Editor/components/BlocLibrary/BlocLibrary", () => ({
+mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: { open: () => fakeLibrary },
 }));
 
-const { openChangeComponentPicker } = await import("src/core/Editor/components/BlocActionGroup/actions");
+const { openChangeComponentPicker } = await import("src/control/editor/components/BlocActionGroup/actions");
 
 function resetState() {
     document.body.querySelectorAll("*").forEach((n) => {

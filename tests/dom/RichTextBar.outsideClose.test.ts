@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { EditorToolbar } from "src/core/Editor/components/RichTextBar/RichTextBar";
+import { EditorToolbar } from "src/control/editor/components/RichTextBar/RichTextBar";
 
 beforeEach(() => { document.body.innerHTML = ""; });
 

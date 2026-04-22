@@ -1,5 +1,5 @@
-import type { Component } from "src/core/Editor/runtime/Component";
-import { ICON_UPLOAD } from "src/core/Editor/icons";
+import type { Component } from "src/control/editor/runtime/Component";
+import { ICON_UPLOAD } from "src/control/editor/icons";
 import css from "./ImageSync.style.css" with { type: "text" };
 
 /**

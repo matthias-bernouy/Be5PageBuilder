@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
-import updatePage from "src/endpoints/admin-api/page.post";
-import { InMemoryCache } from "src/providers/memory/Cache/InMemoryCache";
+import updatePage from "src/control/endpoints/admin-api/page.post";
+import { InMemoryCache } from "src/socle/providers/memory/Cache/InMemoryCache";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
 
@@ -10,7 +10,6 @@ function makeSystem(opts: {
     adminPathPrefix?: string;
 } = {}) {
     const createPageCalls: CreatePageCall[] = [];
-    const registeredRoutes: string[] = [];
     const cache = new InMemoryCache();
     const deleteSpy: string[] = [];
     const originalDelete = cache.delete.bind(cache);
@@ -42,11 +41,9 @@ function makeSystem(opts: {
                 editor: { layoutCategory: "" },
             }),
         },
-        registerPageRoute: (path: string) => { registeredRoutes.push(path); },
-        imageOptimizer: { enqueuePageOptimization: () => {} },
     };
 
-    return { cms, createPageCalls, registeredRoutes, deleteSpy };
+    return { cms, createPageCalls, deleteSpy };
 }
 
 function makeRequest(query: Record<string, string>, body: Partial<TPage> & { identifier?: string }) {
@@ -92,29 +89,13 @@ describe("page.post", () => {
         expect(await res.text()).toContain("Invalid path format");
     });
 
-    test("400 when new path is reserved (admin prefix)", async () => {
-        const { cms } = makeSystem();
-        const req = makeRequest({ path: "/about" }, fullBody({ path: "/cms/foo" }));
-        const res = await updatePage(req, cms);
-        expect(res.status).toBe(400);
-        expect(await res.text()).toContain("reserved");
-    });
-
-    test("400 when new path is an exact reserved path", async () => {
-        const { cms } = makeSystem();
-        const req = makeRequest({ path: "/about" }, fullBody({ path: "/bloc" }));
-        const res = await updatePage(req, cms);
-        expect(res.status).toBe(400);
-    });
-
-    test("happy path: creates page, registers route, returns 200", async () => {
-        const { cms, createPageCalls, registeredRoutes } = makeSystem();
+    test("happy path: creates page and returns 200", async () => {
+        const { cms, createPageCalls } = makeSystem();
         const req = makeRequest({ path: "/about" }, fullBody());
         const res = await updatePage(req, cms);
         expect(res.status).toBe(200);
         expect(createPageCalls).toHaveLength(1);
         expect(createPageCalls[0]?.page.path).toBe("/about");
-        expect(registeredRoutes).toContain("/about");
     });
 
     test("rename: passes oldKey from query params to createPage", async () => {

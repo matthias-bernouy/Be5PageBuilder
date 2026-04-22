@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { Editor } from "src/core/Editor/runtime/Editor";
-import { CompSync } from "src/core/Editor/configuration/sync/CompSync";
+import { Editor } from "src/control/editor/runtime/Editor";
+import { CompSync } from "src/control/editor/configuration/sync/CompSync";
 
 // Exposes the live action-bar feature map populated by `Editor.viewEditor()`.
 class SlotEditor extends Editor {
