@@ -29,14 +29,23 @@ export const createAuthGuard = (cms: Cms): Middleware => {
         }
 
         try {
-            const subject = await cms.auth.guardAuthenticated(req);
-            if (subject.role !== "admin") throw new Error("Not connected")
-            return await next();
+            const subject = await cms.auth.getSubject(req);
+            if (subject){
+                if ( subject.role === "admin" ) {
+                    return await next();
+                }
+                else {
+                    return new Response(null, {
+                        status: 302,
+                        headers: { "Location": cms.config.clientPathPrefix || "/" }
+                    });
+                }
+            } else {
+                throw new Error("Not connected")
+            }
         } catch (error) {
-            console.log(error)
             const currentPath = new URL(req.url).pathname;
-            const loginUrl = cms.auth.withRedirect(cms.auth.loginPage, currentPath);
-            
+            const loginUrl = cms.auth.buildLoginUrl(currentPath);
             return new Response(null, {
                 status: 302,
                 headers: { "Location": loginUrl }
@@ -45,11 +54,38 @@ export const createAuthGuard = (cms: Cms): Middleware => {
     };
 };
 
+/**
+ * Escape a string for safe interpolation inside an HTML attribute value that
+ * is wrapped in double quotes. Covers the four characters that could break
+ * out of the attribute or the surrounding tag.
+ */
+function escapeHtmlAttr(value: string): string {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+/**
+ * Inject `<meta>` tags carrying CMS-global values into every admin page's
+ * `<head>`. AdminLayout reads these at connectedCallback to wire up links
+ * that depend on runtime configuration (logout URL, etc.) without any
+ * build-time placeholder replacement.
+ */
+function buildAdminHtmlTransform(cms: Cms): (html: string) => string {
+    const logoutUrl = escapeHtmlAttr(cms.auth.logoutUrl);
+    const metaTags = `    <meta name="admin-logout-url" content="${logoutUrl}">\n`;
+    return (html: string) => html.replace(/<\/head>/i, metaTags + "</head>");
+}
+
 export function registerEndpoints(cms: Cms){
+
+    const adminHtmlTransform = buildAdminHtmlTransform(cms);
 
     cms.runner.group(cms.config.adminPathPrefix || "/cms", (r) => {
 
-        registerUIFolder   ("/admin", res("admin-ui"),    cms, r);
+        registerUIFolder   ("/admin", res("admin-ui"),    cms, r, { htmlTransform: adminHtmlTransform });
         registerAPIFolder  ("/api",   res("admin-api"),   cms, r);
         registerCSSFolder  ("/css",   res("admin-css"),   cms, r);
         registerFontsFolder("/fonts", res("admin-fonts"), cms, r);

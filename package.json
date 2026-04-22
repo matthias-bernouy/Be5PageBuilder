@@ -46,7 +46,6 @@
         "prepublishOnly": "bun run build"
     },
     "devDependencies": {
-        "@bernouy/socle": "1.0.1",
         "@happy-dom/global-registrator": "^20.8.9",
         "@types/bun": "latest",
         "bun-types": "^1.3.11",
@@ -60,7 +59,8 @@
     "dependencies": {
         "linkedom": "^0.18.12",
         "mongodb": "~7.1.1",
-        "sharp": "^0.34.5"
+        "sharp": "^0.34.5",
+        "@bernouy/socle": "link:@bernouy/socle"
     },
     "engines": {
         "bun": ">=1.3.0"

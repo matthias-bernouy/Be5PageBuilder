@@ -1,4 +1,4 @@
-import type { Be5_Runner, Runner } from "@bernouy/socle";
+import type { Runner } from "@bernouy/socle";
 import { MongoClient, type Collection, type Db, ObjectId, Binary } from "mongodb";
 import sharp from "sharp";
 import type {

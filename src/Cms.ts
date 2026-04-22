@@ -1,5 +1,5 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
-import type { Authentication, PasswordAuthentication, Runner, TokenAuthentication } from "@bernouy/socle";
+import type { Authentication, Runner } from "@bernouy/socle";
 import type { CmsRepository } from "./contracts/Repository/CmsRepository";
 import type { MediaRepository } from "./contracts/Media/MediaRepository";
 import type { Cache } from "./contracts/Cache/Cache";
@@ -11,6 +11,7 @@ import { isReservedPath } from "./server/reservedPaths";
 import { isValidPathFormat } from "./utils/validation";
 import { ImageOptimizer } from "./server/imageOptimization/ImageOptimizer";
 import { P9R_CACHE } from "src/constants/p9r-constants";
+import type { CMS_ROLES } from "types/roles";
 
 type Configuration = {
     adminPathPrefix?: string;
@@ -22,7 +23,7 @@ export class Cms{
     private configuration: Configuration;
     private _repository: CmsRepository;
     private _runner:     Runner;
-    private _auth:       Authentication & TokenAuthentication & PasswordAuthentication;
+    private _auth:       Authentication;
     private _mediaRepository: MediaRepository;
     private _cache:      Cache;
     private _imageOptimizer: ImageOptimizer;
@@ -38,7 +39,7 @@ export class Cms{
     constructor(
         runner: Runner,
         repository: CmsRepository,
-        auth: Authentication & TokenAuthentication & PasswordAuthentication,
+        auth: Authentication<CMS_ROLES>,
         mediaRepository: MediaRepository,
         configuration: Configuration,
         cache?: Cache

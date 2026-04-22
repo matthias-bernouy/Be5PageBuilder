@@ -1,4 +1,4 @@
-import type { Be5_Runner, Runner } from "@bernouy/socle";
+import type { Runner } from "@bernouy/socle";
 import type { DefaultMediaRepository } from "./DefaultMediaRepository";
 import type { MediaDocument } from "src/contracts/Media/MediaRepository";
 import sharp from "sharp";
