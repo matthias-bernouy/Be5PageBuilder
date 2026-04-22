@@ -1,7 +1,7 @@
 /**
  * Self-hosted admin UI fonts. Variable woff2 files cover every weight from
  * a single download — one request each for Inter and JetBrains Mono. Served
- * from `/page-builder/fonts/*.woff2` (see registerFontsFolder). Latin subset
+ * from `/resources/fonts/*.woff2` (served by `registerResourcesFolder`). Latin subset
  * only: the admin UI is FR/EN, no need to ship Cyrillic/Greek/Vietnamese.
  */
 @font-face {

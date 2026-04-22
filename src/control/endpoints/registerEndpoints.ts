@@ -1,4 +1,4 @@
-import { registerUIFolder, registerCSSFolder, registerAPIFolder, registerFontsFolder } from "src/control/server/routing";
+import { registerUIFolder, registerAPIFolder, registerResourcesFolder } from "src/control/server/routing";
 import { join } from "node:path"
 import type { ControlCms } from "src/control/ControlCms";
 import type { Middleware } from "@bernouy/socle";
@@ -64,10 +64,9 @@ export const createAuthGuard = (cms: ControlCms): Middleware => {
 export function registerEndpoints(cms: ControlCms){
 
     cms.runner.group("", (r) => {
-        registerUIFolder   ("/admin", res("admin-ui"),    cms, r);
-        registerAPIFolder  ("/api",   res("admin-api"),   cms, r);
-        registerCSSFolder  ("/css",   res("admin-css"),   cms, r);
-        registerFontsFolder("/fonts", res("admin-fonts"), cms, r);
+        registerUIFolder       ("/admin",     res("admin-ui"),        cms, r);
+        registerAPIFolder      ("/api",       res("admin-api"),       cms, r);
+        registerResourcesFolder("/resources", res("admin-resources"), r);
     }, [createAuthGuard(cms)]);
 
 }

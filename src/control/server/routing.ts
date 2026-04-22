@@ -1,7 +1,7 @@
 import type { Runner } from "@bernouy/socle";
 import { basename, dirname, join } from "node:path";
 import type { ControlCms } from "src/control/ControlCms";
-import { cachedResponseAsync, compress } from "src/socle/server/compression";
+import { cachedResponseAsync, compress, SECURITY_HEADERS } from "src/socle/server/compression";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 // Mirrors the union accepted by socle's `Runner.addEndpoint`. Centralized
@@ -75,40 +75,25 @@ function toRouteKey(filePath: string, suffix: string): string {
 }
 
 
-export async function registerCSSFolder(url: string, absoluteFolderPath: string, cms: ControlCms, runner: Runner) {
-    const glob = new Bun.Glob("**/*.css");
-
-    for await (const file of glob.scan(absoluteFolderPath)) {
-        const fullPath = join(absoluteFolderPath, file);
-        const endpointUrl = join(url, file).replace(/\\/g, '/');
-        const cacheKey = P9R_CACHE.css(endpointUrl);
-        runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
-            return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
-                const content = await Bun.file(fullPath).text();
-                return compress(content, "text/css");
-            });
-        });
-    }
-}
-
 /**
- * Serve every `.woff2` found under `absoluteFolderPath` at `<url>/<file>`.
- * woff2 is already Brotli-compressed internally; the extra gzip/brotli pass
- * done by `compress()` is a no-op in practice but keeps the asset pipeline
- * uniform (one cache shape, one response builder).
+ * Serve every file under `absoluteFolderPath` verbatim. Content-Type is
+ * inferred from the file extension by `Bun.file`. No compression and no
+ * in-memory caching — the admin is authenticated, low-traffic, and `.woff2`
+ * is already Brotli-compressed internally anyway. Attach security headers
+ * so the response matches the posture of the rest of the admin surface.
+ *
+ * Subfolders are preserved: a file at `<root>/css/style.css` is served at
+ * `<url>/css/style.css`. This keeps relative `@import` and `url()`
+ * references inside CSS working without rewrites.
  */
-export async function registerFontsFolder(url: string, absoluteFolderPath: string, cms: ControlCms, runner: Runner) {
-    const glob = new Bun.Glob("**/*.woff2");
+export async function registerResourcesFolder(url: string, absoluteFolderPath: string, runner: Runner) {
+    const glob = new Bun.Glob("**/*");
 
     for await (const file of glob.scan(absoluteFolderPath)) {
         const fullPath = join(absoluteFolderPath, file);
         const endpointUrl = join(url, file).replace(/\\/g, '/');
-        const cacheKey = P9R_CACHE.font(endpointUrl);
-        runner.addEndpoint("GET", endpointUrl, async (req: Request) => {
-            return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
-                const content = await Bun.file(fullPath).arrayBuffer();
-                return compress(content, "font/woff2");
-            });
+        runner.addEndpoint("GET", endpointUrl, async () => {
+            return new Response(Bun.file(fullPath), { headers: SECURITY_HEADERS });
         });
     }
 }
