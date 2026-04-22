@@ -39,7 +39,7 @@ async function renderWithFallbacks(
     cachePath: string,
     delivery: DeliveryCms,
 ): Promise<Response> {
-    const cacheKey = P9R_CACHE.page(cachePath, "");
+    const cacheKey = P9R_CACHE.page(cachePath);
     const wasCached = delivery.cache.get(cacheKey) !== null;
 
     try {

@@ -55,21 +55,6 @@ describe("sitemap.xml (delivery)", () => {
         expect(body).not.toContain("/.cms/leak");
     });
 
-    test("dedupes entries with the same path (identifier is gone, one path one URL)", async () => {
-        const delivery = makeDelivery({
-            repository: testRepository({
-                pages: [
-                    page({ path: "/article", identifier: "" }),
-                    page({ path: "/article", identifier: "v2" }),
-                ],
-            }),
-        });
-        const body = await (await SitemapServer(req("https://acme.io/sitemap.xml"), delivery)).text();
-        const matches = body.match(/<loc>https:\/\/acme\.io\/article<\/loc>/g) ?? [];
-        expect(matches).toHaveLength(1);
-        expect(body).not.toContain("identifier=");
-    });
-
     test("returns an empty urlset when no visible pages exist", async () => {
         const delivery = makeDelivery();
         const body = await (await SitemapServer(req(), delivery)).text();

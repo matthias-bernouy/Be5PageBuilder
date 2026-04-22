@@ -39,7 +39,7 @@ export async function invalidatePagesReferencingBloc(cms: ControlCms, blocTag: s
             }
         }
         if (matches) {
-            cms.cache.delete(P9R_CACHE.page(page.path, page.identifier));
+            cms.cache.delete(P9R_CACHE.page(page.path));
         }
     }
 }

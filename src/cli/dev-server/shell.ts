@@ -78,7 +78,6 @@ export async function buildShell(ctx: ShellContext): Promise<string> {
     const pageInfo = document.createElement("w13c-page-information");
     pageInfo.setAttribute("default-title",       scratch.title);
     pageInfo.setAttribute("default-description", scratch.description);
-    pageInfo.setAttribute("default-identifier",  scratch.identifier);
     pageInfo.setAttribute("default-path",        scratch.path);
     pageInfo.setAttribute("default-visible",     scratch.visible ? "on" : "off");
     pageInfo.setAttribute("default-tags",        scratch.tags);

@@ -6,14 +6,13 @@ import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 export default async function updatePage(req: Request, cms: ControlCms) {
 
-    const body = await req.json() as TPage & { identifier?: string };
+    const body = await req.json() as TPage;
 
+    // The primary key is `path`. The current (pre-save) path comes from the
+    // query string so we can locate the existing document for upsert; the
+    // new path comes from the request body.
     const url = new URL(req.url);
-    // The primary key is (path, identifier). Current (pre-save) values come
-    // from query params so we can locate the old document for upsert; new
-    // values come from the request body.
     const oldPath = url.searchParams.get("path");
-    const oldIdentifier = url.searchParams.get("identifier") || "";
 
     if (!oldPath) {
         return new Response("Missing argument path", { status: 400 });
@@ -26,22 +25,16 @@ export default async function updatePage(req: Request, cms: ControlCms) {
     }
 
     const newPath = body.path;
-    const newIdentifier = body.identifier || "";
 
     if (!isValidPathFormat(newPath)) {
         return new Response("Invalid path format. Must start with '/' and contain no '?', '#' or ':'.", { status: 400 });
     }
 
-    await cms.repository.createPage(
-        { ...body, identifier: newIdentifier },
-        { path: oldPath, identifier: oldIdentifier }
-    );
+    await cms.repository.createPage(body, oldPath);
 
-
-    // Invalidate cache for both the old and the new (path, identifier) in case
-    // the user renamed the page — either key could be stale
-    cms.cache.delete(P9R_CACHE.page(oldPath, oldIdentifier));
-    cms.cache.delete(P9R_CACHE.page(newPath, newIdentifier));
+    // Invalidate cache for both the old and new path in case of a rename.
+    cms.cache.delete(P9R_CACHE.page(oldPath));
+    cms.cache.delete(P9R_CACHE.page(newPath));
 
     return new Response("Page updated");
 }

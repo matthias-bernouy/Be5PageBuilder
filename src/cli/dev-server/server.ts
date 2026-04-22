@@ -78,7 +78,6 @@ export function startDevServer(config: ServerConfig): ServerHandle {
                     const saved = await saveScratch(config.cwd, {
                         content: body.content ?? "",
                         path: body.path ?? "/dev",
-                        identifier: body.identifier ?? "",
                         title: body.title ?? "Dev page",
                         description: body.description ?? "",
                         visible: body.visible ?? true,

@@ -4,7 +4,7 @@ import { InMemoryCache } from "src/socle/providers/memory/Cache/InMemoryCache";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
 
-type CreatePageCall = { page: TPage; oldKey?: { path: string; identifier: string } };
+type CreatePageCall = { page: TPage; oldPath?: string };
 
 function makeSystem() {
     const createPageCalls: CreatePageCall[] = [];
@@ -19,8 +19,8 @@ function makeSystem() {
     const cms: any = {
         cache,
         repository: {
-            createPage: async (page: TPage, oldKey?: { path: string; identifier: string }) => {
-                createPageCalls.push({ page, oldKey });
+            createPage: async (page: TPage, oldPath?: string) => {
+                createPageCalls.push({ page, oldPath });
                 return page;
             },
             getSystem: async (): Promise<TSystem> => ({
@@ -43,7 +43,7 @@ function makeSystem() {
     return { cms, createPageCalls, deleteSpy };
 }
 
-function makeRequest(query: Record<string, string>, body: Partial<TPage> & { identifier?: string }) {
+function makeRequest(query: Record<string, string>, body: Partial<TPage>) {
     const url = new URL("http://localhost/cms/api/page");
     for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
     return new Request(url.toString(), {
@@ -60,7 +60,6 @@ const fullBody = (over: Partial<TPage> = {}): Partial<TPage> => ({
     visible: true,
     title: "About",
     tags: [],
-    identifier: "",
     ...over,
 });
 
@@ -95,27 +94,26 @@ describe("page.post", () => {
         expect(createPageCalls[0]?.page.path).toBe("/about");
     });
 
-    test("rename: passes oldKey from query params to createPage", async () => {
+    test("rename: passes oldPath from query params to createPage", async () => {
         const { cms, createPageCalls } = makeSystem();
         const req = makeRequest(
-            { path: "/old-path", identifier: "v1" },
-            fullBody({ path: "/new-path", identifier: "v2" })
+            { path: "/old-path" },
+            fullBody({ path: "/new-path" }),
         );
         const res = await updatePage(req, cms);
         expect(res.status).toBe(200);
-        expect(createPageCalls[0]?.oldKey).toEqual({ path: "/old-path", identifier: "v1" });
+        expect(createPageCalls[0]?.oldPath).toBe("/old-path");
         expect(createPageCalls[0]?.page.path).toBe("/new-path");
-        expect(createPageCalls[0]?.page.identifier).toBe("v2");
     });
 
-    test("rename: invalidates cache for both old and new (path, identifier)", async () => {
+    test("rename: invalidates cache for both the old and the new path", async () => {
         const { cms, deleteSpy } = makeSystem();
         const req = makeRequest(
-            { path: "/old", identifier: "a" },
-            fullBody({ path: "/new", identifier: "b" })
+            { path: "/old" },
+            fullBody({ path: "/new" }),
         );
         await updatePage(req, cms);
-        expect(deleteSpy).toContain(P9R_CACHE.page("/old", "a"));
-        expect(deleteSpy).toContain(P9R_CACHE.page("/new", "b"));
+        expect(deleteSpy).toContain(P9R_CACHE.page("/old"));
+        expect(deleteSpy).toContain(P9R_CACHE.page("/new"));
     });
 });

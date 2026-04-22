@@ -2,15 +2,13 @@ import { describe, test, expect } from "bun:test";
 import pageExists from "src/control/endpoints/admin-api/page-exists.get";
 import type { TPage } from "src/socle/contracts/Repository/TModels";
 
-function makeSystem(pages: Array<{ path: string; identifier: string }>) {
+function makeSystem(paths: string[]) {
     const cms: any = {
         repository: {
-            getPage: async (path: string, identifier: string): Promise<TPage | null> => {
-                const match = pages.find(p => p.path === path && p.identifier === identifier);
-                if (!match) return null;
+            getPage: async (path: string): Promise<TPage | null> => {
+                if (!paths.includes(path)) return null;
                 return {
-                    path: match.path,
-                    identifier: match.identifier,
+                    path,
                     title: "",
                     description: "",
                     content: "",
@@ -36,42 +34,25 @@ describe("GET /api/page-exists", () => {
         expect(res.status).toBe(400);
     });
 
-    test("returns { exists: true, reason: 'taken' } when an existing page matches", async () => {
-        const cms = makeSystem([{ path: "/article", identifier: "" }]);
+    test("returns { exists: true, reason: 'taken' } when a page exists at that path", async () => {
+        const cms = makeSystem(["/article"]);
         const res = await pageExists(makeRequest({ path: "/article" }), cms);
         expect(res.status).toBe(200);
         expect(await res.json()).toEqual({ exists: true, reason: "taken" });
     });
 
     test("returns { exists: false } when no page matches", async () => {
-        const cms = makeSystem([{ path: "/other", identifier: "" }]);
+        const cms = makeSystem(["/other"]);
         const res = await pageExists(makeRequest({ path: "/article" }), cms);
-        expect(await res.json()).toEqual({ exists: false });
-    });
-
-    test("treats missing `identifier` as empty string", async () => {
-        const cms = makeSystem([{ path: "/article", identifier: "" }]);
-        const res = await pageExists(makeRequest({ path: "/article" }), cms);
-        expect(await res.json()).toEqual({ exists: true, reason: "taken" });
-    });
-
-    test("matches on (path, identifier) tuple — same path, different identifier is NOT a match", async () => {
-        const cms = makeSystem([{ path: "/article", identifier: "v1" }]);
-        const res = await pageExists(
-            makeRequest({ path: "/article", identifier: "v2" }),
-            cms,
-        );
         expect(await res.json()).toEqual({ exists: false });
     });
 
     test("ignores the collision when it is the page editing itself", async () => {
-        const cms = makeSystem([{ path: "/article", identifier: "" }]);
+        const cms = makeSystem(["/article"]);
         const res = await pageExists(
             makeRequest({
                 path: "/article",
-                identifier: "",
                 "current-path": "/article",
-                "current-identifier": "",
             }),
             cms,
         );
@@ -79,27 +60,12 @@ describe("GET /api/page-exists", () => {
     });
 
     test("still flags the collision when current-path differs from the candidate", async () => {
-        const cms = makeSystem([{ path: "/article", identifier: "" }]);
+        const cms = makeSystem(["/article"]);
         // User renamed from /old to /article — /article is occupied by someone else.
         const res = await pageExists(
             makeRequest({
                 path: "/article",
                 "current-path": "/old",
-            }),
-            cms,
-        );
-        expect(await res.json()).toEqual({ exists: true, reason: "taken" });
-    });
-
-    test("self-match check distinguishes by identifier, not just path", async () => {
-        const cms = makeSystem([{ path: "/article", identifier: "v2" }]);
-        // Editing v1 on /article, renaming to v2 which already exists.
-        const res = await pageExists(
-            makeRequest({
-                path: "/article",
-                identifier: "v2",
-                "current-path": "/article",
-                "current-identifier": "v1",
             }),
             cms,
         );

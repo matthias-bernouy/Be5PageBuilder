@@ -184,7 +184,6 @@ export function makeDelivery(opts: {
 export function page(over: Partial<TPage> = {}): TPage {
     return {
         path: "/about",
-        identifier: "",
         title: "About",
         description: "About desc",
         content: "<p>about body</p>",

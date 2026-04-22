@@ -16,7 +16,7 @@ export default async function deleteSnippet(req: Request, cms: ControlCms) {
     if (!force && usages.length > 0) {
         return new Response(JSON.stringify({
             error: "Snippet is in use",
-            pages: usages.map(p => ({ identifier: p.identifier, title: p.title }))
+            pages: usages.map(p => ({ path: p.path, title: p.title }))
         }), {
             status: 409,
             headers: { "Content-Type": "application/json" }
@@ -27,7 +27,7 @@ export default async function deleteSnippet(req: Request, cms: ControlCms) {
 
     // Invalidate rendered-page cache for every page that referenced this snippet
     for (const page of usages) {
-        cms.cache.delete(P9R_CACHE.page(page.path, page.identifier));
+        cms.cache.delete(P9R_CACHE.page(page.path));
     }
 
     return new Response("Deleted", { status: 200 });

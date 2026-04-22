@@ -9,13 +9,7 @@ export type TBloc = {
 
 export type TPage = {
   id?: string;
-  /**
-   * Optional discriminator within a path. Pages are uniquely identified by
-   * (path, identifier). When empty, the page is the default for its path
-   * and is served without any query parameter: e.g. `/article`. When set,
-   * the page is served as `/article?identifier=foo`.
-   */
-  identifier: string;
+  /** Primary key — one page per path. */
   path: string;
   content: string;
   title: string;
@@ -45,10 +39,9 @@ export type TSnippet = {
 }
 
 /**
- * Reference to a specific page by its compound key. `null` means "not set";
- * `identifier: ""` is valid and targets the default variant for that path.
+ * Reference to a specific page by its primary key. `null` means "not set".
  */
-export type TPageRef = { path: string; identifier: string } | null;
+export type TPageRef = { path: string } | null;
 
 export type TSystem = {
 

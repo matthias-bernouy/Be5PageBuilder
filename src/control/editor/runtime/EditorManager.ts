@@ -153,7 +153,6 @@ export class EditorManager{
         title: string;
         description: string;
         visible: boolean;
-        identifier: string;
         tags: string;
     }){
         this.switchMode(p9r.mode.VIEW);
@@ -161,12 +160,11 @@ export class EditorManager{
 
         const target = new URL("page", this.getApiBasePath());
 
-        // The current URL identifies the page being edited via (?path, ?identifier).
-        // Those become the "old key" we send to the API so the upsert can find
-        // the existing document even if the user just renamed its path/identifier.
+        // The current URL identifies the page being edited via `?path=`.
+        // That becomes the "old path" we send to the API so the upsert can
+        // find the existing document even if the user just renamed it.
         const urlParams = new URLSearchParams(window.location.search);
         const currentPath = urlParams.get("path") || props.path;
-        const currentIdentifier = urlParams.get("identifier") || "";
 
         const body = {
             content: article,
@@ -175,11 +173,9 @@ export class EditorManager{
             description: props.description,
             visible: props.visible,
             tags: props.tags,
-            identifier: props.identifier
         };
 
         target.searchParams.set("path", currentPath);
-        target.searchParams.set("identifier", currentIdentifier);
         try {
             const res = await fetch(target, {
                 method: "POST",

@@ -84,12 +84,12 @@ export class DefaultCmsRepository implements CmsRepository {
 
     // ── Pages ──
 
-    createPage(page: TPage, oldKey?: { path: string; identifier: string }): Promise<TPage> {
-        return this._pages.upsert(page, oldKey);
+    createPage(page: TPage, oldPath?: string): Promise<TPage> {
+        return this._pages.upsert(page, oldPath);
     }
 
-    getPage(path: string, identifier: string): Promise<TPage | null> {
-        return this._pages.getByKey(path, identifier);
+    getPage(path: string): Promise<TPage | null> {
+        return this._pages.getByPath(path);
     }
 
     getAllPages(): Promise<TPage[]> {

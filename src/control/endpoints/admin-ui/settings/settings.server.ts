@@ -5,10 +5,9 @@ import type { ControlCms } from 'src/control/ControlCms';
 import type { TPageRef } from 'src/socle/contracts/Repository/TModels';
 import template from "./settings.html";
 
-/** Composite value used in option[value] for page selects. */
+/** Path-based value used in option[value] for page selects. */
 function encodeRef(ref: TPageRef): string {
-    if (!ref) return "";
-    return `${ref.path}::${ref.identifier}`;
+    return ref?.path ?? "";
 }
 
 export default async function Server(_req: Request, cms: ControlCms) {
@@ -38,10 +37,8 @@ export default async function Server(_req: Request, cms: ControlCms) {
         select.innerHTML += `<option value=""${currentValue === "" ? " selected" : ""}>-- None --</option>`;
 
         for (const page of sortedPages) {
-            const value = encodeRef({ path: page.path, identifier: page.identifier });
-            const label = page.identifier
-                ? `${page.title || "(untitled)"} — ${page.path}?identifier=${page.identifier}`
-                : `${page.title || "(untitled)"} — ${page.path}`;
+            const value = encodeRef({ path: page.path });
+            const label = `${page.title || "(untitled)"} — ${page.path}`;
             const selected = value === currentValue ? " selected" : "";
             select.innerHTML += `<option value="${escapeHtml(value)}"${selected}>${escapeHtml(label)}</option>`;
         }

@@ -5,7 +5,6 @@ import { send_html } from 'src/control/server/send_html';
 
 type PageRow = {
     title: string;
-    identifier: string;
     path: string;
     visible: boolean;
     tags: string[];
@@ -33,21 +32,13 @@ export default async function Server(req: Request, cms: ControlCms) {
             tags = [];
         }
 
-        const editorHref = page.identifier
-            ? `./editor?path=${encodeURIComponent(page.path)}&identifier=${encodeURIComponent(page.identifier)}`
-            : `./editor?path=${encodeURIComponent(page.path)}`;
-        const publicUrl = page.identifier
-            ? `${page.path}?identifier=${encodeURIComponent(page.identifier)}`
-            : page.path;
-
         return {
             title: page.title || "",
-            identifier: page.identifier || "",
             path: page.path,
             visible: !!page.visible,
             tags,
-            editorHref,
-            publicUrl,
+            editorHref: `./editor?path=${encodeURIComponent(page.path)}`,
+            publicUrl: page.path,
         };
     });
 

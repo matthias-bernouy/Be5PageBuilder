@@ -86,22 +86,11 @@ describe("PageConfiguration", () => {
         );
     });
 
-    test("puts the Identifier field inside an Advanced section, collapsed by default", () => {
-        const el = mountPageConfiguration();
-        const sections = Array.from(el.shadowRoot!.querySelectorAll("p9r-section"));
-        const advanced = sections.find(s => s.getAttribute("data-title") === "Advanced");
-        expect(advanced).toBeTruthy();
-        expect(advanced!.hasAttribute("data-collapsed")).toBe(true);
-
-        const identifier = advanced!.querySelector(`p9r-input[name=identifier]`);
-        expect(identifier).toBeTruthy();
-    });
-
-    test("has the five expected sections in order", () => {
+    test("has the four expected sections in order", () => {
         const el = mountPageConfiguration();
         const titles = Array.from(el.shadowRoot!.querySelectorAll("p9r-section"))
             .map(s => s.getAttribute("data-title"));
-        expect(titles).toEqual(["SEO", "URL", "Taxonomy", "Publication", "Advanced"]);
+        expect(titles).toEqual(["SEO", "URL", "Taxonomy", "Publication"]);
     });
 
     // --- Character counters ---
@@ -193,13 +182,6 @@ describe("PageConfiguration", () => {
         expect(getPreview(el).textContent).not.toContain("identifier=");
     });
 
-    test("URL preview appends ?identifier= when identifier is set", () => {
-        const el = mountPageConfiguration();
-        setInputValue(el, "path", "/article");
-        setInputValue(el, "identifier", "v2");
-        expect(getPreview(el).textContent).toContain("/article?identifier=v2");
-    });
-
     // --- Open-in-new-tab button ---
 
     test("open-in-new-tab button is disabled when path format is invalid", () => {
@@ -217,7 +199,6 @@ describe("PageConfiguration", () => {
     test("clicking open-in-new-tab calls window.open with the full URL", () => {
         const el = mountPageConfiguration();
         setInputValue(el, "path", "/article");
-        setInputValue(el, "identifier", "v2");
 
         const opened: Array<{ url: string; target: string }> = [];
         const originalOpen = window.open;
@@ -230,7 +211,8 @@ describe("PageConfiguration", () => {
 
         (window as any).open = originalOpen;
         expect(opened.length).toBe(1);
-        expect(opened[0]!.url).toContain("/article?identifier=v2");
+        expect(opened[0]!.url).toContain("/article");
+        expect(opened[0]!.url).not.toContain("identifier=");
         expect(opened[0]!.target).toBe("_blank");
     });
 
@@ -250,7 +232,7 @@ describe("PageConfiguration", () => {
 
     // --- Remote uniqueness check ---
 
-    type PageExistsReply = { exists: boolean; reason?: "taken" | "reserved" };
+    type PageExistsReply = { exists: boolean; reason?: "taken" };
 
     /** Records `page-exists` calls only; other fetches (p9r-tag-suggest's
      *  `/api/tags` load) are matched but unrecorded. */
@@ -287,19 +269,6 @@ describe("PageConfiguration", () => {
         expect(getSaveBtn(el).getAttribute("aria-disabled")).toBe("true");
     });
 
-    test("reserved paths get a distinct error message", async () => {
-        mockPageExistsFetch(() => () => ({ exists: true, reason: "reserved" }));
-
-        const el = mountPageConfiguration();
-        setInputValue(el, "path", "/bloc");
-        blurInput(el, "path");
-        await new Promise(r => setTimeout(r, 0));
-
-        expect(getHint(el).dataset.level).toBe("error");
-        expect(getHint(el).textContent).toContain("reserved");
-        expect(getSaveBtn(el).getAttribute("aria-disabled")).toBe("true");
-    });
-
     test("remote check reports availability when the path is free", async () => {
         mockPageExistsFetch(() => () => ({ exists: false }));
 
@@ -312,19 +281,18 @@ describe("PageConfiguration", () => {
         expect(getSaveBtn(el).getAttribute("aria-disabled")).toBeNull();
     });
 
-    test("remote check forwards current-path / current-identifier from default-* attrs", async () => {
+    test("remote check forwards current-path from default-* attrs", async () => {
         const called = mockPageExistsFetch(() => () => ({ exists: false }));
 
         const el = mountPageConfiguration({
             "default-path": "/article",
-            "default-identifier": "v1",
         });
         setInputValue(el, "path", "/article");
         blurInput(el, "path");
         await new Promise(r => setTimeout(r, 0));
 
         expect(called[0]).toContain("current-path=%2Farticle");
-        expect(called[0]).toContain("current-identifier=v1");
+        expect(called[0]).not.toContain("identifier=");
     });
 
     test("a newer blur supersedes an in-flight remote check", async () => {

@@ -36,9 +36,9 @@ describe("admin UI escapes DB-sourced text", () => {
         expect(html).not.toContain("<script>fetch('/pwned')");
     });
 
-    test("pages page escapes page.title / tags / identifier", async () => {
+    test("pages page escapes page.title / tags / path", async () => {
         const res = await PagesPage(new Request("http://x"), sys({
-            pages: [{ id: "x", title: XSS, tags: XSS, identifier: XSS, path: "/a", visible: true }],
+            pages: [{ id: "x", title: XSS, tags: XSS, path: XSS, visible: true }],
         }));
         const html = await bodyOf(res);
         expect(html).not.toContain("<script>fetch('/pwned')");

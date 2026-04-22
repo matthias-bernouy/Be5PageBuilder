@@ -16,7 +16,7 @@ export default async function postSnippet(req: Request, cms: ControlCms) {
         // Invalidate rendered-page cache for every page that references this snippet
         const usages = await cms.repository.findPagesUsingSnippet(updated.identifier);
         for (const page of usages) {
-            cms.cache.delete(P9R_CACHE.page(page.path, page.identifier));
+            cms.cache.delete(P9R_CACHE.page(page.path));
         }
 
         return new Response(JSON.stringify(updated), {

@@ -5,16 +5,13 @@ import { renderEditorShell } from 'src/control/server/rendering/editorShell';
 
 export default async function ArticleServerAdmin(req: Request, cms: ControlCms) {
     const url = new URL(req.url);
-    // New URL scheme: (path, identifier) as the key, both overridable via query.
-    // `identifier` is optional (empty string = default variant for a path).
     const path = url.searchParams.get("path");
-    const identifier = url.searchParams.get("identifier") || "";
 
     if (!path) {
         return Response.redirect("/cms/admin/pages", 302);
     }
 
-    const page = await cms.repository.getPage(path, identifier);
+    const page = await cms.repository.getPage(path);
 
     // Brand-new page (no document in DB yet) + a configured layout category
     // → signal the client to pop the BlocLibrary in locked "pick a layout"
@@ -40,7 +37,6 @@ export default async function ArticleServerAdmin(req: Request, cms: ControlCms) 
         configAttributes: {
             "default-title":       page?.title || url.searchParams.get("title") || "Default Title",
             "default-description": page?.description || "Default Description",
-            "default-identifier":  page?.identifier ?? identifier,
             "default-path":        page?.path || path,
             "default-visible":     page?.visible ? "on" : "off",
             "default-tags":        JSON.parse(page?.tags as unknown as string || "[]").join(','),

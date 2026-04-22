@@ -5,7 +5,6 @@ import type { TagSuggest } from "src/control/components/base/Form/TagSuggest/Tag
 
 type PageRow = {
     title: string;
-    identifier: string;
     path: string;
     visible: boolean;
     tags: string[];
@@ -228,7 +227,7 @@ function filterAndSort(pages: PageRow[]): PageRow[] {
     const q = state.q.trim().toLowerCase();
     const filtered = pages.filter(p => {
         if (q) {
-            const hay = `${p.title}\n${p.path}\n${p.identifier}`.toLowerCase();
+            const hay = `${p.title}\n${p.path}`.toLowerCase();
             if (!hay.includes(q)) return false;
         }
         if (state.visibility === "published" && !p.visible) return false;

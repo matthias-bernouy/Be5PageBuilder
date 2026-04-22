@@ -32,7 +32,7 @@ export const P9R_ID = {
  */
 export const P9R_CACHE = {
     bloc: (id: string) => `bloc:${id}`,
-    page: (path: string, identifier: string) => `page:${path}:${identifier}`,
+    page: (path: string) => `page:${path}`,
     css:  (url: string) => `css:${url}`,
     js:   (url: string) => `js:${url}`,
     html: (url: string) => `html:${url}`,

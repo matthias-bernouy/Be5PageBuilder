@@ -11,7 +11,6 @@ import { dirname, join } from "node:path";
 export type ScratchPage = {
     content: string;
     path: string;
-    identifier: string;
     title: string;
     description: string;
     visible: boolean;
@@ -22,7 +21,6 @@ export type ScratchPage = {
 const DEFAULT_SCRATCH: ScratchPage = {
     content: "<p></p>",
     path: "/dev",
-    identifier: "",
     title: "Dev page",
     description: "Local dev mode — writes disabled",
     visible: true,

@@ -46,7 +46,6 @@ export class PageConfiguration extends Component {
                 title: data.title,
                 description: data.description,
                 visible: data.visible,
-                identifier: data.identifier,
                 path: data.path,
                 tags: JSON.stringify(data.tags),
             }).then(() => {
@@ -55,12 +54,10 @@ export class PageConfiguration extends Component {
                 console.error(err);
                 showToast("Failed to save page: " + (err?.message || err), { type: "error", duration: 6000 });
             });
-            // Keep the admin URL in sync with the new (path, identifier) key
-            // so a refresh re-opens the same page even after a rename.
+            // Keep the admin URL in sync with the new path so a refresh
+            // re-opens the same page even after a rename.
             const url = new URL(window.location.href);
             url.searchParams.set("path", data.path);
-            if (data.identifier) url.searchParams.set("identifier", data.identifier);
-            else url.searchParams.delete("identifier");
             window.history.pushState({}, "", url);
         });
 
@@ -78,11 +75,7 @@ export class PageConfiguration extends Component {
         btn?.addEventListener("click", () => {
             const path = this._getPathInput()?.value.trim() ?? "";
             if (!path || !isValidPathFormat(path)) return;
-            const identifier = this._getIdentifierInput()?.value.trim() ?? "";
-            const url = identifier
-                ? `${window.location.origin}${path}?identifier=${encodeURIComponent(identifier)}`
-                : `${window.location.origin}${path}`;
-            window.open(url, "_blank", "noopener,noreferrer");
+            window.open(`${window.location.origin}${path}`, "_blank", "noopener,noreferrer");
         });
     }
 
@@ -90,7 +83,6 @@ export class PageConfiguration extends Component {
         return {
             title: this._getInputValue("title"),
             description: this._getInputValue("description"),
-            identifier: this._getInputValue("identifier"),
             path: this._getInputValue("path"),
             visible: this._getSelectValue("visible") === "on",
             tags: this._getTagsValue(),
@@ -147,7 +139,6 @@ export class PageConfiguration extends Component {
 
     private _wirePathValidation() {
         const input = this._getPathInput();
-        const identifier = this._getIdentifierInput();
         if (!input) return;
 
         input.addEventListener("input", () => {
@@ -158,10 +149,6 @@ export class PageConfiguration extends Component {
             this._pathBlurred = true;
             this._validatePathRemote();
         });
-        identifier?.addEventListener("input", () => this._updateUrlPreview());
-        identifier?.addEventListener("blur", () => {
-            if (this._pathBlurred) this._validatePathRemote();
-        });
 
         this._updateUrlPreview();
         this._validatePathFormatSync();
@@ -169,10 +156,6 @@ export class PageConfiguration extends Component {
 
     private _getPathInput(): P9rInput | null {
         return this._getInputElement("path");
-    }
-
-    private _getIdentifierInput(): P9rInput | null {
-        return this._getInputElement("identifier");
     }
 
     private _setHint(level: "info" | "error" | "success", text: string) {
@@ -215,24 +198,19 @@ export class PageConfiguration extends Component {
     /** Remote uniqueness check — runs on blur. */
     private async _validatePathRemote() {
         const input = this._getPathInput();
-        const identifierInput = this._getIdentifierInput();
         if (!input) return;
 
         const path = input.value.trim();
         if (path === "" || !isValidPathFormat(path)) return;
 
-        const identifier = identifierInput?.value.trim() ?? "";
         const currentPath = this.getAttribute("default-path") ?? "";
-        const currentIdentifier = this.getAttribute("default-identifier") ?? "";
 
         const token = ++this._pathCheckToken;
 
         try {
             const url = new URL("../api/page-exists", window.location.href);
             url.searchParams.set("path", path);
-            if (identifier) url.searchParams.set("identifier", identifier);
             if (currentPath) url.searchParams.set("current-path", currentPath);
-            if (currentIdentifier) url.searchParams.set("current-identifier", currentIdentifier);
 
             const res = await fetch(url);
             if (token !== this._pathCheckToken) return;
@@ -242,13 +220,9 @@ export class PageConfiguration extends Component {
                 this._setPathValid(false);
                 return;
             }
-            const body = await res.json() as { exists: boolean; reason?: "taken" | "reserved" };
+            const body = await res.json() as { exists: boolean; reason?: "taken" };
             if (body.exists) {
-                if (body.reason === "reserved") {
-                    this._setHint("error", `"${path}" is reserved by the framework.`);
-                } else {
-                    this._setHint("error", `"${path}"${identifier ? ` / "${identifier}"` : ""} is already used.`);
-                }
+                this._setHint("error", `"${path}" is already used.`);
                 this._setPathValid(false);
             } else {
                 this._setHint("success", "Path is available.");
@@ -263,24 +237,19 @@ export class PageConfiguration extends Component {
 
     private _updateUrlPreview() {
         const pathInput = this._getPathInput();
-        const identifierInput = this._getIdentifierInput();
         const preview = this.shadowRoot?.getElementById("url-preview") as HTMLElement | null;
         const row = this.shadowRoot?.getElementById("url-row") as HTMLElement | null;
         const openBtn = this.shadowRoot?.getElementById("url-open") as HTMLButtonElement | null;
         if (!pathInput || !preview || !row) return;
 
         const path = pathInput.value.trim();
-        const identifier = identifierInput?.value.trim() ?? "";
 
         if (path === "") {
             row.hidden = true;
             return;
         }
         row.hidden = false;
-        const origin = window.location.origin;
-        preview.textContent = identifier
-            ? `${origin}${path}?identifier=${identifier}`
-            : `${origin}${path}`;
+        preview.textContent = `${window.location.origin}${path}`;
         if (openBtn) openBtn.disabled = !isValidPathFormat(path);
     }
 

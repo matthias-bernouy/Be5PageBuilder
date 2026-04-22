@@ -160,8 +160,8 @@ describe("snippet.post — update", () => {
         const { cms, deleteSpy } = makeSystem({
             pagesUsingSnippet: {
                 "kept-identifier": [
-                    { path: "/a", identifier: "", content: "", title: "", description: "", visible: true, tags: [] },
-                    { path: "/b", identifier: "v2", content: "", title: "", description: "", visible: true, tags: [] },
+                    { path: "/a", content: "", title: "", description: "", visible: true, tags: [] },
+                    { path: "/b", content: "", title: "", description: "", visible: true, tags: [] },
                 ],
             },
         });
@@ -170,8 +170,8 @@ describe("snippet.post — update", () => {
             cms
         );
         expect(res.status).toBe(200);
-        expect(deleteSpy).toContain(P9R_CACHE.page("/a", ""));
-        expect(deleteSpy).toContain(P9R_CACHE.page("/b", "v2"));
+        expect(deleteSpy).toContain(P9R_CACHE.page("/a"));
+        expect(deleteSpy).toContain(P9R_CACHE.page("/b"));
     });
 
     test("no cache deletes when no page references the snippet", async () => {

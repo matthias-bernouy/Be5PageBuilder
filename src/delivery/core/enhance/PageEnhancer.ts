@@ -37,7 +37,7 @@ export class PageEnhancer {
      * is already there.
      */
     async enhance(path: string, origin: string): Promise<void> {
-        const cacheKey = P9R_CACHE.page(path, "");
+        const cacheKey = P9R_CACHE.page(path);
 
         const existing = this._inFlight.get(cacheKey);
         if (existing) return existing;

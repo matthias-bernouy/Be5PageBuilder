@@ -9,7 +9,7 @@ export default async function getSnippets(req: Request, cms: ControlCms) {
         const pages = await cms.repository.findPagesUsingSnippet(identifier);
         return new Response(JSON.stringify({
             identifier,
-            pages: pages.map(p => ({ identifier: p.identifier, title: p.title, path: p.path }))
+            pages: pages.map(p => ({ title: p.title, path: p.path }))
         }), {
             headers: { "Content-Type": "application/json" }
         });

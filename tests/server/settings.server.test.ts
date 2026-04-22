@@ -54,7 +54,6 @@ function mockSystem(opts: MockOpts = {}): ControlCms {
 
 const page = (over: Partial<TPage> = {}): TPage => ({
     path: "/article",
-    identifier: "",
     content: "",
     title: "Article",
     description: "",
@@ -95,13 +94,14 @@ describe("settings.server — XSS prevention in <option> rendering", () => {
         expect(html).toContain("&lt;script&gt;alert(1)&lt;/script&gt;");
     });
 
-    test("page identifier with a double-quote cannot break out of the value attribute", async () => {
+    test("page path with a double-quote cannot break out of the value attribute", async () => {
+        // Paths pass through `isValidPathFormat` on write so `"` never reaches
+        // the DB in practice; the encode-ref path is still tested defensively
+        // here in case a row is manually inserted.
         const html = await render({
-            pages: [page({ path: "/p", identifier: 'a"><img onerror=alert(1) src=x>' })],
+            pages: [page({ path: 'a"><img onerror=alert(1) src=x>' })],
         });
-        // The double-quote MUST be entity-encoded to preserve attribute bounds.
         expect(html).toContain("&quot;");
-        // And no <img onerror=…> element was injected.
         const doc = parseHTML(html).document;
         expect(doc.querySelectorAll("img[onerror]")).toHaveLength(0);
     });

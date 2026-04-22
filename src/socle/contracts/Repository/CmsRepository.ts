@@ -13,8 +13,8 @@ export interface CmsRepository {
 
 
     // PAGE
-    createPage(page: TPage, oldKey?: { path: string; identifier: string }): Promise<TPage>;
-    getPage(path: string, identifier: string): Promise<TPage | null>;
+    createPage(page: TPage, oldPath?: string): Promise<TPage>;
+    getPage(path: string): Promise<TPage | null>;
     getAllPages(): Promise<TPage[]>;
 
 

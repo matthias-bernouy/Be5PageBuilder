@@ -4,21 +4,15 @@ import "src/control/editor/components/MediaCenter/MediaCenter";
 import "src/control/components/base/Form/FormSection";
 import { showToast } from "src/control/components/base/Toast/ToastStack";
 
-type PageRef = { path: string; identifier: string } | null;
+type PageRef = { path: string } | null;
 
 /**
- * Decode a composite `path::identifier` string back into a structured page
- * reference. An empty string means "not set". We use `::` as the separator
- * because `:` is reserved in paths (see isValidPathFormat).
+ * Decode the option value (raw path) into the structured page reference the
+ * API expects. Empty string means "not set".
  */
 function decodePageRef(raw: string): PageRef {
     if (!raw) return null;
-    const idx = raw.indexOf("::");
-    if (idx === -1) return { path: raw, identifier: "" };
-    return {
-        path: raw.slice(0, idx),
-        identifier: raw.slice(idx + 2),
-    };
+    return { path: raw };
 }
 
 document.addEventListener("DOMContentLoaded", () => {

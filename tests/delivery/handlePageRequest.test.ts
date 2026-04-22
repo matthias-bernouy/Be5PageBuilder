@@ -45,17 +45,6 @@ describe("handlePageRequest — page resolution", () => {
         expect(await res.text()).toContain("about body");
     });
 
-    test("ignores any ?identifier= query param (identifier system is not delivery's concern)", async () => {
-        const delivery = makeDelivery({
-            repository: testRepository({
-                pages: [page({ path: "/about", content: "<p>the page</p>" })],
-            }),
-        });
-        const res = await handlePageRequest(req("http://localhost/about?identifier=v2"), delivery);
-        expect(res.status).toBe(200);
-        expect(await res.text()).toContain("the page");
-    });
-
     test("returns plain-text 404 when no page matches and no notFound is configured", async () => {
         const delivery = makeDelivery({ repository: testRepository({ pages: [] }) });
         const res = await handlePageRequest(req("http://localhost/missing"), delivery);
@@ -67,7 +56,7 @@ describe("handlePageRequest — page resolution", () => {
         const delivery = makeDelivery({
             repository: testRepository({
                 pages: [page({ path: "/404", content: "<p>custom 404</p>" })],
-                notFound: { path: "/404", identifier: "" },
+                notFound: { path: "/404" },
             }),
         });
         const res = await handlePageRequest(req("http://localhost/missing"), delivery);
