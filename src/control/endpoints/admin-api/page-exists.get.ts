@@ -15,9 +15,8 @@ import type { ControlCms } from "src/control/ControlCms";
  * the collision is the page editing itself, so the endpoint returns available.
  *
  * Response:
- *   - `{ exists: false }`                       : available
- *   - `{ exists: true, reason: "taken" }`       : another page uses this key
- *   - `{ exists: true, reason: "reserved" }`    : path is reserved by the framework
+ *   - `{ exists: false }`                   : available
+ *   - `{ exists: true, reason: "taken" }`   : another page uses this key
  */
 export default async function pageExists(req: Request, cms: ControlCms) {
     const url = new URL(req.url);
@@ -30,9 +29,8 @@ export default async function pageExists(req: Request, cms: ControlCms) {
     const currentPath = url.searchParams.get("current-path");
     const currentIdentifier = url.searchParams.get("current-identifier") || "";
 
-    // Editing the same page is not a collision. Checked first so the user
-    // can still save a page whose path happens to live on a reserved prefix
-    // that was grandfathered in.
+    // Editing the same page is not a collision — short-circuit before the
+    // repository lookup.
     if (currentPath !== null && currentPath === path && currentIdentifier === identifier) {
         return json({ exists: false });
     }
