@@ -22,22 +22,7 @@ function isHTTPMethod(s: string): s is HTTPMethod {
     return (ALLOWED_METHODS as readonly string[]).includes(s);
 }
 
-export type UIFolderOptions = {
-    /**
-     * Optional transformation applied to every HTML response before it is
-     * compressed and cached (static pages) or forwarded to the client (server
-     * handlers). Used by the admin to inject global `<meta>` tags.
-     */
-    htmlTransform?: (html: string) => string;
-};
-
-export async function registerUIFolder(
-    baseUrl: string,
-    absolutePath: string,
-    cms: Cms,
-    runner: Runner,
-    options: UIFolderOptions = {},
-) {
+export async function registerUIFolder(baseUrl: string, absolutePath: string, cms: Cms, runner: Runner) {
     type PageEntry = { serverFile?: string; clientFile?: string; htmlFile?: string };
     const pages = new Map<string, PageEntry>();
 
@@ -56,8 +41,6 @@ export async function registerUIFolder(
         }
     }
 
-    const { htmlTransform } = options;
-
     for (const [routeKey, { serverFile, clientFile, htmlFile }] of pages) {
         const urlPath = join(baseUrl, routeKey).replace(/\\/g, '/');
 
@@ -65,17 +48,14 @@ export async function registerUIFolder(
             const module = await import(serverFile);
             const serverHandler = module.default as (req: Request, cms: Cms) => Promise<Response>;
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
-                const response = await serverHandler(req, cms);
-                if (!htmlTransform) return response;
-                return await transformHtmlResponse(response, htmlTransform);
+                return await serverHandler(req, cms);
             });
         } else if (htmlFile) {
             const cacheKey = P9R_CACHE.html(urlPath);
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
                 return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
                     const content = await Bun.file(htmlFile).text();
-                    const transformed = htmlTransform ? htmlTransform(content) : content;
-                    return compress(transformed, "text/html");
+                    return compress(content, "text/html");
                 });
             });
         }
@@ -107,28 +87,6 @@ function toRouteKey(filePath: string, suffix: string): string {
     if (dir === ".") return name;
     if (name === basename(dir)) return dir;
     return base;
-}
-
-/**
- * Apply `transform` to an HTML Response body. Non-HTML responses (redirects,
- * JSON, etc.) are passed through untouched so server handlers can still emit
- * 302s or error payloads without being mangled.
- */
-async function transformHtmlResponse(
-    response: Response,
-    transform: (html: string) => string,
-): Promise<Response> {
-    const contentType = response.headers.get("content-type") || "";
-    if (!contentType.toLowerCase().includes("text/html")) return response;
-
-    const html = await response.text();
-    const headers = new Headers(response.headers);
-    headers.delete("content-length");
-    return new Response(transform(html), {
-        status: response.status,
-        statusText: response.statusText,
-        headers,
-    });
 }
 
 

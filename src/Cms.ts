@@ -16,17 +16,25 @@ import type { CMS_ROLES } from "types/roles";
 type Configuration = {
     adminPathPrefix?: string;
     clientPathPrefix?: string;
+    /**
+     * Absolute URL to the external token management interface. Surfaced on
+     * the admin Profile page as the "Manage tokens" button; left undefined
+     * keeps the button disabled. Deliberately a CMS-level config rather than
+     * pulled from `auth.profileUrl` because that Socle contract is too
+     * ambiguous (profile vs tokens vs account management).
+     */
+    tokensUrl?: string;
 }
 
 export class Cms{
 
-    private configuration: Configuration;
-    private _repository: CmsRepository;
-    private _runner:     Runner;
-    private _auth:       Authentication;
+    private configuration:    Configuration;
+    private _repository:      CmsRepository;
+    private _runner:          Runner;
+    private _auth:            Authentication;
     private _mediaRepository: MediaRepository;
-    private _cache:      Cache;
-    private _imageOptimizer: ImageOptimizer;
+    private _cache:           Cache;
+    private _imageOptimizer:  ImageOptimizer;
 
     /**
      * Set of paths for which a dynamic GET route has already been registered

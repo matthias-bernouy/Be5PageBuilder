@@ -54,38 +54,11 @@ export const createAuthGuard = (cms: Cms): Middleware => {
     };
 };
 
-/**
- * Escape a string for safe interpolation inside an HTML attribute value that
- * is wrapped in double quotes. Covers the four characters that could break
- * out of the attribute or the surrounding tag.
- */
-function escapeHtmlAttr(value: string): string {
-    return value
-        .replace(/&/g, "&amp;")
-        .replace(/"/g, "&quot;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-}
-
-/**
- * Inject `<meta>` tags carrying CMS-global values into every admin page's
- * `<head>`. AdminLayout reads these at connectedCallback to wire up links
- * that depend on runtime configuration (logout URL, etc.) without any
- * build-time placeholder replacement.
- */
-function buildAdminHtmlTransform(cms: Cms): (html: string) => string {
-    const logoutUrl = escapeHtmlAttr(cms.auth.logoutUrl);
-    const metaTags = `    <meta name="admin-logout-url" content="${logoutUrl}">\n`;
-    return (html: string) => html.replace(/<\/head>/i, metaTags + "</head>");
-}
-
 export function registerEndpoints(cms: Cms){
-
-    const adminHtmlTransform = buildAdminHtmlTransform(cms);
 
     cms.runner.group(cms.config.adminPathPrefix || "/cms", (r) => {
 
-        registerUIFolder   ("/admin", res("admin-ui"),    cms, r, { htmlTransform: adminHtmlTransform });
+        registerUIFolder   ("/admin", res("admin-ui"),    cms, r);
         registerAPIFolder  ("/api",   res("admin-api"),   cms, r);
         registerCSSFolder  ("/css",   res("admin-css"),   cms, r);
         registerFontsFolder("/fonts", res("admin-fonts"), cms, r);

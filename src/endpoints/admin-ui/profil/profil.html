@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Be5 Page Builder</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="./script.js"></script>
+    <script src="./profil.js" defer></script>
+    <style>
+        .profil-root {
+            display: grid;
+            gap: 16px;
+            max-width: 760px;
+        }
+
+        .profil-notice {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px 14px;
+            background: var(--primary-muted);
+            border: 1px solid var(--primary-base);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .profil-notice svg {
+            flex: 0 0 auto;
+            width: 18px;
+            height: 18px;
+            color: var(--primary-base);
+            margin-top: 1px;
+        }
+
+        .profil-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .profil-row__text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .profil-row__title {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .profil-row__hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+
+    <w13c-fixed-admin-layout>
+        <span slot="title">Profile</span>
+
+        <div class="profil-root">
+
+            <div class="profil-notice" role="note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="16" x2="12" y2="12"/>
+                    <line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+                <span>This page will soon expose account details, session history and preferences. For now it only covers authentication essentials.</span>
+            </div>
+
+            <p9r-section data-title="API tokens">
+                <div class="profil-row">
+                    <div class="profil-row__text">
+                        <span class="profil-row__title">Manage tokens</span>
+                        <span class="profil-row__hint">Open the token management interface.</span>
+                    </div>
+                    <p9r-button id="manage-tokens-btn" variant="outline" disabled>Manage tokens</p9r-button>
+                </div>
+            </p9r-section>
+
+            <p9r-section data-title="Session">
+                <div class="profil-row">
+                    <div class="profil-row__text">
+                        <span class="profil-row__title">Log out</span>
+                        <span class="profil-row__hint">End the current admin session on this device.</span>
+                    </div>
+                    <p9r-button id="logout-btn" color="danger">Logout</p9r-button>
+                </div>
+            </p9r-section>
+
+        </div>
+
+    </w13c-fixed-admin-layout>
+
+</body>
+
+</html>
