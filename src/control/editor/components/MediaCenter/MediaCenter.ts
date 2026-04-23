@@ -154,16 +154,6 @@ export class MediaCenter extends Component {
         return raw.endsWith("/") ? raw.slice(0, -1) : raw;
     }
 
-    /**
-     * Public base URL used to build the media `src` returned to consumers.
-     * Same standalone/editor dual-source as `_apiBase`.
-     */
-    private get _publicRoot(): string {
-        const attr = this.getAttribute("public-root");
-        const raw = attr ?? document.EditorManager?.publicRoot ?? "/";
-        return raw.endsWith("/") ? raw : raw + "/";
-    }
-
     private async _refresh() {
         this._items = await this._fetchItems();
         this._selectedItem = null;
@@ -215,7 +205,7 @@ export class MediaCenter extends Component {
 
     private _confirmSelection() {
         if (!this._selectedItem) return;
-        const src = this._publicRoot + `media?id=${this._selectedItem.id}`;
+        const src = this._selectedItem.absoluteURL ?? "";
         this.dispatchEvent(new CustomEvent("select-item", {
             detail: { src, alt: this._selectedItem.label },
             bubbles: true,

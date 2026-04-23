@@ -1,5 +1,5 @@
 import type { MediaItem, BreadcrumbEntry } from "./types";
-import { escapeHtml, escapeAttr } from "./types";
+import { escapeHtml, escapeAttr, variantUrl } from "./types";
 
 export function renderGrid(grid: HTMLElement, items: MediaItem[]) {
     grid.innerHTML = "";
@@ -31,7 +31,9 @@ function appendMediaPreview(card: HTMLElement, item: MediaItem) {
     if (isImage || isSvg) {
         const img = document.createElement("img");
         img.slot = "image";
-        img.src = `/media?id=${item.id}${isSvg ? '' : '&w=400&h=300'}`;
+        // SVG doesn't need resizing; rasters get a 400×300 variant via
+        // `window._cms.Media.formatImageUrl` (provider decides the URL shape).
+        img.src = isSvg ? (item.absoluteURL ?? "") : variantUrl(item, 400, 300);
         img.alt = item.alt || item.label;
         img.loading = "lazy";
         card.appendChild(img);

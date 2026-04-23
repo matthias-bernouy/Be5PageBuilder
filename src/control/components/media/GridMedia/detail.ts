@@ -1,5 +1,5 @@
 import type { MediaItem } from "./types";
-import { escapeHtml, escapeAttr, formatSize } from "./types";
+import { escapeHtml, escapeAttr, formatSize, variantUrl } from "./types";
 import type { DetailMedia } from "../DetailMedia/DetailMedia";
 
 const ICON_COPY = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
@@ -65,7 +65,7 @@ function buildPreview(item: MediaItem): HTMLElement | null {
     const isSvg = item.mimetype === "image/svg+xml";
     const img = document.createElement("img");
     img.slot = "preview";
-    img.src = `/media?id=${item.id}${isSvg ? '' : '&w=800&h=600'}`;
+    img.src = isSvg ? (item.absoluteURL ?? "") : variantUrl(item, 800, 600);
     img.alt = item.alt || item.label;
     return img;
 }
@@ -74,7 +74,7 @@ function buildFields(item: MediaItem): HTMLElement {
     const isImage = item.type === "image" || item.mimetype === "image/svg+xml";
     const size = item.size ? formatSize(item.size) : "";
     const dims = (item.width && item.height) ? `${item.width}\u00d7${item.height}` : "";
-    const mediaUrl = `/media?id=${item.id}`;
+    const mediaUrl = item.absoluteURL ?? "";
 
     const el = document.createElement("div");
     el.slot = "fields";

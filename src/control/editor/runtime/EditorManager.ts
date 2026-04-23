@@ -28,7 +28,6 @@ export class EditorManager{
     private dragManager: DragManager;
 
     private backPath?: string;
-    publicRoot: string = "/";
 
     constructor(workingElement: HTMLElement, backPath?: string) {
         this.backPath = backPath;

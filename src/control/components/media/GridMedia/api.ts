@@ -30,8 +30,9 @@ function toLocal(item: SocleMediaItem): LocalMediaItem {
         label: item.name,
     };
     if (item.type !== "folder") {
-        local.mimetype = item.mimeType;
-        local.size     = item.size;
+        local.mimetype    = item.mimeType;
+        local.size        = item.size;
+        local.absoluteURL = item.absoluteURL;
     }
     if (item.type === "image") {
         local.width  = item.imageInfo.width;
