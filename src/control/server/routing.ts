@@ -77,17 +77,20 @@ function toRouteKey(filePath: string, suffix: string): string {
 }
 
 /**
- * Inserts `<script src="<basePath>/_cms/media.js" defer></script>` before
- * `</head>` so every admin page bootstraps `window._cms.Media` from the
- * server-serialized Media provider. Runs once at HTML build time for static
- * pages (cached); runs per-request for server-rendered pages but only when
- * the response carries `Content-Type: text/html` so JSON/JS responses pass
- * through untouched.
+ * Inserts `<script src="<basePath>/_cms/media.js"></script>` right after the
+ * `<head>` opening tag — synchronous, non-deferred, first script executed on
+ * the page — so `window._cms.Media` is guaranteed to be available before any
+ * subsequent admin script reads it. The Media bootstrap has no dependencies
+ * of its own, so blocking parsing for its fetch is cheap and worth the
+ * simplicity. Runs once at HTML build time for static pages (cached); runs
+ * per-request for server-rendered pages but only when the response carries
+ * `Content-Type: text/html` so JSON/JS responses pass through untouched.
  */
 function injectMediaClientScript(html: string, basePath: string): string {
-    const tag = `<script src="${basePath}/_cms/media.js" defer></script>`;
-    const idx = html.toLowerCase().indexOf("</head>");
-    if (idx < 0) return html;
+    const tag = `<script src="${basePath}/_cms/media.js"></script>`;
+    const match = html.match(/<head[^>]*>/i);
+    if (!match || match.index === undefined) return html;
+    const idx = match.index + match[0].length;
     return html.slice(0, idx) + tag + html.slice(idx);
 }
 
