@@ -25,7 +25,6 @@ export type { DeliveryCmsConfig } from "./src/delivery/DeliveryCms";
 
 // ── Default providers (MongoDB + in-memory cache) ──────────────────────
 export { DefaultCmsRepository } from "./src/socle/providers/mongo/Repository/DefaultCmsRepository";
-export { DefaultMediaRepository } from "./src/socle/providers/mongo/Media/DefaultMediaRepository";
 export { InMemoryCache } from "./src/socle/providers/memory/Cache/InMemoryCache";
 
 // Browser-safe bloc authoring symbols are deliberately split into two
@@ -43,8 +42,8 @@ export { InMemoryCache } from "./src/socle/providers/memory/Cache/InMemoryCache"
 
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
 export type { CmsRepository } from "./src/socle/contracts/Repository/CmsRepository";
-export type { MediaRepository } from "./src/socle/contracts/Media/MediaRepository";
 export type { Cache } from "./src/socle/contracts/Cache/Cache";
+export type { CMS_ROLES } from "./types/roles";
 export type {
     TPage,
     TBloc,

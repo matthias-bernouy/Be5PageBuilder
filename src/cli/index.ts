@@ -2,6 +2,7 @@
 import CLI_importBloc from "./CLI_importBloc";
 import CLI_dev from "./CLI_dev";
 import CLI_init from "./CLI_init";
+import CLI_new from "./CLI_new";
 import CLI_installSkill from "./CLI_installSkill";
 import CLI_listBlocs from "./CLI_listBlocs";
 
@@ -15,6 +16,11 @@ Usage:
                                    base template (manifest.json, Bloc.ts,
                                    BlocEditor.ts, template.html, style.css,
                                    configuration.html, assets/)
+  p9r new <folder> [flags]         Scaffold a new CMS app (Control + Delivery
+                                   co-hosted, in-memory providers, basic auth)
+                                   into <folder>
+      --template=full              Template to use (default: full)
+      --force | -f                 Allow a non-empty target folder
   p9r install-skill [--force]      Install the bloc-creator Claude Code skill
                                    into ./.claude/skills/ so Claude can scaffold
                                    blocs on request in this project
@@ -46,6 +52,9 @@ try {
     switch (command) {
         case "init":
             await CLI_init(rest);
+            break;
+        case "new":
+            await CLI_new(rest);
             break;
         case "install-skill":
             await CLI_installSkill(rest);

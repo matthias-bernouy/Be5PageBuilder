@@ -2,6 +2,7 @@ import type { EditorManager } from "src/control/editor/runtime/EditorManager";
 import type { Editor } from "src/control/editor/runtime/Editor";
 import type { Component } from "src/control/editor/runtime/Component";
 import type { registerEditor, registerEditor_opaque } from "src/control/editor/runtime/registerEditor";
+import type { Media } from "@bernouy/socle";
 import { P9R_ATTR } from "src/socle/constants/editorAttributes";
 import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/socle/constants/p9r-constants";
 
@@ -28,6 +29,18 @@ declare global {
         readonly registerEditor: typeof registerEditor;
         readonly registerEditor_opaque: typeof registerEditor_opaque;
     };
+
+    /**
+     * CMS-scoped globals the active providers may install on `window`. Only
+     * the shape is declared here — the actual runtime binding is the
+     * provider's responsibility (e.g. the Media implementation is expected
+     * to set `window._cms.Media` before the admin UI uses it).
+     */
+    interface Window {
+        _cms?: {
+            Media?: Media;
+        };
+    }
 
 }
 

@@ -235,12 +235,6 @@ Delivery **never serves media bytes**. Images embedded in page content are expec
 | `GET` | `/api/snippets` | List snippets |
 | `POST` | `/api/snippet` | Create/update a snippet |
 | `DELETE` | `/api/snippet?id=X` | Delete a snippet |
-| `GET` | `/api/mediaItems` | List media items (optional `parent` filter) |
-| `POST` | `/api/media/file` | Upload a file |
-| `POST` | `/api/media/folder` | Create a folder |
-| `GET` | `/api/media/item?id=X` | Media metadata |
-| `PATCH` | `/api/media/item?id=X` | Update media metadata |
-| `DELETE` | `/api/media/item?id=X` | Delete media |
 | `GET` | `/api/system` | Read system config |
 | `POST` | `/api/system` | Update system config |
 | `GET` | `/api/blocs` | List registered blocs (editor-facing, includes editorJS) |

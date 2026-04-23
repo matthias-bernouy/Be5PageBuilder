@@ -1,7 +1,6 @@
 import { registerEndpoints } from "./endpoints/registerEndpoints";
-import type { Authentication, Runner } from "@bernouy/socle";
+import type { Authentication, Media, Runner } from "@bernouy/socle";
 import type { CmsRepository } from "../socle/contracts/Repository/CmsRepository";
-import type { MediaRepository } from "../socle/contracts/Media/MediaRepository";
 import type { Cache } from "../socle/contracts/Cache/Cache";
 import { InMemoryCache } from "../socle/providers/memory/Cache/InMemoryCache";
 import type { CMS_ROLES } from "types/roles";
@@ -48,14 +47,14 @@ export class ControlCms {
     private _repository:      CmsRepository;
     private _runner:          Runner;
     private _auth:            Authentication;
-    private _mediaRepository: MediaRepository;
+    private _media:           Media;
     private _cache:           Cache;
 
     constructor(
         runner: Runner,
         repository: CmsRepository,
         auth: Authentication<CMS_ROLES>,
-        mediaRepository: MediaRepository,
+        media: Media,
         configuration: Configuration = {},
         cache?: Cache
     ){
@@ -63,13 +62,13 @@ export class ControlCms {
         this._auth = auth;
         this._runner = runner;
         this._repository = repository;
-        this._mediaRepository = mediaRepository;
+        this._media = media;
         this._cache = cache || new InMemoryCache();
         registerEndpoints(this);
     }
 
-    get mediaRepository(){
-        return this._mediaRepository;
+    get media(){
+        return this._media;
     }
 
     get config(){

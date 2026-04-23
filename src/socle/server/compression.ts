@@ -72,7 +72,7 @@ export const SECURITY_HEADERS = {
  * extended.
  */
 export const HTML_CSP_HEADER = {
-    "Content-Security-Policy":
+    "Content-Security-Policy-ReportOnly":
         "default-src 'self'; style-src 'self' 'unsafe-inline'; " +
         "img-src 'self' data: https:; " +
         "base-uri 'self'; form-action 'self'; " +

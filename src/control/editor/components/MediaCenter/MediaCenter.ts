@@ -4,7 +4,7 @@ import { Component } from 'src/control/editor/runtime/Component';
 
 import "src/control/components/media/CardMedia/CardMedia";
 import type { MediaItem, BreadcrumbEntry } from "src/control/components/media/GridMedia/types";
-import { uploadFiles, createFolder } from "src/control/components/media/GridMedia/api";
+import { uploadFiles, createFolder, fetchItems, type LocalTypeFilter } from "src/control/components/media/GridMedia/api";
 import { renderGrid, renderBreadcrumb } from "src/control/components/media/GridMedia/render";
 
 export class MediaCenter extends Component {
@@ -172,20 +172,7 @@ export class MediaCenter extends Component {
     }
 
     private async _fetchItems(): Promise<MediaItem[]> {
-        const params = new URLSearchParams();
-        if (this._folder) params.set("parent", this._folder);
-        params.set("types", JSON.stringify(this._types));
-
-        const res = await fetch(`${this._apiBase}/mediaItems?${params}`);
-        if (!res.ok) return [];
-
-        const items: MediaItem[] = await res.json();
-        items.sort((a, b) => {
-            if (a.type === "folder" && b.type !== "folder") return -1;
-            if (a.type !== "folder" && b.type === "folder") return 1;
-            return a.label.localeCompare(b.label);
-        });
-        return items;
+        return fetchItems(this._apiBase, this._folder, this._types as LocalTypeFilter);
     }
 
     private _render() {

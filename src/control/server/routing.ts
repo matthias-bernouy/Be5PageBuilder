@@ -40,14 +40,16 @@ export async function registerUIFolder(baseUrl: string, absolutePath: string, cm
             const module = await import(serverFile);
             const serverHandler = module.default as (req: Request, cms: ControlCms) => Promise<Response>;
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
-                return await serverHandler(req, cms);
+                const response = await serverHandler(req, cms);
+                return injectMediaClientIntoHtml(response, cms.basePath);
             });
         } else if (htmlFile) {
             const cacheKey = P9R_CACHE.html(urlPath);
+            const basePath = cms.basePath;
             runner.addEndpoint("GET", urlPath, async (req: Request) => {
                 return cachedResponseAsync(req, cacheKey, cms.cache, async () => {
                     const content = await Bun.file(htmlFile).text();
-                    return compress(content, "text/html");
+                    return compress(injectMediaClientScript(content, basePath), "text/html");
                 });
             });
         }
@@ -72,6 +74,31 @@ function toRouteKey(filePath: string, suffix: string): string {
     if (dir === ".") return name;
     if (name === basename(dir)) return dir;
     return base;
+}
+
+/**
+ * Inserts `<script src="<basePath>/_cms/media.js" defer></script>` before
+ * `</head>` so every admin page bootstraps `window._cms.Media` from the
+ * server-serialized Media provider. Runs once at HTML build time for static
+ * pages (cached); runs per-request for server-rendered pages but only when
+ * the response carries `Content-Type: text/html` so JSON/JS responses pass
+ * through untouched.
+ */
+function injectMediaClientScript(html: string, basePath: string): string {
+    const tag = `<script src="${basePath}/_cms/media.js" defer></script>`;
+    const idx = html.toLowerCase().indexOf("</head>");
+    if (idx < 0) return html;
+    return html.slice(0, idx) + tag + html.slice(idx);
+}
+
+async function injectMediaClientIntoHtml(response: Response, basePath: string): Promise<Response> {
+    const contentType = response.headers.get("Content-Type") ?? "";
+    if (!contentType.includes("text/html")) return response;
+    const body = await response.text();
+    const injected = injectMediaClientScript(body, basePath);
+    const headers = new Headers(response.headers);
+    headers.delete("Content-Length");
+    return new Response(injected, { status: response.status, headers });
 }
 
 

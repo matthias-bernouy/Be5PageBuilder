@@ -1,14 +1,26 @@
 import { join, resolve } from "node:path";
 import { cp, mkdir, readdir, stat } from "node:fs/promises";
 
-function parseArgs(args: string[]): { folder: string | null; force: boolean } {
+const AVAILABLE_TEMPLATES = ["full"] as const;
+type TemplateName = typeof AVAILABLE_TEMPLATES[number];
+const DEFAULT_TEMPLATE: TemplateName = "full";
+
+type ParsedArgs = {
+    folder:   string | null;
+    template: string;
+    force:    boolean;
+};
+
+function parseArgs(args: string[]): ParsedArgs {
     let folder: string | null = null;
+    let template: string = DEFAULT_TEMPLATE;
     let force = false;
     for (const arg of args) {
         if (arg === "--force" || arg === "-f") force = true;
+        else if (arg.startsWith("--template=")) template = arg.slice("--template=".length);
         else if (!arg.startsWith("-") && folder === null) folder = arg;
     }
-    return { folder, force };
+    return { folder, template, force };
 }
 
 async function isEmptyOrMissing(path: string): Promise<boolean> {
@@ -20,12 +32,18 @@ async function isEmptyOrMissing(path: string): Promise<boolean> {
     }
 }
 
-export default async function CLI_init(args: string[]) {
-    const { folder, force } = parseArgs(args);
+export default async function CLI_new(args: string[]) {
+    const { folder, template, force } = parseArgs(args);
 
     if (!folder) {
         console.error("✖ Missing folder name.");
-        console.error("  Usage: p9r init <folder>");
+        console.error("  Usage: p9r new <folder> [--template=full] [--force]");
+        process.exit(1);
+    }
+
+    if (!AVAILABLE_TEMPLATES.includes(template as TemplateName)) {
+        console.error(`✖ Unknown template: "${template}".`);
+        console.error(`  Available: ${AVAILABLE_TEMPLATES.join(", ")}`);
         process.exit(1);
     }
 
@@ -43,7 +61,7 @@ export default async function CLI_init(args: string[]) {
         process.exit(1);
     }
 
-    const templateDir = join(import.meta.dir, "resources", "bloc-template");
+    const templateDir = join(import.meta.dir, "resources", "app-templates", template);
     const templateStat = await stat(templateDir).catch(() => null);
     if (!templateStat || !templateStat.isDirectory()) {
         console.error(`✖ Template folder not found at ${templateDir}`);
@@ -53,13 +71,11 @@ export default async function CLI_init(args: string[]) {
     await mkdir(target, { recursive: true });
     await cp(templateDir, target, { recursive: true, force });
 
-    console.log(`✓ Bloc scaffold created in ${target}`);
+    console.log(`✓ Scaffolded in ${target} (template: ${template})`);
     console.log("");
     console.log("Next steps:");
     console.log(`  1. cd ${folder}`);
-    console.log(`  2. Edit manifest.json — set "default-tag" and "default-group"`);
-    console.log(`  3. Customize Bloc.ts, template.html, style.css`);
-    console.log(`  4. Customize BlocEditor.ts + configuration.html (or delete them for an opaque bloc)`);
-    console.log(`  5. From the parent folder: p9r dev   (to preview)`);
-    console.log(`     or:                     p9r import (to push to the remote CMS)`);
+    console.log(`  2. cp .env.example .env        # adjust ADMIN_USERNAME / ADMIN_PASSWORD`);
+    console.log(`  3. bun install`);
+    console.log(`  4. bun run dev`);
 }
