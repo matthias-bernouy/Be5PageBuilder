@@ -1,4 +1,4 @@
-import "src/control/components/base/Form/FormSection";
+import "@bernouy/socle";
 
 document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById("logout-btn");

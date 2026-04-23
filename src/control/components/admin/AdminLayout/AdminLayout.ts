@@ -1,7 +1,7 @@
 import { Component } from "@bernouy/cms/component";
 
-import "src/control/components/base/Menu/LateralMenu/LateralMenu"
-import "src/control/components/base/Layout/LeftMenuLayout/LeftMenuLayout"
+import "@bernouy/socle"
+import "@bernouy/socle"
 
 import template from './template.html' with { type: 'text' };
 

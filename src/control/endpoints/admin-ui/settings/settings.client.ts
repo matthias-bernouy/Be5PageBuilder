@@ -1,8 +1,8 @@
-import "src/control/components/base/Form/P9rSelect";
-import "src/control/components/base/Form/P9rInput";
+import "@bernouy/socle";
+import "@bernouy/socle";
 import "src/control/editor/components/MediaCenter/MediaCenter";
-import "src/control/components/base/Form/FormSection";
-import { showToast } from "src/control/components/base/Toast/ToastStack";
+import "@bernouy/socle";
+import { showToast } from "@bernouy/socle";
 
 type PageRef = { path: string } | null;
 

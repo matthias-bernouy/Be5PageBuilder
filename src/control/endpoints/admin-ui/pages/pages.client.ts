@@ -1,7 +1,7 @@
-import "src/control/components/base/Dialog/LateralDialog/LateralDialog";
-import type { LateralDialog } from "src/control/components/base/Dialog/LateralDialog/LateralDialog";
-import "src/control/components/base/Form/TagSuggest/TagSuggest";
-import type { TagSuggest } from "src/control/components/base/Form/TagSuggest/TagSuggest";
+import "@bernouy/socle";
+import type { LateralDialog } from "@bernouy/socle";
+import "@bernouy/socle";
+import type { TagSuggest } from "@bernouy/socle";
 
 type PageRow = {
     title: string;

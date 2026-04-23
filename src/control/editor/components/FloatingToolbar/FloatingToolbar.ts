@@ -1,5 +1,5 @@
-import "src/control/components/base/Dialog/LateralDialog/LateralDialog"
-import "src/control/components/base/Form/Checkbox/Checkbox"
+import "@bernouy/socle"
+import "@bernouy/socle"
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import { Component } from "@bernouy/cms/component";

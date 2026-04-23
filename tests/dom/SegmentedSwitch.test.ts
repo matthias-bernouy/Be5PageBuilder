@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { SegmentedSwitch } from "src/control/components/base/Form/SegmentedSwitch/SegmentedSwitch";
+import { SegmentedSwitch } from "@bernouy/socle";
 
 /**
  * Replace the default `attachInternals` polyfill from setup.ts with one

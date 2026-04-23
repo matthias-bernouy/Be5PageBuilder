@@ -1,18 +1,18 @@
-import "src/control/components/base/Dialog/LateralDialog/LateralDialog"
-import "src/control/components/base/Form/Checkbox/Checkbox"
-import "src/control/components/base/Form/FormSection"
+import "@bernouy/socle"
+import "@bernouy/socle"
+import "@bernouy/socle"
 
-import type { LateralDialog } from "src/control/components/base/Dialog/LateralDialog/LateralDialog";
+import type { LateralDialog } from "@bernouy/socle";
 import { Component } from "@bernouy/cms/component";
 
 import "./sync/AttrSync";
 import "./sync/CompSync";
 import "./sync/ImageSync";
 import "./sync/StateSync";
-import "src/control/components/base/Form/P9rSelect";
-import "src/control/components/base/Form/P9rRange";
+import "@bernouy/socle";
+import "@bernouy/socle";
 import "./P9rLink";
-import "src/control/components/base/Form/P9rSizesSelect";
+import "@bernouy/socle";
 
 export class ConfigPanel extends Component {
 

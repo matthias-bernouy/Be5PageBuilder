@@ -5,16 +5,16 @@ import "src/control/components/media/CropSystem/CropSystem"
 import "src/control/components/media/DetailMedia/DetailMedia"
 import "src/control/components/media/GridMedia/GridMedia"
 
-import "src/control/components/base/Form/Button/Button"
-import "src/control/components/base/Form/P9rInput"
-import "src/control/components/base/Form/InputFile/InputFile"
-import "src/control/components/base/Form/SegmentedSwitch/SegmentedSwitch"
+import "@bernouy/socle"
+import "@bernouy/socle"
+import "@bernouy/socle"
+import "@bernouy/socle"
 
-import "src/control/components/base/Table/Table"
+import "@bernouy/socle"
 
-import "src/control/components/base/Tag/Tag"
+import "@bernouy/socle"
 
-import "src/control/components/base/Dialog/FormDialog/FormDialog"
+import "@bernouy/socle"
 
 
 document.addEventListener('click', (e: any) => {

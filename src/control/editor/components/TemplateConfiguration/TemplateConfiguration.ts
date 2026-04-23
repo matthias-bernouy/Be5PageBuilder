@@ -1,15 +1,15 @@
-import "src/control/components/base/Dialog/LateralDialog/LateralDialog";
-import "src/control/components/base/Form/Button/Button";
-import "src/control/components/base/Form/TagSuggest/TagSuggest";
-import "src/control/components/base/Form/FormSection";
-import "src/control/components/base/Form/P9rInput";
+import "@bernouy/socle";
+import "@bernouy/socle";
+import "@bernouy/socle";
+import "@bernouy/socle";
+import "@bernouy/socle";
 
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import type { LateralDialog } from "src/control/components/base/Dialog/LateralDialog/LateralDialog";
-import type { P9rInput } from "src/control/components/base/Form/P9rInput";
+import type { LateralDialog } from "@bernouy/socle";
+import type { P9rInput } from "@bernouy/socle";
 import { Component } from "@bernouy/cms/component";
-import { showToast } from "src/control/components/base/Toast/ToastStack";
+import { showToast } from "@bernouy/socle";
 
 export class TemplateConfiguration extends Component {
 
