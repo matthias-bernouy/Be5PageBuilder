@@ -1,0 +1,21 @@
+{
+    "name": "my-cms",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev":   "bun --hot run App.ts",
+        "start": "bun run App.ts"
+    },
+    "dependencies": {
+        "@bernouy/cms":   "*",
+        "@bernouy/socle": "*"
+    },
+    "devDependencies": {
+        "@types/bun": "latest",
+        "typescript": "^5.9.3"
+    },
+    "engines": {
+        "bun": ">=1.3.0"
+    }
+}
