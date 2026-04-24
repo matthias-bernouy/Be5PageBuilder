@@ -22,7 +22,7 @@ mock.module("src/blocs/prepare_bloc", () => ({
     }),
 }));
 
-const { default: importBloc } = await import("src/control/endpoints/admin-api/bloc.post");
+const { default: importBloc } = await import("src/control/api/bloc/bloc.post");
 
 type CreateBlocCall = { bloc: TBloc };
 

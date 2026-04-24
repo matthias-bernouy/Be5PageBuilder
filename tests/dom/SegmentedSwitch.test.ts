@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { SegmentedSwitch } from "@bernouy/socle";
+import { SegmentedSwitch } from "@bernouy/webcomponents";
 
 /**
  * Replace the default `attachInternals` polyfill from setup.ts with one

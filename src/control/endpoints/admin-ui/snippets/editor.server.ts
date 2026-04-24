@@ -1,6 +1,6 @@
 import { join } from 'node:path';
 import type { ControlCms } from 'src/control/ControlCms';
-import { renderEditorShell } from 'src/control/server/rendering/editorShell';
+import { renderEditorShell } from 'src/control/core/server/rendering/editorShell';
 
 export default async function SnippetEditorServer(req: Request, cms: ControlCms) {
     const url = new URL(req.url);
@@ -23,8 +23,9 @@ export default async function SnippetEditorServer(req: Request, cms: ControlCms)
     }
 
     return renderEditorShell({
-        htmlFilePath: join(__dirname, "./editor.html"),
+        htmlFilePath: join(__dirname, "../editor/editor.html"),
         cms,
+        flavor: "snippet",
         content: snippet?.content || "<p></p>",
         configElement: "w13c-snippet-information",
         configAttributes,

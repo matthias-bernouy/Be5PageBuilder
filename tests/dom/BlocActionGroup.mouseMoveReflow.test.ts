@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { BlocActionGroup } from "src/control/editor/components/BlocActionGroup/BlocActionGroup";
-import { Editor } from "src/control/editor/runtime/Editor";
+import { BlocActionGroup } from "src/control/core/editorSystem/components/BlocActionGroup/BlocActionGroup";
+import { Editor } from "src/control/core/editorSystem/Editor/Editor";
 
 class BareEditor extends Editor {
     override init() {}

@@ -1,4 +1,4 @@
-import "@bernouy/socle";
+import "@bernouy/webcomponents";
 
 document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById("logout-btn");

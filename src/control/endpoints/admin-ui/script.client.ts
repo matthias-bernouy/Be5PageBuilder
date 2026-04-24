@@ -5,17 +5,7 @@ import "src/control/components/media/CropSystem/CropSystem"
 import "src/control/components/media/DetailMedia/DetailMedia"
 import "src/control/components/media/GridMedia/GridMedia"
 
-import "@bernouy/socle"
-import "@bernouy/socle"
-import "@bernouy/socle"
-import "@bernouy/socle"
-
-import "@bernouy/socle"
-
-import "@bernouy/socle"
-
-import "@bernouy/socle"
-
+import "@bernouy/webcomponents"
 
 document.addEventListener('click', (e: any) => {
     const btn = e.target.closest('[data-modal]');

@@ -1,4 +1,4 @@
-import { send_html } from 'src/control/server/send_html';
+import { send_html } from 'src/control/core/server/send_html';
 import { escapeHtml } from 'src/socle/utils/escapeHtml';
 import { parseHTML } from 'linkedom';
 import type { ControlCms } from 'src/control/ControlCms';

@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { resolveActionBarAnchor } from "src/control/editor/components/BlocActionGroup/anchor";
+import { resolveActionBarAnchor } from "src/control/core/editorSystem/components/BlocActionGroup/anchor";
 
 function makeRect(x: number, y: number, w: number, h: number): DOMRect {
     return {

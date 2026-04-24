@@ -1,7 +1,7 @@
 {
     "name": "@bernouy/cms",
-    "version": "1.0.2",
-    "description": "Modular CMS built on Web Components with an inline visual editing system. Bun + MongoDB.",
+    "version": "0.0.1",
+    "description": "Modular CMS built on Web Components with an inline visual editing system.",
     "license": "UNLICENSED",
     "type": "module",
     "main": "./index.ts",
@@ -38,7 +38,6 @@
         "CLAUDE.md"
     ],
     "scripts": {
-        "dev": "bun --hot run App.ts",
         "build": "bun run build.ts",
         "typecheck": "bun x tsc --noEmit",
         "test": "bun test",
@@ -57,10 +56,11 @@
         "typescript": "^5.9.3"
     },
     "dependencies": {
+        "@bernouy/socle": "^0.1.0",
+        "@bernouy/webcomponents": "^0.1.2",
         "linkedom": "^0.18.12",
         "mongodb": "~7.1.1",
-        "sharp": "^0.34.5",
-        "@bernouy/socle": "link:@bernouy/socle"
+        "sharp": "^0.34.5"
     },
     "engines": {
         "bun": ">=1.3.0"

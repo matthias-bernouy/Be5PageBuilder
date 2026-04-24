@@ -1,17 +1,17 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { ConfigPanel } from "src/control/editor/configuration/ConfigPanel";
+import { SyncPanel } from "src/control/components/editor/componentSync/SyncPanel";
 
 describe("ConfigPanel", () => {
-    let panel: ConfigPanel;
+    let panel: SyncPanel;
 
     beforeEach(() => {
         document.body.innerHTML = "";
-        panel = document.createElement("p9r-config-panel") as ConfigPanel;
+        panel = document.createElement("p9r-config-panel") as SyncPanel;
         document.body.appendChild(panel);
     });
 
     test("registers itself as the `p9r-config-panel` custom element", () => {
-        expect(customElements.get("p9r-config-panel")).toBe(ConfigPanel as unknown as CustomElementConstructor);
+        expect(customElements.get("p9r-config-panel")).toBe(SyncPanel as unknown as CustomElementConstructor);
     });
 
     test("init() propagates to every light-DOM child that exposes an init() method", () => {

@@ -85,6 +85,13 @@ Routes inside Delivery (relative to the delivery runner's basePath):
 - All admin pages wrap in `<w13c-fixed-admin-layout>` with `slot="title"` and `slot="action"`.
 - Auth guard is applied once by `createAuthGuard(cms)` and attached to every endpoint via `runner.group("", cb, [authGuard])` inside `registerEndpoints`. Non-admin authenticated users get 403 (no redirect to a client URL — Control doesn't know where Delivery lives in multi-tenant).
 
+### Admin UI dependencies — `@bernouy/socle` vs `@bernouy/webcomponents`
+
+- **`@bernouy/webcomponents`** ships every `<p9r-*>` / `<w13c-*>` admin custom element (Button, LateralDialog, P9rInput, TagSuggest, HorizontalActionGroup, …). Its `.` entry is an **IIFE bundle** (`dist/ui.js`) — a single bare `import "@bernouy/webcomponents"` at the top of a client bundle is enough to register every tag. Value imports like `{ HorizontalActionGroup }` work for `extends` / type positions (driven by the shipped `.d.ts`). Never import from `@bernouy/socle` for UI.
+- **`@bernouy/socle`** is for infrastructure only: `Runner`, `DefaultRunner`/`BunRunner`, `Authentication`, `Subject`, `Media`, `MediaItem`, `MediaUrlBuilder`, `Middleware`. Never pull UI from it.
+- **`showToast`**: webcomponents does not expose an ESM entry for its utilities, so the project has its own helper at `src/control/showToast.ts` that lazily mounts a `<p9r-toast-stack>` and calls its `push()`. Always import `showToast` from there.
+- **Design tokens** (`--primary-base`, `--bg-surface`, `--text-main`, `--border-default`, …) live in `@bernouy/webcomponents/style.css`. It is resolved server-side with `Bun.resolveSync` in `registerEndpoints.ts` and exposed at `<basePath>/resources/css/webcomponents.css`; `admin-resources/css/style.css` `@import`s it, so every admin HTML page that already links `style.css` inherits the tokens.
+
 ## Editor system
 
 Lives under `src/control/editor/`.
@@ -97,7 +104,17 @@ Lives under `src/control/editor/`.
 - `BlocLibrary` has 3 sections: Blocs (by group), Templates (by category), Snippets.
 - Templates insert as HTML fragments (independent copies), blocs and snippets insert as custom elements (`<w13c-snippet identifier="…">` keeps a live link to the snippet source).
 - `ObserverManager` walks the editor tree and creates an editor per registered tag. Opaque blocs get marked with `p9r-opaque="true"` after editorizing so descendants bail out (the bloc still gets its parent-level action bar).
-- Editor preview loads bloc view bundles from Control's own `GET /api/bloc?tag=X` endpoint — it never reaches out to Delivery, which keeps the admin self-sufficient and avoids CORS + deliveryUrl coupling.
+- Editor preview loads bloc view bundles inlined in the consolidated `editor-script` endpoint — it never reaches out to Delivery, which keeps the admin self-sufficient and avoids CORS + deliveryUrl coupling. `GET /api/bloc?tag=X` still exists for the dev CLI.
+
+### Editor shell boot
+
+- Every editor page (page / template / snippet flavor) serves the same `editor.html` shell (lives at `src/control/endpoints/admin-ui/editor/editor.html`). The shell is a bare `<div id="editor-system">` + `<main id="editor">`; `renderEditorShell` injects the meta tags, CSS links and script tags at render time with basePath-prefixed absolute URLs.
+- The flavor is stamped on `#editor-system[data-flavor]` ("page" / "template" / "snippet") by `renderEditorShell`. The editor runtime reads it to pick the right `EditorManager.backPath` and to decide whether to run page-specific boot logic (layout-category popup).
+- Two `<script>` tags are injected (both `defer`, so they run post-parse in document order):
+  1. `<basePath>/admin/editor-script` — **the consolidated editor bundle**. Contents in order: `window.p9r` setup → `EditorManager` construction → every bloc's `editorJS` → every bloc's `viewJS`. A single file, lexical ordering: no defer cascade, no `document.EditorManager` retry loop. Built by `src/control/endpoints/admin-ui/editor-script.server.ts`, which Bun-builds `src/control/editor/editor-script-entry.ts` for the runtime half and fetches `repository.getBlocsJS()` for the bloc half. Cached under `P9R_CACHE.EDITOR_SCRIPT` and invalidated from `bloc.post.ts`.
+  2. `<basePath>/admin/script.js` — the shared admin shell (AdminLayout + Media widgets + `@bernouy/webcomponents` registration), served as the Bun-built IIFE of `admin-ui/script.client.ts`.
+- The bloc editor entry file (`editor-script-entry.ts`) lives **outside** `admin-ui/` on purpose — `registerUIFolder` auto-exposes every `*.client.ts` under `admin-ui/` at `<url>.js`, and this entry is served only through the compound `editor-script.server.ts` endpoint.
+- The `p9r dev` CLI mirrors this layout: `src/cli/dev-server/shell.ts::buildShell` emits the same `<script src="<adminPrefix>/admin/editor-script">` tag, and `dev-server/server.ts` handles that path locally via `buildEditorScript` — same runtime build, but bloc editorJS is sourced from the dev-built blocs shadowing the remote snapshot. View JS in dev stays on the per-tag `/bloc?tag=X` path so rebuilding a local bloc only refreshes one endpoint.
 
 ### BlocActionGroup
 
@@ -158,7 +175,6 @@ Lives under `src/delivery/`.
   - `buildFoucShell` — anti-FOUC style while custom elements are undefined
   - `defineMetaTags` — title, description, favicon, canonical
   - `buildStylesheetLink` — theme `<link rel=stylesheet>`
-  - `buildScriptTags` — deferred `<script>` tags in document order (component.js first, blocs after)
 - **Page enhancement** (`src/delivery/core/enhance/`) runs synchronously on cache miss:
   - `PageEnhancer.enhance(path, origin)` awaits until the enhanced bytes are committed, with an in-flight dedup map so N concurrent cold requests share a single Playwright run
   - `PlaywrightSession` opens a long-lived Chromium (injectable so a shared session spans multiple tenants)
@@ -174,7 +190,7 @@ Lives under `src/delivery/`.
 - `constants/p9r-constants.ts` — cache key builders, event names, DOM ids, mode tokens.
 - `constants/editorAttributes.ts` — DOM attribute names consumed by editors.
 - `utils/validation.ts` — shared path / snippet-identifier / custom-element-tag validators.
-- `server/compression.ts` — `compress(raw, contentType) → CacheEntry`, `cachedResponseAsync`, `sendCompressed`, `SECURITY_HEADERS`, `HTML_CSP_HEADER`. Used by both Control (editor-blocs, admin bundles) and Delivery (pages, bloc bundles, theme).
+- `server/compression.ts` — `compress(raw, contentType) → CacheEntry`, `cachedResponseAsync`, `sendCompressed`, `SECURITY_HEADERS`, `HTML_CSP_HEADER`. Used by both Control (editor bundle, admin bundles) and Delivery (pages, bloc bundles, theme).
 - `blocs/prepare_bloc.ts` + `p9rExternalsPlugin.ts` — server-side bloc compilation used by `bloc.post.ts` and the dev CLI.
 
 ## CSS conventions
@@ -183,8 +199,8 @@ Lives under `src/delivery/`.
 - CSS `attr()` only works for simple numeric values with px fallback: `attr(radius px, 16px)`
 - For enum-like attributes (e.g. background names mapping to CSS variables), always use `:host([attr="value"])` selectors
 - All CSS variables must be self-contained in the component's `style.css`
-- Global design tokens: `--primary-base`, `--bg-surface`, `--text-main`, `--border-default`, etc.
-- Admin resources live in `src/control/endpoints/admin-resources/css/` and `/fonts/`, served at `<basePath>/resources/{css,fonts}/*` by `registerResourcesFolder` (no compression pipeline; admin is authenticated and low-traffic).
+- Global design tokens: `--primary-base`, `--bg-surface`, `--text-main`, `--border-default`, etc. — defined in `@bernouy/webcomponents/style.css` and pulled in via the dedicated `/resources/css/webcomponents.css` route (see the admin UI section).
+- Admin resources live in `src/control/endpoints/admin-resources/css/` and `/fonts/`, served at `<basePath>/resources/{css,fonts}/*` by `registerResourcesFolder` (no compression pipeline; admin is authenticated and low-traffic). `style.css` starts with `@import url("./webcomponents.css")` so the design tokens are in scope before anything else.
 
 ## Configuration inputs
 

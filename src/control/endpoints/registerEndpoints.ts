@@ -1,22 +1,14 @@
-import { registerUIFolder, registerAPIFolder, registerResourcesFolder } from "src/control/server/routing";
+import { registerUIFolder, registerAPIFolder, registerResourcesFolder } from "src/control/core/server/routing";
 import { join } from "node:path"
 import type { ControlCms } from "src/control/ControlCms";
 import type { Middleware } from "@bernouy/socle";
-import { compress, cachedResponseAsync } from "src/socle/server/compression";
+import { compress, cachedResponseAsync, SECURITY_HEADERS } from "src/socle/server/compression";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
 function res(str: string){
     return join(import.meta.dir, str);
 }
 
-/**
- * Auth + CSRF guard applied to every endpoint registered by Control. Assumes
- * the runner is already scoped — all requests reaching this middleware are
- * admin-scope by construction, so no path-prefix check is needed.
- *
- * Non-admin authenticated users receive 403 (no redirect). Unauthenticated
- * users are redirected to the auth provider's login URL.
- */
 export const createAuthGuard = (cms: ControlCms): Middleware => {
     return async (req, next) => {
         const url = new URL(req.url);
@@ -47,6 +39,7 @@ export const createAuthGuard = (cms: ControlCms): Middleware => {
             }
             throw new Error("Not connected");
         } catch (error) {
+            console.debug(error);
             const loginUrl = cms.auth.buildLoginUrl(url.pathname);
             return new Response(null, {
                 status: 302,
@@ -70,10 +63,6 @@ export function registerEndpoints(cms: ControlCms){
         registerAPIFolder      ("/api",       res("admin-api"),       cms, r);
         registerResourcesFolder("/resources", res("admin-resources"), r);
 
-        // No landing page at /admin yet — bounce to the pages listing so the
-        // admin opens on something meaningful. Uses a plain 302 (not a
-        // permanent redirect) so adding a real dashboard later just flips
-        // the target without invalidating bookmarked URLs.
         r.get("/admin", () => new Response(null, {
             status:  302,
             headers: { Location: `${cms.basePath}/admin/pages` },

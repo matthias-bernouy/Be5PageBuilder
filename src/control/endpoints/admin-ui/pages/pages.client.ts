@@ -1,7 +1,5 @@
-import "@bernouy/socle";
-import type { LateralDialog } from "@bernouy/socle";
-import "@bernouy/socle";
-import type { TagSuggest } from "@bernouy/socle";
+import "@bernouy/webcomponents";
+import type { LateralDialog, TagSuggest } from "@bernouy/webcomponents";
 
 type PageRow = {
     title: string;

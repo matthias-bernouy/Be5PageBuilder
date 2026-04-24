@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type { ControlCms } from 'src/control/ControlCms';
-import { expandSnippets } from 'src/control/server/rendering/expandSnippets';
-import { renderEditorShell } from 'src/control/server/rendering/editorShell';
+import { expandSnippets } from 'src/control/core/expandSnippets';
+import { renderEditorShell } from 'src/control/core/server/rendering/editorShell';
 
 export default async function TemplateEditorServer(req: Request, cms: ControlCms) {
     const url = new URL(req.url);
@@ -21,8 +21,9 @@ export default async function TemplateEditorServer(req: Request, cms: ControlCms
     const content = await expandSnippets(template?.content || "<p></p>", cms);
 
     return renderEditorShell({
-        htmlFilePath: join(__dirname, "./editor.html"),
+        htmlFilePath: join(__dirname, "../editor/editor.html"),
         cms,
+        flavor: "template",
         content,
         configElement: "w13c-template-information",
         configAttributes,

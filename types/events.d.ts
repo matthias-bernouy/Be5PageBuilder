@@ -18,6 +18,10 @@ export interface ImageSelected extends CustomEvent {
     };
 }
 
+export interface CMSEvent<Data = string> extends CustomEvent {
+    readonly detail: Data
+}
+
 declare global {
 
     interface HTMLElementEventMap {

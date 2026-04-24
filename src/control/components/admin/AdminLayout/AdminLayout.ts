@@ -1,7 +1,6 @@
 import { Component } from "@bernouy/cms/component";
 
-import "@bernouy/socle"
-import "@bernouy/socle"
+import "@bernouy/webcomponents";
 
 import template from './template.html' with { type: 'text' };
 

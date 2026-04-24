@@ -13,7 +13,7 @@ mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     },
 }));
 
-const { TextEditor } = await import("src/control/editor/editors/TextEditor");
+const { TextEditor } = await import("src/control/core/editorSystem/editors/TextEditor");
 
 function reset() {
     openCalls.length = 0;

@@ -74,6 +74,10 @@ export class DefaultCmsRepository implements CmsRepository {
         return this._blocs.getEditorJS();
     }
 
+    getBlocsJS(): Promise<{ id: string, editorJS: string, viewJS: string }[]> {
+        return this._blocs.getAllJS();
+    }
+
     getBlocsList(): Promise<{ id: string, name: string, group: string, description: string }[]> {
         return this._blocs.getList();
     }

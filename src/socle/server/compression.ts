@@ -15,7 +15,11 @@ import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
  * - Permissions-Policy: disables browser APIs we never use, so a
  *   DOM-XSS payload can't invoke them either.
  * - COOP same-origin: isolates our window from any cross-origin
- *   popup's opener reference (Spectre / tabnabbing mitigation).
+ *   popup's opener reference (Spectre / tabnabbing mitigation). In DEV
+ *   (`MODE=DEV`) we emit the `-Report-Only` variant instead: local dev
+ *   runs over plain HTTP on a non-localhost origin (e.g. `192.168.x.x`)
+ *   which browsers treat as untrustworthy, so the enforcing header
+ *   would be ignored anyway and pollute the console with a warning.
  * - CORP same-origin: an external site can't load our bloc bundles,
  *   theme CSS or media through <script>/<img>/<link> tags. Tradeoff:
  *   external blogs can't hotlink our images either — acceptable for a
@@ -27,7 +31,9 @@ export const SECURITY_HEADERS = {
     "X-Frame-Options": "DENY",
     "Referrer-Policy": "strict-origin-when-cross-origin",
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
-    "Cross-Origin-Opener-Policy": "same-origin",
+    ...(process.env.MODE === "DEV"
+        ? { "Cross-Origin-Opener-Policy-Report-Only": "same-origin" }
+        : { "Cross-Origin-Opener-Policy":            "same-origin" }),
     "Cross-Origin-Resource-Policy": "same-origin",
 } as const;
 

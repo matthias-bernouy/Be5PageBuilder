@@ -42,7 +42,7 @@
         "src/cli/CLI_importBloc.ts",
 		"types/**/*.d.ts",
 		"tests/**/*.ts"
-	],
+, "types/HTMLElements.ts"	],
 
 	"exclude": [
 		"tests/perf/**/*"

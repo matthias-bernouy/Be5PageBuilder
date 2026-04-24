@@ -1,8 +1,6 @@
-import "@bernouy/socle";
-import "@bernouy/socle";
-import "src/control/editor/components/MediaCenter/MediaCenter";
-import "@bernouy/socle";
-import { showToast } from "@bernouy/socle";
+import "@bernouy/webcomponents";
+import "src/control/core/editorSystem/components/MediaCenter/MediaCenter";
+import { showToast } from "src/control/core/showToast";
 
 type PageRef = { path: string } | null;
 

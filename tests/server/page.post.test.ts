@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import updatePage from "src/control/endpoints/admin-api/page.post";
+import updatePage from "src/control/api/page/page.post";
 import { InMemoryCache } from "src/socle/providers/memory/Cache/InMemoryCache";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";

@@ -4,7 +4,7 @@ mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: { open: () => new EventTarget() },
 }));
 
-const { TextEditor } = await import("src/control/editor/editors/TextEditor");
+const { TextEditor } = await import("src/control/core/editorSystem/editors/TextEditor");
 
 function reset() {
     (document as any).compIdentifierToEditor = new Map();

@@ -48,6 +48,13 @@ export class BlocsRepository {
         return blocs.map(bloc => ({ id: bloc.id, editorJS: bloc.editorJS }));
     }
 
+    async getAllJS(): Promise<{ id: string, editorJS: string, viewJS: string }[]> {
+        const blocs = await this._collection
+            .find({}, { projection: { id: 1, editorJS: 1, viewJS: 1, _id: 0 } })
+            .toArray();
+        return blocs.map(bloc => ({ id: bloc.id, editorJS: bloc.editorJS, viewJS: bloc.viewJS }));
+    }
+
     /**
      * Light projection used by `p9r list-blocs` and any consumer that needs
      * to know what blocs exist without downloading the compiled JS payloads.

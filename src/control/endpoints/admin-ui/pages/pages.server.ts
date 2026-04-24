@@ -1,7 +1,7 @@
 import { parseHTML } from 'linkedom';
 import type { ControlCms } from 'src/control/ControlCms';
 import template from "./pages.html";
-import { send_html } from 'src/control/server/send_html';
+import { send_html } from 'src/control/core/server/send_html';
 
 type PageRow = {
     title: string;

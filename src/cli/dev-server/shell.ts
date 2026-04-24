@@ -15,11 +15,11 @@ export type ShellContext = {
 
 /**
  * Assembles the editor HTML for local dev. Mirrors `renderEditorShell` on the
- * server side: injects the API-base meta tag, the inline bloc bootstrap script
- * (one retry-loop IIFE per bloc) and one `<script src="/bloc?tag=X">` per bloc.
- * The bloc list is the union of remote CMS blocs (snapshot at startup) and
- * locally-built dev blocs, with dev blocs shadowing CMS ones that share the
- * same tag.
+ * server side: injects the p9r meta tags, the consolidated editor-script
+ * (served locally by this dev server — contains the runtime plus every dev +
+ * remote bloc's `editorJS` concatenated in evaluation order) and one
+ * `<script src="/bloc?tag=X">` per bloc for view JS. Dev blocs shadow remote
+ * blocs that share the same tag.
  */
 export async function buildShell(ctx: ShellContext): Promise<string> {
     const merged = new Map<string, RemoteBloc>();
@@ -37,42 +37,29 @@ export async function buildShell(ctx: ShellContext): Promise<string> {
     apiBase.setAttribute("content", `${ctx.adminPrefix}/api/`);
     document.head.appendChild(apiBase);
 
-    const initScript = [...merged.values()].map(b => `
-        (function() {
-            const init = () => {
-                if (window.document && document.EditorManager) {
-                    try {
-                        ${b.editorJS}
-                    } catch (e) {
-                        console.error("Error executing bloc ${b.id}:", e);
-                    }
-                } else {
-                    setTimeout(init, 10);
-                }
-            };
-            init();
-        })();
-    `).join("\n");
+    const basePathMeta = document.createElement("meta");
+    basePathMeta.setAttribute("name", "p9r-base-path");
+    basePathMeta.setAttribute("content", `${ctx.adminPrefix}/`);
+    document.head.appendChild(basePathMeta);
 
-    const inline = document.createElement("script");
-    inline.textContent = initScript;
-    inline.setAttribute("defer", "");
-    document.head.appendChild(inline);
-
-    // Synchronous global runtime — must come first in <head> so the bloc
-    // IIFEs below can read `window.p9r.Component` at evaluation time.
-    const globalScript = document.createElement("script");
-    globalScript.setAttribute("src", "/assets/component.js");
-    document.head.prepend(globalScript);
+    // Consolidated editor bundle (runtime + all editorJS). View JS stays as
+    // per-bloc <script> tags below so dev blocs stay cheap to rebuild.
+    const editorScript = document.createElement("script");
+    editorScript.setAttribute("src",   `${ctx.adminPrefix}/admin/editor-script`);
+    editorScript.setAttribute("defer", "");
+    document.head.appendChild(editorScript);
 
     for (const id of merged.keys()) {
         const s = document.createElement("script");
-        s.setAttribute("src", `/bloc?tag=${id}`);
+        s.setAttribute("src",   `/bloc?tag=${id}`);
+        s.setAttribute("defer", "");
         document.head.appendChild(s);
     }
 
     const editorSystem = document.getElementById("editor-system");
     const editor = document.getElementById("editor");
+
+    editorSystem?.setAttribute("data-flavor", "page");
 
     const scratch = ctx.scratch;
     const pageInfo = document.createElement("w13c-page-information");
@@ -137,4 +124,42 @@ export async function fetchRemoteBlocs(adminBase: URL, token: string): Promise<R
         console.warn(`[remote] Continuing with dev blocs only. Fix P9R_URL or start the CMS and restart \`p9r dev\`.`);
         return [];
     }
+}
+
+/**
+ * Builds the consolidated editor bundle served at
+ * `<adminPrefix>/admin/editor-script` in dev. Mirrors the production
+ * endpoint (`admin-ui/editor-script.server.ts`) but sources the bloc
+ * payload from dev blocs + the remote snapshot instead of the DB.
+ *
+ * `viewJS` for each bloc is still loaded per-tag via `/bloc?tag=X` so a
+ * dev rebuild only needs to refresh that one endpoint — no need to re-fetch
+ * every remote viewJS on reload.
+ */
+export async function buildEditorScript(ctx: {
+    packageRoot: string;
+    devBlocs: Map<string, BuiltBloc>;
+    remoteBlocs: RemoteBloc[];
+}): Promise<string> {
+    const entry = `${ctx.packageRoot}/src/control/editor/editor-script-entry.ts`;
+    const result = await Bun.build({ entrypoints: [entry], format: "iife" });
+    const output = result.outputs[0];
+    if (!output) {
+        const logs = result.logs.map(l => l.message).join("\n");
+        throw new Error(`editor-script runtime build failed: ${logs || "no output"}`);
+    }
+    const runtime = await output.text();
+
+    const merged = new Map<string, string>();
+    for (const r of ctx.remoteBlocs) merged.set(r.id, r.editorJS);
+    for (const [tag, b] of ctx.devBlocs) {
+        if (b.editorJS) merged.set(tag, b.editorJS);
+        else merged.delete(tag);
+    }
+
+    const editorPayload = [...merged.entries()]
+        .map(([id, js]) => `try { ${js} } catch (e) { console.error("Error in bloc ${id} editorJS:", e); }`)
+        .join("\n");
+
+    return `${runtime}\n${editorPayload}`;
 }

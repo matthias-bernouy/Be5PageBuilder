@@ -1,4 +1,4 @@
-import { DefaultRunner, type Runner, type MediaUrlBuilder } from "@bernouy/socle";
+import { type Runner, type MediaUrlBuilder, BunRunner } from "@bernouy/socle";
 import type { Cache } from "src/socle/contracts/Cache/Cache";
 import { DeliveryCache } from "src/delivery/core/DeliveryCache";
 import { PageEnhancer } from "src/delivery/core/enhance/PageEnhancer";
@@ -61,7 +61,7 @@ export default class DeliveryCms {
     private _enhancer:           PageEnhancer;
 
     constructor(config: DeliveryCmsConfig){
-        this._runner     = config.runner || new DefaultRunner();
+        this._runner     = config.runner || new BunRunner();
         this._media      = config.media;
         this._repository = config.repository;
         this._cache      = config.cache || new DeliveryCache();

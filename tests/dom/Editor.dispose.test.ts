@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { Editor } from "src/control/editor/runtime/Editor";
+import { Editor } from "src/control/core/editorSystem/Editor/Editor";
 
 class TrackingEditor extends Editor {
     public viewEditorCalls = 0;

@@ -8,6 +8,7 @@ export interface CmsRepository {
     replaceBloc(bloc: TBloc): Promise<TBloc>;
 
     getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
+    getBlocsJS(): Promise<{ id: string, editorJS: string, viewJS: string }[]>;
     getBlocsList(): Promise<{ id: string, name: string, group: string, description: string }[]>;
     getBlocViewJS(htmlTag: string): Promise<string | null>;
 

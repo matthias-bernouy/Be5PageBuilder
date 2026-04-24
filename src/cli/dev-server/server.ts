@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import type { BuiltBloc } from "./build";
-import { buildShell } from "./shell";
+import { buildShell, buildEditorScript } from "./shell";
 import { findBlockingRule, blockedResponse } from "./write-guard";
 import { proxyRequest } from "./proxy";
 import { loadScratch, saveScratch, type ScratchPage } from "./scratch";
@@ -28,8 +28,9 @@ export type ServerHandle = {
 
 export function startDevServer(config: ServerConfig): ServerHandle {
     const adminPrefix = config.adminBase.pathname.replace(/\/$/, "") || "";
-    const editorHtmlPath = join(config.packageRoot, "src/endpoints/admin-ui/editor/editor.html");
+    const editorHtmlPath = join(config.packageRoot, "src/control/endpoints/admin-ui/editor/editor.html");
     const editorPath = `${adminPrefix}/admin/editor`;
+    const editorScriptPath = `${adminPrefix}/admin/editor-script`;
 
     const server = Bun.serve({
         port: config.port,
@@ -46,6 +47,29 @@ export function startDevServer(config: ServerConfig): ServerHandle {
             // SSE reload channel — one message per rebuilt bloc
             if (req.method === "GET" && path === "/dev/reload") {
                 return sseResponse(req, config.reload);
+            }
+
+            // Consolidated editor runtime + bloc editorJS — rebuilt every
+            // request. Cheap enough in dev (Bun.build is sub-second on this
+            // entry) and it keeps live-reload simple: editing a bloc rebuilds
+            // its editorJS, and the next editor reload picks it up.
+            if (req.method === "GET" && path === editorScriptPath) {
+                try {
+                    const js = await buildEditorScript({
+                        packageRoot: config.packageRoot,
+                        devBlocs:    config.devBlocs,
+                        remoteBlocs: config.remoteBlocs,
+                    });
+                    return new Response(js, {
+                        headers: {
+                            "Content-Type":  "application/javascript; charset=utf-8",
+                            "Cache-Control": "no-store",
+                        },
+                    });
+                } catch (e) {
+                    console.error(`[editor-script] ${e instanceof Error ? e.message : e}`);
+                    return new Response("editor-script build failed", { status: 500 });
+                }
             }
 
             // Editor shell — assembled locally

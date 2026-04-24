@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { expandSnippets } from "src/control/server/rendering/expandSnippets";
+import { expandSnippets } from "src/control/core/expandSnippets";
 import type { ControlCms } from "src/control/ControlCms";
 import type { TSnippet } from "src/socle/contracts/Repository/TModels";
 

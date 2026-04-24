@@ -9,7 +9,7 @@ mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: { open: () => fakeLibrary },
 }));
 
-const { openChangeComponentPicker } = await import("src/control/editor/components/BlocActionGroup/actions");
+const { openChangeComponentPicker } = await import("src/control/core/editorSystem/components/BlocActionGroup/actions");
 
 function resetState() {
     document.body.querySelectorAll("*").forEach((n) => {

@@ -4,8 +4,8 @@ mock.module("src/control/editor/components/BlocLibrary/BlocLibrary", () => ({
     BlocLibrary: { open: () => new EventTarget() },
 }));
 
-const { TextEditor } = await import("src/control/editor/editors/TextEditor");
-const { BlocActionGroup } = await import("src/control/editor/components/BlocActionGroup/BlocActionGroup");
+const { TextEditor } = await import("src/control/core/editorSystem/editors/TextEditor");
+const { BlocActionGroup } = await import("src/control/core/editorSystem/components/BlocActionGroup/BlocActionGroup");
 const { Editor } = await import("@bernouy/cms/editor");
 
 class BareEditor extends Editor {

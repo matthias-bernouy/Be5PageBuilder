@@ -4,6 +4,7 @@ import type { CmsRepository } from "../socle/contracts/Repository/CmsRepository"
 import type { Cache } from "../socle/contracts/Cache/Cache";
 import { InMemoryCache } from "../socle/providers/memory/Cache/InMemoryCache";
 import type { CMS_ROLES } from "types/roles";
+import serveStaticFolder from "./core/registerEndpoints/serveStaticFolder/serveStaticFolder";
 
 type Configuration = {
     /**
@@ -64,7 +65,8 @@ export class ControlCms {
         this._repository = repository;
         this._media = media;
         this._cache = cache || new InMemoryCache();
-        registerEndpoints(this);
+
+        serveStaticFolder(runner);
     }
 
     get media(){

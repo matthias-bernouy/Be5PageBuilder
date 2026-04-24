@@ -1,7 +1,7 @@
 import { parseHTML } from 'linkedom';
 import type { ControlCms } from 'src/control/ControlCms';
 import template from "./profil.html";
-import { send_html } from 'src/control/server/send_html';
+import { send_html } from 'src/control/core/server/send_html';
 
 export default async function Server(_req: Request, cms: ControlCms) {
     const { document } = parseHTML(await Bun.file(template.index).text());

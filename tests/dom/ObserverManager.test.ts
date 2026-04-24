@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeEach } from "bun:test";
-import { ObserverManager } from "src/control/editor/runtime/ObserverManager";
-import { Editor } from "src/control/editor/runtime/Editor";
+import { ObserverManager } from "src/control/components/editor/EditorSystem/ObserverManager";
+import { Editor } from "src/control/core/editorSystem/Editor/Editor";
 
 // A minimal Editor subclass that tracks lifecycle calls without touching the
 // heavy editor infrastructure (no styles, no panel, no hover bar).

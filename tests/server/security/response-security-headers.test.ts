@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import { compress, sendCompressed } from "src/socle/server/compression";
-import { send_html } from "src/control/server/send_html";
+import { send_html } from "src/control/core/server/send_html";
 
 function runner() {
     const handlers = new Map<string, (req: Request) => Promise<Response>>();

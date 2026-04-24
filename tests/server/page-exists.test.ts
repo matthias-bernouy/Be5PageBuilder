@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import pageExists from "src/control/endpoints/admin-api/page-exists.get";
+import pageExists from "src/control/api/page/exists.get";
 import type { TPage } from "src/socle/contracts/Repository/TModels";
 
 function makeSystem(paths: string[]) {

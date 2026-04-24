@@ -1,7 +1,7 @@
-import type { EditorManager } from "src/control/editor/runtime/EditorManager";
-import type { Editor } from "src/control/editor/runtime/Editor";
-import type { Component } from "src/control/editor/runtime/Component";
-import type { registerEditor, registerEditor_opaque } from "src/control/editor/runtime/registerEditor";
+import type { EditorManager } from "src/control/core/editorSystem/runtime/EditorManager";
+import type { Editor } from "src/control/core/editorSystem/Editor/Editor";
+import type { Component } from "src/control/core/editorSystem/Component";
+import type { registerEditor, registerEditor_opaque } from "src/control/core/editorSystem/registerEditor";
 import type { Media } from "@bernouy/socle";
 import { P9R_ATTR } from "src/socle/constants/editorAttributes";
 import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/socle/constants/p9r-constants";

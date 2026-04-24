@@ -1,7 +1,7 @@
 import { join } from 'node:path';
 import type { ControlCms } from 'src/control/ControlCms';
-import { expandSnippets } from 'src/control/server/rendering/expandSnippets';
-import { renderEditorShell } from 'src/control/server/rendering/editorShell';
+import { expandSnippets } from 'src/control/core/expandSnippets';
+import { renderEditorShell } from 'src/control/core/server/rendering/editorShell';
 
 export default async function ArticleServerAdmin(req: Request, cms: ControlCms) {
     const url = new URL(req.url);
@@ -32,6 +32,7 @@ export default async function ArticleServerAdmin(req: Request, cms: ControlCms) 
     return renderEditorShell({
         htmlFilePath: join(__dirname, "./editor.html"),
         cms,
+        flavor: "page",
         content,
         configElement: "w13c-page-information",
         configAttributes: {

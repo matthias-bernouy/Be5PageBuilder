@@ -1,6 +1,7 @@
 /**
- * Runtime constants exposed globally via `window.p9r` (see `src/core/global.ts`).
- * Server code that can't touch `window` imports these directly instead.
+ * Runtime constants exposed globally via `window.p9r`. Installed at the top of
+ * the consolidated editor bundle (`admin-ui/editor-script.client.ts`). Server
+ * code that can't touch `window` imports these directly instead.
  *
  * Add to this file whenever a magic string ends up duplicated across call
  * sites — the whole point is to have a single source of truth.
@@ -39,6 +40,10 @@ export const P9R_CACHE = {
     font: (url: string) => `font:${url}`,
     /** The single theme CSS served at `/style`. */
     STYLE: "style:main",
-    /** Concatenated bloc editor JS served at `<admin>/admin/editor-blocs`. */
-    EDITOR_BLOCS: "js:editor-blocs",
+    /**
+     * Consolidated editor bundle served at `<admin>/admin/editor-script`.
+     * Contains the static editor runtime plus every bloc's editorJS and
+     * viewJS concatenated — invalidated on any bloc write.
+     */
+    EDITOR_SCRIPT: "js:editor-script",
 } as const;

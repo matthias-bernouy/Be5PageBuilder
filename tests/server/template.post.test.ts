@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import postTemplate from "src/control/endpoints/admin-api/template.post";
+import postTemplate from "src/control/api/template/template.post";
 import type { TTemplate } from "src/socle/contracts/Repository/TModels";
 
 type CreateCall = { template: TTemplate };

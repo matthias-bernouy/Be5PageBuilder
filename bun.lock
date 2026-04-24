@@ -5,7 +5,8 @@
     "": {
       "name": "@bernouy/cms",
       "dependencies": {
-        "@bernouy/socle": "link:@bernouy/socle",
+        "@bernouy/socle": "^0.1.0",
+        "@bernouy/webcomponents": "^0.1.2",
         "linkedom": "^0.18.12",
         "mongodb": "~7.1.1",
         "sharp": "^0.34.5",
@@ -24,7 +25,9 @@
     },
   },
   "packages": {
-    "@bernouy/socle": ["@bernouy/socle@link:@bernouy/socle", {}],
+    "@bernouy/socle": ["@bernouy/socle@0.1.0", "", { "dependencies": { "jose": "^6.2.1", "sharp": "^0.34.5" }, "peerDependencies": { "mongodb": "^7.1.0", "nodemailer": "^6.9.16", "typescript": "^5.9.3" }, "optionalPeers": ["mongodb", "nodemailer"] }, "sha512-WtHyJLYEdO3d+F0anLYJlVl/h8+YE8FHUgC3R9rNLhQWLYu9P3Aw2zGahsFb2zvEJnRee78sNYsSlRbF5WBvBQ=="],
+
+    "@bernouy/webcomponents": ["@bernouy/webcomponents@0.1.2", "", { "peerDependencies": { "typescript": "^5" } }, "sha512-3O46gh+K56te2o2C+7os+9ilkAnG+guha4GPUB9S7t+Id37NjqVgd7Xis0EBjhIFIJQ8TqhH/h5Hj2Na/pTANg=="],
 
     "@emnapi/runtime": ["@emnapi/runtime@1.10.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA=="],
 
@@ -80,9 +83,9 @@
 
     "@img/sharp-win32-x64": ["@img/sharp-win32-x64@0.34.5", "", { "os": "win32", "cpu": "x64" }, "sha512-+29YMsqY2/9eFEiW93eqWnuLcWcufowXewwSNIT6UwZdUUCrM3oFjMWH/Z6/TMmb4hlFenmfAVbpWeup2jryCw=="],
 
-    "@mongodb-js/saslprep": ["@mongodb-js/saslprep@1.4.8", "", { "dependencies": { "sparse-bitfield": "^3.0.3" } }, "sha512-kpjr2jy2w71w0oqAMI8oibBmiF9lXxWkEQs5gMkW4hVE48bsqINGLxnCSYW62ck/NHXJQpQEfA9WlJ1sY0eqBg=="],
+    "@mongodb-js/saslprep": ["@mongodb-js/saslprep@1.4.9", "", { "dependencies": { "sparse-bitfield": "^3.0.3" } }, "sha512-RXSxsokhAF/4nWys8An8npsqOI33Ex1Hlzqjw2pZOO+GKtMAR2noGnUdsFiGwsaO/xXI+56mtjTmDA3JXJsvmA=="],
 
-    "@types/bun": ["@types/bun@1.3.12", "", { "dependencies": { "bun-types": "1.3.12" } }, "sha512-DBv81elK+/VSwXHDlnH3Qduw+KxkTIWi7TXkAeh24zpi5l0B2kUg9Ga3tb4nJaPcOFswflgi/yAvMVBPrxMB+A=="],
+    "@types/bun": ["@types/bun@1.3.13", "", { "dependencies": { "bun-types": "1.3.13" } }, "sha512-9fqXWk5YIHGGnUau9TEi+qdlTYDAnOj+xLCmSTwXfAIqXr2x4tytJb43E9uCvt09zJURKXwAtkoH4nLQfzeTXw=="],
 
     "@types/node": ["@types/node@25.6.0", "", { "dependencies": { "undici-types": "~7.19.0" } }, "sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ=="],
 
@@ -126,6 +129,8 @@
 
     "htmlparser2": ["htmlparser2@10.1.0", "", { "dependencies": { "domelementtype": "^2.3.0", "domhandler": "^5.0.3", "domutils": "^3.2.2", "entities": "^7.0.1" } }, "sha512-VTZkM9GWRAtEpveh7MSF6SjjrpNVNNVJfFup7xTY3UpFtm67foy9HDVXneLtFVt4pMz5kZtgNcvCniNFb1hlEQ=="],
 
+    "jose": ["jose@6.2.2", "", {}, "sha512-d7kPDd34KO/YnzaDOlikGpOurfF0ByC2sEV4cANCtdqLlTfBlw2p14O/5d/zv40gJPbIQxfES3nSx1/oYNyuZQ=="],
+
     "linkedom": ["linkedom@0.18.12", "", { "dependencies": { "css-select": "^5.1.0", "cssom": "^0.5.0", "html-escaper": "^3.0.3", "htmlparser2": "^10.0.0", "uhyphen": "^0.2.0" }, "peerDependencies": { "canvas": ">= 2" }, "optionalPeers": ["canvas"] }, "sha512-jalJsOwIKuQJSeTvsgzPe9iJzyfVaEJiEXl+25EkKevsULHvMJzpNqwvj1jOESWdmgKDiXObyjOYwlUqG7wo1Q=="],
 
     "memory-pager": ["memory-pager@1.5.0", "", {}, "sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg=="],
@@ -165,8 +170,6 @@
     "whatwg-url": ["whatwg-url@14.2.0", "", { "dependencies": { "tr46": "^5.1.0", "webidl-conversions": "^7.0.0" } }, "sha512-De72GdQZzNTUBBChsXueQUnPKDkg/5A5zp7pFDuQAj5UFoENpiACU0wlCvzpAGnTkj++ihpKwKyYewn/XNUbKw=="],
 
     "ws": ["ws@8.20.0", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-sAt8BhgNbzCtgGbt2OxmpuryO63ZoDk/sqaB/znQm94T4fCEsy/yV+7CdC1kJhOU9lboAEU7R3kquuycDoibVA=="],
-
-    "@types/bun/bun-types": ["bun-types@1.3.12", "", { "dependencies": { "@types/node": "*" } }, "sha512-HqOLj5PoFajAQciOMRiIZGNoKxDJSr6qigAttOX40vJuSp6DN/CxWp9s3C1Xwm4oH7ybueITwiaOcWXoYVoRkA=="],
 
     "dom-serializer/entities": ["entities@4.5.0", "", {}, "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw=="],
   }
