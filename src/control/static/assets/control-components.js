@@ -13415,7 +13415,7 @@ form[method="dialog"] {
       this.attrObserver = new MutationObserver((mutations) => {
         for (const mutation of mutations) {
           if (mutation.type === "attributes" && mutation.attributeName?.startsWith("p9r-")) {
-            if (document.EditorManager.getMode() === p9r.mode.EDITOR) {
+            if (getClosestEditorSystem(this.target).mode === "editor") {
               if (!this.isInitializing) {
                 this.isInitializing = true;
                 this.init();
@@ -13429,7 +13429,7 @@ form[method="dialog"] {
       super.onSwitchMode(mode);
       if (!this.attrObserver)
         return;
-      if (mode === p9r.mode.EDITOR) {
+      if (mode === "editor") {
         this.attrObserver.observe(this.target, {
           attributes: true,
           attributeFilter: [p9r.attr.TEXT.BLOC_MANAGEMENT, p9r.attr.TEXT.EDITABLE]
@@ -14040,7 +14040,7 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/EditorRoot/EditorRoot.ts
   class EditorRoot extends HTMLElement {
-    mode = "editor";
+    _mode = "editor";
     _observer = null;
     _dragmanager = null;
     _blocActions = null;
@@ -14082,12 +14082,13 @@ form[method="dialog"] {
       }
       ele.open();
     }
-    switchMode() {
-      const newMode = this.mode === "editor" ? "view" : "editor";
+    switchMode(mode) {
+      const newMode = this._mode === "editor" ? "view" : "editor";
       this.dispatchEvent(new CustomEvent("editor-system-switch-mode", {
         bubbles: true,
-        detail: newMode
+        detail: mode ?? newMode
       }));
+      this._mode = mode ?? newMode;
     }
     get observer() {
       if (!this._observer)
@@ -14115,10 +14116,15 @@ form[method="dialog"] {
         throw new Error("You try to get _blocLibrary before his initialization");
       return this._blocLibrary;
     }
+    get mode() {
+      return this._mode;
+    }
     get pageContent() {
+      this.switchMode("view");
       const slot = this.shadowRoot.querySelector("#workingElement slot");
       const nodes = slot.assignedNodes({ flatten: true });
       const html = nodes.filter((n2) => n2.nodeName !== "#text").map((n2) => n2 instanceof Element ? n2.outerHTML : n2.textContent ?? "").join("");
+      this.switchMode("editor");
       return html;
     }
   }

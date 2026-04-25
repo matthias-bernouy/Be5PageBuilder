@@ -1,6 +1,7 @@
 import { BlocLibrary } from "src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary";
 import { Editor } from "../Editor/Editor";
 import getClosestEditorSystem from "../../dom/getClosestEditorSystem";
+import type { EDITOR_SYSTEM_MODE } from "types/w13c/EditorSystem";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote, a):empty::before {
@@ -46,7 +47,7 @@ export class TextEditor extends Editor {
         this.attrObserver = new MutationObserver((mutations) => {
             for (const mutation of mutations) {
                 if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
-                    if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
+                    if ( getClosestEditorSystem(this.target).mode === "editor" ){
                         if ( !this.isInitializing ){
                             this.isInitializing = true;
                             this.init();
@@ -57,10 +58,10 @@ export class TextEditor extends Editor {
         });
     }
 
-    public override onSwitchMode(mode: string) {
+    public override onSwitchMode(mode: EDITOR_SYSTEM_MODE) {
         super.onSwitchMode(mode);
         if (!this.attrObserver) return;
-        if (mode === p9r.mode.EDITOR) {
+        if (mode === "editor") {
             this.attrObserver.observe(this.target, {
                 attributes: true,
                 attributeFilter: [p9r.attr.TEXT.BLOC_MANAGEMENT, p9r.attr.TEXT.EDITABLE],

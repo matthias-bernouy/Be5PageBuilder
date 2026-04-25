@@ -10,7 +10,7 @@ import { waitForScripts } from "./waitForScripts";
 
 export default class EditorRoot extends HTMLElement {
 
-    private mode: EDITOR_SYSTEM_MODE = "editor";
+    private _mode: EDITOR_SYSTEM_MODE = "editor";
 
     private _observer: ObserverManager | null = null;
     private _dragmanager: DragManager | null = null;
@@ -63,11 +63,12 @@ export default class EditorRoot extends HTMLElement {
     }
 
     switchMode(mode?: EDITOR_SYSTEM_MODE){
-        const newMode = ( this.mode === "editor" ) ? "view" : "editor";
+        const newMode = ( this._mode === "editor" ) ? "view" : "editor";
         this.dispatchEvent(new CustomEvent("editor-system-switch-mode", {
             bubbles: true,
             detail: mode ?? newMode
         }))
+        this._mode = mode ?? newMode;
     }
 
     get observer(){
@@ -94,6 +95,10 @@ export default class EditorRoot extends HTMLElement {
     get blocLibrary(){
         if ( !this._blocLibrary ) throw new Error("You try to get _blocLibrary before his initialization");
         return this._blocLibrary;
+    }
+
+    get mode(){
+        return this._mode;
     }
 
     get pageContent(){
