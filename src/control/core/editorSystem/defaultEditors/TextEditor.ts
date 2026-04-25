@@ -57,11 +57,6 @@ export class TextEditor extends Editor {
         });
     }
 
-    /**
-     * Used to be an anonymous `document.addEventListener(SWITCH_MODE)` that
-     * was never removed — one leaked closure per TextEditor. Folded into the
-     * registry-driven hook so lifecycle is explicit.
-     */
     public override onSwitchMode(mode: string) {
         super.onSwitchMode(mode);
         if (!this.attrObserver) return;
@@ -107,9 +102,6 @@ export class TextEditor extends Editor {
             if (TextEditor._editorAttrs.has(attr.name)) return;
             element.setAttribute(attr.name, attr.value);
         });
-        // Preserve the parent-identifier so ObserverManager can notify the
-        // parent (onChildrenAdded) and its CompSync re-applies slot
-        // attributes (DISABLE_CHANGE_COMPONENT, etc.) on the new node.
         const parentId = this.target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
         if (parentId) element.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, parentId);
         element.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
@@ -122,42 +114,23 @@ export class TextEditor extends Editor {
             e.preventDefault();
             e.stopImmediatePropagation()
 
-            // Enter inserts a sibling — block it when the action bar forbids
-            // adding after (e.g. a non-multiple p9r-comp-sync slot).
             if (this.isAddAfterDisabled) return;
 
             const nextEl = this.createElement("p")
-            // Make nextEl focusable BEFORE the sync focus call: `TextEditor.init()`
-            // only sets contentEditable/tabIndex inside a rAF (post-microtask),
-            // so a bare `focus()` here would be a no-op and OS key-repeat would
-            // keep firing on `this.target`, stacking every sibling behind the
-            // same anchor in reverse order.
             nextEl.contentEditable = "true";
             nextEl.tabIndex = 0;
 
-            // Split the target at the caret: everything after the caret moves
-            // into the new sibling. Non-collapsed selections are dropped first
-            // so "Hello [World]" + Enter leaves "Hello" / "" rather than
-            // "Hello " / "World".
             const sel = window.getSelection();
             if (sel && sel.rangeCount && sel.anchorNode && this.target.contains(sel.anchorNode) && this.target.lastChild) {
                 const range = sel.getRangeAt(0);
                 if (!range.collapsed) range.deleteContents();
                 const tail = range.cloneRange();
-                // End AFTER the last child (inside target), not after target
-                // itself — the latter spans the target's closing boundary and
-                // extractContents would pull the target node itself into the
-                // fragment, producing a nested <p>.
                 tail.setEndAfter(this.target.lastChild);
                 const fragment = tail.extractContents();
                 nextEl.appendChild(fragment);
             }
 
             this.target.after(nextEl)
-            // Wire the new <p> as an editor synchronously. Without this, the
-            // MutationObserver path is async — a second Enter pressed before
-            // it fires lands on an unbound element and falls through to the
-            // native contentEditable behavior (which inserts a nested <p>).
             const observer = getClosestEditorSystem(this.target).observer;
             if (observer) {
                 observer.make_it_editor(nextEl);
@@ -169,9 +142,6 @@ export class TextEditor extends Editor {
         }
 
         if (e.key === "Backspace" && this.target.innerHTML === "" && !this.isDeleteDisabled) {
-            // Must stop propagation: BAG's window-level keydown would otherwise
-            // receive the same Backspace and, if the user was hovering the
-            // parent, delete the parent as well.
             e.preventDefault();
             e.stopImmediatePropagation();
             this.restore();
@@ -305,23 +275,13 @@ export class TextEditor extends Editor {
         return deleteAttr ? deleteAttr === "true" : false;
     }
 
-    // Text blocs are driven by keyboard: Enter adds a sibling, Backspace on
-    // empty deletes, "/" opens the component picker. The standard action-bar
-    // buttons are all redundant — hide them by default so the bar disappears
-    // unless the bloc has a config panel, custom actions or state-syncs.
-    // `p9r-force-delete-button` / `p9r-force-duplicate-button` opt individual
-    // buttons back in (e.g. a decorative heading the user never empties).
     override refreshActionBarFeatures() {
         super.refreshActionBarFeatures();
         this._actionBarFeatures.set("addBefore", false);
         this._actionBarFeatures.set("addAfter", false);
         this._actionBarFeatures.set("changeComponent", false);
-        if (!this.target.hasAttribute("p9r-force-delete-button")) {
-            this._actionBarFeatures.set("delete", false);
-        }
-        if (!this.target.hasAttribute("p9r-force-duplicate-button")) {
-            this._actionBarFeatures.set("duplicate", false);
-        }
+        this._actionBarFeatures.set("delete", false);
+        this._actionBarFeatures.set("duplicate", false);
     }
 
     private get isAddAfterDisabled(){
@@ -356,14 +316,8 @@ export class TextEditor extends Editor {
     }
 
     public override dispose() {
-        // If disposed while in EDITOR mode, the observer is still connected —
-        // disconnect explicitly so the callback closure (and its capture of
-        // `this`) doesn't keep the editor + target alive.
         this.attrObserver?.disconnect();
         this.attrObserver = undefined;
-        // Pair the add in init(): without this, removing a text bloc leaves
-        // three listeners (keydown/input/paste) bound to the detached node,
-        // each holding the editor + target alive through the handler closure.
         this.target.removeEventListener("keydown", this.onKeyDown);
         this.target.removeEventListener("input", this.onInput);
         this.target.removeEventListener("paste", this.onPaste);

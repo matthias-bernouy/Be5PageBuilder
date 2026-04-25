@@ -10870,7 +10870,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/template.html
-  var template_default5 = `<dialog id="action-bar-dialog" class="action-bar-modal">
+  var template_default5 = `<dialog id="dialog">
     <div class="container">
         <header class="header">
             <nav class="tabs" id="tabs">
@@ -10897,7 +10897,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
   var style_default4 = `:host {
     --bg-main: rgba(255, 255, 255, 0.95);
     --bg-card: #ffffff;
-    --bg-card-hover: rgba(0, 122, 255, 0.03);
 
     --text-primary: #1a1a1a;
     --text-secondary: #666;
@@ -10912,9 +10911,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
-/* ── Dialog ── */
-
-.action-bar-modal {
+#dialog {
     padding: 0;
     border: none;
     background: transparent;
@@ -10927,13 +10924,11 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     to { opacity: 1; transform: scale(1); }
 }
 
-.action-bar-modal::backdrop {
+#dialog::backdrop {
     background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(12px) saturate(180%);
     -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
-
-/* ── Container ── */
 
 .container {
     width: 90vw;
@@ -10947,8 +10942,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
 }
-
-/* ── Header with tabs ── */
 
 .header {
     padding: 0 20px;
@@ -11007,7 +11000,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     transition: all 0.15s;
 }
 
-.tab:hover:not(.active):not(.disabled) {
+.tab:hover:not(.active) {
     background: rgba(0, 0, 0, 0.04);
     color: var(--text-primary);
 }
@@ -11016,11 +11009,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     background: var(--accent);
     color: #fff;
     font-weight: 600;
-}
-
-.tab.disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
 }
 
 form[method="dialog"] {
@@ -11049,15 +11037,11 @@ form[method="dialog"] {
     transform: rotate(90deg);
 }
 
-/* ── Content ── */
-
 .content {
     display: flex;
     flex: 1;
     overflow: hidden;
 }
-
-/* ── Sidebar ── */
 
 .groups-sidebar {
     width: var(--sidebar-width);
@@ -11090,8 +11074,6 @@ form[method="dialog"] {
     font-weight: 600;
 }
 
-/* ── Grid ── */
-
 .blocs-grid {
     flex: 1;
     padding: 20px;
@@ -11102,8 +11084,6 @@ form[method="dialog"] {
     align-content: start;
 }
 
-/* Section header used when cross-section search results are shown. Spans
- * the whole grid row so the following cards flow normally underneath. */
 .section-header {
     grid-column: 1 / -1;
     font-size: 11px;
@@ -11118,12 +11098,44 @@ form[method="dialog"] {
 .section-header:first-child {
     margin-top: 0;
 }
+`;
 
-/* ── Cards ── */
+  // src/control/components/editor/EditorSystem/BlocLibrary/api.ts
+  async function fetchJson(path, fallback) {
+    try {
+      const res = await fetch(new URL(path, getMetaApiPath()));
+      if (!res.ok)
+        return fallback;
+      return await res.json();
+    } catch {
+      return fallback;
+    }
+  }
+  var fetchTemplates = () => fetchJson("template/list", []);
+  var fetchSnippets = () => fetchJson("snippet/list", []);
+  async function fetchBlocMeta() {
+    const list = await fetchJson("bloc/list", []);
+    return new Map(list.map((b) => [b.id, { description: b.description }]));
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/template.html
+  var template_default6 = `<button type="button" class="card">
+    <span class="icon"><slot name="icon"></slot></span>
+    <span class="text">
+        <span class="title"><slot name="title"></slot></span>
+        <span class="description"><slot name="description"></slot></span>
+    </span>
+</button>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/style.css
+  var style_default5 = `:host {
+    display: contents;
+}
 
 .card {
     all: unset;
-    background: var(--bg-card);
+    background: var(--bg-card, #ffffff);
     border: 1px solid #eee;
     border-radius: 12px;
     padding: 12px 14px;
@@ -11138,46 +11150,46 @@ form[method="dialog"] {
     overflow: hidden;
 }
 
-.card .icon {
+.icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--accent);
+    color: var(--accent, #007aff);
 }
 
-.card svg {
+::slotted(svg) {
     width: 28px;
     height: 28px;
 }
 
 .card:hover {
-    border-color: var(--accent);
+    border-color: var(--accent, #007aff);
     background: #f8fbff;
     transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
-.card .text {
+.text {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
 }
 
-.card .title {
+.title {
     font-size: 13px;
     font-weight: 600;
-    color: var(--text-primary);
+    color: var(--text-primary, #1a1a1a);
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.card .description {
+.description {
     font-size: 11px;
     font-weight: 400;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #666);
     line-height: 1.35;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -11185,7 +11197,70 @@ form[method="dialog"] {
     overflow: hidden;
 }
 
-/* ── Empty state ── */
+.description:not(:has(::slotted(*))) {
+    display: none;
+}
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/Card.ts
+  var Metadata = {
+    css: style_default5,
+    template: template_default6
+  };
+
+  class Card extends Component {
+    constructor() {
+      super(Metadata);
+    }
+    static create(opts) {
+      const card = document.createElement("cms-bloc-library-card");
+      const iconFragment = document.createRange().createContextualFragment(opts.icon);
+      const iconRoot = iconFragment.firstElementChild;
+      if (iconRoot) {
+        iconRoot.setAttribute("slot", "icon");
+        card.appendChild(iconRoot);
+      }
+      const titleSpan = document.createElement("span");
+      titleSpan.slot = "title";
+      titleSpan.textContent = opts.title;
+      card.appendChild(titleSpan);
+      if (opts.description) {
+        const descSpan = document.createElement("span");
+        descSpan.slot = "description";
+        descSpan.textContent = opts.description;
+        card.appendChild(descSpan);
+      }
+      return card;
+    }
+  }
+  if (!customElements.get("cms-bloc-library-card")) {
+    customElements.define("cms-bloc-library-card", Card);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderBlocs.ts
+  function renderBlocs({ grid, items, blocMeta, onPick }) {
+    for (const item of items) {
+      const card = Card.create({
+        icon: ICON_COMPONENT,
+        title: item.label,
+        description: blocMeta.get(item.tag)?.description
+      });
+      card.addEventListener("click", () => onPick({ type: "bloc", id: item.tag }));
+      grid.appendChild(card);
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/template.html
+  var template_default7 = `<div class="empty-state">
+    <slot name="icon"></slot>
+    <p><slot name="message"></slot></p>
+</div>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/style.css
+  var style_default6 = `:host {
+    display: contents;
+}
 
 .empty-state {
     grid-column: 1 / -1;
@@ -11195,11 +11270,11 @@ form[method="dialog"] {
     justify-content: center;
     gap: 8px;
     padding: 48px 24px;
-    color: var(--text-secondary);
+    color: var(--text-secondary, #666);
     text-align: center;
 }
 
-.empty-state svg {
+::slotted(svg) {
     width: 40px;
     height: 40px;
     opacity: 0.3;
@@ -11211,86 +11286,129 @@ form[method="dialog"] {
 }
 `;
 
-  // src/control/components/editor/EditorSystem/BlocLibrary/sections.ts
-  function createCard(icon, label, description, onClick) {
-    const card = document.createElement("button");
-    card.className = "card";
-    const desc = description ? `<span class="description">${escapeHtml(description)}</span>` : "";
-    card.innerHTML = `
-        <span class="icon">${icon}</span>
-        <span class="text">
-            <span class="title">${escapeHtml(label)}</span>
-            ${desc}
-        </span>
-    `;
-    card.onclick = onClick;
-    return card;
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/EmptyState.ts
+  var Metadata2 = {
+    css: style_default6,
+    template: template_default7
+  };
+
+  class EmptyState extends Component {
+    constructor() {
+      super(Metadata2);
+    }
+    static create(opts) {
+      const el = document.createElement("cms-bloc-library-empty-state");
+      const iconFragment = document.createRange().createContextualFragment(opts.icon);
+      const iconRoot = iconFragment.firstElementChild;
+      if (iconRoot) {
+        iconRoot.setAttribute("slot", "icon");
+        el.appendChild(iconRoot);
+      }
+      const messageSpan = document.createElement("span");
+      messageSpan.slot = "message";
+      messageSpan.textContent = opts.message;
+      el.appendChild(messageSpan);
+      return el;
+    }
   }
-  function escapeHtml(s2) {
-    return s2.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  if (!customElements.get("cms-bloc-library-empty-state")) {
+    customElements.define("cms-bloc-library-empty-state", EmptyState);
   }
-  function renderEmptyState(grid, icon, message) {
-    grid.innerHTML = `
-        <div class="empty-state">
-            ${icon}
-            <p>${message}</p>
-        </div>
-    `;
-  }
-  function renderBlocSection(grid, items, metaByTag, deps) {
-    items.forEach((item) => {
-      const meta = metaByTag.get(item.tag);
-      grid.appendChild(createCard(ICON_COMPONENT, item.label, meta?.description || "", () => deps.onInsert({ type: "bloc", id: item.tag })));
-    });
-  }
-  function renderTemplateSection(grid, templates, activeGroup, deps) {
-    const filtered = templates.filter((t) => (t.category || "Default") === activeGroup);
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderTemplates.ts
+  function renderTemplates({ grid, templates, category, onPick }) {
+    const filtered = templates.filter((t) => (t.category || "Default") === category);
     if (filtered.length === 0) {
-      renderEmptyState(grid, ICON_TEMPLATE_MUTED, "No templates in this category");
+      grid.appendChild(EmptyState.create({
+        icon: ICON_TEMPLATE_MUTED,
+        message: "No templates in this category"
+      }));
       return;
     }
-    filtered.forEach((tpl) => {
-      grid.appendChild(createCard(ICON_TEMPLATE, tpl.name, tpl.description || "", () => deps.onInsert({ type: "template", html: tpl.content })));
-    });
+    for (const tpl of filtered) {
+      const card = Card.create({
+        icon: ICON_TEMPLATE,
+        title: tpl.name,
+        description: tpl.description
+      });
+      card.addEventListener("click", () => onPick({ type: "template", html: tpl.content }));
+      grid.appendChild(card);
+    }
   }
-  function renderSnippetSection(grid, snippets, activeGroup, deps) {
-    const filtered = snippets.filter((s2) => (s2.category || "Default") === activeGroup);
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderSnippets.ts
+  function renderSnippets({ grid, snippets, category, onPick }) {
+    const filtered = snippets.filter((s2) => (s2.category || "Default") === category);
     if (filtered.length === 0) {
-      renderEmptyState(grid, ICON_SNIPPET_MUTED, "No snippets in this category");
+      grid.appendChild(EmptyState.create({
+        icon: ICON_SNIPPET_MUTED,
+        message: "No snippets in this category"
+      }));
       return;
     }
-    filtered.forEach((snippet) => {
-      grid.appendChild(createCard(ICON_SNIPPET, snippet.name, snippet.description || "", () => deps.onInsert({ type: "snippet", identifier: snippet.identifier })));
-    });
+    for (const snippet of filtered) {
+      const card = Card.create({
+        icon: ICON_SNIPPET,
+        title: snippet.name,
+        description: snippet.description
+      });
+      card.addEventListener("click", () => onPick({ type: "snippet", identifier: snippet.identifier }));
+      grid.appendChild(card);
+    }
   }
-  function renderSearchResults(grid, query, blocs, blocMeta, templates, snippets, deps) {
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderSearch.ts
+  function renderSearch({ grid, query, blocs, blocMeta, templates, snippets, onPick }) {
     const q = query.trim().toLowerCase();
     const matchingBlocs = blocs.filter((b) => {
-      const desc = blocMeta.get(b.tag)?.description || "";
+      const desc = blocMeta.get(b.tag)?.description ?? "";
       return b.label.toLowerCase().includes(q) || b.tag.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
     });
-    const matchingTemplates = templates.filter((t) => t.name.toLowerCase().includes(q) || (t.description || "").toLowerCase().includes(q) || (t.category || "").toLowerCase().includes(q));
-    const matchingSnippets = snippets.filter((s2) => s2.name.toLowerCase().includes(q) || (s2.description || "").toLowerCase().includes(q) || s2.identifier.toLowerCase().includes(q) || (s2.category || "").toLowerCase().includes(q));
+    const matchingTemplates = templates.filter((t) => t.name.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q) || (t.category ?? "").toLowerCase().includes(q));
+    const matchingSnippets = snippets.filter((s2) => s2.name.toLowerCase().includes(q) || (s2.description ?? "").toLowerCase().includes(q) || s2.identifier.toLowerCase().includes(q) || (s2.category ?? "").toLowerCase().includes(q));
     const total = matchingBlocs.length + matchingTemplates.length + matchingSnippets.length;
     if (total === 0) {
-      renderEmptyState(grid, ICON_COMPONENT, `No results for "${query}"`);
+      grid.appendChild(EmptyState.create({
+        icon: ICON_COMPONENT,
+        message: `No results for "${query}"`
+      }));
       return;
     }
     if (matchingBlocs.length > 0) {
       appendSectionHeader(grid, "Blocs");
-      renderBlocSection(grid, matchingBlocs, blocMeta, deps);
+      for (const item of matchingBlocs) {
+        const card = Card.create({
+          icon: ICON_COMPONENT,
+          title: item.label,
+          description: blocMeta.get(item.tag)?.description
+        });
+        card.addEventListener("click", () => onPick({ type: "bloc", id: item.tag }));
+        grid.appendChild(card);
+      }
     }
     if (matchingTemplates.length > 0) {
       appendSectionHeader(grid, "Templates");
-      matchingTemplates.forEach((tpl) => {
-        grid.appendChild(createCard(ICON_TEMPLATE, tpl.name, tpl.description || "", () => deps.onInsert({ type: "template", html: tpl.content })));
-      });
+      for (const tpl of matchingTemplates) {
+        const card = Card.create({
+          icon: ICON_TEMPLATE,
+          title: tpl.name,
+          description: tpl.description
+        });
+        card.addEventListener("click", () => onPick({ type: "template", html: tpl.content }));
+        grid.appendChild(card);
+      }
     }
     if (matchingSnippets.length > 0) {
       appendSectionHeader(grid, "Snippets");
-      matchingSnippets.forEach((snippet) => {
-        grid.appendChild(createCard(ICON_SNIPPET, snippet.name, snippet.description || "", () => deps.onInsert({ type: "snippet", identifier: snippet.identifier })));
-      });
+      for (const snippet of matchingSnippets) {
+        const card = Card.create({
+          icon: ICON_SNIPPET,
+          title: snippet.name,
+          description: snippet.description
+        });
+        card.addEventListener("click", () => onPick({ type: "snippet", identifier: snippet.identifier }));
+        grid.appendChild(card);
+      }
     }
   }
   function appendSectionHeader(grid, label) {
@@ -11301,114 +11419,86 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
-  var ActionBarMetadata = {
+  var Metadata3 = {
     css: style_default4,
     template: template_default5
   };
 
   class BlocLibrary extends Component {
-    _dialog = null;
+    _dialog;
     _section = "blocs";
     _activeGroup = null;
+    _query = "";
     _templates = [];
     _snippets = [];
     _blocMeta = new Map;
-    _locked = false;
-    _forcedCategory = null;
-    _query = "";
     constructor() {
-      super(ActionBarMetadata);
+      super(Metadata3);
     }
     connectedCallback() {
-      const editorManager = getClosestEditorSystem(this);
       const s2 = this.shadowRoot;
-      this._dialog = s2.querySelector("#action-bar-dialog");
+      this._dialog = s2.querySelector("#dialog");
       this._dialog.addEventListener("click", (e) => {
         if (e.target === this._dialog)
           this.close();
       });
-      s2.getElementById("tabs").addEventListener("click", (e) => {
-        if (this._locked)
-          return;
-        const tab = e.target.closest(".tab:not(.disabled)");
-        if (!tab)
-          return;
-        this._section = tab.dataset.section;
-        this._activeGroup = null;
-        this._render();
-      });
-      s2.getElementById("sidebar").addEventListener("click", (e) => {
-        if (this._locked)
-          return;
-        const item = e.target.closest(".sidebar-item");
-        if (!item)
-          return;
-        this._activeGroup = item.dataset.group || null;
-        this._render();
-      });
-      const searchInput = s2.getElementById("search");
-      searchInput.addEventListener("input", () => {
-        this._query = searchInput.value;
-        this._render();
-      });
-      if (this._locked) {
-        s2.getElementById("tabs").style.display = "none";
-        s2.querySelector(".groups-sidebar").style.display = "none";
-        s2.querySelector(".search-wrap").style.display = "none";
+      s2.getElementById("tabs").addEventListener("click", (e) => this._onTabClick(e));
+      s2.getElementById("sidebar").addEventListener("click", (e) => this._onSidebarClick(e));
+      s2.getElementById("search").addEventListener("input", (e) => this._onSearchInput(e));
+      this._loadData();
+    }
+    open() {
+      this._dialog.showModal();
+    }
+    close() {
+      this._dialog.close();
+    }
+    async _loadData() {
+      const editorSystem = getClosestEditorSystem(this);
+      if (!this._activeGroup && this._section === "blocs") {
+        const groups = Array.from(editorSystem.observer.getGroups());
+        if (groups.length > 0)
+          this._activeGroup = groups[0];
       }
-      if (!this._activeGroup) {
-        if (this._section === "blocs") {
-          const groups = Array.from(editorManager.observer.getGroups());
-          if (groups.length > 0)
-            this._activeGroup = groups[0];
-        }
-      }
-      Promise.all([
-        this._fetchTemplates(),
-        this._fetchSnippets(),
-        this._fetchBlocMeta()
-      ]).then(() => {
-        if (this._forcedCategory)
-          this._activeGroup = this._forcedCategory;
-        this._render();
-        if (!this._locked)
-          searchInput.focus();
-      });
+      const [templates, snippets, blocMeta] = await Promise.all([
+        fetchTemplates(),
+        fetchSnippets(),
+        fetchBlocMeta()
+      ]);
+      this._templates = templates;
+      this._snippets = snippets;
+      this._blocMeta = blocMeta;
+      this._render();
+      this.shadowRoot.getElementById("search").focus();
     }
-    async _fetchTemplates() {
-      try {
-        const res = await fetch(new URL("template/list", getMetaApiPath()));
-        if (res.ok)
-          this._templates = await res.json();
-      } catch {}
+    _onTabClick(e) {
+      const tab = e.target.closest(".tab");
+      if (!tab || !tab.dataset.section)
+        return;
+      this._section = tab.dataset.section;
+      this._activeGroup = null;
+      this._render();
     }
-    async _fetchSnippets() {
-      try {
-        const res = await fetch(new URL("snippet/list", getMetaApiPath()));
-        if (res.ok)
-          this._snippets = await res.json();
-      } catch {}
+    _onSidebarClick(e) {
+      const item = e.target.closest(".sidebar-item");
+      if (!item)
+        return;
+      this._activeGroup = item.dataset.group ?? null;
+      this._render();
     }
-    async _fetchBlocMeta() {
-      try {
-        const res = await fetch(new URL("bloc/list", getMetaApiPath()));
-        if (!res.ok)
-          return;
-        const list = await res.json();
-        this._blocMeta = new Map(list.map((b) => [b.id, { description: b.description }]));
-      } catch {}
+    _onSearchInput(e) {
+      this._query = e.target.value;
+      this._render();
     }
     _render() {
-      const searching = this._query.trim().length > 0 && !this._locked;
+      const searching = this._query.trim().length > 0;
       this._renderTabs(searching);
       this._renderSidebar(searching);
       this._renderGrid(searching);
     }
     _renderTabs(searching) {
-      const tabs = this.shadowRoot.querySelectorAll(".tab");
-      tabs.forEach((tab) => {
-        const section = tab.dataset.section;
-        tab.classList.toggle("active", !searching && section === this._section);
+      this.shadowRoot.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.toggle("active", !searching && tab.dataset.section === this._section);
       });
     }
     _renderSidebar(searching) {
@@ -11421,61 +11511,57 @@ form[method="dialog"] {
       if (this._activeGroup === null && groups.length > 0) {
         this._activeGroup = groups[0];
       }
-      groups.forEach((group) => {
+      for (const group of groups) {
         const btn = document.createElement("button");
         btn.className = `sidebar-item ${group === this._activeGroup ? "active" : ""}`;
         btn.dataset.group = group;
         btn.textContent = group;
         sidebar.appendChild(btn);
-      });
+      }
     }
     _renderGrid(searching) {
-      const editorManager = getClosestEditorSystem(this);
+      const editorSystem = getClosestEditorSystem(this);
       const grid = this.shadowRoot.getElementById("grid");
       grid.innerHTML = "";
-      const deps = { onInsert: (detail) => this._emitInsert(detail) };
+      const onPick = (detail) => this._emitInsert(detail);
       if (searching) {
-        const allBlocs = Array.from(editorManager.observer.getItems());
-        renderSearchResults(grid, this._query, allBlocs, this._blocMeta, this._templates, this._snippets, deps);
+        renderSearch({
+          grid,
+          query: this._query,
+          blocs: Array.from(editorSystem.observer.getItems()),
+          blocMeta: this._blocMeta,
+          templates: this._templates,
+          snippets: this._snippets,
+          onPick
+        });
         return;
       }
       if (this._section === "blocs") {
         if (!this._activeGroup)
           return;
-        const items = Array.from(editorManager.observer.getItemsByGroup(this._activeGroup));
-        renderBlocSection(grid, items, this._blocMeta, deps);
+        renderBlocs({
+          grid,
+          items: Array.from(editorSystem.observer.getItemsByGroup(this._activeGroup)),
+          blocMeta: this._blocMeta,
+          onPick
+        });
       } else if (this._section === "templates") {
-        renderTemplateSection(grid, this._templates, this._activeGroup, deps);
-      } else if (this._section === "snippets") {
-        renderSnippetSection(grid, this._snippets, this._activeGroup, deps);
+        renderTemplates({ grid, templates: this._templates, category: this._activeGroup, onPick });
+      } else {
+        renderSnippets({ grid, snippets: this._snippets, category: this._activeGroup, onPick });
       }
-    }
-    _emitInsert(detail) {
-      this.dispatchEvent(new CustomEvent("insert", {
-        detail,
-        bubbles: true,
-        composed: true
-      }));
-      this.close();
     }
     _getGroups() {
-      const editorManager = getClosestEditorSystem(this);
-      if (this._section === "blocs") {
-        return Array.from(editorManager.observer.getGroups());
-      }
-      if (this._section === "templates") {
+      const editorSystem = getClosestEditorSystem(this);
+      if (this._section === "blocs")
+        return Array.from(editorSystem.observer.getGroups());
+      if (this._section === "templates")
         return Array.from(new Set(this._templates.map((t) => t.category || "Default")));
-      }
-      if (this._section === "snippets") {
-        return Array.from(new Set(this._snippets.map((s2) => s2.category || "Default")));
-      }
-      return [];
+      return Array.from(new Set(this._snippets.map((s2) => s2.category || "Default")));
     }
-    close() {
-      this._dialog?.close();
-    }
-    open() {
-      this._dialog?.showModal();
+    _emitInsert(detail) {
+      this.dispatchEvent(new CustomEvent("insert", { detail, bubbles: true, composed: true }));
+      this.close();
     }
   }
   if (!customElements.get("cms-bloc-library")) {
@@ -12347,10 +12433,10 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/EditorRoot/style.css
-  var style_default5 = "";
+  var style_default7 = "";
 
   // src/control/components/editor/EditorSystem/EditorRoot/template.html
-  var template_default6 = `<div>
+  var template_default8 = `<div>
     <div id="workingElement">
         <slot>
             <p></p>
@@ -12694,6 +12780,7 @@ form[method="dialog"] {
       this.target.removeAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
     }
     viewEditor() {
+      console.log("viewEditor");
       this._setPanelItemIdentifiers();
       this._notifyPanelSyncs();
       this.init();
@@ -13206,12 +13293,8 @@ form[method="dialog"] {
       this._actionBarFeatures.set("addBefore", false);
       this._actionBarFeatures.set("addAfter", false);
       this._actionBarFeatures.set("changeComponent", false);
-      if (!this.target.hasAttribute("p9r-force-delete-button")) {
-        this._actionBarFeatures.set("delete", false);
-      }
-      if (!this.target.hasAttribute("p9r-force-duplicate-button")) {
-        this._actionBarFeatures.set("duplicate", false);
-      }
+      this._actionBarFeatures.set("delete", false);
+      this._actionBarFeatures.set("duplicate", false);
     }
     get isAddAfterDisabled() {
       return this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) === "true";
@@ -13592,10 +13675,10 @@ form[method="dialog"] {
       super();
       this.attachShadow({ mode: "open" });
       const style = document.createElement("style");
-      style.innerHTML = style_default5;
+      style.innerHTML = style_default7;
       this.shadowRoot?.append(style);
       const template = document.createElement("template");
-      template.innerHTML = template_default6;
+      template.innerHTML = template_default8;
       this.shadowRoot?.append(template.content.cloneNode(true));
     }
     connectedCallback() {
@@ -13665,7 +13748,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/template.html
-  var template_default7 = `<div id="toolbar-container">
+  var template_default9 = `<div id="toolbar-container">
     <div id="drag-handle" title="Move">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path
@@ -13700,7 +13783,7 @@ form[method="dialog"] {
 </div>`;
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/style.css
-  var style_default6 = `:host {
+  var style_default8 = `:host {
   --toolbar-bg: #ffffff;
   --toolbar-border: #e5e7eb;
   --toolbar-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -13779,8 +13862,8 @@ button span {
     _startY = 0;
     constructor() {
       super({
-        css: style_default6,
-        template: template_default7
+        css: style_default8,
+        template: template_default9
       });
       this._onPointerMove = this._onPointerMove.bind(this);
       this._onPointerUp = this._onPointerUp.bind(this);
@@ -13832,7 +13915,7 @@ button span {
   }
 
   // src/control/components/editor/MediaCenter/template.html
-  var template_default8 = `<dialog>
+  var template_default10 = `<dialog>
     <div class="modal-container">
         <header class="modal-header">
             <h2>Media Center</h2>
@@ -13900,7 +13983,7 @@ button span {
 `;
 
   // src/control/components/editor/MediaCenter/style.css
-  var style_default7 = `:host {
+  var style_default9 = `:host {
     --mc-bg: #ffffff;
     --mc-border: #e2e8f0;
     --mc-text: #1e293b;
@@ -14289,7 +14372,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/template.html
-  var template_default9 = `<div class="card">
+  var template_default11 = `<div class="card">
     <div class="preview">
         <slot name="image">
             <span class="placeholder">
@@ -14311,7 +14394,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/style.css
-  var style_default8 = `:host {
+  var style_default10 = `:host {
     --card-bg: var(--bg-surface, #fff);
     --card-border: var(--border-default, #e2e8f0);
     --card-radius: 12px;
@@ -14436,8 +14519,8 @@ dialog::backdrop {
   class CardMedia extends Component {
     constructor() {
       super({
-        css: style_default8,
-        template: template_default9
+        css: style_default10,
+        template: template_default11
       });
     }
   }
@@ -14574,7 +14657,7 @@ dialog::backdrop {
       return (bytes / 1024).toFixed(1) + " KB";
     return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   }
-  function escapeHtml2(s2) {
+  function escapeHtml(s2) {
     return s2.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
   function escapeAttr(s2) {
@@ -14648,9 +14731,9 @@ dialog::backdrop {
       const isLast = i === breadcrumb.length - 1;
       html += `<span class="bc-sep">/</span>`;
       if (isLast) {
-        html += `<span class="bc-current">${escapeHtml2(crumb.label)}</span>`;
+        html += `<span class="bc-current">${escapeHtml(crumb.label)}</span>`;
       } else {
-        html += `<span class="bc-item" data-folder="${escapeAttr(crumb.id)}" data-index="${i}">${escapeHtml2(crumb.label)}</span>`;
+        html += `<span class="bc-item" data-folder="${escapeAttr(crumb.id)}" data-index="${i}">${escapeHtml(crumb.label)}</span>`;
       }
     }
     container.innerHTML = html;
@@ -14669,8 +14752,8 @@ dialog::backdrop {
     _dragCounter = 0;
     constructor() {
       super({
-        css: style_default7,
-        template: template_default8
+        css: style_default9,
+        template: template_default10
       });
     }
     connectedCallback() {
@@ -14845,7 +14928,7 @@ dialog::backdrop {
   customElements.define("cms-media-center", MediaCenter);
 
   // src/control/components/editor/RichTextBar/template.html
-  var template_default10 = `<div class="toolbar">
+  var template_default12 = `<div class="toolbar">
     <!-- Format -->
     <button data-command="bold" title="Bold">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -15006,7 +15089,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/editor/RichTextBar/style.css
-  var style_default9 = `:host {
+  var style_default11 = `:host {
     position: absolute;
     z-index: 9999999999;
     display: none;
@@ -15513,8 +15596,8 @@ button.active svg {
     _rootListenersAttached = false;
     constructor() {
       super({
-        css: style_default9,
-        template: template_default10
+        css: style_default11,
+        template: template_default12
       });
     }
     connectedCallback() {
@@ -15757,11 +15840,11 @@ button.active svg {
   customElements.define("cms-richtextbar", RichTextBar);
 
   // src/control/components/editor/snippet/Snippet/template.html
-  var template_default11 = `<div class="snippet-root"></div>
+  var template_default13 = `<div class="snippet-root"></div>
 `;
 
   // src/control/components/editor/snippet/Snippet/style.css
-  var style_default10 = `:host {
+  var style_default12 = `:host {
     display: block;
     position: relative;
     min-height: 40px;
@@ -15840,8 +15923,8 @@ button.active svg {
 
   // src/control/components/editor/snippet/Snippet/Snippet.ts
   var SnippetMetadata = {
-    css: style_default10,
-    template: template_default11
+    css: style_default12,
+    template: template_default13
   };
 
   class Snippet extends Component {
@@ -15900,7 +15983,7 @@ button.active svg {
   }
 
   // src/control/components/editor/snippet/SnippetConfiguration/template.html
-  var template_default12 = `<w13c-lateral-dialog>
+  var template_default14 = `<w13c-lateral-dialog>
   <form action="">
 
     <p9r-section data-title="Identity">
@@ -15950,7 +16033,7 @@ button.active svg {
 `;
 
   // src/control/components/editor/snippet/SnippetConfiguration/style.css
-  var style_default11 = `form {
+  var style_default13 = `form {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -15996,8 +16079,8 @@ button.active svg {
     _identifierValid = true;
     constructor() {
       super({
-        css: style_default11,
-        template: template_default12
+        css: style_default13,
+        template: template_default14
       });
     }
     connectedCallback() {
@@ -16201,7 +16284,7 @@ button.active svg {
   customElements.define("w13c-snippet-information", SnippetConfiguration);
 
   // src/control/components/media/CropSystem/template.html
-  var template_default13 = `<div class="backdrop" id="backdrop">
+  var template_default15 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3>Crop image</h3>
@@ -16240,7 +16323,7 @@ button.active svg {
 `;
 
   // src/control/components/media/CropSystem/style.css
-  var style_default12 = `:host {
+  var style_default14 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -16442,8 +16525,8 @@ button.active svg {
   class CropSystem extends Component {
     constructor() {
       super({
-        css: style_default12,
-        template: template_default13
+        css: style_default14,
+        template: template_default15
       });
     }
     connectedCallback() {
@@ -16480,7 +16563,7 @@ button.active svg {
   customElements.define("p9r-crop-system", CropSystem);
 
   // src/control/components/media/DetailMedia/template.html
-  var template_default14 = `<div class="backdrop" id="backdrop">
+  var template_default16 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3 id="title">File details</h3>
@@ -16522,7 +16605,7 @@ button.active svg {
 `;
 
   // src/control/components/media/DetailMedia/style.css
-  var style_default13 = `:host {
+  var style_default15 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -16735,8 +16818,8 @@ button.active svg {
   class DetailMedia extends Component {
     constructor() {
       super({
-        css: style_default13,
-        template: template_default14
+        css: style_default15,
+        template: template_default16
       });
     }
     connectedCallback() {
@@ -16768,7 +16851,7 @@ button.active svg {
   }
 
   // src/control/components/media/GridMedia/template.html
-  var template_default15 = `<div class="toolbar">
+  var template_default17 = `<div class="toolbar">
     <div class="breadcrumb" id="breadcrumb">
         <span class="bc-current">Root</span>
     </div>
@@ -16830,7 +16913,7 @@ button.active svg {
 `;
 
   // src/control/components/media/GridMedia/style.css
-  var style_default14 = `:host {
+  var style_default16 = `:host {
     --grid-gap: 16px;
     --grid-min-col: 180px;
     --empty-color: var(--text-muted, #94a3b8);
@@ -17457,12 +17540,12 @@ button.active svg {
         ${isImage ? `
         <div class="detail-field">
             <label>Alt text</label>
-            <textarea id="detail-alt" rows="2">${escapeHtml2(item.alt || "")}</textarea>
+            <textarea id="detail-alt" rows="2">${escapeHtml(item.alt || "")}</textarea>
         </div>` : ""}
         <div class="detail-meta-row">
             <div class="detail-field">
                 <label>Type</label>
-                <span class="detail-value">${escapeHtml2(item.mimetype || item.type)}</span>
+                <span class="detail-value">${escapeHtml(item.mimetype || item.type)}</span>
             </div>
             <div class="detail-field">
                 <label>Size</label>
@@ -17472,12 +17555,12 @@ button.active svg {
         ${dims ? `
         <div class="detail-field">
             <label>Dimensions</label>
-            <span class="detail-value">${escapeHtml2(dims)}</span>
+            <span class="detail-value">${escapeHtml(dims)}</span>
         </div>` : ""}
         <div class="detail-field">
             <label>URL</label>
             <div class="url-row">
-                <span class="detail-value mono">${escapeHtml2(mediaUrl)}</span>
+                <span class="detail-value mono">${escapeHtml(mediaUrl)}</span>
                 <button class="btn-copy" id="btn-copy" title="Copy URL">${ICON_COPY}</button>
             </div>
         </div>
@@ -17511,8 +17594,8 @@ button.active svg {
     _items = [];
     constructor() {
       super({
-        css: style_default14,
-        template: template_default15
+        css: style_default16,
+        template: template_default17
       });
     }
     get apiBase() {

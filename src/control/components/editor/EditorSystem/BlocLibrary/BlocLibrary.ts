@@ -1,221 +1,178 @@
 import { Component, type ComponentMetadata } from 'src/control/core/editorSystem/Component';
+import getClosestEditorSystem from 'src/control/core/dom/getClosestEditorSystem';
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import {
-    renderBlocSection,
-    renderSearchResults,
-    renderSnippetSection,
-    renderTemplateSection,
-    type BlocMeta,
-    type InsertDetail,
-    type SnippetItem,
-    type TemplateItem,
-} from './sections';
-import { getMetaApiPath } from 'src/control/core/dom/getMetaApiPath';
-import getClosestEditorSystem from 'src/control/core/dom/getClosestEditorSystem';
 
-type Section = 'blocs' | 'templates' | 'snippets';
+import { fetchBlocMeta, fetchSnippets, fetchTemplates } from './api';
+import { renderBlocs } from './sections/renderBlocs';
+import { renderTemplates } from './sections/renderTemplates';
+import { renderSnippets } from './sections/renderSnippets';
+import { renderSearch } from './sections/renderSearch';
+import type { BlocMeta, InsertDetail, Section, SnippetItem, TemplateItem } from './types';
 
-export type BlocLibraryOptions = {
-    section?: Section;
-    category?: string;
-    locked?: boolean;
+import './components/Card/Card';
+import './components/EmptyState/EmptyState';
+
+const Metadata: ComponentMetadata = {
+    css,
+    template: html as unknown as string,
 };
 
-export const ActionBarMetadata: ComponentMetadata = {
-    css: css,
-    template: html as unknown as string
-}
-
-type BlocListEntry = { id: string; name: string; group: string; description: string };
-
 export class BlocLibrary extends Component {
-
-    private _dialog: HTMLDialogElement | null = null;
+    private _dialog!: HTMLDialogElement;
     private _section: Section = 'blocs';
     private _activeGroup: string | null = null;
+    private _query: string = '';
+
     private _templates: TemplateItem[] = [];
     private _snippets: SnippetItem[] = [];
     private _blocMeta: Map<string, BlocMeta> = new Map();
-    private _locked: boolean = false;
-    private _forcedCategory: string | null = null;
-    private _query: string = '';
 
     constructor() {
-        super(ActionBarMetadata);
+        super(Metadata);
     }
 
     override connectedCallback() {
-        const editorManager = getClosestEditorSystem(this);
         const s = this.shadowRoot!;
-        this._dialog = s.querySelector('#action-bar-dialog') as HTMLDialogElement;
+        this._dialog = s.querySelector('#dialog') as HTMLDialogElement;
 
         this._dialog.addEventListener('click', (e) => {
             if (e.target === this._dialog) this.close();
         });
 
-        s.getElementById('tabs')!.addEventListener('click', (e) => {
-            if (this._locked) return;
-            const tab = (e.target as HTMLElement).closest('.tab:not(.disabled)') as HTMLElement;
-            if (!tab) return;
-            this._section = tab.dataset.section as Section;
-            this._activeGroup = null;
-            this._render();
-        });
+        s.getElementById('tabs')!.addEventListener('click', (e) => this._onTabClick(e));
+        s.getElementById('sidebar')!.addEventListener('click', (e) => this._onSidebarClick(e));
+        s.getElementById('search')!.addEventListener('input', (e) => this._onSearchInput(e));
 
-        s.getElementById('sidebar')!.addEventListener('click', (e) => {
-            if (this._locked) return;
-            const item = (e.target as HTMLElement).closest('.sidebar-item') as HTMLElement;
-            if (!item) return;
-            this._activeGroup = item.dataset.group || null;
-            this._render();
-        });
+        void this._loadData();
+    }
 
-        const searchInput = s.getElementById('search') as HTMLInputElement;
-        searchInput.addEventListener('input', () => {
-            this._query = searchInput.value;
-            this._render();
-        });
+    open() {
+        this._dialog.showModal();
+    }
 
-        if (this._locked) {
-            (s.getElementById('tabs') as HTMLElement).style.display = 'none';
-            (s.querySelector('.groups-sidebar') as HTMLElement).style.display = 'none';
-            (s.querySelector('.search-wrap') as HTMLElement).style.display = 'none';
+    close() {
+        this._dialog.close();
+    }
+
+    private async _loadData() {
+        const editorSystem = getClosestEditorSystem(this);
+        if (!this._activeGroup && this._section === 'blocs') {
+            const groups = Array.from(editorSystem.observer.getGroups());
+            if (groups.length > 0) this._activeGroup = groups[0]!;
         }
-        if (!this._activeGroup) {
-            if (this._section === 'blocs') {
-                const groups = Array.from(editorManager.observer.getGroups());
-                if (groups.length > 0) this._activeGroup = groups[0]!;
-            }
-        }
-
-        Promise.all([
-            this._fetchTemplates(),
-            this._fetchSnippets(),
-            this._fetchBlocMeta(),
-        ]).then(() => {
-            if (this._forcedCategory) this._activeGroup = this._forcedCategory;
-            this._render();
-            if (!this._locked) searchInput.focus();
-        });
+        const [templates, snippets, blocMeta] = await Promise.all([
+            fetchTemplates(),
+            fetchSnippets(),
+            fetchBlocMeta(),
+        ]);
+        this._templates = templates;
+        this._snippets = snippets;
+        this._blocMeta = blocMeta;
+        this._render();
+        (this.shadowRoot!.getElementById('search') as HTMLInputElement).focus();
     }
 
-    private async _fetchTemplates() {
-        try {
-            const res = await fetch(new URL("template/list", getMetaApiPath()));
-            if (res.ok) this._templates = await res.json();
-        } catch { /* ignore */ }
+    private _onTabClick(e: Event) {
+        const tab = (e.target as HTMLElement).closest('.tab') as HTMLElement | null;
+        if (!tab || !tab.dataset.section) return;
+        this._section = tab.dataset.section as Section;
+        this._activeGroup = null;
+        this._render();
     }
 
-    private async _fetchSnippets() {
-        try {
-            const res = await fetch(new URL("snippet/list", getMetaApiPath()));
-            if (res.ok) this._snippets = await res.json();
-        } catch { /* ignore */ }
+    private _onSidebarClick(e: Event) {
+        const item = (e.target as HTMLElement).closest('.sidebar-item') as HTMLElement | null;
+        if (!item) return;
+        this._activeGroup = item.dataset.group ?? null;
+        this._render();
     }
 
-    private async _fetchBlocMeta() {
-        try {
-            const res = await fetch(new URL("bloc/list", getMetaApiPath()));
-            if (!res.ok) return;
-            const list = await res.json() as BlocListEntry[];
-            this._blocMeta = new Map(list.map(b => [b.id, { description: b.description }]));
-        } catch { /* ignore */ }
+    private _onSearchInput(e: Event) {
+        this._query = (e.target as HTMLInputElement).value;
+        this._render();
     }
 
     private _render() {
-        const searching = this._query.trim().length > 0 && !this._locked;
+        const searching = this._query.trim().length > 0;
         this._renderTabs(searching);
         this._renderSidebar(searching);
         this._renderGrid(searching);
     }
 
     private _renderTabs(searching: boolean) {
-        const tabs = this.shadowRoot!.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            const section = (tab as HTMLElement).dataset.section;
-            tab.classList.toggle('active', !searching && section === this._section);
+        this.shadowRoot!.querySelectorAll<HTMLElement>('.tab').forEach(tab => {
+            tab.classList.toggle('active', !searching && tab.dataset.section === this._section);
         });
     }
 
     private _renderSidebar(searching: boolean) {
         const sidebar = this.shadowRoot!.getElementById('sidebar')!;
         sidebar.innerHTML = '';
-        (sidebar as HTMLElement).style.display = searching ? 'none' : '';
+        sidebar.style.display = searching ? 'none' : '';
         if (searching) return;
 
         const groups = this._getGroups();
-
         if (this._activeGroup === null && groups.length > 0) {
             this._activeGroup = groups[0]!;
         }
-
-        groups.forEach(group => {
+        for (const group of groups) {
             const btn = document.createElement('button');
             btn.className = `sidebar-item ${group === this._activeGroup ? 'active' : ''}`;
             btn.dataset.group = group;
             btn.textContent = group;
             sidebar.appendChild(btn);
-        });
+        }
     }
 
     private _renderGrid(searching: boolean) {
-        const editorManager = getClosestEditorSystem(this);
-
+        const editorSystem = getClosestEditorSystem(this);
         const grid = this.shadowRoot!.getElementById('grid')!;
         grid.innerHTML = '';
 
-        const deps = { onInsert: (detail: InsertDetail) => this._emitInsert(detail) };
+        const onPick = (detail: InsertDetail) => this._emitInsert(detail);
 
         if (searching) {
-            const allBlocs = Array.from(editorManager.observer.getItems());
-            renderSearchResults(grid, this._query, allBlocs, this._blocMeta, this._templates, this._snippets, deps);
+            renderSearch({
+                grid,
+                query: this._query,
+                blocs: Array.from(editorSystem.observer.getItems()),
+                blocMeta: this._blocMeta,
+                templates: this._templates,
+                snippets: this._snippets,
+                onPick,
+            });
             return;
         }
 
         if (this._section === 'blocs') {
             if (!this._activeGroup) return;
-            const items = Array.from(editorManager.observer.getItemsByGroup(this._activeGroup));
-            renderBlocSection(grid, items, this._blocMeta, deps);
+            renderBlocs({
+                grid,
+                items: Array.from(editorSystem.observer.getItemsByGroup(this._activeGroup)),
+                blocMeta: this._blocMeta,
+                onPick,
+            });
         } else if (this._section === 'templates') {
-            renderTemplateSection(grid, this._templates, this._activeGroup, deps);
-        } else if (this._section === 'snippets') {
-            renderSnippetSection(grid, this._snippets, this._activeGroup, deps);
+            renderTemplates({ grid, templates: this._templates, category: this._activeGroup, onPick });
+        } else {
+            renderSnippets({ grid, snippets: this._snippets, category: this._activeGroup, onPick });
         }
-    }
-
-    private _emitInsert(detail: InsertDetail) {
-        this.dispatchEvent(new CustomEvent('insert', {
-            detail,
-            bubbles: true,
-            composed: true,
-        }));
-        this.close();
     }
 
     private _getGroups(): string[] {
-        const editorManager = getClosestEditorSystem(this);
-        if (this._section === 'blocs') {
-            return Array.from(editorManager.observer.getGroups());
-        }
-        if (this._section === 'templates') {
-            return Array.from(new Set(this._templates.map(t => t.category || 'Default')));
-        }
-        if (this._section === 'snippets') {
-            return Array.from(new Set(this._snippets.map(s => s.category || 'Default')));
-        }
-        return [];
+        const editorSystem = getClosestEditorSystem(this);
+        if (this._section === 'blocs') return Array.from(editorSystem.observer.getGroups());
+        if (this._section === 'templates') return Array.from(new Set(this._templates.map(t => t.category || 'Default')));
+        return Array.from(new Set(this._snippets.map(s => s.category || 'Default')));
     }
 
-    public close() {
-        this._dialog?.close();
-    }
-
-    open() {
-        this._dialog?.showModal();
+    private _emitInsert(detail: InsertDetail) {
+        this.dispatchEvent(new CustomEvent('insert', { detail, bubbles: true, composed: true }));
+        this.close();
     }
 }
 
-if (!customElements.get("cms-bloc-library")) {
-    customElements.define("cms-bloc-library", BlocLibrary);
+if (!customElements.get('cms-bloc-library')) {
+    customElements.define('cms-bloc-library', BlocLibrary);
 }
