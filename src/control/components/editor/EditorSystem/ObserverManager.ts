@@ -23,13 +23,9 @@ export class ObserverManager {
 
     private groups: Set<string> = new Set(["default"])
 
-    /** Tags registered as opaque via `register_editor_opaque`. Nodes of these
-     *  tags still receive their (default) editor for parent-level actions, but
-     *  are marked with `p9r-opaque` so the walker never descends into them. */
     private opaqueTags: Set<string> = new Set();
 
     constructor(slot: HTMLSlotElement) {
-        // Le slot vit dans le shadow DOM ; le contenu éditable vit dans le light DOM du host.
         const root = slot.getRootNode();
         if (!(root instanceof ShadowRoot)) {
             throw new Error("ObserverManager: slot must live in a ShadowRoot");
@@ -39,8 +35,6 @@ export class ObserverManager {
 
         this._registerEditors();
 
-        // Editorize les éléments actuellement slottés (light DOM du host).
-        // flatten: true gère les slots imbriqués (slot dans slot).
         const initialAssigned = slot.assignedElements({ flatten: true }) as HTMLElement[];
         initialAssigned.forEach((el) => {
             this.make_it_editor(el);
@@ -50,8 +44,6 @@ export class ObserverManager {
         });
 
         const callback = (mutationsList: MutationRecord[]) => {
-            // Collect every node added in this batch so we can recognise
-            // DOM moves (node in both removedNodes AND addedNodes).
             const allAdded = new Set<Node>();
             for (const mutation of mutationsList) {
                 for (const node of Array.from(mutation.addedNodes)) {
@@ -68,7 +60,6 @@ export class ObserverManager {
                     const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
 
                     if (allAdded.has(node)) {
-                        // DOM move — notify old parent but keep the editor (and subtree) alive
                         document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
                         continue;
                     }
@@ -82,11 +73,8 @@ export class ObserverManager {
                     mutation.addedNodes.forEach((node: Node) => {
                         if (!(node instanceof HTMLElement)) return;
 
-                        // Skip elements destined for a NAMED slot — they're not
-                        // part of the editable content (e.g. configuration panel).
                         if (node.hasAttribute("slot")) return;
 
-                        // Moved node (already editorized) — notify new parent
                         if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
                             const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
                             if (newParentId) {
@@ -104,16 +92,12 @@ export class ObserverManager {
             }
         };
 
-        // Observe the HOST (light DOM), because slotted-content mutations
-        // happen there — not in the shadow tree where the <slot> lives.
         this.observer = new MutationObserver(callback);
         this.observer.observe(host, {
             childList: true,
             subtree: true
         });
 
-        // Re-editorize on slot composition changes (elements assigned/unassigned).
-        // Useful if slotted content is mounted asynchronously.
         slot.addEventListener("slotchange", () => {
             const current = slot.assignedElements({ flatten: true }) as HTMLElement[];
             current.forEach((el) => {
@@ -182,7 +166,6 @@ export class ObserverManager {
     dispose() {
         this.observer?.disconnect();
         this.observer = undefined;
-        // Tear down every editor this manager spawned.
         const map = document.compIdentifierToEditor;
         if (!map) return;
         const descendants = this.workingElement.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
@@ -213,9 +196,6 @@ export class ObserverManager {
         return this.editors.values().filter(v => v.visible);
     }
 
-    /** Display label registered for a tag (via `register_editor`). Used by
-     *  BAG's breadcrumb to name ancestors without reaching into the private
-     *  `editors` Map. Returns undefined for unregistered tags. */
     getLabel(tag: string): string | undefined {
         return this.editors.get(tag)?.label;
     }
@@ -227,16 +207,13 @@ export class ObserverManager {
             visible: element.visible ?? true
         });
         this.groups.add(element.group || "default")
-        // const existingElements = this.workingElement.querySelectorAll(element.tag);
-        // existingElements.forEach((el: any) => this.make_it_editor(el));
+        const existingElements = this.workingElement.querySelectorAll(element.tag);
+        existingElements.forEach((el: any) => this.make_it_editor(el));
     }
 
     register_editor_opaque(element: TagElement): void {
         this.opaqueTags.add(element.tag);
         this.register_editor(element);
-        // Opaque registration usually fires *after* the initial walk, so any
-        // descendants of an opaque root may already have been editorized. Walk
-        // each matching root and strip editor decorations from its subtree.
         const roots = this.workingElement.querySelectorAll(element.tag);
         roots.forEach((root) => this._sealOpaqueSubtree(root as HTMLElement));
     }

@@ -13980,6 +13980,8 @@ form[method="dialog"] {
         visible: element.visible ?? true
       });
       this.groups.add(element.group || "default");
+      const existingElements = this.workingElement.querySelectorAll(element.tag);
+      existingElements.forEach((el) => this.make_it_editor(el));
     }
     register_editor_opaque(element) {
       this.opaqueTags.add(element.tag);
