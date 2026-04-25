@@ -62,11 +62,11 @@ export default class EditorRoot extends HTMLElement {
         ele.open();
     }
 
-    switchMode(){
+    switchMode(mode?: EDITOR_SYSTEM_MODE){
         const newMode = ( this.mode === "editor" ) ? "view" : "editor";
         this.dispatchEvent(new CustomEvent("editor-system-switch-mode", {
             bubbles: true,
-            detail: newMode
+            detail: mode ?? newMode
         }))
     }
 
@@ -94,6 +94,18 @@ export default class EditorRoot extends HTMLElement {
     get blocLibrary(){
         if ( !this._blocLibrary ) throw new Error("You try to get _blocLibrary before his initialization");
         return this._blocLibrary;
+    }
+
+    get pageContent(){
+        this.switchMode("view");
+        const slot = this.shadowRoot!.querySelector('#workingElement slot') as HTMLSlotElement;                                                                                                  
+        const nodes = slot.assignedNodes({ flatten: true });                                                                                                                            
+        const html = nodes                    
+            .filter(n => n.nodeName !== "#text")                                                                                                                  
+            .map(n => n instanceof Element ? n.outerHTML : n.textContent ?? '')
+            .join('');   
+        this.switchMode("editor");                                                                                                                                                                          
+        return html;
     }
 
 }

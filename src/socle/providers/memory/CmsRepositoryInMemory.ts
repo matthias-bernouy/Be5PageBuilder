@@ -81,6 +81,13 @@ export class InMemoryCmsRepository implements CmsRepository {
         this._pages.set(page.path, page);
     }
 
+    async updatePage(page: TPage){
+        this._pages.set(page.path, page);
+        this._pagesById.set(page.id, page);
+    }
+
+
+
     async getPageById(id: string): Promise<TPage | null> {
         return this._pagesById.get(id) ?? null;
     }

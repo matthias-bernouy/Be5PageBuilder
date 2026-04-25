@@ -11,5 +11,13 @@ export default async function getPage(req: Request, cms: ControlCms) {
 
     const res = await cms.repository.getPageById(id);
 
-    return new Response(JSON.stringify(res));
+    if (!res) throw new Error("Undefiened");
+
+    const webFormat = {
+        ...res,
+        visible: res.visible ? "on" : "off",
+        tags: res.tags.join(",")
+    }
+
+    return new Response(JSON.stringify(webFormat));
 }

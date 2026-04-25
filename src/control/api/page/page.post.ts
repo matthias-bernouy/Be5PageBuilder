@@ -1,20 +1,11 @@
-import type { ControlCms } from "src/control/ControlCms";
-import { isValidPathFormat } from "src/socle/utils/validation";
-import MissingParam from "src/control/errors/Http/MissingParam";
-import InvalidParam from "src/control/errors/Http/InvalidParam";
-import { assertValidPageTitle } from "src/control/core/validation/pageTitle";
+import type { ControlCms } from 'src/control/ControlCms';
+import { readJsonBody } from 'src/control/core/http/readJsonBody';
+import { parsePageCreateDto } from 'src/control/core/validation/page/parseCreateDto';
+import { createPage } from 'src/control/core/page/createPage';
 
 export default async function postPage(req: Request, cms: ControlCms) {
-    const { title, path } = await req.json();
-
-    if ( !title ) throw new MissingParam("title");
-    if ( !path )  throw new MissingParam("path");
-
-    if ( !isValidPathFormat(path) ) throw new InvalidParam("path",  "Must start with '/' and contain no '?', '#' or ':'.");
-
-    assertValidPageTitle(title);
-
-    await cms.repository.insertPage(path, title);
-
+    const body = await readJsonBody(req);
+    const dto  = parsePageCreateDto(body);
+    await createPage(cms, dto);
     return new Response();
 }

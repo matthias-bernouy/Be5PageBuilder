@@ -4762,7 +4762,7 @@ p9r-tag:hover {
           this._input.setAttribute("aria-controls", `${this._uid}-listbox`);
       }
       static get observedAttributes() {
-        return ["placeholder", "mode", "resource", "api", "disabled"];
+        return ["placeholder", "mode", "resource", "api", "disabled", "value"];
       }
       connectedCallback() {
         for (let t of ["placeholder", "mode", "resource", "api", "disabled", "value"])
@@ -4786,6 +4786,8 @@ p9r-tag:hover {
           this._loaded = false, this._allSuggestions = [], this._loadSuggestions();
         else if (t === "mode")
           this._renderTags();
+        else if (t === "value")
+          this.value = i ?? "";
       }
       _upgradeProperty(t) {
         if (Object.prototype.hasOwnProperty.call(this, t)) {
@@ -4825,7 +4827,7 @@ p9r-tag:hover {
       _onKeyDown = (t) => {
         if (!this._input)
           return;
-        let e = this.getAttribute("mode") || "single";
+        let e = this.getAttribute("mode") || "multiple";
         if (t.key === "ArrowDown") {
           if (t.preventDefault(), this._suggestions.length === 0)
             return;
@@ -4856,7 +4858,7 @@ p9r-tag:hover {
         }
       };
       _select(t) {
-        let e = this.getAttribute("mode") || "single", i = t.trim();
+        let e = this.getAttribute("mode") || "multiple", i = t.trim();
         if (!i || !this._input)
           return;
         if (e === "multiple") {
@@ -4884,7 +4886,7 @@ p9r-tag:hover {
       _renderTags() {
         if (!this._display)
           return;
-        let t = this.getAttribute("mode") || "single";
+        let t = this.getAttribute("mode") || "multiple";
         if (this._display.innerHTML = "", t !== "multiple")
           return;
         this._tags.forEach((e, i) => {
@@ -4893,7 +4895,7 @@ p9r-tag:hover {
         });
       }
       _refreshSuggestions(t) {
-        let i = (this.getAttribute("mode") || "single") === "multiple" ? this._tags : [], r = this._allSuggestions.filter((a) => !i.includes(a.value));
+        let i = (this.getAttribute("mode") || "multiple") === "multiple" ? this._tags : [], r = this._allSuggestions.filter((a) => !i.includes(a.value));
         if (t === "")
           this._suggestions = r.slice(0, 8);
         else
@@ -4938,12 +4940,12 @@ p9r-tag:hover {
         }, 10);
       }
       get value() {
-        if ((this.getAttribute("mode") || "single") === "multiple")
+        if ((this.getAttribute("mode") || "multiple") === "multiple")
           return this._tags.join(",");
         return this._tags[0] || "";
       }
       set value(t) {
-        if ((this.getAttribute("mode") || "single") === "multiple") {
+        if ((this.getAttribute("mode") || "multiple") === "multiple") {
           if (this._tags = t ? t.split(",").map((i) => i.trim()).filter((i) => i !== "") : [], this._input)
             this._input.value = "";
         } else if (this._tags = t ? [t.trim()] : [], this._input)
@@ -4963,7 +4965,7 @@ p9r-tag:hover {
           this.removeAttribute("placeholder");
       }
       get mode() {
-        return this.getAttribute("mode") || "single";
+        return this.getAttribute("mode") || "multiple";
       }
       set mode(t) {
         if (t)
@@ -5932,6 +5934,7 @@ p9r-tag:hover {
     background-color: #ffffff;
     border-right: 1px solid var(--secondary-muted);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    box-sizing: border-box;
 }
 
 :host([collapsed]) {
@@ -8469,16 +8472,6 @@ p9r-tag:hover {
     }
   };
 
-  // src/control/core/showToast.ts
-  function showToast(message, options) {
-    let stack = document.querySelector("p9r-toast-stack");
-    if (!stack) {
-      stack = document.createElement("p9r-toast-stack");
-      document.body.appendChild(stack);
-    }
-    stack.push(message, options);
-  }
-
   // src/control/components/globals.ts
   window.p9r = {
     attr: P9R_ATTR,
@@ -8487,29 +8480,6 @@ p9r-tag:hover {
     registerEditor,
     registerEditor_opaque
   };
-  document.addEventListener("fetch:loading", (e) => {
-    showToast("Data loading " + e, {
-      type: "info"
-    });
-  });
-  document.addEventListener("fetch:data", (e) => {
-    console.log(e);
-  });
-  document.addEventListener("fetch:error", (e) => {
-    showToast("Error during data get " + e, {
-      type: "error"
-    });
-  });
-  document.addEventListener("form:success", (e) => {
-    showToast("Form success " + e, {
-      type: "info"
-    });
-  });
-  document.addEventListener("form:error", (e) => {
-    showToast("Form Error " + e, {
-      type: "error"
-    });
-  });
 
   // src/control/components/admin/AdminLayout/template.html
   var template_default = `<w13c-left-menu-layout>
@@ -10471,6 +10441,16 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     pointer-events: none;
 }
 `;
+
+  // src/control/core/showToast.ts
+  function showToast(message, options) {
+    let stack = document.querySelector("p9r-toast-stack");
+    if (!stack) {
+      stack = document.createElement("p9r-toast-stack");
+      document.body.appendChild(stack);
+    }
+    stack.push(message, options);
+  }
 
   // src/socle/utils/validation.ts
   function isValidPathFormat(path) {
@@ -14042,15 +14022,18 @@ form[method="dialog"] {
     const scriptSlot = ele.shadowRoot?.querySelector('slot[name="script"]');
     const scripts = scriptSlot.assignedElements();
     const loaders = scripts.map((s2) => {
-      if (s2.src && !s2.dataset.loaded) {
-        return new Promise((resolve) => {
-          s2.onload = () => {
-            s2.dataset.loaded = "true";
-            resolve(true);
-          };
-        });
-      }
-      return Promise.resolve(true);
+      if (!s2.src || s2.dataset.loaded)
+        return Promise.resolve(true);
+      return new Promise((resolve) => {
+        const done = () => {
+          s2.dataset.loaded = "true";
+          resolve(true);
+        };
+        s2.addEventListener("load", done, { once: true });
+        s2.addEventListener("error", () => resolve(false), { once: true });
+        if (performance.getEntriesByName(s2.src).length > 0)
+          done();
+      });
     });
     await Promise.all(loaders);
   }
@@ -14131,6 +14114,12 @@ form[method="dialog"] {
       if (!this._blocLibrary)
         throw new Error("You try to get _blocLibrary before his initialization");
       return this._blocLibrary;
+    }
+    get pageContent() {
+      const slot = this.shadowRoot.querySelector("#workingElement slot");
+      const nodes = slot.assignedNodes({ flatten: true });
+      const html = nodes.filter((n2) => n2.nodeName !== "#text").map((n2) => n2 instanceof Element ? n2.outerHTML : n2.textContent ?? "").join("");
+      return html;
     }
   }
   if (!customElements.get("cms-editor-system")) {
@@ -14268,7 +14257,7 @@ button span {
           return;
         switch (btn.dataset.action) {
           case "dashboard":
-            window.location.href = getMetaBasePath();
+            window.location.href = getMetaBasePath() + "admin/pages";
             break;
           case "switch-mode":
             EditorSystem.switchMode();
@@ -16229,8 +16218,114 @@ button.active svg {
   }
   customElements.define("cms-richtextbar", RichTextBar);
 
+  // src/control/components/CustomHTMLElement.ts
+  class CustomHTMLElement extends HTMLElement {
+    constructor(html, css, shadow) {
+      super();
+      if (shadow) {
+        const ele = this.attachShadow({ mode: "open" });
+        ele.innerHTML = `${css}${html}`;
+      }
+    }
+    static get observedAttributes() {
+      return [];
+    }
+  }
+
+  // src/control/components/editor/configurations/Configuration/template.html
+  var template_default16 = `<w13c-lateral-dialog>
+
+    <h3 slot="title"><slot name="title"></slot></h3>
+
+    <form>
+
+        <slot></slot>
+
+
+        <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">Save</p9r-button>
+
+    </form>
+
+</w13c-lateral-dialog>`;
+
+  // src/control/components/editor/configurations/Configuration/getFormData.ts
+  function getFormData(formEle, slotTarget) {
+    const formData = new FormData(formEle);
+    const elements = slotTarget?.assignedElements();
+    if (!elements)
+      return formData;
+    for (const element of elements) {
+      const name = element.getAttribute("name");
+      const value = element.value;
+      if (name && value !== undefined && value !== "") {
+        formData.append(name, value);
+      }
+      const nestedInputs = element.querySelectorAll("[name]");
+      for (const input of nestedInputs) {
+        if (!input.name || !input.value)
+          continue;
+        formData.set(input.name, input.value);
+      }
+    }
+    return formData;
+  }
+
+  // src/control/components/editor/configurations/Configuration/EditorConfiguration.ts
+  class EditorConfiguration extends CustomHTMLElement {
+    static get observedAttributes() {
+      return ["url", "method"];
+    }
+    constructor() {
+      super(template_default16, template_default16, true);
+    }
+    _handleSubmit = (e) => {
+      e.preventDefault();
+      const editorSystem = getClosestEditorSystem(this);
+      const content = editorSystem.pageContent;
+      const id = new URL(window.location.href).searchParams.get("id");
+      if (!id)
+        throw new Error("Id is missing");
+      const formData = getFormData(e.target, this.shadowRoot?.querySelector("form slot"));
+      const data = Object.fromEntries(formData.entries());
+      fetch(this.url, {
+        method: this.method,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ ...data, content, id })
+      });
+    };
+    connectedCallback() {
+      requestAnimationFrame(() => {
+        const form = this.shadowRoot?.querySelector("form");
+        form.addEventListener("submit", this._handleSubmit);
+      });
+    }
+    disconnectedCallback() {
+      const form = this.shadowRoot?.querySelector("form");
+      form.addEventListener("submit", this._handleSubmit);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {}
+    open() {
+      const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
+      dialog.showModal();
+    }
+    get url() {
+      const url = this.getAttribute("url");
+      if (!url)
+        throw new Error("url should be set");
+      return url;
+    }
+    get method() {
+      return this.getAttribute("method") || "PUT";
+    }
+  }
+  if (!customElements.get("cms-editor-configuration")) {
+    customElements.define("cms-editor-configuration", EditorConfiguration);
+  }
+
   // src/control/components/editor/snippet/Snippet/template.html
-  var template_default16 = `<div class="snippet-root"></div>
+  var template_default17 = `<div class="snippet-root"></div>
 `;
 
   // src/control/components/editor/snippet/Snippet/style.css
@@ -16314,7 +16409,7 @@ button.active svg {
   // src/control/components/editor/snippet/Snippet/Snippet.ts
   var SnippetMetadata = {
     css: style_default14,
-    template: template_default16
+    template: template_default17
   };
 
   class Snippet extends Component {
@@ -16373,7 +16468,7 @@ button.active svg {
   }
 
   // src/control/components/editor/configurations/SnippetConfiguration/template.html
-  var template_default17 = `<w13c-lateral-dialog>
+  var template_default18 = `<w13c-lateral-dialog>
   <form action="">
 
     <p9r-section data-title="Identity">
@@ -16470,7 +16565,7 @@ button.active svg {
     constructor() {
       super({
         css: style_default15,
-        template: template_default17
+        template: template_default18
       });
     }
     connectedCallback() {
@@ -16674,7 +16769,7 @@ button.active svg {
   customElements.define("w13c-snippet-information", SnippetConfiguration);
 
   // src/control/components/media/CropSystem/template.html
-  var template_default18 = `<div class="backdrop" id="backdrop">
+  var template_default19 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3>Crop image</h3>
@@ -16916,7 +17011,7 @@ button.active svg {
     constructor() {
       super({
         css: style_default16,
-        template: template_default18
+        template: template_default19
       });
     }
     connectedCallback() {
@@ -16953,7 +17048,7 @@ button.active svg {
   customElements.define("p9r-crop-system", CropSystem);
 
   // src/control/components/media/DetailMedia/template.html
-  var template_default19 = `<div class="backdrop" id="backdrop">
+  var template_default20 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3 id="title">File details</h3>
@@ -17209,7 +17304,7 @@ button.active svg {
     constructor() {
       super({
         css: style_default17,
-        template: template_default19
+        template: template_default20
       });
     }
     connectedCallback() {
@@ -17241,7 +17336,7 @@ button.active svg {
   }
 
   // src/control/components/media/GridMedia/template.html
-  var template_default20 = `<div class="toolbar">
+  var template_default21 = `<div class="toolbar">
     <div class="breadcrumb" id="breadcrumb">
         <span class="bc-current">Root</span>
     </div>
@@ -17985,7 +18080,7 @@ button.active svg {
     constructor() {
       super({
         css: style_default18,
-        template: template_default20
+        template: template_default21
       });
     }
     get apiBase() {
@@ -18112,20 +18207,6 @@ button.active svg {
   }
   if (!customElements.get("p9r-grid-media")) {
     customElements.define("p9r-grid-media", GridMedia);
-  }
-
-  // src/control/components/CustomHTMLElement.ts
-  class CustomHTMLElement extends HTMLElement {
-    constructor(html, css, shadow) {
-      super();
-      if (shadow) {
-        const ele = this.attachShadow({ mode: "open" });
-        ele.innerHTML = `${css}${html}`;
-      }
-    }
-    static get observedAttributes() {
-      return [];
-    }
   }
 
   // src/control/components/form/Form/events/onSubmit.ts

@@ -57,7 +57,7 @@
     },
     "dependencies": {
         "@bernouy/socle": "^0.1.0",
-        "@bernouy/webcomponents": "^0.1.2",
+        "@bernouy/webcomponents": "link:@bernouy/webcomponents",
         "linkedom": "^0.18.12",
         "mongodb": "~7.1.1",
         "sharp": "^0.34.5"

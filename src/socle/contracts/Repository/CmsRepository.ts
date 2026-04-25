@@ -27,6 +27,7 @@ export interface CmsRepository {
     // NEW VERSION
     insertPage(path: string, title: string): Promise<void>;
     getPageById(id: string): Promise<TPage | null>;
+    updatePage(page: Partial<TPage>): Promise<void>;
 
 
     // SYSTEM

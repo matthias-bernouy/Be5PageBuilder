@@ -1,6 +1,6 @@
 export abstract class CustomHTMLElement extends HTMLElement {
     
-    constructor(html?: string, css?: string, shadow?: true) {
+    constructor(html?: string, css?: string, shadow?: boolean) {
         super();
         if ( shadow ) {
             const ele = this.attachShadow({mode: "open"});

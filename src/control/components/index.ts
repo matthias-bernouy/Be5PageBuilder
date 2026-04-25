@@ -25,6 +25,8 @@ import "./editor/EditorSystem/ObserverManager"
 import "./editor/MediaCenter/MediaCenter"
 import "./editor/RichTextBar/RichTextBar"
 
+import "./editor/configurations/Configuration/EditorConfiguration"
+
 // Snippets
 import "./editor/snippet/Snippet/Snippet"
 import "./editor/configurations/SnippetConfiguration/SnippetConfiguration"

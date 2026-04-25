@@ -6,7 +6,7 @@
       "name": "@bernouy/cms",
       "dependencies": {
         "@bernouy/socle": "^0.1.0",
-        "@bernouy/webcomponents": "^0.1.2",
+        "@bernouy/webcomponents": "link:@bernouy/webcomponents",
         "linkedom": "^0.18.12",
         "mongodb": "~7.1.1",
         "sharp": "^0.34.5",
@@ -27,7 +27,7 @@
   "packages": {
     "@bernouy/socle": ["@bernouy/socle@0.1.0", "", { "dependencies": { "jose": "^6.2.1", "sharp": "^0.34.5" }, "peerDependencies": { "mongodb": "^7.1.0", "nodemailer": "^6.9.16", "typescript": "^5.9.3" }, "optionalPeers": ["mongodb", "nodemailer"] }, "sha512-WtHyJLYEdO3d+F0anLYJlVl/h8+YE8FHUgC3R9rNLhQWLYu9P3Aw2zGahsFb2zvEJnRee78sNYsSlRbF5WBvBQ=="],
 
-    "@bernouy/webcomponents": ["@bernouy/webcomponents@0.1.2", "", { "peerDependencies": { "typescript": "^5" } }, "sha512-3O46gh+K56te2o2C+7os+9ilkAnG+guha4GPUB9S7t+Id37NjqVgd7Xis0EBjhIFIJQ8TqhH/h5Hj2Na/pTANg=="],
+    "@bernouy/webcomponents": ["@bernouy/webcomponents@link:@bernouy/webcomponents", {}],
 
     "@emnapi/runtime": ["@emnapi/runtime@1.10.0", "", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA=="],
 
