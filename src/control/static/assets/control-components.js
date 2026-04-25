@@ -7811,6 +7811,629 @@ p9r-tag:hover {
       customElements.define("p9r-tooltip", rt);
   })();
 
+  // src/control/core/editorSystem/Component.ts
+  class Component extends HTMLElement {
+    _rawStyles = "";
+    _styles = null;
+    _template = null;
+    constructor(metadata) {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      if (metadata) {
+        this._rawStyles = metadata.css;
+        this._styles = document.createElement("style");
+        this._styles.innerHTML = metadata.css;
+        shadow.appendChild(this._styles);
+        this._template = document.createElement("template");
+        this._template.innerHTML = metadata ? metadata.template : "";
+        shadow.appendChild(this._template.content.cloneNode(true));
+      }
+    }
+    registerCSSVariables(items) {
+      if (!this._styles)
+        return;
+      let src = this._rawStyles;
+      Object.entries(items).forEach(([key, value]) => {
+        src = src.replaceAll("var(--" + key + ")", value);
+      });
+      this._styles.innerHTML = src;
+    }
+    connectedCallback() {}
+  }
+  // src/control/errors/NearestElementRequire.ts
+  class NearestElementRequire extends Error {
+    constructor(ele, target) {
+      super("The element " + ele.tagName + " should be placed under <" + target + ">");
+    }
+  }
+
+  // src/control/core/dom/getClosestEditorSystem.ts
+  function getClosestEditorSystem(ele) {
+    let current = ele;
+    while (current) {
+      if (current instanceof Element) {
+        const editorManager = current.closest("cms-editor-system");
+        if (editorManager)
+          return editorManager;
+      }
+      if (current instanceof ShadowRoot) {
+        current = current.host;
+      } else {
+        current = current.parentNode;
+      }
+    }
+    throw new NearestElementRequire(ele, "cms-editor-system");
+  }
+
+  // src/control/components/icons.ts
+  var ICON_SNIPPET = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m18 16 4-4-4-4"/>
+    <path d="m6 8-4 4 4 4"/>
+    <path d="m14.5 4-5 16"/>
+</svg>
+`;
+  var ICON_SNIPPET_MUTED = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="m18 16 4-4-4-4"/>
+    <path d="m6 8-4 4 4 4"/>
+    <path d="m14.5 4-5 16"/>
+</svg>
+`;
+  var ICON_TEMPLATE = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
+    <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    <path d="M3 9h18" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <path d="M9 21V9" stroke="currentColor" stroke-width="1.5" fill="none"/>
+</svg>
+`;
+  var ICON_TEMPLATE_MUTED = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <path d="M3 9h18"/>
+    <path d="M9 21V9"/>
+</svg>
+`;
+  var ICON_COMPONENT = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
+    <rect x="2" y="2" width="20" height="20" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
+    <rect x="6" y="6" width="12" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/>
+    <rect x="6" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <rect x="13" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
+</svg>
+`;
+  var ICON_UPLOAD = `
+<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <circle cx="8.5" cy="8.5" r="1.5"/>
+    <path d="m21 15-5-5L5 21"/>
+</svg>
+`;
+  var ICON_PARENT = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <polyline points="18 15 12 9 6 15"></polyline>
+</svg>
+`;
+  var ICON_PIN = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 17v5"/>
+    <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
+</svg>
+`;
+
+  // src/control/core/editorSystem/Editor/PinMode.ts
+  class PinMode {
+    _target;
+    _stateSyncs;
+    _onUnpinAll;
+    static _stylesInjected = false;
+    _btn = null;
+    _resizeObs = null;
+    _reflow = () => this._position();
+    _rafId = 0;
+    _lastRect = null;
+    constructor(_target, _stateSyncs, _onUnpinAll) {
+      this._target = _target;
+      this._stateSyncs = _stateSyncs;
+      this._onUnpinAll = _onUnpinAll;
+    }
+    get active() {
+      return this._btn !== null;
+    }
+    enter() {
+      PinMode._injectStyles();
+      if (this._btn) {
+        this._position();
+        return;
+      }
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "p9r-unpin-btn";
+      btn.title = "Unpin state";
+      btn.innerHTML = `${ICON_PIN}<span>Unpin</span>`;
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this._onUnpinAll();
+      });
+      this._btn = btn;
+      document.body.appendChild(btn);
+      window.addEventListener("scroll", this._reflow, { passive: true, capture: true });
+      window.addEventListener("resize", this._reflow);
+      this._resizeObs = new ResizeObserver(this._reflow);
+      this._resizeObs.observe(this._target);
+      this._resizeObs.observe(document.body);
+      this._startRectWatch();
+      this._position();
+    }
+    exit() {
+      if (!this._btn)
+        return;
+      this._btn.remove();
+      this._btn = null;
+      window.removeEventListener("scroll", this._reflow, { capture: true });
+      window.removeEventListener("resize", this._reflow);
+      this._resizeObs?.disconnect();
+      this._resizeObs = null;
+      if (this._rafId) {
+        cancelAnimationFrame(this._rafId);
+        this._rafId = 0;
+      }
+      this._lastRect = null;
+    }
+    _startRectWatch() {
+      const tick = () => {
+        if (!this._btn)
+          return;
+        const r = this._target.getBoundingClientRect();
+        const last = this._lastRect;
+        if (!last || last.x !== r.left || last.y !== r.top || last.w !== r.width || last.h !== r.height) {
+          this._lastRect = { x: r.left, y: r.top, w: r.width, h: r.height };
+          this._position();
+        }
+        this._rafId = requestAnimationFrame(tick);
+      };
+      this._rafId = requestAnimationFrame(tick);
+    }
+    _position() {
+      if (!this._btn)
+        return;
+      const rect = this._target.getBoundingClientRect();
+      const placement = this._stateSyncs.find((s) => s.isPinned)?.placement ?? "left";
+      const gap = 8;
+      const bw = this._btn.offsetWidth;
+      const bh = this._btn.offsetHeight;
+      let x = 0, y = 0;
+      switch (placement) {
+        case "right":
+          x = rect.right + gap;
+          y = rect.top + rect.height / 2 - bh / 2;
+          break;
+        case "top":
+          x = rect.left + rect.width / 2 - bw / 2;
+          y = rect.top - bh - gap;
+          break;
+        case "bottom":
+          x = rect.left + rect.width / 2 - bw / 2;
+          y = rect.bottom + gap;
+          break;
+        default:
+          x = rect.left - bw - gap;
+          y = rect.top + rect.height / 2 - bh / 2;
+      }
+      x = Math.max(4, Math.min(x, window.innerWidth - bw - 4));
+      y = Math.max(4, Math.min(y, window.innerHeight - bh - 4));
+      this._btn.style.left = `${x}px`;
+      this._btn.style.top = `${y}px`;
+    }
+    static _injectStyles() {
+      if (PinMode._stylesInjected)
+        return;
+      const style = document.createElement("style");
+      style.textContent = `
+.p9r-unpin-btn {
+    position: fixed;
+    z-index: 10002;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 14px;
+    border: 1px solid var(--primary-base, #4361ee);
+    background: var(--bg-surface, #fff);
+    color: var(--primary-base, #4361ee);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.p9r-unpin-btn svg { width: 14px; height: 14px; }
+.p9r-unpin-btn:hover { background: var(--primary-base, #4361ee); color: #fff; }
+`;
+      document.head.appendChild(style);
+      PinMode._stylesInjected = true;
+    }
+  }
+
+  // src/control/core/editorSystem/Editor/panel.ts
+  var SYNC_SELECTORS = "p9r-comp-sync, p9r-image-sync, p9r-attr-sync, p9r-state-sync";
+
+  class PanelConfig {
+    editor;
+    _config = null;
+    _fragment = null;
+    _syncs = [];
+    constructor(editor, html) {
+      this.editor = editor;
+      if (html)
+        this._initFromHTML(html);
+    }
+    get hasPanel() {
+      return this._config != null || this._fragment != null;
+    }
+    get configPanel() {
+      return this._config;
+    }
+    queryChildren(selector) {
+      if (this._config)
+        return Array.from(this._config.querySelectorAll(selector));
+      if (this._fragment)
+        return Array.from(this._fragment.querySelectorAll(selector));
+      return [];
+    }
+    propagateIdentifier(identifier) {
+      if (!this._config)
+        return;
+      this._config.querySelectorAll("*").forEach((el) => el.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, identifier));
+    }
+    notifySyncs(opts) {
+      if (this._config) {
+        this._config.init(opts);
+        return;
+      }
+      for (const sync of this._syncs)
+        sync.init?.(opts);
+    }
+    show() {
+      this._ensureBuilt();
+      this._config?.show();
+    }
+    dispose() {
+      this._config?.remove();
+      this._config = null;
+      this._fragment = null;
+      this._syncs = [];
+    }
+    _ensureBuilt() {
+      if (this._config || !this._fragment)
+        return;
+      this._config = document.createElement("p9r-config-panel");
+      this._config.appendChild(this._fragment);
+      this._fragment = null;
+      getClosestEditorSystem(this.editor.target).editorDOM.append(this._config);
+    }
+    _initFromHTML(html) {
+      this._fragment = document.createRange().createContextualFragment(html);
+      try {
+        customElements.upgrade(this._fragment);
+      } catch {}
+      const id = this.editor.identifier;
+      this._fragment.querySelectorAll("*").forEach((el) => el.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, id));
+      this._syncs = Array.from(this._fragment.querySelectorAll(SYNC_SELECTORS));
+      for (const sync of this._syncs) {
+        sync.prepare?.(this.editor.target, this.editor);
+      }
+    }
+  }
+
+  // src/control/core/editorSystem/Editor/hoverBinding.ts
+  class HoverBinding {
+    editor;
+    _hoverElement = null;
+    _handler = (e) => this._onHover(e);
+    constructor(editor) {
+      this.editor = editor;
+    }
+    bind() {
+      this.unbind();
+      this._hoverElement = this.editor.getActionBarAnchor() ?? this.editor.target;
+      this._hoverElement.addEventListener("mouseenter", this._handler);
+    }
+    unbind() {
+      if (!this._hoverElement)
+        return;
+      this._hoverElement.removeEventListener("mouseenter", this._handler);
+      this._hoverElement = null;
+    }
+    _onHover(e) {
+      const editorSystem = getClosestEditorSystem(this.editor.target);
+      editorSystem.blocActions.setEditor(this.editor);
+      editorSystem.blocActions.open(e.clientX, e.clientY);
+    }
+  }
+
+  // src/control/core/editorSystem/Editor/modeBinding.ts
+  var EVENT_NAME = "editor-system-switch-mode";
+
+  class ModeBinding {
+    _root;
+    _handler;
+    constructor(target, callbacks) {
+      this._root = getClosestEditorSystem(target);
+      this._handler = (e) => {
+        const mode = e.detail;
+        if (mode === "editor")
+          callbacks.onEditorMode();
+        else if (mode === "view")
+          callbacks.onViewMode();
+        callbacks.afterSwitch?.(mode);
+      };
+      this._root.addEventListener(EVENT_NAME, this._handler);
+    }
+    dispose() {
+      this._root.removeEventListener(EVENT_NAME, this._handler);
+    }
+  }
+
+  // src/control/core/editorSystem/Editor/bodyStyle.ts
+  var registry = new Map;
+  function acquireBodyStyle(tag, el) {
+    let entry = registry.get(tag);
+    if (!entry) {
+      document.body.append(el);
+      entry = { el, count: 0 };
+      registry.set(tag, entry);
+    }
+    entry.count++;
+  }
+  function releaseBodyStyle(tag) {
+    const entry = registry.get(tag);
+    if (!entry)
+      return;
+    entry.count--;
+    if (entry.count <= 0) {
+      entry.el.remove();
+      registry.delete(tag);
+    }
+  }
+
+  // src/control/core/editorSystem/Editor/actionBarFeatures.ts
+  function defaultActionBarFeatures() {
+    return new Map([
+      ["delete", true],
+      ["duplicate", true],
+      ["addBefore", false],
+      ["addAfter", false],
+      ["changeComponent", false],
+      ["saveAsTemplate", false]
+    ]);
+  }
+  function syncActionBarFeaturesFromAttrs(target, features) {
+    features.set("delete", target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
+    features.set("duplicate", target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
+    features.set("addBefore", target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
+    features.set("addAfter", target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
+    features.set("changeComponent", target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) !== "true");
+    features.set("saveAsTemplate", target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
+  }
+
+  // src/control/core/editorSystem/Editor/Editor.ts
+  class Editor {
+    target;
+    variant = "default";
+    customActions = [];
+    stateSyncs = [];
+    _identifier;
+    _styleElement;
+    _holdsBodyStyle = false;
+    _panel;
+    _hover;
+    _mode;
+    _pinMode;
+    _actionBarFeatures = defaultActionBarFeatures();
+    constructor(target, styles, editor) {
+      this.target = target;
+      this._styleElement = document.createElement("style");
+      this._styleElement.innerHTML = styles;
+      this._identifier = crypto.randomUUID();
+      this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this._identifier);
+      if (!document.compIdentifierToEditor)
+        document.compIdentifierToEditor = new Map;
+      document.compIdentifierToEditor.set(this._identifier, this);
+      this._panel = new PanelConfig(this, editor);
+      this._hover = new HoverBinding(this);
+      this._pinMode = new PinMode(this.target, this.stateSyncs, () => {
+        this.stateSyncs.forEach((s) => s.unpin());
+        this.notifyPinStateChanged();
+      });
+      this._mode = new ModeBinding(this.target, {
+        onEditorMode: () => this.viewEditor(),
+        onViewMode: () => this.viewClient(),
+        afterSwitch: (mode) => this.onSwitchMode(mode)
+      });
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);
+        });
+      });
+      getClosestEditorSystem(this.target).blocActions.close();
+    }
+    viewEditor() {
+      this._panel.propagateIdentifier(this._identifier);
+      this._panel.notifySyncs();
+      this.init();
+      if (!this.target.shadowRoot) {
+        this._acquireBodyStyle();
+      } else {
+        this.target.shadowRoot.append(this._styleElement);
+      }
+      this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
+      this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this._identifier);
+      this.target.classList.add("editor-block");
+      this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true");
+      if (this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)) {
+        this.target.setAttribute("draggable", "false");
+      } else {
+        this.target.draggable = true;
+      }
+      this.target.style.setProperty("pointer-events", "auto", "important");
+      this.refreshActionBarFeatures();
+      this._hover.unbind();
+      if (this._hasInteractiveFeatures())
+        this._hover.bind();
+    }
+    viewClient() {
+      this.stateSyncs.forEach((s) => s.unpin());
+      this._pinMode.exit();
+      this.restore();
+      this._hover.unbind();
+      this.target.style.removeProperty("pointer-events");
+      if (this.target.getAttribute("style") === "") {
+        this.target.removeAttribute("style");
+      }
+      this._releaseBodyStyle();
+      if (this.target.shadowRoot)
+        this._styleElement.remove();
+      this.target.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+      this.target.classList.remove("editor-block");
+      this.target.removeAttribute("draggable");
+      if (this.target.getAttribute("class") === "") {
+        this.target.removeAttribute("class");
+      }
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE);
+      this.target.removeAttribute(p9r.attr.ACTION.INLINE_ADDING);
+      this.target.removeAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE);
+      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DRAGGING);
+      this.target.removeAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
+      this.target.removeAttribute(p9r.attr.EDITOR.IDENTIFIER);
+      this.target.removeAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+    }
+    onSwitchMode(_mode) {}
+    dispose() {
+      document.compIdentifierToEditor?.delete(this._identifier);
+      this._hover.unbind();
+      this._mode.dispose();
+      this._pinMode.exit();
+      this._panel.dispose();
+      this._releaseBodyStyle();
+      this._styleElement.remove();
+    }
+    registerStateSync(sync) {
+      if (!this.stateSyncs.includes(sync))
+        this.stateSyncs.push(sync);
+    }
+    unregisterStateSync(sync) {
+      const i = this.stateSyncs.indexOf(sync);
+      if (i >= 0)
+        this.stateSyncs.splice(i, 1);
+    }
+    getActionBarAnchor() {
+      return null;
+    }
+    notifyPinStateChanged(stateSync) {
+      const anyPinned = this.stateSyncs.some((s) => s.isPinned);
+      if (anyPinned) {
+        this._hover.unbind();
+        getClosestEditorSystem(this.target).blocActions.close();
+        this._pinMode.enter();
+      } else {
+        this._pinMode.exit();
+        if (this._hasInteractiveFeatures())
+          this._hover.bind();
+      }
+      this.onEditorPinState?.(anyPinned, stateSync);
+    }
+    refreshActionBarFeatures() {
+      syncActionBarFeaturesFromAttrs(this.target, this._actionBarFeatures);
+    }
+    get actionBarConfiguration() {
+      return this._actionBarFeatures;
+    }
+    addCustomAction(action) {
+      this.customActions.push(action);
+    }
+    _hasInteractiveFeatures() {
+      return this._actionBarFeatures.values().some((v) => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0;
+    }
+    get hasConfigPanel() {
+      return this._panel.hasPanel;
+    }
+    queryPanelChildren(selector) {
+      return this._panel.queryChildren(selector);
+    }
+    showConfigPanel() {
+      this._panel.show();
+    }
+    get _panelConfig() {
+      return this._panel.configPanel;
+    }
+    onChildrenRemoved(removedNode) {
+      this._panel.notifySyncs({ removed: removedNode });
+    }
+    onChildrenAdded(addedNode) {
+      this._panel.notifySyncs({ added: addedNode });
+    }
+    get identifier() {
+      return this._identifier;
+    }
+    get ensurePersistentIdentifier() {
+      if (!this.target.hasAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)) {
+        const generatedId = "ID-" + crypto.randomUUID();
+        this.target.setAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER, generatedId);
+      }
+      return this.target.getAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER);
+    }
+    get persistentIdentifierAttrName() {
+      return p9r.attr.EDITOR.PERSISTENT_IDENTIFIER;
+    }
+    _acquireBodyStyle() {
+      if (this._holdsBodyStyle)
+        return;
+      acquireBodyStyle(this.target.tagName, this._styleElement);
+      this._holdsBodyStyle = true;
+    }
+    _releaseBodyStyle() {
+      if (!this._holdsBodyStyle)
+        return;
+      this._holdsBodyStyle = false;
+      releaseBodyStyle(this.target.tagName);
+    }
+  }
+  // src/control/core/editorSystem/registerEditor.ts
+  class EmptyEditor extends Editor {
+    constructor(target) {
+      super(target, "");
+    }
+    init() {}
+    restore() {}
+  }
+  function registerEditor(props) {
+    if (!document.editors)
+      document.editors = [];
+    document.editors.push({
+      tag: props.tag + (props.suffix || ""),
+      cl: props.cl || EmptyEditor,
+      label: props.label + (props.suffix || ""),
+      group: props.group
+    });
+  }
+  function registerEditor_opaque(props) {
+    if (!document.editors)
+      document.editors = [];
+    document.editors.push({
+      tag: props.tag,
+      cl: EmptyEditor,
+      label: props.label,
+      group: props.group
+    });
+  }
   // src/socle/constants/editorAttributes.ts
   var P9R_ATTR = {
     ACTION: {
@@ -7848,38 +8471,13 @@ p9r-tag:hover {
 
   // src/control/components/globals.ts
   window.p9r = {
-    attr: P9R_ATTR
+    attr: P9R_ATTR,
+    Component,
+    Editor,
+    registerEditor,
+    registerEditor_opaque
   };
 
-  // src/control/core/editorSystem/Component.ts
-  class Component extends HTMLElement {
-    _rawStyles = "";
-    _styles = null;
-    _template = null;
-    constructor(metadata) {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      if (metadata) {
-        this._rawStyles = metadata.css;
-        this._styles = document.createElement("style");
-        this._styles.innerHTML = metadata.css;
-        shadow.appendChild(this._styles);
-        this._template = document.createElement("template");
-        this._template.innerHTML = metadata ? metadata.template : "";
-        shadow.appendChild(this._template.content.cloneNode(true));
-      }
-    }
-    registerCSSVariables(items) {
-      if (!this._styles)
-        return;
-      let src = this._rawStyles;
-      Object.entries(items).forEach(([key, value]) => {
-        src = src.replaceAll("var(--" + key + ")", value);
-      });
-      this._styles.innerHTML = src;
-    }
-    connectedCallback() {}
-  }
   // src/control/components/admin/AdminLayout/template.html
   var template_default = `<w13c-left-menu-layout>
 
@@ -8028,31 +8626,6 @@ p9r-tag:hover {
     };
   }
   customElements.define("w13c-open-dialog", OpenDialog);
-
-  // src/control/errors/NearestElementRequire.ts
-  class NearestElementRequire extends Error {
-    constructor(ele, target) {
-      super("The element " + ele.tagName + " should be placed under <" + target + ">");
-    }
-  }
-
-  // src/control/core/dom/getClosestEditorSystem.ts
-  function getClosestEditorSystem(ele) {
-    let current = ele;
-    while (current) {
-      if (current instanceof Element) {
-        const editorManager = current.closest("cms-editor-system");
-        if (editorManager)
-          return editorManager;
-      }
-      if (current instanceof ShadowRoot) {
-        current = current.host;
-      } else {
-        current = current.parentNode;
-      }
-    }
-    throw new NearestElementRequire(ele, "cms-editor-system");
-  }
 
   // src/control/components/editor/componentSync/PageLink/PageLink.css
   var PageLink_default = `:host {
@@ -9212,62 +9785,6 @@ p9r-tag:hover {
   if (!customElements.get("p9r-comp-sync")) {
     customElements.define("p9r-comp-sync", CompSync);
   }
-
-  // src/control/components/icons.ts
-  var ICON_SNIPPET = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="m18 16 4-4-4-4"/>
-    <path d="m6 8-4 4 4 4"/>
-    <path d="m14.5 4-5 16"/>
-</svg>
-`;
-  var ICON_SNIPPET_MUTED = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="m18 16 4-4-4-4"/>
-    <path d="m6 8-4 4 4 4"/>
-    <path d="m14.5 4-5 16"/>
-</svg>
-`;
-  var ICON_TEMPLATE = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
-    <rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-    <path d="M3 9h18" stroke="currentColor" stroke-width="1.5" fill="none"/>
-    <path d="M9 21V9" stroke="currentColor" stroke-width="1.5" fill="none"/>
-</svg>
-`;
-  var ICON_TEMPLATE_MUTED = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <path d="M3 9h18"/>
-    <path d="M9 21V9"/>
-</svg>
-`;
-  var ICON_COMPONENT = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w13c-icon-svg" aria-hidden="true">
-    <rect x="2" y="2" width="20" height="20" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/>
-    <rect x="6" y="6" width="12" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/>
-    <rect x="6" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
-    <rect x="13" y="14" width="5" height="4" rx="1" fill="none" stroke="currentColor" stroke-width="1.5"/>
-</svg>
-`;
-  var ICON_UPLOAD = `
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <rect x="3" y="3" width="18" height="18" rx="2"/>
-    <circle cx="8.5" cy="8.5" r="1.5"/>
-    <path d="m21 15-5-5L5 21"/>
-</svg>
-`;
-  var ICON_PARENT = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <polyline points="18 15 12 9 6 15"></polyline>
-</svg>
-`;
-  var ICON_PIN = `
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path d="M12 17v5"/>
-    <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
-</svg>
-`;
 
   // src/control/components/editor/componentSync/sync/ImageSync/ImageSync.style.css
   var ImageSync_style_default = `p9r-image-sync {
@@ -11103,11 +11620,12 @@ form[method="dialog"] {
   // src/control/components/editor/EditorSystem/BlocLibrary/api.ts
   async function fetchJson(path, fallback) {
     try {
-      const res = await fetch(new URL(path, getMetaApiPath()));
+      const res = await fetch(resolveApiUrl(path));
       if (!res.ok)
         return fallback;
       return await res.json();
-    } catch {
+    } catch (e) {
+      console.log(e);
       return fallback;
     }
   }
@@ -12440,6 +12958,8 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/EditorRoot/template.html
   var template_default8 = `<div>
+    <slot name="style"></slot>
+    <slot name="script"></slot>
     <div id="workingElement">
         <slot>
             <p></p>
@@ -12458,420 +12978,6 @@ form[method="dialog"] {
   // src/control/core/isToggable.ts
   function isToggable(el) {
     return "open" in el && typeof el.open === "function";
-  }
-
-  // src/control/core/editorSystem/Editor/PinMode.ts
-  class PinMode {
-    _target;
-    _stateSyncs;
-    _onUnpinAll;
-    static _stylesInjected = false;
-    _btn = null;
-    _resizeObs = null;
-    _reflow = () => this._position();
-    _rafId = 0;
-    _lastRect = null;
-    constructor(_target, _stateSyncs, _onUnpinAll) {
-      this._target = _target;
-      this._stateSyncs = _stateSyncs;
-      this._onUnpinAll = _onUnpinAll;
-    }
-    get active() {
-      return this._btn !== null;
-    }
-    enter() {
-      PinMode._injectStyles();
-      if (this._btn) {
-        this._position();
-        return;
-      }
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "p9r-unpin-btn";
-      btn.title = "Unpin state";
-      btn.innerHTML = `${ICON_PIN}<span>Unpin</span>`;
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._onUnpinAll();
-      });
-      this._btn = btn;
-      document.body.appendChild(btn);
-      window.addEventListener("scroll", this._reflow, { passive: true, capture: true });
-      window.addEventListener("resize", this._reflow);
-      this._resizeObs = new ResizeObserver(this._reflow);
-      this._resizeObs.observe(this._target);
-      this._resizeObs.observe(document.body);
-      this._startRectWatch();
-      this._position();
-    }
-    exit() {
-      if (!this._btn)
-        return;
-      this._btn.remove();
-      this._btn = null;
-      window.removeEventListener("scroll", this._reflow, { capture: true });
-      window.removeEventListener("resize", this._reflow);
-      this._resizeObs?.disconnect();
-      this._resizeObs = null;
-      if (this._rafId) {
-        cancelAnimationFrame(this._rafId);
-        this._rafId = 0;
-      }
-      this._lastRect = null;
-    }
-    _startRectWatch() {
-      const tick = () => {
-        if (!this._btn)
-          return;
-        const r = this._target.getBoundingClientRect();
-        const last = this._lastRect;
-        if (!last || last.x !== r.left || last.y !== r.top || last.w !== r.width || last.h !== r.height) {
-          this._lastRect = { x: r.left, y: r.top, w: r.width, h: r.height };
-          this._position();
-        }
-        this._rafId = requestAnimationFrame(tick);
-      };
-      this._rafId = requestAnimationFrame(tick);
-    }
-    _position() {
-      if (!this._btn)
-        return;
-      const rect = this._target.getBoundingClientRect();
-      const placement = this._stateSyncs.find((s2) => s2.isPinned)?.placement ?? "left";
-      const gap = 8;
-      const bw = this._btn.offsetWidth;
-      const bh = this._btn.offsetHeight;
-      let x = 0, y = 0;
-      switch (placement) {
-        case "right":
-          x = rect.right + gap;
-          y = rect.top + rect.height / 2 - bh / 2;
-          break;
-        case "top":
-          x = rect.left + rect.width / 2 - bw / 2;
-          y = rect.top - bh - gap;
-          break;
-        case "bottom":
-          x = rect.left + rect.width / 2 - bw / 2;
-          y = rect.bottom + gap;
-          break;
-        default:
-          x = rect.left - bw - gap;
-          y = rect.top + rect.height / 2 - bh / 2;
-      }
-      x = Math.max(4, Math.min(x, window.innerWidth - bw - 4));
-      y = Math.max(4, Math.min(y, window.innerHeight - bh - 4));
-      this._btn.style.left = `${x}px`;
-      this._btn.style.top = `${y}px`;
-    }
-    static _injectStyles() {
-      if (PinMode._stylesInjected)
-        return;
-      const style = document.createElement("style");
-      style.textContent = `
-.p9r-unpin-btn {
-    position: fixed;
-    z-index: 10002;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    height: 28px;
-    padding: 0 12px;
-    border-radius: 14px;
-    border: 1px solid var(--primary-base, #4361ee);
-    background: var(--bg-surface, #fff);
-    color: var(--primary-base, #4361ee);
-    font: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-}
-.p9r-unpin-btn svg { width: 14px; height: 14px; }
-.p9r-unpin-btn:hover { background: var(--primary-base, #4361ee); color: #fff; }
-`;
-      document.head.appendChild(style);
-      PinMode._stylesInjected = true;
-    }
-  }
-
-  // src/control/core/editorSystem/Editor/Editor.ts
-  class Editor {
-    targetIdentifier;
-    target;
-    styleElement;
-    static bodyStyle = new Map;
-    _holdsBodyStyle = false;
-    _panelConfig = null;
-    _panelFragment = null;
-    _panelSyncs = [];
-    variant = "default";
-    customActions = [];
-    stateSyncs = [];
-    _pinMode;
-    _actionBarFeatures = new Map([
-      ["delete", true],
-      ["duplicate", true],
-      ["addBefore", false],
-      ["addAfter", false],
-      ["changeComponent", false],
-      ["saveAsTemplate", false]
-    ]);
-    constructor(target, styles, editor) {
-      console.debug("NEW EDITOR", target);
-      this.target = target;
-      this.styleElement = document.createElement("style");
-      this.styleElement.innerHTML = styles;
-      this.targetIdentifier = crypto.randomUUID();
-      this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier);
-      if (!document.compIdentifierToEditor)
-        document.compIdentifierToEditor = new Map;
-      document.compIdentifierToEditor.set(this.targetIdentifier, this);
-      this._pinMode = new PinMode(this.target, this.stateSyncs, () => {
-        this.stateSyncs.forEach((s2) => s2.unpin());
-        this.notifyPinStateChanged();
-      });
-      if (editor) {
-        this._initPanelFragment(editor);
-      }
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);
-        });
-      });
-      getClosestEditorSystem(this.target).blocActions.close();
-    }
-    onSwitchMode(mode) {
-      if (mode === p9r.mode.EDITOR)
-        this.viewEditor();
-      else
-        this.viewClient();
-    }
-    _setPanelItemIdentifiers() {
-      if (!this._panelConfig)
-        return;
-      const panelItems = this._panelConfig.querySelectorAll("*");
-      panelItems.forEach((item) => {
-        item.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.targetIdentifier);
-      });
-    }
-    _initPanelFragment(editor) {
-      this._panelFragment = document.createRange().createContextualFragment(editor);
-      try {
-        customElements.upgrade(this._panelFragment);
-      } catch {}
-      this._panelFragment.querySelectorAll("*").forEach((el) => {
-        el.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, this.targetIdentifier);
-      });
-      this._panelSyncs = Array.from(this._panelFragment.querySelectorAll("p9r-comp-sync, p9r-image-sync, p9r-attr-sync, p9r-state-sync"));
-      for (const sync of this._panelSyncs) {
-        sync.prepare?.(this.target, this);
-      }
-    }
-    _ensurePanelBuilt() {
-      if (this._panelConfig || !this._panelFragment)
-        return;
-      this._panelConfig = document.createElement("p9r-config-panel");
-      this._panelConfig.appendChild(this._panelFragment);
-      this._panelFragment = null;
-      getClosestEditorSystem(this.target).editorDOM.append(this._panelConfig);
-    }
-    get hasConfigPanel() {
-      return this._panelConfig != null || this._panelFragment != null;
-    }
-    queryPanelChildren(selector) {
-      if (this._panelConfig)
-        return Array.from(this._panelConfig.querySelectorAll(selector));
-      if (this._panelFragment)
-        return Array.from(this._panelFragment.querySelectorAll(selector));
-      return [];
-    }
-    _notifyPanelSyncs(opts) {
-      if (this._panelConfig) {
-        this._panelConfig.init(opts);
-        return;
-      }
-      for (const sync of this._panelSyncs) {
-        sync.init?.(opts);
-      }
-    }
-    handleHover = (e) => {
-      console.log("Handle Hover");
-      const editorSystem = getClosestEditorSystem(this.target);
-      console.log("Handle Hover", editorSystem);
-      editorSystem.blocActions.setEditor(this);
-      editorSystem.blocActions.open(e.clientX, e.clientY);
-    };
-    refreshActionBarFeatures() {
-      this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
-      this._actionBarFeatures.set("duplicate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE) !== "true");
-      this._actionBarFeatures.set("addBefore", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE) !== "true");
-      this._actionBarFeatures.set("addAfter", this.target.getAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER) !== "true");
-      this._actionBarFeatures.set("changeComponent", this.target.getAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT) !== "true");
-      this._actionBarFeatures.set("saveAsTemplate", this.target.getAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE) !== "true");
-    }
-    registerStateSync(sync) {
-      if (!this.stateSyncs.includes(sync))
-        this.stateSyncs.push(sync);
-    }
-    unregisterStateSync(sync) {
-      const i = this.stateSyncs.indexOf(sync);
-      if (i >= 0)
-        this.stateSyncs.splice(i, 1);
-    }
-    getActionBarAnchor() {
-      return null;
-    }
-    _hoverElement = null;
-    notifyPinStateChanged(stateSync) {
-      const anyPinned = this.stateSyncs.some((s2) => s2.isPinned);
-      if (anyPinned) {
-        this._unbindHover();
-        const editorSystem = getClosestEditorSystem(this.target);
-        editorSystem.blocActions.close();
-        this._pinMode.enter();
-      } else {
-        this._pinMode.exit();
-        if (this._hasInteractiveFeatures()) {
-          this._bindHover();
-        }
-      }
-      this.onEditorPinState?.(anyPinned, stateSync);
-    }
-    _bindHover() {
-      this._unbindHover();
-      this._hoverElement = this.getActionBarAnchor() ?? this.target;
-      this._hoverElement.addEventListener("mouseenter", this.handleHover);
-    }
-    _unbindHover() {
-      this._hoverElement?.removeEventListener("mouseenter", this.handleHover);
-      this._hoverElement = null;
-    }
-    _hasInteractiveFeatures() {
-      return this._actionBarFeatures.values().some((v) => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0;
-    }
-    viewClient() {
-      this.stateSyncs.forEach((s2) => s2.unpin());
-      this._pinMode.exit();
-      this.restore();
-      this._unbindHover();
-      this.target.style.removeProperty("pointer-events");
-      if (this.target.getAttribute("style") === "") {
-        this.target.removeAttribute("style");
-      }
-      this._releaseBodyStyle();
-      if (this.target.shadowRoot)
-        this.styleElement.remove();
-      this.target.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-      this.target.classList.remove("editor-block");
-      this.target.removeAttribute("draggable");
-      if (this.target.getAttribute("class") === "") {
-        this.target.removeAttribute("class");
-      }
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DELETE);
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DUPLICATE);
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_BEFORE);
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_ADD_AFTER);
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_CHANGE_COMPONENT);
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE);
-      this.target.removeAttribute(p9r.attr.ACTION.INLINE_ADDING);
-      this.target.removeAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE);
-      this.target.removeAttribute(p9r.attr.ACTION.DISABLE_DRAGGING);
-      this.target.removeAttribute(p9r.attr.TEXT.BLOC_MANAGEMENT);
-      this.target.removeAttribute(p9r.attr.EDITOR.IDENTIFIER);
-      this.target.removeAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-    }
-    viewEditor() {
-      console.log("viewEditor");
-      this._setPanelItemIdentifiers();
-      this._notifyPanelSyncs();
-      this.init();
-      if (!this.target.shadowRoot) {
-        this._acquireBodyStyle();
-      } else {
-        this.target.shadowRoot.append(this.styleElement);
-      }
-      this.target.setAttribute(p9r.attr.ACTION.DISABLE_SAVE_AS_TEMPLATE, "true");
-      this.target.setAttribute(p9r.attr.EDITOR.IDENTIFIER, this.targetIdentifier);
-      this.target.classList.add("editor-block");
-      this.target.setAttribute(p9r.attr.EDITOR.IS_EDITOR, "true");
-      if (this.target.hasAttribute(p9r.attr.ACTION.DISABLE_DRAGGING)) {
-        this.target.setAttribute("draggable", "false");
-      } else {
-        this.target.draggable = true;
-      }
-      this.target.style.setProperty("pointer-events", "auto", "important");
-      this.refreshActionBarFeatures();
-      this._unbindHover();
-      if (this._actionBarFeatures.values().some((v) => v === true) || this.stateSyncs.length > 0 || this.customActions.length > 0) {
-        this._bindHover();
-      }
-    }
-    dispose() {
-      document.compIdentifierToEditor?.delete(this.targetIdentifier);
-      this._unbindHover();
-      this._pinMode.exit();
-      this._panelConfig?.remove();
-      this._panelConfig = null;
-      this._panelFragment = null;
-      this._panelSyncs = [];
-      this._releaseBodyStyle();
-      this.styleElement.remove();
-    }
-    _acquireBodyStyle() {
-      if (this._holdsBodyStyle)
-        return;
-      const tag = this.target.tagName;
-      let entry = Editor.bodyStyle.get(tag);
-      if (!entry) {
-        document.body.append(this.styleElement);
-        entry = { el: this.styleElement, count: 0 };
-        Editor.bodyStyle.set(tag, entry);
-      }
-      entry.count++;
-      this._holdsBodyStyle = true;
-    }
-    _releaseBodyStyle() {
-      if (!this._holdsBodyStyle)
-        return;
-      const tag = this.target.tagName;
-      const entry = Editor.bodyStyle.get(tag);
-      this._holdsBodyStyle = false;
-      if (!entry)
-        return;
-      entry.count--;
-      if (entry.count <= 0) {
-        entry.el.remove();
-        Editor.bodyStyle.delete(tag);
-      }
-    }
-    onChildrenRemoved(removedNode) {
-      this._notifyPanelSyncs({ removed: removedNode });
-    }
-    onChildrenAdded(addedNode) {
-      this._notifyPanelSyncs({ added: addedNode });
-    }
-    get actionBarConfiguration() {
-      return this._actionBarFeatures;
-    }
-    get ensurePersistentIdentifier() {
-      if (!this.target.hasAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER)) {
-        const generatedId = "ID-" + crypto.randomUUID();
-        this.target.setAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER, generatedId);
-      }
-      return this.target.getAttribute(p9r.attr.EDITOR.PERSISTENT_IDENTIFIER);
-    }
-    get persistentIdentifierAttrName() {
-      return p9r.attr.EDITOR.PERSISTENT_IDENTIFIER;
-    }
-    showConfigPanel() {
-      this._ensurePanelBuilt();
-      this._panelConfig?.show();
-    }
-    addCustomAction(action) {
-      this.customActions.push(action);
-    }
   }
 
   // src/control/core/editorSystem/defaultEditors/ImageEditor/ResizeInstance.ts
@@ -13022,15 +13128,6 @@ form[method="dialog"] {
       this._mediaCenter?.remove();
       this.resizeInstance.stop();
     }
-  }
-
-  // src/control/core/editorSystem/registerEditor.ts
-  class EmptyEditor extends Editor {
-    constructor(target) {
-      super(target, "");
-    }
-    init() {}
-    restore() {}
   }
 
   // src/control/core/editorSystem/defaultEditors/TextEditor.ts
@@ -13667,6 +13764,24 @@ form[method="dialog"] {
     }
   }
 
+  // src/control/components/editor/EditorSystem/EditorRoot/waitForScripts.ts
+  async function waitForScripts(ele) {
+    const scriptSlot = ele.shadowRoot?.querySelector('slot[name="script"]');
+    const scripts = scriptSlot.assignedElements();
+    const loaders = scripts.map((s2) => {
+      if (s2.src && !s2.dataset.loaded) {
+        return new Promise((resolve) => {
+          s2.onload = () => {
+            s2.dataset.loaded = "true";
+            resolve(true);
+          };
+        });
+      }
+      return Promise.resolve(true);
+    });
+    await Promise.all(loaders);
+  }
+
   // src/control/components/editor/EditorSystem/EditorRoot/EditorRoot.ts
   class EditorRoot extends HTMLElement {
     mode = "editor";
@@ -13691,9 +13806,11 @@ form[method="dialog"] {
         const slot = this.shadowRoot.querySelector("#workingElement slot");
         if (!slot)
           throw new Error("Working slot not found in shadow DOM");
-        this._observer = new ObserverManager(slot);
-        this._dragmanager = new DragManager(workingElement);
-        this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library");
+        waitForScripts(this).then(() => {
+          this._observer = new ObserverManager(slot);
+          this._dragmanager = new DragManager(workingElement);
+          this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library");
+        });
       });
     }
     save() {

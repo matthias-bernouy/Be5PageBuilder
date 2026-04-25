@@ -1,5 +1,11 @@
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "./TModels";
 
+export type BlocListItemResponse = {
+    id: string, 
+    name: string, 
+    group: string, 
+    description: string
+}
 
 export interface CmsRepository {
 
@@ -9,7 +15,7 @@ export interface CmsRepository {
 
     getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
     getBlocsJS(): Promise<{ id: string, editorJS: string, viewJS: string }[]>;
-    getBlocsList(): Promise<{ id: string, name: string, group: string, description: string }[]>;
+    getBlocsList(): Promise<BlocListItemResponse[]>;
     getBlocViewJS(htmlTag: string): Promise<string | null>;
 
 

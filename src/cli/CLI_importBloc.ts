@@ -166,7 +166,7 @@ export default async function CLI_importBloc(args: string[]) {
 }
 
 async function fetchRemoteTags(adminBase: URL, token: string): Promise<Set<string>> {
-    const url = new URL("api/blocs", adminBase).href;
+    const url = new URL("api/bloc/list", adminBase).href;
     let res: Response;
     try {
         res = await fetch(url, { headers: { "Authorization": `Bearer ${token}` } });

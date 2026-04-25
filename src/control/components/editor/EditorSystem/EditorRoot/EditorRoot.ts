@@ -6,6 +6,7 @@ import { ObserverManager } from "src/control/components/editor/EditorSystem/Obse
 import { DragManager } from "src/control/components/editor/EditorSystem/DragManager";
 import { BlocActions } from "../BlocActions/BlocActions";
 import type { BlocLibrary } from "../BlocLibrary/BlocLibrary";
+import { waitForScripts } from "./waitForScripts";
 
 
 export default class EditorRoot extends HTMLElement {
@@ -36,10 +37,12 @@ export default class EditorRoot extends HTMLElement {
             const slot = this.shadowRoot!.querySelector("#workingElement slot") as HTMLSlotElement;
             if (!slot) throw new Error("Working slot not found in shadow DOM");
             
-            this._observer = new ObserverManager(slot);
-            this._dragmanager = new DragManager(workingElement);
+            waitForScripts(this).then(() => {
+                this._observer = new ObserverManager(slot);
+                this._dragmanager = new DragManager(workingElement);
 
-            this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library") as BlocLibrary;
+                this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library") as BlocLibrary;
+            })
         })
 
     }
