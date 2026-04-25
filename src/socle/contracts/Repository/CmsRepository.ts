@@ -24,6 +24,10 @@ export interface CmsRepository {
     getPage(path: string): Promise<TPage | null>;
     getAllPages(): Promise<TPage[]>;
 
+    // NEW VERSION
+    insertPage(path: string, title: string): Promise<void>;
+    getPageById(id: string): Promise<TPage | null>;
+
 
     // SYSTEM
     getSystem(): Promise<TSystem>;

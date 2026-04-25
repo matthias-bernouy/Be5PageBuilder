@@ -8469,6 +8469,16 @@ p9r-tag:hover {
     }
   };
 
+  // src/control/core/showToast.ts
+  function showToast(message, options) {
+    let stack = document.querySelector("p9r-toast-stack");
+    if (!stack) {
+      stack = document.createElement("p9r-toast-stack");
+      document.body.appendChild(stack);
+    }
+    stack.push(message, options);
+  }
+
   // src/control/components/globals.ts
   window.p9r = {
     attr: P9R_ATTR,
@@ -8477,6 +8487,29 @@ p9r-tag:hover {
     registerEditor,
     registerEditor_opaque
   };
+  document.addEventListener("fetch:loading", (e) => {
+    showToast("Data loading " + e, {
+      type: "info"
+    });
+  });
+  document.addEventListener("fetch:data", (e) => {
+    console.log(e);
+  });
+  document.addEventListener("fetch:error", (e) => {
+    showToast("Error during data get " + e, {
+      type: "error"
+    });
+  });
+  document.addEventListener("form:success", (e) => {
+    showToast("Form success " + e, {
+      type: "info"
+    });
+  });
+  document.addEventListener("form:error", (e) => {
+    showToast("Form Error " + e, {
+      type: "error"
+    });
+  });
 
   // src/control/components/admin/AdminLayout/template.html
   var template_default = `<w13c-left-menu-layout>
@@ -10439,16 +10472,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 }
 `;
 
-  // src/control/core/showToast.ts
-  function showToast(message, options) {
-    let stack = document.querySelector("p9r-toast-stack");
-    if (!stack) {
-      stack = document.createElement("p9r-toast-stack");
-      document.body.appendChild(stack);
-    }
-    stack.push(message, options);
-  }
-
   // src/socle/utils/validation.ts
   function isValidPathFormat(path) {
     if (!path || typeof path !== "string")
@@ -10984,7 +11007,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
   if (!customElements.get("p9r-horizontal-action-group"))
     customElements.define("p9r-horizontal-action-group", s);
 
-  // src/control/components/editor/EditorSystem/BlocActions/style.css
+  // src/control/components/editor/EditorSystem/BlocActions/view/style.css
   var style_default3 = `:host {
     position: absolute;
     left: 0;
@@ -10998,9 +11021,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     transition: opacity 0.1s ease-out;
 }
 
-/* Snippet variant — blue accent to signal this bar is acting on a reference,
-   not a regular bloc. We override the HorizontalActionGroup CSS variables so
-   its existing ::slotted button styles pick up the new palette. */
 ::slotted([data-action="pin-state"][data-active]) {
     background: var(--primary-muted, #eef2ff) !important;
     color: var(--primary-base, #4361ee) !important;
@@ -11016,121 +11036,22 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     --toolbar-border: rgba(0, 122, 255, 0.3);
 }
 
-.p9r-bag-meta {
+/* ── Breadcrumb host position (relative to BAG) ─────────────────────
+   The pill internals + hover-bridge live in cms-bag-breadcrumb's own
+   stylesheet — here we only place the host element relative to BAG. */
+
+cms-bag-breadcrumb {
     position: absolute;
     bottom: calc(100% + 2px);
     left: 16px;
-    width: max-content;
-    max-width: 420px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 10px;
-    background: var(--toolbar-bg, #fff);
-    border: 1px solid var(--toolbar-border, #e5e7eb);
-    border-radius: 999px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    font-family: system-ui, sans-serif;
-    font-size: 11px;
-    line-height: 1.4;
-    white-space: nowrap;
-    /* overflow:hidden would clip the hover-bridge pseudo-element that lets the
-       cursor cross the 2-4px gap between the BAG and the breadcrumb without
-       triggering a mouseleave-close. \`overflow:visible\` here is fine because
-       the logical 5-item cap already prevents horizontal overflow of real
-       content. */
-    overflow: visible;
 }
 
-/* Hover bridge — a transparent pseudo-element that physically covers the gap
-   between the BAG and the breadcrumb so the cursor stays over a descendant
-   of the host the whole way across. Without it, crossing the gap fires
-   \`mouseleave\` on the BAG host with relatedTarget pointing at whatever is
-   behind the gap, and close() runs before the user reaches the breadcrumb. */
-.p9r-bag-meta::before {
-    content: "";
-    position: absolute;
-    /* Default vAnchor="top" → breadcrumb sits above the BAG. Bridge drops
-       from the breadcrumb's bottom edge down past the 2px gap into the BAG's
-       padding band — 6px total, clears sub-pixel rounding. */
-    top: 100%;
-    left: 0;
-    right: 0;
-    height: 6px;
-}
-
-/* vAnchor="top" → BAG sits above the target → meta pill above BAG (default).
-   vAnchor="bottom" → BAG sits below the target → flip the pill below BAG so
-   it doesn't land between the cursor and the target. */
-:host([data-v-anchor="bottom"]) .p9r-bag-meta {
+:host([data-v-anchor="bottom"]) cms-bag-breadcrumb {
     bottom: auto;
     top: calc(100% + 2px);
 }
 
-/* Flip the bridge to rise from the top edge when the breadcrumb is below. */
-:host([data-v-anchor="bottom"]) .p9r-bag-meta::before {
-    top: auto;
-    bottom: 100%;
-    height: 6px;
-}
-
-.p9r-bag-meta:empty {
-    display: none;
-}
-
-.p9r-bag-meta__parent {
-    color: var(--text-muted, #94a3b8);
-    font-weight: 500;
-    font-family: inherit;
-    font-size: inherit;
-    line-height: inherit;
-    padding: 1px 6px;
-    border-radius: 999px;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    transition: background 0.1s, color 0.1s;
-}
-
-.p9r-bag-meta__parent:hover,
-.p9r-bag-meta__parent:focus-visible {
-    color: var(--text-main, #1e293b);
-    background: var(--bg-base, #f1f5f9);
-    outline: none;
-}
-
-.p9r-bag-meta__ellipsis {
-    color: var(--text-muted, #94a3b8);
-    padding: 0 2px;
-    cursor: default;
-}
-
-.p9r-bag-meta__sep {
-    color: var(--border-default, #cbd5e1);
-    font-weight: 400;
-}
-
-.p9r-bag-meta__current {
-    padding: 1px 8px;
-    border-radius: 999px;
-    background: var(--primary-muted, rgba(67, 97, 238, 0.1));
-    color: var(--primary-base, #4361ee);
-    font-weight: 700;
-    letter-spacing: 0.01em;
-}
-
-/* Inline fallback — used when the breadcrumb would overflow viewport in its
-   default vertical direction (above or below the BAG). Preferred side is
-   left; right is used only when there is no left room. Absolute positioning
-   overrides the above/below rules. */
-/* The host has asymmetric padding (\`padding: 8px 32px 8px 16px\`) so \`100%\`
-   in the inline-left/right offsets resolves to the padding-box, which does
-   NOT line up visually with the button row. Without compensation, the gap
-   between the breadcrumb and the visible BAG edge ends up 16px on the left
-   and 32px on the right — i.e. the right-side breadcrumb looks much farther.
-   We shift the pill horizontally by the host's left/right padding so both
-   sides share the same 4px visual gap. */
-.p9r-bag-meta--inline-left {
+cms-bag-breadcrumb[data-inline="left"] {
     top: 50% !important;
     bottom: auto !important;
     left: auto !important;
@@ -11138,39 +11059,44 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     transform: translate(16px, -50%);
 }
 
-.p9r-bag-meta--inline-right {
+cms-bag-breadcrumb[data-inline="right"] {
     top: 50% !important;
     bottom: auto !important;
     left: calc(100% + 4px) !important;
     right: auto;
     transform: translate(-32px, -50%);
 }
+`;
 
-/* Inline placements use a horizontal bridge that spans the gap + reaches a
-   bit into the BAG's padding. Without the override the vertical-default
-   bridge rule above leaves a useless 6px-tall strip below the pill while the
-   real gap is on the side — the cursor would still transit over empty
-   pixels. \`!important\` overrides the default top/left/right rule from the
-   .p9r-bag-meta::before base selector. */
-.p9r-bag-meta--inline-left::before {
-    top: 0 !important;
-    bottom: 0;
-    left: 100% !important;
-    right: auto !important;
-    width: 8px;
-    height: auto !important;
-}
+  // src/control/components/editor/EditorSystem/BlocActions/compute/ancestorChain.ts
+  function findParentEditor(target) {
+    const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+    if (!parentId)
+      return null;
+    return document.compIdentifierToEditor?.get(parentId) ?? null;
+  }
+  function ancestorChain(editor) {
+    const chain = [editor];
+    let el = editor.target;
+    for (let i = 0;i < 20; i++) {
+      const pid = el.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+      if (!pid)
+        break;
+      const pEd = document.compIdentifierToEditor?.get(pid);
+      if (!pEd)
+        break;
+      chain.unshift(pEd);
+      el = pEd.target;
+    }
+    return chain;
+  }
+  function collapseChain(items) {
+    if (items.length <= 5)
+      return items;
+    return [items[0], null, items[items.length - 3], items[items.length - 2], items[items.length - 1]];
+  }
 
-.p9r-bag-meta--inline-right::before {
-    top: 0 !important;
-    bottom: 0;
-    right: 100% !important;
-    left: auto !important;
-    width: 8px;
-    height: auto !important;
-}`;
-
-  // src/control/components/editor/EditorSystem/BlocActions/template.html
+  // src/control/components/editor/EditorSystem/BlocActions/view/template.html
   var template_default4 = `<button data-action="edit" title="Edit">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
 </button>
@@ -11190,15 +11116,333 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 </button>
 `;
 
-  // src/control/components/editor/EditorSystem/BlocActions/insert-btn.css
-  var insert_btn_default = `.p9r-insert-btn {
+  // src/control/components/editor/EditorSystem/BlocActions/domain/actionBarButtons.ts
+  function buildSelectParentButton() {
+    const btn = document.createElement("button");
+    btn.setAttribute("data-action", "select-parent");
+    btn.setAttribute("title", "Select parent");
+    btn.innerHTML = ICON_PARENT;
+    return btn;
+  }
+  function buildCustomActionButton(action) {
+    const btn = document.createElement("button");
+    btn.setAttribute("data-action", action.action);
+    btn.setAttribute("title", action.title);
+    btn.innerHTML = action.icon;
+    return btn;
+  }
+  function buildPinButton(stateSyncCount, firstLabel) {
+    const btn = document.createElement("button");
+    btn.setAttribute("data-action", "pin-state");
+    btn.setAttribute("title", stateSyncCount === 1 && firstLabel ? `Pin: ${firstLabel}` : "Pin state");
+    btn.innerHTML = ICON_PIN;
+    return btn;
+  }
+  function toggleActionButton(host, action, show) {
+    host.querySelector(`[data-action="${action}"]`)?.toggleAttribute("hidden", !show);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/renderActionBar.ts
+  function renderActionBar(host, editor, parentEditor, previousConfigKey) {
+    const config = editor.actionBarConfiguration;
+    const hasConfig = editor.hasConfigPanel;
+    const customActions = editor.customActions;
+    const stateSyncCount = editor.stateSyncs.length;
+    const variant = editor.variant;
+    const hasAnyButton = hasConfig || !!config.get("duplicate") || !!config.get("delete") || !!config.get("changeComponent") || customActions.length > 0 || stateSyncCount > 0;
+    const showSelectParent = !!parentEditor && hasAnyButton;
+    const configKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customActions.map((a2) => a2.action).join(",") + "|s=" + stateSyncCount + "|p=" + showSelectParent;
+    if (previousConfigKey === configKey)
+      return null;
+    host.setAttribute("data-variant", variant);
+    host.innerHTML = template_default4;
+    const separator = host.querySelector('[data-group="delete"]');
+    if (showSelectParent)
+      host.insertBefore(buildSelectParentButton(), host.firstChild);
+    toggleActionButton(host, "edit", hasConfig);
+    toggleActionButton(host, "duplicate", !!config.get("duplicate"));
+    toggleActionButton(host, "changeComponent", !!config.get("changeComponent"));
+    toggleActionButton(host, "delete", !!config.get("delete"));
+    for (const action of customActions) {
+      host.insertBefore(buildCustomActionButton(action), separator);
+    }
+    if (stateSyncCount > 0) {
+      host.insertBefore(buildPinButton(stateSyncCount, editor.stateSyncs[0]?.label), separator);
+    }
+    const hasLeftButtons = hasConfig || !!config.get("duplicate") || !!config.get("changeComponent") || customActions.length > 0 || stateSyncCount > 0;
+    separator?.toggleAttribute("hidden", !config.get("delete") || !hasLeftButtons);
+    return { configKey, hasAnyButton };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/refreshPinButton.ts
+  function refreshPinButton(host, editor) {
+    const btn = host.querySelector('[data-action="pin-state"]');
+    if (!btn)
+      return;
+    const anyPinned = editor?.stateSyncs.some((s2) => s2.isPinned) ?? false;
+    btn.toggleAttribute("data-active", anyPinned);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/template.html
+  var template_default5 = `<div class="pill" id="pill"></div>
+<div class="bridge"></div>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/style.css
+  var style_default4 = `:host {
+    display: block;
+    width: max-content;
+    max-width: 420px;
+    font-family: system-ui, sans-serif;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+:host(:not([data-has-items])) { display: none; }
+
+.pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: var(--toolbar-bg, #fff);
+    border: 1px solid var(--toolbar-border, #e5e7eb);
+    border-radius: 999px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    overflow: visible;
+    position: relative;
+}
+
+.parent {
+    color: var(--text-muted, #94a3b8);
+    font: inherit;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+}
+
+.parent:hover, .parent:focus-visible {
+    color: var(--text-main, #1e293b);
+    background: var(--bg-base, #f1f5f9);
+    outline: none;
+}
+
+.ellipsis { color: var(--text-muted, #94a3b8); padding: 0 2px; cursor: default; }
+.sep { color: var(--border-default, #cbd5e1); }
+
+.current {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--primary-muted, rgba(67, 97, 238, 0.1));
+    color: var(--primary-base, #4361ee);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+/* Hover bridge — covers the gap between BAG and the breadcrumb. */
+.bridge {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 6px;
+}
+
+:host-context([data-v-anchor="bottom"]) .bridge { top: auto; bottom: 100%; }
+
+:host([data-inline]) .bridge {
+    top: 0 !important;
+    bottom: 0;
+    width: 8px;
+    height: auto !important;
+}
+
+:host([data-inline="left"]) .bridge { left: 100% !important; right: auto !important; }
+:host([data-inline="right"]) .bridge { right: 100% !important; left: auto !important; }
+`;
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/items.ts
+  function renderBreadcrumbItem(item, cb) {
+    if (item.type === "ellipsis") {
+      const span = document.createElement("span");
+      span.className = "ellipsis";
+      span.textContent = "…";
+      return span;
+    }
+    if (item.type === "current") {
+      const span = document.createElement("span");
+      span.className = "current";
+      span.textContent = item.label;
+      return span;
+    }
+    return renderParentButton(item.key, item.label, cb);
+  }
+  function renderParentButton(key, label, cb) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "parent";
+    btn.textContent = label;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      cb.onPick(key);
+    });
+    btn.addEventListener("mouseenter", () => cb.onHover(key, true));
+    btn.addEventListener("mouseleave", () => cb.onHover(key, false));
+    return btn;
+  }
+  function renderSeparator() {
+    const sep = document.createElement("span");
+    sep.className = "sep";
+    sep.textContent = "›";
+    return sep;
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/Breadcrumb.ts
+  var Metadata = { css: style_default4, template: template_default5 };
+
+  class Breadcrumb extends Component {
+    _pill;
+    constructor() {
+      super(Metadata);
+      this._pill = this.shadowRoot.getElementById("pill");
+    }
+    static create() {
+      return document.createElement("cms-bag-breadcrumb");
+    }
+    setItems(items, cb) {
+      this._pill.innerHTML = "";
+      if (items.length === 0) {
+        this.removeAttribute("data-has-items");
+        return;
+      }
+      this.setAttribute("data-has-items", "");
+      items.forEach((item, idx) => {
+        this._pill.appendChild(renderBreadcrumbItem(item, cb));
+        if (idx < items.length - 1)
+          this._pill.appendChild(renderSeparator());
+      });
+    }
+    clear() {
+      this._pill.innerHTML = "";
+      this.removeAttribute("data-has-items");
+      this.removeAttribute("data-inline");
+    }
+    refinePosition(barRect) {
+      this.removeAttribute("data-inline");
+      if (!this._pill.children.length)
+        return;
+      const margin = 4;
+      const ownRect = this.getBoundingClientRect();
+      if (ownRect.width === 0 && ownRect.height === 0)
+        return;
+      const fitsVertically = ownRect.top >= margin && ownRect.bottom <= window.innerHeight - margin;
+      if (fitsVertically)
+        return;
+      const leftSpace = barRect.left - margin;
+      const rightSpace = window.innerWidth - barRect.right - margin;
+      const side = leftSpace >= ownRect.width || leftSpace >= rightSpace ? "left" : "right";
+      this.setAttribute("data-inline", side);
+    }
+  }
+  if (!customElements.get("cms-bag-breadcrumb")) {
+    customElements.define("cms-bag-breadcrumb", Breadcrumb);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/compute/breadcrumbBuilder.ts
+  function buildBreadcrumb(editor, editorSystem) {
+    const observer = editorSystem.observer;
+    const labelled = ancestorChain(editor).map((ed) => {
+      const label = observer?.getLabel(ed.target.tagName.toLowerCase());
+      return label ? { editor: ed, label } : null;
+    }).filter((it) => it !== null);
+    if (labelled.length === 0)
+      return { items: [], editorByKey: new Map };
+    const collapsed = collapseChain(labelled);
+    const editorByKey = new Map;
+    const items = collapsed.map((it, idx) => {
+      const isLast = idx === collapsed.length - 1;
+      if (it === null)
+        return { type: "ellipsis" };
+      if (isLast)
+        return { type: "current", label: it.label };
+      const key = it.editor.identifier;
+      editorByKey.set(key, it.editor);
+      return { type: "parent", key, label: it.label };
+    });
+    return { items, editorByKey };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/BreadcrumbController.ts
+  class BreadcrumbController {
+    _host;
+    _onSwitch;
+    _el;
+    constructor(_host, _onSwitch) {
+      this._host = _host;
+      this._onSwitch = _onSwitch;
+      this._el = Breadcrumb.create();
+      const sr = this._host.shadowRoot;
+      sr.insertBefore(this._el, sr.querySelector("nav"));
+    }
+    update(editor) {
+      const editorSystem = getClosestEditorSystem(this._host);
+      const { items, editorByKey } = buildBreadcrumb(editor, editorSystem);
+      if (items.length === 0) {
+        this._el.clear();
+        return;
+      }
+      this._el.setItems(items, {
+        onPick: (key) => {
+          const ed = editorByKey.get(key);
+          if (ed)
+            this._onSwitch(ed);
+        },
+        onHover: (key, hovered) => {
+          editorByKey.get(key)?.target.classList.toggle("p9r-breadcrumb-hover", hovered);
+        }
+      });
+    }
+    refinePosition(barRect) {
+      this._el.refinePosition(barRect);
+    }
+    clear() {
+      this._el.clear();
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/template.html
+  var template_default6 = `<button class="btn" type="button">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+</button>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/style.css
+  var style_default5 = `:host {
     position: absolute;
     z-index: 10001;
     display: none;
-    align-items: center;
-    justify-content: center;
     width: 24px;
     height: 24px;
+}
+
+:host([data-visible]) {
+    display: block;
+}
+
+.btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border-radius: 50%;
     border: 2px solid var(--primary-base, #4361ee);
     background: var(--bg-surface, #fff);
@@ -11209,40 +11453,218 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-.p9r-insert-btn::before {
+.btn::before {
     content: '';
     position: absolute;
     inset: -10px;
     pointer-events: auto;
 }
 
-.p9r-insert-btn--before::before {
+:host([data-position="before"]) .btn::before {
     bottom: 0;
 }
 
-.p9r-insert-btn--after::before {
+:host([data-position="after"]) .btn::before {
     top: 0;
 }
 
-.p9r-insert-btn--before.p9r-insert-btn--inline::before {
+:host([data-position="before"][data-inline]) .btn::before {
     bottom: -10px;
     right: 0;
 }
 
-.p9r-insert-btn--after.p9r-insert-btn--inline::before {
+:host([data-position="after"][data-inline]) .btn::before {
     top: -10px;
     left: 0;
 }
 
-.p9r-insert-btn:hover {
+.btn:hover {
     background: var(--primary-base, #4361ee);
     color: #fff;
     transform: scale(1.15);
 }
+`;
 
-.p9r-pin-menu {
+  // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/InsertButton.ts
+  var Metadata2 = {
+    css: style_default5,
+    template: template_default6
+  };
+
+  class InsertButton extends Component {
+    constructor() {
+      super(Metadata2);
+      this.shadowRoot.querySelector(".btn").addEventListener("click", () => {
+        this.dispatchEvent(new CustomEvent("insert-pick", { bubbles: true, composed: true }));
+      });
+    }
+    static create(position, onPick) {
+      const btn = document.createElement("cms-bag-insert-button");
+      btn.dataset.position = position;
+      btn.addEventListener("insert-pick", onPick);
+      return btn;
+    }
+    setVisible(visible) {
+      this.toggleAttribute("data-visible", visible);
+    }
+    setInline(inline) {
+      this.toggleAttribute("data-inline", inline);
+    }
+    setLocation(left, top) {
+      this.style.left = `${left}px`;
+      this.style.top = `${top}px`;
+    }
+  }
+  if (!customElements.get("cms-bag-insert-button")) {
+    customElements.define("cms-bag-insert-button", InsertButton);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/compute/insertButtonPosition.ts
+  function positionInsertButtons(btnBefore, btnAfter, rect, inline, show) {
+    btnBefore.setInline(inline);
+    btnAfter.setInline(inline);
+    if (!show.before && !show.after)
+      return;
+    const sx = window.scrollX;
+    const sy = window.scrollY;
+    if (inline) {
+      const cy = rect.top + sy + rect.height / 2 - 12;
+      if (show.before) {
+        btnBefore.setLocation(rect.left + sx - 12, cy);
+        btnBefore.setVisible(true);
+      }
+      if (show.after) {
+        btnAfter.setLocation(rect.right + sx - 12, cy);
+        btnAfter.setVisible(true);
+      }
+    } else {
+      const cx = rect.left + sx + rect.width / 2 - 12;
+      if (show.before) {
+        btnBefore.setLocation(cx, rect.top + sy - 12);
+        btnBefore.setVisible(true);
+      }
+      if (show.after) {
+        btnAfter.setLocation(cx, rect.bottom + sy - 12);
+        btnAfter.setVisible(true);
+      }
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/compute/anchor.ts
+  function resolveActionBarAnchor(target, editor) {
+    const element = editor?.getActionBarAnchor?.() ?? target;
+    return { rect: element.getBoundingClientRect(), element };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/insertBlankSibling.ts
+  function resolveDefaultTag(target) {
+    const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+    if (!parentId)
+      return "p";
+    const parentEditor = document.compIdentifierToEditor?.get(parentId);
+    if (!parentEditor)
+      return "p";
+    const slotName = target.getAttribute("slot");
+    const compSyncs = parentEditor.queryPanelChildren("p9r-comp-sync");
+    for (const cs of compSyncs) {
+      const template = cs.firstElementChild;
+      if (!template)
+        continue;
+      const tSlot = template.getAttribute("slot");
+      if ((slotName ?? null) === (tSlot ?? null)) {
+        return template.tagName.toLowerCase();
+      }
+    }
+    return "p";
+  }
+  function insertBlankSibling(target, position) {
+    const tag = resolveDefaultTag(target);
+    const fresh = document.createElement(tag);
+    const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+    if (parentId)
+      fresh.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, parentId);
+    const slot = target.getAttribute("slot");
+    if (slot)
+      fresh.setAttribute("slot", slot);
+    fresh.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
+    if (position === "before")
+      target.before(fresh);
+    else
+      target.after(fresh);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/InsertButtonsController.ts
+  class InsertButtonsController {
+    _btnBefore;
+    _btnAfter;
+    _target = null;
+    _editor = null;
+    _show = { before: false, after: false };
+    constructor(onPick) {
+      this._btnBefore = InsertButton.create("before", () => onPick("before"));
+      this._btnAfter = InsertButton.create("after", () => onPick("after"));
+    }
+    get elements() {
+      return [this._btnBefore, this._btnAfter];
+    }
+    attachTo(parent) {
+      parent?.appendChild(this._btnBefore);
+      parent?.appendChild(this._btnAfter);
+    }
+    resolveTarget(editor) {
+      let ed = editor;
+      let target = editor.target;
+      while (ed && target) {
+        const cfg = ed.actionBarConfiguration;
+        if (cfg.get("addBefore") || cfg.get("addAfter")) {
+          this._target = target;
+          this._editor = ed;
+          this._show = { before: !!cfg.get("addBefore"), after: !!cfg.get("addAfter") };
+          return;
+        }
+        const parentEd = findParentEditor(target);
+        if (!parentEd)
+          break;
+        ed = parentEd;
+        target = parentEd.target;
+      }
+      this._target = editor.target;
+      this._editor = editor;
+      this._show = { before: false, after: false };
+    }
+    position() {
+      if (!this._target)
+        return;
+      const { rect } = resolveActionBarAnchor(this._target, this._editor);
+      const isInline = this._target.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
+      positionInsertButtons(this._btnBefore, this._btnAfter, rect, isInline, this._show);
+    }
+    hide() {
+      this._btnBefore.setVisible(false);
+      this._btnAfter.setVisible(false);
+    }
+    insertBlank(position) {
+      if (!this._target)
+        return;
+      insertBlankSibling(this._target, position);
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/template.html
+  var template_default7 = `<div class="menu" id="menu">
+    <div class="title">Pin state</div>
+    <div class="items" id="items"></div>
+</div>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/style.css
+  var style_default6 = `:host {
     position: absolute;
     z-index: 10001;
+    display: block;
+}
+
+.menu {
     background: var(--bg-surface, #fff);
     border: 1px solid var(--border-default, #e2e8f0);
     border-radius: 10px;
@@ -11256,7 +11678,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     color: var(--text-main, #1e293b);
 }
 
-.p9r-pin-menu__title {
+.title {
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
@@ -11265,7 +11687,13 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     padding: 8px 10px 6px;
 }
 
-.p9r-pin-menu__item {
+.items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.item {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -11280,17 +11708,17 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     width: 100%;
 }
 
-.p9r-pin-menu__item:hover {
+.item:hover {
     background: var(--primary-muted, #eef2ff);
 }
 
-.p9r-pin-menu__item[data-active] {
+.item[data-active] {
     background: var(--primary-muted, #eef2ff);
     color: var(--primary-base, #4361ee);
     font-weight: 600;
 }
 
-.p9r-pin-menu__icon {
+.icon {
     display: inline-flex;
     width: 18px;
     height: 18px;
@@ -11298,96 +11726,297 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     flex-shrink: 0;
 }
 
-.p9r-pin-menu__icon svg {
+.icon svg {
     width: 100%;
     height: 100%;
 }
 
-.p9r-pin-menu__item[data-active] .p9r-pin-menu__icon {
+.item[data-active] .icon {
     opacity: 1;
 }
 
-.p9r-pin-menu__label {
+.label {
     flex: 1;
 }
 `;
 
-  // src/control/components/editor/EditorSystem/BlocActions/insert-btn.html
-  var insert_btn_default2 = `<button class="p9r-insert-btn">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="12" y1="5" x2="12" y2="19"/>
-        <line x1="5" y1="12" x2="19" y2="12"/>
-    </svg>
-</button>
-`;
+  // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/PinMenu.ts
+  var Metadata3 = {
+    css: style_default6,
+    template: template_default7
+  };
 
-  // src/control/components/editor/EditorSystem/BlocActions/positioning.ts
-  function computeGroupPosition(input) {
-    const { rect, barWidth, barHeight, mouseX, mouseY } = input;
-    const margin = 8;
-    const centerY = rect.top + rect.height / 2;
-    let vAnchor = mouseY < centerY ? "top" : "bottom";
-    if (vAnchor === "top" && rect.top - barHeight < margin && rect.bottom + barHeight <= window.innerHeight - margin) {
-      vAnchor = "bottom";
-    } else if (vAnchor === "bottom" && rect.bottom + barHeight > window.innerHeight - margin && rect.top - barHeight >= margin) {
-      vAnchor = "top";
+  class PinMenu extends Component {
+    _items;
+    constructor() {
+      super(Metadata3);
+      this._items = this.shadowRoot.getElementById("items");
     }
-    const halfWidth = barWidth / 2;
-    let x = mouseX + window.scrollX - halfWidth;
-    const minRectX = rect.left + window.scrollX;
-    const maxRectX = rect.right + window.scrollX - barWidth;
-    x = Math.max(minRectX, Math.min(maxRectX, x));
-    const minViewX = window.scrollX + margin;
-    const maxViewX = window.scrollX + window.innerWidth - barWidth - margin;
-    x = Math.max(minViewX, Math.min(maxViewX, x));
-    let y = vAnchor === "top" ? rect.top + window.scrollY - barHeight : rect.bottom + window.scrollY;
-    const minViewY = window.scrollY + margin;
-    const maxViewY = window.scrollY + window.innerHeight - barHeight - margin;
-    y = Math.max(minViewY, Math.min(maxViewY, y));
-    return { x, y, vAnchor };
-  }
-  function positionInsertButtons(btnBefore, btnAfter, rect, inline, show) {
-    btnBefore.classList.toggle("p9r-insert-btn--inline", inline);
-    btnAfter.classList.toggle("p9r-insert-btn--inline", inline);
-    if (!show.before && !show.after)
-      return;
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    if (inline) {
-      const centerY = rect.top + scrollY + rect.height / 2 - 12;
-      if (show.before) {
-        btnBefore.style.left = `${rect.left + scrollX - 12}px`;
-        btnBefore.style.top = `${centerY}px`;
-        btnBefore.style.display = "flex";
-      }
-      if (show.after) {
-        btnAfter.style.left = `${rect.right + scrollX - 12}px`;
-        btnAfter.style.top = `${centerY}px`;
-        btnAfter.style.display = "flex";
-      }
-    } else {
-      const centerX = rect.left + scrollX + rect.width / 2 - 12;
-      if (show.before) {
-        btnBefore.style.left = `${centerX}px`;
-        btnBefore.style.top = `${rect.top + scrollY - 12}px`;
-        btnBefore.style.display = "flex";
-      }
-      if (show.after) {
-        btnAfter.style.left = `${centerX}px`;
-        btnAfter.style.top = `${rect.bottom + scrollY - 12}px`;
-        btnAfter.style.display = "flex";
+    static create(items) {
+      const menu = document.createElement("cms-bag-pin-menu");
+      menu.setItems(items);
+      return menu;
+    }
+    setItems(items) {
+      this._items.innerHTML = "";
+      for (const item of items) {
+        this._items.appendChild(this._renderItem(item));
       }
     }
+    setPosition(left, top) {
+      this.style.left = `${left}px`;
+      this.style.top = `${top}px`;
+    }
+    _renderItem(item) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "item";
+      btn.innerHTML = `<span class="icon">${ICON_PIN}</span><span class="label"></span>`;
+      btn.querySelector(".label").textContent = item.label;
+      const setActive = () => btn.toggleAttribute("data-active", item.isPinned);
+      setActive();
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        item.onToggle();
+        setActive();
+      });
+      return btn;
+    }
+  }
+  if (!customElements.get("cms-bag-pin-menu")) {
+    customElements.define("cms-bag-pin-menu", PinMenu);
   }
 
-  // src/control/components/editor/EditorSystem/BlocActions/anchor.ts
-  function resolveActionBarAnchor(target, editor) {
-    const element = editor?.getActionBarAnchor?.() ?? target;
-    return { rect: element.getBoundingClientRect(), element };
+  // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/PinController.ts
+  class PinController {
+    _host;
+    _getEditor;
+    _menu = null;
+    constructor(_host, _getEditor) {
+      this._host = _host;
+      this._getEditor = _getEditor;
+    }
+    get menu() {
+      return this._menu;
+    }
+    handleClick() {
+      const editor = this._getEditor();
+      const syncs = editor?.stateSyncs ?? [];
+      if (syncs.length === 0)
+        return;
+      if (syncs.length === 1) {
+        this._toggle(syncs[0]);
+        refreshPinButton(this._host, editor);
+        return;
+      }
+      this._toggleMenu(syncs);
+    }
+    close() {
+      this._menu?.remove();
+      this._menu = null;
+    }
+    _toggle(sync) {
+      sync.toggle();
+      this._getEditor()?.notifyPinStateChanged(sync);
+    }
+    _toggleMenu(syncs) {
+      if (this._menu) {
+        this.close();
+        return;
+      }
+      const btn = this._host.querySelector('[data-action="pin-state"]');
+      if (!btn)
+        return;
+      const menu = PinMenu.create(syncs.map((sync) => ({
+        label: sync.label,
+        isPinned: sync.isPinned,
+        onToggle: () => {
+          this._toggle(sync);
+          refreshPinButton(this._host, this._getEditor());
+        }
+      })));
+      const rect = btn.getBoundingClientRect();
+      menu.setPosition(rect.left, rect.bottom);
+      document.body.appendChild(menu);
+      this._menu = menu;
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/events/actionDispatcher.ts
+  function createActionDispatcher(deps) {
+    return (e) => {
+      switch (e.detail.action) {
+        case "delete":
+          return deps.onDelete();
+        case "edit":
+          return deps.onEdit();
+        case "duplicate":
+          return deps.onDuplicate();
+        case "changeComponent":
+          return deps.onChangeComponent();
+        case "pin-state":
+          return deps.onPinClick();
+        case "select-parent":
+          return deps.onSelectParent();
+        default: {
+          const custom = deps.editor()?.customActions.find((a2) => a2.action === e.detail.action);
+          custom?.handler();
+        }
+      }
+    };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/events/keyboardHandler.ts
+  function createKeyDownHandler(deps) {
+    return (e) => {
+      if (e.key === "Escape") {
+        deps.onClose();
+        return;
+      }
+      if (e.key !== "Delete" && e.key !== "Backspace")
+        return;
+      const target = deps.target();
+      if (!target)
+        return;
+      const active = document.activeElement;
+      if (active && active.isContentEditable)
+        return;
+      if (!deps.canDelete())
+        return;
+      e.preventDefault();
+      target.remove();
+      deps.onClose();
+    };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/events/pointerHandlers.ts
+  function createPointerHandlers(deps) {
+    let lastX = 0;
+    let lastY = 0;
+    let raf = null;
+    const onMouseMove = (e) => {
+      lastX = e.clientX;
+      lastY = e.clientY;
+      if (raf !== null)
+        return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        deps.onReflow();
+      });
+    };
+    const onClickOutside = (e) => {
+      const t = e.target;
+      if (deps.host.contains(t))
+        return;
+      if (deps.pinMenu()?.contains(t))
+        return;
+      if (deps.insertButtons().includes(t))
+        return;
+      if (deps.target()?.contains(t))
+        return;
+      deps.onClose();
+    };
+    const onLeave = (e) => {
+      const to = e.relatedTarget;
+      if (deps.host.contains(to))
+        return;
+      if (deps.pinMenu()?.contains(to))
+        return;
+      if (deps.insertButtons().includes(to))
+        return;
+      const parentEditor = to?.closest?.(`[${p9r.attr.EDITOR.IS_EDITOR}]`);
+      const tgt = deps.target();
+      if (parentEditor && tgt && parentEditor.contains(tgt)) {
+        parentEditor.dispatchEvent(new MouseEvent("mouseenter", {
+          clientX: e.clientX,
+          clientY: e.clientY,
+          bubbles: false
+        }));
+        return;
+      }
+      deps.onClose();
+    };
+    return {
+      onLeave,
+      onMouseMove,
+      onClickOutside,
+      lastMouse: () => ({ x: lastX, y: lastY }),
+      cancelPendingReflow: () => {
+        if (raf !== null) {
+          cancelAnimationFrame(raf);
+          raf = null;
+        }
+      }
+    };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/events/EventManager.ts
+  class EventManager {
+    deps;
+    _attached = false;
+    _onKeyDown;
+    _onActionClick;
+    _pointer;
+    constructor(deps) {
+      this.deps = deps;
+      this._onKeyDown = createKeyDownHandler(deps);
+      this._onActionClick = createActionDispatcher(deps);
+      this._pointer = createPointerHandlers(deps);
+    }
+    attach() {
+      if (this._attached)
+        return;
+      this.deps.host.addEventListener("action-click", this._onActionClick);
+      this.deps.host.addEventListener("mouseleave", this._pointer.onLeave);
+      this.deps.hoverEl()?.addEventListener("mouseleave", this._pointer.onLeave);
+      this.deps.hoverEl()?.addEventListener("mousemove", this._pointer.onMouseMove);
+      window.addEventListener("keydown", this._onKeyDown);
+      window.addEventListener("click", this._pointer.onClickOutside);
+      this._attached = true;
+    }
+    detach() {
+      if (!this._attached)
+        return;
+      this.deps.host.removeEventListener("action-click", this._onActionClick);
+      this.deps.host.removeEventListener("mouseleave", this._pointer.onLeave);
+      this.deps.hoverEl()?.removeEventListener("mouseleave", this._pointer.onLeave);
+      this.deps.hoverEl()?.removeEventListener("mousemove", this._pointer.onMouseMove);
+      window.removeEventListener("keydown", this._onKeyDown);
+      window.removeEventListener("click", this._pointer.onClickOutside);
+      this._pointer.cancelPendingReflow();
+      this._attached = false;
+    }
+    lastMouse() {
+      return this._pointer.lastMouse();
+    }
+    rebindHover(prev) {
+      if (!this._attached)
+        return;
+      prev?.removeEventListener("mouseleave", this._pointer.onLeave);
+      prev?.removeEventListener("mousemove", this._pointer.onMouseMove);
+      const next = this.deps.hoverEl();
+      next?.addEventListener("mouseleave", this._pointer.onLeave);
+      next?.addEventListener("mousemove", this._pointer.onMouseMove);
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/duplicateSibling.ts
+  function duplicateSibling(target, position) {
+    const clone = target.cloneNode(true);
+    clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+    clone.classList.remove("p9r-active");
+    clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach((el) => {
+      el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
+      el.classList.remove("p9r-active");
+    });
+    if (position === "before")
+      target.before(clone);
+    else
+      target.after(clone);
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/template.html
-  var template_default5 = `<dialog id="dialog">
+  var template_default8 = `<dialog id="dialog">
     <div class="container">
         <header class="header">
             <nav class="tabs" id="tabs">
@@ -11411,7 +12040,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/style.css
-  var style_default4 = `:host {
+  var style_default7 = `:host {
     --bg-main: rgba(255, 255, 255, 0.95);
     --bg-card: #ffffff;
 
@@ -11637,7 +12266,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/template.html
-  var template_default6 = `<button type="button" class="card">
+  var template_default9 = `<button type="button" class="card">
     <span class="icon"><slot name="icon"></slot></span>
     <span class="text">
         <span class="title"><slot name="title"></slot></span>
@@ -11647,7 +12276,7 @@ form[method="dialog"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/style.css
-  var style_default5 = `:host {
+  var style_default8 = `:host {
     display: contents;
 }
 
@@ -11721,14 +12350,14 @@ form[method="dialog"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/Card.ts
-  var Metadata = {
-    css: style_default5,
-    template: template_default6
+  var Metadata4 = {
+    css: style_default8,
+    template: template_default9
   };
 
   class Card extends Component {
     constructor() {
-      super(Metadata);
+      super(Metadata4);
     }
     static create(opts) {
       const card = document.createElement("cms-bloc-library-card");
@@ -11769,14 +12398,14 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/template.html
-  var template_default7 = `<div class="empty-state">
+  var template_default10 = `<div class="empty-state">
     <slot name="icon"></slot>
     <p><slot name="message"></slot></p>
 </div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/style.css
-  var style_default6 = `:host {
+  var style_default9 = `:host {
     display: contents;
 }
 
@@ -11805,14 +12434,14 @@ form[method="dialog"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/EmptyState.ts
-  var Metadata2 = {
-    css: style_default6,
-    template: template_default7
+  var Metadata5 = {
+    css: style_default9,
+    template: template_default10
   };
 
   class EmptyState extends Component {
     constructor() {
-      super(Metadata2);
+      super(Metadata5);
     }
     static create(opts) {
       const el = document.createElement("cms-bloc-library-empty-state");
@@ -11937,9 +12566,9 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
-  var Metadata3 = {
-    css: style_default4,
-    template: template_default5
+  var Metadata6 = {
+    css: style_default7,
+    template: template_default8
   };
 
   class BlocLibrary extends Component {
@@ -11952,7 +12581,7 @@ form[method="dialog"] {
     _blocMeta = new Map;
     _dataLoaded = false;
     constructor() {
-      super(Metadata3);
+      super(Metadata6);
     }
     connectedCallback() {
       const s2 = this.shadowRoot;
@@ -12089,57 +12718,14 @@ form[method="dialog"] {
     customElements.define("cms-bloc-library", BlocLibrary);
   }
 
-  // src/control/components/editor/EditorSystem/BlocActions/actions.ts
-  function duplicateSibling(target, position) {
-    const clone = target.cloneNode(true);
-    clone.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-    clone.classList.remove("p9r-active");
-    clone.querySelectorAll(`[${p9r.attr.EDITOR.IS_EDITOR}]`).forEach((el) => {
-      el.removeAttribute(p9r.attr.EDITOR.IS_EDITOR);
-      el.classList.remove("p9r-active");
-    });
-    if (position === "before")
-      target.before(clone);
-    else
-      target.after(clone);
-  }
-  function resolveDefaultTag(target) {
-    const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-    if (!parentId)
-      return "p";
-    const parentEditor = document.compIdentifierToEditor?.get(parentId);
-    if (!parentEditor)
-      return "p";
-    const slotName = target.getAttribute("slot");
-    const compSyncs = parentEditor.queryPanelChildren("p9r-comp-sync");
-    for (const cs of compSyncs) {
-      const template = cs.firstElementChild;
-      if (!template)
-        continue;
-      const tSlot = template.getAttribute("slot");
-      if ((slotName ?? null) === (tSlot ?? null)) {
-        return template.tagName.toLowerCase();
-      }
-    }
-    return "p";
-  }
-  function insertBlankSibling(target, position) {
-    const tag = resolveDefaultTag(target);
-    const fresh = document.createElement(tag);
-    inheritLayoutAttrs(target, fresh);
-    fresh.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
-    if (position === "before")
-      target.before(fresh);
-    else
-      target.after(fresh);
-  }
-  function inheritLayoutAttrs(source, dest) {
-    if (source.hasAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER)) {
-      dest.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, source.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER));
-    }
-    if (source.hasAttribute("slot")) {
-      dest.setAttribute("slot", source.getAttribute("slot"));
-    }
+  // src/control/components/editor/EditorSystem/BlocActions/domain/openChangeComponentPicker.ts
+  function inherit(source, dest) {
+    const parentId = source.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+    if (parentId)
+      dest.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, parentId);
+    const slot = source.getAttribute("slot");
+    if (slot)
+      dest.setAttribute("slot", slot);
   }
   function openChangeComponentPicker(target, onDone) {
     const library = BlocLibrary.open();
@@ -12154,12 +12740,12 @@ form[method="dialog"] {
       } else if (detail.type === "snippet") {
         const newEl = document.createElement("w13c-snippet");
         newEl.setAttribute("identifier", detail.identifier);
-        inheritLayoutAttrs(target, newEl);
+        inherit(target, newEl);
         newEl.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
         target.replaceWith(newEl);
       } else {
         const newEl = document.createElement(detail.id);
-        inheritLayoutAttrs(target, newEl);
+        inherit(target, newEl);
         newEl.setAttribute(p9r.attr.EDITOR.IS_CREATING, "true");
         target.replaceWith(newEl);
       }
@@ -12167,564 +12753,246 @@ form[method="dialog"] {
     });
   }
 
+  // src/control/components/editor/EditorSystem/BlocActions/events/buildEventManager.ts
+  function buildEventManager(host, accessors, pin, insertBtns, cb) {
+    return new EventManager({
+      host,
+      target: accessors.target,
+      editor: accessors.editor,
+      hoverEl: accessors.hoverEl,
+      pinMenu: () => pin.menu,
+      insertButtons: () => insertBtns.elements,
+      canDelete: () => !!accessors.editor()?.actionBarConfiguration.get("delete"),
+      onClose: cb.onClose,
+      onReflow: cb.onReflow,
+      onDelete: () => {
+        accessors.target()?.remove();
+        cb.onClose();
+      },
+      onEdit: () => accessors.editor()?.showConfigPanel(),
+      onDuplicate: () => {
+        const t = accessors.target();
+        if (t)
+          cb.withCooldown(() => duplicateSibling(t, "after"));
+      },
+      onChangeComponent: () => {
+        const t = accessors.target();
+        if (t)
+          openChangeComponentPicker(t, cb.onClose);
+      },
+      onPinClick: () => pin.handleClick(),
+      onSelectParent: cb.onSelectParent
+    });
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/lifecycle/navigate.ts
+  function switchToEditor(c, target) {
+    const t = c.host.style.transform;
+    const va = c.host.getAttribute("data-v-anchor");
+    c.positionLocked = true;
+    c.setEditor(target);
+    c.open();
+    c.host.style.transform = t;
+    if (va !== null) {
+      c.host.setAttribute("data-v-anchor", va);
+      c.lastVAnchor = va;
+      c.breadcrumb.refinePosition(c.host.getBoundingClientRect());
+    }
+  }
+  function selectParent(c) {
+    if (!c.target)
+      return;
+    const p = findParentEditor(c.target);
+    if (p)
+      switchToEditor(c, p);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/compute/groupPosition.ts
+  function computeGroupPosition(input) {
+    const { rect, barWidth, barHeight, mouseX, mouseY } = input;
+    const margin = 8;
+    const centerY = rect.top + rect.height / 2;
+    let vAnchor = mouseY < centerY ? "top" : "bottom";
+    if (vAnchor === "top" && rect.top - barHeight < margin && rect.bottom + barHeight <= window.innerHeight - margin) {
+      vAnchor = "bottom";
+    } else if (vAnchor === "bottom" && rect.bottom + barHeight > window.innerHeight - margin && rect.top - barHeight >= margin) {
+      vAnchor = "top";
+    }
+    const halfWidth = barWidth / 2;
+    let x = mouseX + window.scrollX - halfWidth;
+    const minRectX = rect.left + window.scrollX;
+    const maxRectX = rect.right + window.scrollX - barWidth;
+    x = Math.max(minRectX, Math.min(maxRectX, x));
+    const minViewX = window.scrollX + margin;
+    const maxViewX = window.scrollX + window.innerWidth - barWidth - margin;
+    x = Math.max(minViewX, Math.min(maxViewX, x));
+    let y = vAnchor === "top" ? rect.top + window.scrollY - barHeight : rect.bottom + window.scrollY;
+    const minViewY = window.scrollY + margin;
+    const maxViewY = window.scrollY + window.innerHeight - barHeight - margin;
+    y = Math.max(minViewY, Math.min(maxViewY, y));
+    return { x, y, vAnchor };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/compute/applyBagPosition.ts
+  function applyBagPosition(bag, target, editor, mouseX, mouseY, lastVAnchor) {
+    const { rect, element } = resolveActionBarAnchor(target, editor);
+    const my = mouseY ?? (lastVAnchor === "top" ? rect.top : rect.bottom);
+    const { x, y, vAnchor } = computeGroupPosition({
+      rect,
+      barWidth: bag.offsetWidth,
+      barHeight: bag.offsetHeight,
+      mouseX,
+      mouseY: my
+    });
+    bag.setAttribute("data-v-anchor", vAnchor);
+    bag.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    bag.style.visibility = "visible";
+    bag.style.opacity = "1";
+    bag.style.pointerEvents = "auto";
+    return { vAnchor, anchorEl: element };
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/lifecycle/reflow.ts
+  function reflow(c) {
+    if (!c.target)
+      return;
+    if (!c.positionLocked) {
+      const m = c.events.lastMouse();
+      const r = applyBagPosition(c.host, c.target, c.editor, m.x, m.y, c.lastVAnchor);
+      c.lastVAnchor = r.vAnchor;
+      c.hoverEl = r.anchorEl;
+    }
+    c.insertBtns.hide();
+    c.insertBtns.position();
+    c.breadcrumb.refinePosition(c.host.getBoundingClientRect());
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/lifecycle/open.ts
+  function open(c, mouseX, mouseY) {
+    if (!c.editor || !c.target || c.cooldown)
+      return;
+    c.renderBar();
+    c.breadcrumb.update(c.editor);
+    const r = applyBagPosition(c.host, c.target, c.editor, mouseX ?? c.events.lastMouse().x, mouseY ?? null, c.lastVAnchor);
+    c.lastVAnchor = r.vAnchor;
+    c.hoverEl = r.anchorEl;
+    c.insertBtns.position();
+    c.ro.disconnect();
+    c.ro.observe(c.target);
+    if (r.anchorEl !== c.target)
+      c.ro.observe(r.anchorEl);
+    c.target.classList.add("p9r-active");
+    c.events.attach();
+    c.breadcrumb.refinePosition(c.host.getBoundingClientRect());
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/lifecycle/isInteractive.ts
+  function isInteractive(editor) {
+    const someEnabled = Array.from(editor.actionBarConfiguration.values()).some((v) => v);
+    return someEnabled || editor.customActions.length > 0 || editor.stateSyncs.length > 0 || editor.hasConfigPanel;
+  }
+
+  // src/control/components/editor/EditorSystem/BlocActions/domain/lifecycle/BagController.ts
+  class BagController {
+    host;
+    target = null;
+    editor = null;
+    hoverEl = null;
+    cooldown = false;
+    positionLocked = false;
+    lastVAnchor = "bottom";
+    lastConfigKey = "";
+    breadcrumb;
+    insertBtns;
+    pin;
+    events;
+    ro;
+    constructor(host) {
+      this.host = host;
+      const s2 = document.createElement("style");
+      s2.textContent = style_default3;
+      host.shadowRoot.appendChild(s2);
+      this.breadcrumb = new BreadcrumbController(host, (ed) => switchToEditor(this, ed));
+      this.insertBtns = new InsertButtonsController((pos) => this.withCooldown(() => this.insertBtns.insertBlank(pos)));
+      this.pin = new PinController(host, () => this.editor);
+      this.ro = new ResizeObserver(() => reflow(this));
+      this.events = buildEventManager(host, { target: () => this.target, editor: () => this.editor, hoverEl: () => this.hoverEl }, this.pin, this.insertBtns, {
+        onClose: () => this.close(),
+        onReflow: () => reflow(this),
+        withCooldown: (fn) => this.withCooldown(fn),
+        onSelectParent: () => selectParent(this)
+      });
+    }
+    setEditor(editor) {
+      if (!isInteractive(editor)) {
+        this.close();
+        this.editor = null;
+        this.target = null;
+        return;
+      }
+      const prev = this.hoverEl;
+      this.target?.classList.remove("p9r-active");
+      this.editor = editor;
+      this.target = editor.target;
+      this.hoverEl = editor.getActionBarAnchor?.() ?? editor.target;
+      this.events.rebindHover(prev);
+      this.insertBtns.resolveTarget(editor);
+    }
+    open(mouseX, mouseY) {
+      open(this, mouseX, mouseY);
+    }
+    close() {
+      this.pin.close();
+      this.target?.classList.remove("p9r-active");
+      document.querySelectorAll(".p9r-breadcrumb-hover").forEach((el) => el.classList.remove("p9r-breadcrumb-hover"));
+      this.host.style.cssText = "visibility:hidden;opacity:0;pointer-events:none;";
+      this.insertBtns.hide();
+      this.ro.disconnect();
+      this.events.detach();
+      this.positionLocked = false;
+    }
+    renderBar() {
+      if (!this.editor)
+        return;
+      const r = renderActionBar(this.host, this.editor, findParentEditor(this.target), this.lastConfigKey);
+      if (r) {
+        this.lastConfigKey = r.configKey;
+        refreshPinButton(this.host, this.editor);
+      }
+    }
+    withCooldown(fn) {
+      fn();
+      this.close();
+      this.cooldown = true;
+      requestAnimationFrame(() => {
+        this.cooldown = false;
+      });
+    }
+  }
+
   // src/control/components/editor/EditorSystem/BlocActions/BlocActions.ts
   class BlocActions extends s {
-    _target = null;
-    _editor = null;
-    _hoverEl = null;
-    _insertTarget = null;
-    _insertEditor = null;
-    _insertConfig = { before: false, after: false };
-    _lastConfigKey = "";
-    _btnBefore;
-    _btnAfter;
-    _cooldown = false;
-    _resizeObserver;
-    _pinMenu = null;
-    _metaEl;
-    _positionLocked = false;
+    _ctrl;
     constructor() {
       super();
-      const style = document.createElement("style");
-      style.textContent = style_default3;
-      this.shadowRoot.appendChild(style);
-      this._metaEl = document.createElement("div");
-      this._metaEl.className = "p9r-bag-meta";
-      this.shadowRoot.insertBefore(this._metaEl, this.shadowRoot.querySelector("nav"));
-      BlocActions._injectInsertBtnStyles();
-      this._btnBefore = this._createInsertButton("before");
-      this._btnAfter = this._createInsertButton("after");
-      this._btnBefore.addEventListener("click", () => this._insertBlank("before"));
-      this._btnAfter.addEventListener("click", () => this._insertBlank("after"));
-      this._resizeObserver = new ResizeObserver(() => this._reflow());
-    }
-    static _stylesInjected = false;
-    static _injectInsertBtnStyles() {
-      if (BlocActions._stylesInjected)
-        return;
-      const style = document.createElement("style");
-      style.textContent = insert_btn_default;
-      document.head.appendChild(style);
-      BlocActions._stylesInjected = true;
-    }
-    _createInsertButton(position) {
-      const wrapper = document.createElement("div");
-      wrapper.innerHTML = insert_btn_default2.trim();
-      const btn = wrapper.firstElementChild;
-      btn.classList.add(`p9r-insert-btn--${position}`);
-      return btn;
+      this._ctrl = new BagController(this);
     }
     connectedCallback() {
       super.connectedCallback();
-      this.parentElement?.appendChild(this._btnBefore);
-      this.parentElement?.appendChild(this._btnAfter);
+      this._ctrl.insertBtns.attachTo(this.parentElement);
     }
     setEditor(editor) {
-      const allDisabled = Array.from(editor.actionBarConfiguration.values()).every((v) => v === false);
-      const hasCustomActions = editor.customActions.length > 0;
-      const hasStateSyncs = editor.stateSyncs.length > 0;
-      if (allDisabled && !hasCustomActions && !hasStateSyncs && !editor.hasConfigPanel) {
-        this.close();
-        this._editor = null;
-        this._target = null;
-        return;
-      }
-      if (this._listenersAttached) {
-        this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
-        this._hoverEl?.removeEventListener("mousemove", this.handleMouseMove);
-      }
-      this._target?.classList.remove("p9r-active");
-      this._editor = editor;
-      this._target = editor.target;
-      this._hoverEl = editor.getActionBarAnchor?.() ?? editor.target;
-      if (this._listenersAttached) {
-        this._hoverEl.addEventListener("mouseleave", this.handleLeave);
-        this._hoverEl.addEventListener("mousemove", this.handleMouseMove);
-      }
-      this._resolveInsertTarget();
-    }
-    _resolveInsertTarget() {
-      let ed = this._editor;
-      let target = this._target;
-      while (ed && target) {
-        const cfg = ed.actionBarConfiguration;
-        if (cfg.get("addBefore") || cfg.get("addAfter")) {
-          this._insertTarget = target;
-          this._insertEditor = ed;
-          this._insertConfig = { before: !!cfg.get("addBefore"), after: !!cfg.get("addAfter") };
-          return;
-        }
-        const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-        if (!parentId)
-          break;
-        const parentEd = document.compIdentifierToEditor?.get(parentId);
-        if (!parentEd)
-          break;
-        ed = parentEd;
-        target = parentEd.target;
-      }
-      this._insertTarget = this._target;
-      this._insertEditor = this._editor;
-      this._insertConfig = { before: false, after: false };
+      this._ctrl.setEditor(editor);
     }
     open(mouseX, mouseY) {
-      if (!this._editor || !this._target || this._cooldown)
-        return;
-      this.smartRender();
-      this._updateMeta();
-      const targetRect = this._target.getBoundingClientRect();
-      const { rect: anchorRect, element: anchorEl } = resolveActionBarAnchor(this._target, this._editor);
-      this._hoverEl = anchorEl;
-      const mx = mouseX ?? this._lastMouseX;
-      const my = mouseY ?? (this._lastVAnchor === "top" ? anchorRect.top : anchorRect.bottom);
-      const { x, y, vAnchor } = computeGroupPosition({
-        rect: anchorRect,
-        barWidth: this.offsetWidth,
-        barHeight: this.offsetHeight,
-        mouseX: mx,
-        mouseY: my
-      });
-      this._lastMouseX = mx;
-      this._lastMouseY = my;
-      this._lastVAnchor = vAnchor;
-      this.setAttribute("data-v-anchor", vAnchor);
-      this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      this.style.visibility = "visible";
-      this.style.opacity = "1";
-      this.style.pointerEvents = "auto";
-      this._positionInsertButtons(targetRect);
-      this._resizeObserver.disconnect();
-      this._resizeObserver.observe(this._target);
-      if (anchorEl && anchorEl !== this._target) {
-        this._resizeObserver.observe(anchorEl);
-      }
-      this._target.classList.add("p9r-active");
-      this.addEventListeners();
-      this._refineBreadcrumbPosition();
+      this._ctrl.open(mouseX, mouseY);
     }
     close() {
-      this._closePinMenu();
-      this._target?.classList.remove("p9r-active");
-      document.querySelectorAll(".p9r-breadcrumb-hover").forEach((el) => el.classList.remove("p9r-breadcrumb-hover"));
-      this.style.visibility = "hidden";
-      this.style.opacity = "0";
-      this.style.pointerEvents = "none";
-      this._btnBefore.style.display = "none";
-      this._btnAfter.style.display = "none";
-      this._resizeObserver.disconnect();
-      this.removeEventListeners();
-      this._positionLocked = false;
-    }
-    _lastMouseX = 0;
-    _lastMouseY = 0;
-    _lastVAnchor = "bottom";
-    _mouseMoveRaf = null;
-    _reflow() {
-      if (!this._target)
-        return;
-      const targetRect = this._target.getBoundingClientRect();
-      if (!this._positionLocked) {
-        const { rect: anchorRect } = resolveActionBarAnchor(this._target, this._editor);
-        const { x, y, vAnchor } = computeGroupPosition({
-          rect: anchorRect,
-          barWidth: this.offsetWidth,
-          barHeight: this.offsetHeight,
-          mouseX: this._lastMouseX,
-          mouseY: this._lastMouseY
-        });
-        this._lastVAnchor = vAnchor;
-        this.setAttribute("data-v-anchor", vAnchor);
-        this.style.transform = `translate3d(${x}px, ${y}px, 0)`;
-      }
-      this._btnBefore.style.display = "none";
-      this._btnAfter.style.display = "none";
-      this._positionInsertButtons(targetRect);
-      this._refineBreadcrumbPosition();
-    }
-    handleMouseMove = (e) => {
-      this._lastMouseX = e.clientX;
-      this._lastMouseY = e.clientY;
-      if (this._mouseMoveRaf !== null)
-        return;
-      this._mouseMoveRaf = requestAnimationFrame(() => {
-        this._mouseMoveRaf = null;
-        if (!this._listenersAttached)
-          return;
-        this._reflow();
-      });
-    };
-    _positionInsertButtons(_rect) {
-      if (!this._insertTarget)
-        return;
-      const { rect: insertRect } = resolveActionBarAnchor(this._insertTarget, this._insertEditor);
-      const isInline = this._insertTarget.hasAttribute(p9r.attr.ACTION.INLINE_ADDING);
-      positionInsertButtons(this._btnBefore, this._btnAfter, insertRect, isInline, this._insertConfig);
-    }
-    _insertBlank(position) {
-      if (!this._insertTarget)
-        return;
-      insertBlankSibling(this._insertTarget, position);
-      this.close();
-      this._cooldown = true;
-      requestAnimationFrame(() => {
-        this._cooldown = false;
-      });
-    }
-    _duplicate() {
-      if (!this._target)
-        return;
-      duplicateSibling(this._target, "after");
-      this.close();
-      this._cooldown = true;
-      requestAnimationFrame(() => {
-        this._cooldown = false;
-      });
-    }
-    _changeComponent() {
-      if (!this._target)
-        return;
-      openChangeComponentPicker(this._target, () => this.close());
-    }
-    _listenersAttached = false;
-    addEventListeners() {
-      if (this._listenersAttached)
-        return;
-      this.addEventListener("action-click", this.handleBlocActionClick);
-      this.addEventListener("mouseleave", this.handleLeave);
-      this._hoverEl?.addEventListener("mouseleave", this.handleLeave);
-      this._hoverEl?.addEventListener("mousemove", this.handleMouseMove);
-      this._btnBefore.addEventListener("mouseenter", this.handleInsertBtnEnter);
-      this._btnAfter.addEventListener("mouseenter", this.handleInsertBtnEnter);
-      window.addEventListener("keydown", this.handleKeyDown);
-      window.addEventListener("click", this.handleClickOutside);
-      this._listenersAttached = true;
-    }
-    removeEventListeners() {
-      if (!this._listenersAttached)
-        return;
-      this.removeEventListener("action-click", this.handleBlocActionClick);
-      this.removeEventListener("mouseleave", this.handleLeave);
-      this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
-      this._hoverEl?.removeEventListener("mousemove", this.handleMouseMove);
-      this._btnBefore.removeEventListener("mouseenter", this.handleInsertBtnEnter);
-      this._btnAfter.removeEventListener("mouseenter", this.handleInsertBtnEnter);
-      window.removeEventListener("keydown", this.handleKeyDown);
-      window.removeEventListener("click", this.handleClickOutside);
-      if (this._mouseMoveRaf !== null) {
-        cancelAnimationFrame(this._mouseMoveRaf);
-        this._mouseMoveRaf = null;
-      }
-      this._listenersAttached = false;
-    }
-    handleInsertBtnEnter = () => {};
-    handleKeyDown = (e) => {
-      if (e.key === "Escape")
-        this.close();
-      if ((e.key === "Delete" || e.key === "Backspace") && this._target) {
-        const active = document.activeElement;
-        if (active && active.isContentEditable)
-          return;
-        const canDelete = this._editor?.actionBarConfiguration.get("delete");
-        if (!canDelete)
-          return;
-        e.preventDefault();
-        this._target.remove();
-        this.close();
-      }
-    };
-    handleClickOutside = (e) => {
-      const target = e.target;
-      if (this.contains(target))
-        return;
-      if (this._pinMenu?.contains(target))
-        return;
-      if (target === this._btnBefore || target === this._btnAfter)
-        return;
-      if (this._target?.contains(target))
-        return;
-      this.close();
-    };
-    handleLeave = (e) => {
-      const toElement = e.relatedTarget;
-      if (this.contains(toElement))
-        return;
-      if (this._pinMenu?.contains(toElement))
-        return;
-      if (toElement === this._btnBefore || toElement === this._btnAfter)
-        return;
-      const parentEditor = toElement?.closest?.(`[${p9r.attr.EDITOR.IS_EDITOR}]`);
-      if (parentEditor && parentEditor.contains(this._target)) {
-        parentEditor.dispatchEvent(new MouseEvent("mouseenter", { clientX: e.clientX, clientY: e.clientY, bubbles: false }));
-        return;
-      }
-      this.close();
-    };
-    handleBlocActionClick = (e) => {
-      switch (e.detail.action) {
-        case "delete":
-          this._target?.remove();
-          this.close();
-          break;
-        case "edit":
-          this._editor?.showConfigPanel();
-          break;
-        case "duplicate":
-          this._duplicate();
-          break;
-        case "changeComponent":
-          this._changeComponent();
-          break;
-        case "pin-state":
-          this._handlePinClick();
-          break;
-        case "select-parent":
-          this._selectParent();
-          break;
-        default: {
-          const custom = this._editor?.customActions.find((a2) => a2.action === e.detail.action);
-          custom?.handler();
-        }
-      }
-    };
-    _parentEditor() {
-      const parentId = this._target?.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-      if (!parentId)
-        return null;
-      return document.compIdentifierToEditor?.get(parentId) ?? null;
-    }
-    _ancestorChain() {
-      if (!this._editor || !this._target)
-        return [];
-      const chain = [this._editor];
-      let el = this._target;
-      for (let i = 0;i < 20; i++) {
-        const pid = el.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-        if (!pid)
-          break;
-        const pEd = document.compIdentifierToEditor?.get(pid);
-        if (!pEd)
-          break;
-        chain.unshift(pEd);
-        el = pEd.target;
-      }
-      return chain;
-    }
-    static _collapseChain(items) {
-      if (items.length <= 5)
-        return items;
-      return [items[0], null, items[items.length - 3], items[items.length - 2], items[items.length - 1]];
-    }
-    _updateMeta() {
-      const editorManager = getClosestEditorSystem(this);
-      this._metaEl.innerHTML = "";
-      this._metaEl.classList.remove("p9r-bag-meta--inline-left", "p9r-bag-meta--inline-right");
-      if (!this._target || !this._editor)
-        return;
-      const observer = editorManager.observer;
-      const chain = this._ancestorChain().map((ed) => {
-        const label = observer?.getLabel(ed.target.tagName.toLowerCase());
-        return label ? { editor: ed, label } : null;
-      }).filter((it) => it !== null);
-      if (chain.length === 0)
-        return;
-      const rendered = BlocActions._collapseChain(chain);
-      rendered.forEach((it, idx) => {
-        const isLast = idx === rendered.length - 1;
-        let node;
-        if (it === null) {
-          node = document.createElement("span");
-          node.className = "p9r-bag-meta__ellipsis";
-          node.textContent = "…";
-        } else if (isLast) {
-          node = document.createElement("span");
-          node.className = "p9r-bag-meta__current";
-          node.textContent = it.label;
-        } else {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "p9r-bag-meta__parent";
-          btn.textContent = it.label;
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            this._switchToEditor(it.editor);
-          });
-          btn.addEventListener("mouseenter", () => {
-            it.editor.target.classList.add("p9r-breadcrumb-hover");
-          });
-          btn.addEventListener("mouseleave", () => {
-            it.editor.target.classList.remove("p9r-breadcrumb-hover");
-          });
-          node = btn;
-        }
-        this._metaEl.appendChild(node);
-        if (!isLast) {
-          const sep = document.createElement("span");
-          sep.className = "p9r-bag-meta__sep";
-          sep.textContent = "›";
-          this._metaEl.appendChild(sep);
-        }
-      });
-    }
-    _switchToEditor(target) {
-      const savedTransform = this.style.transform;
-      const savedVAnchor = this.getAttribute("data-v-anchor");
-      this._positionLocked = true;
-      this.setEditor(target);
-      this.open();
-      this.style.transform = savedTransform;
-      if (savedVAnchor !== null) {
-        this.setAttribute("data-v-anchor", savedVAnchor);
-        this._lastVAnchor = savedVAnchor;
-        this._refineBreadcrumbPosition();
-      }
-    }
-    _selectParent() {
-      const parent = this._parentEditor();
-      if (!parent)
-        return;
-      this._switchToEditor(parent);
-    }
-    _refineBreadcrumbPosition() {
-      this._metaEl.classList.remove("p9r-bag-meta--inline-left", "p9r-bag-meta--inline-right");
-      if (!this._metaEl.children.length)
-        return;
-      const margin = 4;
-      const metaRect = this._metaEl.getBoundingClientRect();
-      if (metaRect.width === 0 && metaRect.height === 0)
-        return;
-      const fitsVertically = metaRect.top >= margin && metaRect.bottom <= window.innerHeight - margin;
-      if (fitsVertically)
-        return;
-      const barRect = this.getBoundingClientRect();
-      const leftSpace = barRect.left - margin;
-      const rightSpace = window.innerWidth - barRect.right - margin;
-      const side = leftSpace >= metaRect.width || leftSpace >= rightSpace ? "left" : "right";
-      this._metaEl.classList.add(`p9r-bag-meta--inline-${side}`);
-    }
-    _handlePinClick() {
-      const syncs = this._editor?.stateSyncs ?? [];
-      if (syncs.length === 0)
-        return;
-      if (syncs.length === 1) {
-        this._togglePin(syncs[0]);
-        this._refreshPinButton();
-        return;
-      }
-      this._togglePinMenu(syncs);
-    }
-    _togglePin(sync) {
-      sync.toggle();
-      this._editor?.notifyPinStateChanged(sync);
-    }
-    _refreshPinButton() {
-      const btn = this.querySelector('[data-action="pin-state"]');
-      if (!btn)
-        return;
-      const anyPinned = this._editor?.stateSyncs.some((s2) => s2.isPinned) ?? false;
-      btn.toggleAttribute("data-active", anyPinned);
-    }
-    _togglePinMenu(syncs) {
-      if (this._pinMenu) {
-        this._closePinMenu();
-        return;
-      }
-      const btn = this.querySelector('[data-action="pin-state"]');
-      if (!btn)
-        return;
-      const menu = document.createElement("div");
-      menu.className = "p9r-pin-menu";
-      const title = document.createElement("div");
-      title.className = "p9r-pin-menu__title";
-      title.textContent = "Pin state";
-      menu.appendChild(title);
-      const renderItem = (sync) => {
-        const item = document.createElement("button");
-        item.type = "button";
-        item.className = "p9r-pin-menu__item";
-        item.innerHTML = `
-                <span class="p9r-pin-menu__icon">${ICON_PIN}</span>
-                <span class="p9r-pin-menu__label"></span>
-            `;
-        item.querySelector(".p9r-pin-menu__label").textContent = sync.label;
-        const setState = () => item.toggleAttribute("data-active", sync.isPinned);
-        setState();
-        item.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this._togglePin(sync);
-          setState();
-          this._refreshPinButton();
-        });
-        return item;
-      };
-      for (const sync of syncs)
-        menu.appendChild(renderItem(sync));
-      const rect = btn.getBoundingClientRect();
-      menu.style.left = `${rect.left}px`;
-      menu.style.top = `${rect.bottom}px`;
-      document.body.appendChild(menu);
-      this._pinMenu = menu;
-    }
-    _closePinMenu() {
-      this._pinMenu?.remove();
-      this._pinMenu = null;
-    }
-    _toggle(action, show) {
-      this.querySelector(`[data-action="${action}"]`)?.toggleAttribute("hidden", !show);
-    }
-    smartRender() {
-      const config = this._editor.actionBarConfiguration;
-      const hasConfig = this._editor.hasConfigPanel;
-      const variant = this._editor.variant;
-      const customActions = this._editor.customActions;
-      const customKey = customActions.map((a2) => a2.action).join(",");
-      const stateSyncCount = this._editor.stateSyncs.length;
-      const parent = this._parentEditor();
-      const hasAnyButton = hasConfig || !!config.get("duplicate") || !!config.get("delete") || !!config.get("changeComponent") || customActions.length > 0 || stateSyncCount > 0;
-      const showSelectParent = !!parent && hasAnyButton;
-      const currentConfigKey = JSON.stringify(Array.from(config.entries())) + hasConfig + variant + customKey + "|s=" + stateSyncCount + "|p=" + showSelectParent;
-      if (this._lastConfigKey === currentConfigKey)
-        return;
-      this._lastConfigKey = currentConfigKey;
-      this.setAttribute("data-variant", variant);
-      this.innerHTML = template_default4;
-      if (showSelectParent) {
-        const btn = document.createElement("button");
-        btn.setAttribute("data-action", "select-parent");
-        btn.setAttribute("title", "Select parent");
-        btn.innerHTML = ICON_PARENT;
-        this.insertBefore(btn, this.firstChild);
-      }
-      this._toggle("edit", hasConfig);
-      this._toggle("duplicate", config.get("duplicate"));
-      this._toggle("changeComponent", config.get("changeComponent"));
-      this._toggle("delete", config.get("delete"));
-      if (customActions.length > 0) {
-        const separator = this.querySelector('[data-group="delete"]');
-        for (const action of customActions) {
-          const btn = document.createElement("button");
-          btn.setAttribute("data-action", action.action);
-          btn.setAttribute("title", action.title);
-          btn.innerHTML = action.icon;
-          this.insertBefore(btn, separator);
-        }
-      }
-      if (stateSyncCount > 0) {
-        const separator = this.querySelector('[data-group="delete"]');
-        const btn = document.createElement("button");
-        btn.setAttribute("data-action", "pin-state");
-        btn.setAttribute("title", stateSyncCount === 1 ? `Pin: ${this._editor.stateSyncs[0].label}` : "Pin state");
-        btn.innerHTML = ICON_PIN;
-        this.insertBefore(btn, separator);
-        this._refreshPinButton();
-      }
-      const hasLeftButtons = hasConfig || config.get("duplicate") || config.get("changeComponent") || customActions.length > 0 || stateSyncCount > 0;
-      this.querySelector('[data-group="delete"]')?.toggleAttribute("hidden", !config.get("delete") || !hasLeftButtons);
+      this._ctrl.close();
     }
   }
-  if (!customElements.get("cms-bloc-actions")) {
+  if (!customElements.get("cms-bloc-actions"))
     customElements.define("cms-bloc-actions", BlocActions);
-  }
 
   // src/control/components/editor/EditorSystem/DragManager.ts
   var DRAG_PILL_WIDTH = 180;
@@ -12953,11 +13221,8 @@ form[method="dialog"] {
     }
   }
 
-  // src/control/components/editor/EditorSystem/EditorRoot/style.css
-  var style_default7 = "";
-
   // src/control/components/editor/EditorSystem/EditorRoot/template.html
-  var template_default8 = `<div>
+  var template_default11 = `<div>
     <slot name="style"></slot>
     <slot name="script"></slot>
     <div id="workingElement">
@@ -13792,11 +14057,8 @@ form[method="dialog"] {
     constructor() {
       super();
       this.attachShadow({ mode: "open" });
-      const style = document.createElement("style");
-      style.innerHTML = style_default7;
-      this.shadowRoot?.append(style);
       const template = document.createElement("template");
-      template.innerHTML = template_default8;
+      template.innerHTML = template_default11;
       this.shadowRoot?.append(template.content.cloneNode(true));
     }
     connectedCallback() {
@@ -13868,7 +14130,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/template.html
-  var template_default9 = `<div id="toolbar-container">
+  var template_default12 = `<div id="toolbar-container">
     <div id="drag-handle" title="Move">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path
@@ -13903,7 +14165,7 @@ form[method="dialog"] {
 </div>`;
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/style.css
-  var style_default8 = `:host {
+  var style_default10 = `:host {
   --toolbar-bg: #ffffff;
   --toolbar-border: #e5e7eb;
   --toolbar-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -13982,8 +14244,8 @@ button span {
     _startY = 0;
     constructor() {
       super({
-        css: style_default8,
-        template: template_default9
+        css: style_default10,
+        template: template_default12
       });
       this._onPointerMove = this._onPointerMove.bind(this);
       this._onPointerUp = this._onPointerUp.bind(this);
@@ -14035,7 +14297,7 @@ button span {
   }
 
   // src/control/components/editor/MediaCenter/template.html
-  var template_default10 = `<dialog>
+  var template_default13 = `<dialog>
     <div class="modal-container">
         <header class="modal-header">
             <h2>Media Center</h2>
@@ -14103,7 +14365,7 @@ button span {
 `;
 
   // src/control/components/editor/MediaCenter/style.css
-  var style_default9 = `:host {
+  var style_default11 = `:host {
     --mc-bg: #ffffff;
     --mc-border: #e2e8f0;
     --mc-text: #1e293b;
@@ -14492,7 +14754,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/template.html
-  var template_default11 = `<div class="card">
+  var template_default14 = `<div class="card">
     <div class="preview">
         <slot name="image">
             <span class="placeholder">
@@ -14514,7 +14776,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/style.css
-  var style_default10 = `:host {
+  var style_default12 = `:host {
     --card-bg: var(--bg-surface, #fff);
     --card-border: var(--border-default, #e2e8f0);
     --card-radius: 12px;
@@ -14639,8 +14901,8 @@ dialog::backdrop {
   class CardMedia extends Component {
     constructor() {
       super({
-        css: style_default10,
-        template: template_default11
+        css: style_default12,
+        template: template_default14
       });
     }
   }
@@ -14872,8 +15134,8 @@ dialog::backdrop {
     _dragCounter = 0;
     constructor() {
       super({
-        css: style_default9,
-        template: template_default10
+        css: style_default11,
+        template: template_default13
       });
     }
     connectedCallback() {
@@ -15048,7 +15310,7 @@ dialog::backdrop {
   customElements.define("cms-media-center", MediaCenter);
 
   // src/control/components/editor/RichTextBar/template.html
-  var template_default12 = `<div class="toolbar">
+  var template_default15 = `<div class="toolbar">
     <!-- Format -->
     <button data-command="bold" title="Bold">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -15209,7 +15471,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/editor/RichTextBar/style.css
-  var style_default11 = `:host {
+  var style_default13 = `:host {
     position: absolute;
     z-index: 9999999999;
     display: none;
@@ -15716,8 +15978,8 @@ button.active svg {
     _rootListenersAttached = false;
     constructor() {
       super({
-        css: style_default11,
-        template: template_default12
+        css: style_default13,
+        template: template_default15
       });
     }
     connectedCallback() {
@@ -15960,11 +16222,11 @@ button.active svg {
   customElements.define("cms-richtextbar", RichTextBar);
 
   // src/control/components/editor/snippet/Snippet/template.html
-  var template_default13 = `<div class="snippet-root"></div>
+  var template_default16 = `<div class="snippet-root"></div>
 `;
 
   // src/control/components/editor/snippet/Snippet/style.css
-  var style_default12 = `:host {
+  var style_default14 = `:host {
     display: block;
     position: relative;
     min-height: 40px;
@@ -16043,8 +16305,8 @@ button.active svg {
 
   // src/control/components/editor/snippet/Snippet/Snippet.ts
   var SnippetMetadata = {
-    css: style_default12,
-    template: template_default13
+    css: style_default14,
+    template: template_default16
   };
 
   class Snippet extends Component {
@@ -16102,8 +16364,8 @@ button.active svg {
     customElements.define("w13c-snippet", Snippet);
   }
 
-  // src/control/components/editor/snippet/SnippetConfiguration/template.html
-  var template_default14 = `<w13c-lateral-dialog>
+  // src/control/components/editor/configurations/SnippetConfiguration/template.html
+  var template_default17 = `<w13c-lateral-dialog>
   <form action="">
 
     <p9r-section data-title="Identity">
@@ -16152,8 +16414,8 @@ button.active svg {
 </w13c-lateral-dialog>
 `;
 
-  // src/control/components/editor/snippet/SnippetConfiguration/style.css
-  var style_default13 = `form {
+  // src/control/components/editor/configurations/SnippetConfiguration/style.css
+  var style_default15 = `form {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -16193,14 +16455,14 @@ button.active svg {
 }
 `;
 
-  // src/control/components/editor/snippet/SnippetConfiguration/SnippetConfiguration.ts
+  // src/control/components/editor/configurations/SnippetConfiguration/SnippetConfiguration.ts
   class SnippetConfiguration extends Component {
     _identifierCheckToken = 0;
     _identifierValid = true;
     constructor() {
       super({
-        css: style_default13,
-        template: template_default14
+        css: style_default15,
+        template: template_default17
       });
     }
     connectedCallback() {
@@ -16404,7 +16666,7 @@ button.active svg {
   customElements.define("w13c-snippet-information", SnippetConfiguration);
 
   // src/control/components/media/CropSystem/template.html
-  var template_default15 = `<div class="backdrop" id="backdrop">
+  var template_default18 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3>Crop image</h3>
@@ -16443,7 +16705,7 @@ button.active svg {
 `;
 
   // src/control/components/media/CropSystem/style.css
-  var style_default14 = `:host {
+  var style_default16 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -16645,8 +16907,8 @@ button.active svg {
   class CropSystem extends Component {
     constructor() {
       super({
-        css: style_default14,
-        template: template_default15
+        css: style_default16,
+        template: template_default18
       });
     }
     connectedCallback() {
@@ -16683,7 +16945,7 @@ button.active svg {
   customElements.define("p9r-crop-system", CropSystem);
 
   // src/control/components/media/DetailMedia/template.html
-  var template_default16 = `<div class="backdrop" id="backdrop">
+  var template_default19 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3 id="title">File details</h3>
@@ -16725,7 +16987,7 @@ button.active svg {
 `;
 
   // src/control/components/media/DetailMedia/style.css
-  var style_default15 = `:host {
+  var style_default17 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -16938,8 +17200,8 @@ button.active svg {
   class DetailMedia extends Component {
     constructor() {
       super({
-        css: style_default15,
-        template: template_default16
+        css: style_default17,
+        template: template_default19
       });
     }
     connectedCallback() {
@@ -16971,7 +17233,7 @@ button.active svg {
   }
 
   // src/control/components/media/GridMedia/template.html
-  var template_default17 = `<div class="toolbar">
+  var template_default20 = `<div class="toolbar">
     <div class="breadcrumb" id="breadcrumb">
         <span class="bc-current">Root</span>
     </div>
@@ -17033,7 +17295,7 @@ button.active svg {
 `;
 
   // src/control/components/media/GridMedia/style.css
-  var style_default16 = `:host {
+  var style_default18 = `:host {
     --grid-gap: 16px;
     --grid-min-col: 180px;
     --empty-color: var(--text-muted, #94a3b8);
@@ -17714,8 +17976,8 @@ button.active svg {
     _items = [];
     constructor() {
       super({
-        css: style_default16,
-        template: template_default17
+        css: style_default18,
+        template: template_default20
       });
     }
     get apiBase() {
@@ -17843,4 +18105,247 @@ button.active svg {
   if (!customElements.get("p9r-grid-media")) {
     customElements.define("p9r-grid-media", GridMedia);
   }
+
+  // src/control/components/CustomHTMLElement.ts
+  class CustomHTMLElement extends HTMLElement {
+    constructor(html, css, shadow) {
+      super();
+      if (shadow) {
+        const ele = this.attachShadow({ mode: "open" });
+        ele.innerHTML = `${css}${html}`;
+      }
+    }
+    static get observedAttributes() {
+      return [];
+    }
+  }
+
+  // src/control/components/form/Form/events/onSubmit.ts
+  function onSubmit(e, me) {
+    console.log(e);
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    fetch(me.target, {
+      method: me.method || "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+  }
+
+  // src/control/components/form/Form/Form.ts
+  class CmsForm extends CustomHTMLElement {
+    _nativeForm = null;
+    static get observedAttributes() {
+      return ["redirect", "target", "method"];
+    }
+    _handleInternalSubmit = (e) => {
+      onSubmit(e, this);
+    };
+    connectedCallback() {
+      requestAnimationFrame(() => {
+        if (this._nativeForm)
+          return;
+        this._nativeForm = document.createElement("form");
+        while (this.firstChild) {
+          this._nativeForm.appendChild(this.firstChild);
+        }
+        this.appendChild(this._nativeForm);
+        this._nativeForm.addEventListener("submit", this._handleInternalSubmit);
+      });
+    }
+    disconnectedCallback() {
+      this.removeEventListener("submit", (e) => onSubmit(e, this));
+    }
+    attributeChangedCallback(name, oldValue, newValue) {}
+    get redirect() {
+      return this.getAttribute("redirect");
+    }
+    get target() {
+      const val = this.getAttribute("target");
+      if (!val)
+        throw new Error("CmsForm target attribute should be set");
+      return val;
+    }
+    get method() {
+      return this.getAttribute("method");
+    }
+  }
+  if (!customElements.get("cms-form")) {
+    customElements.define("cms-form", CmsForm);
+  }
+
+  // src/control/components/data/fetch/pathHelpers.ts
+  function resolve(obj, path) {
+    return path.split(".").reduce((acc, k) => acc != null ? acc[k] : undefined, obj);
+  }
+  function escape(value) {
+    return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  // src/control/components/data/fetch/interpolate.ts
+  function interpolateNode(node, context) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const original = node.textContent ?? "";
+      const replaced = interpolateString(original, context);
+      if (replaced !== original)
+        node.textContent = replaced;
+      return;
+    }
+    if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = node;
+      if (el.tagName === "TEMPLATE")
+        return;
+      if (el.tagName === "INNER-HTML" && tryRawHtmlInject(el, context))
+        return;
+      for (const attr of Array.from(el.attributes)) {
+        const replaced = interpolateString(attr.value, context);
+        if (replaced !== attr.value)
+          el.setAttribute(attr.name, replaced);
+      }
+    }
+    for (const child of Array.from(node.childNodes)) {
+      interpolateNode(child, context);
+    }
+  }
+  function tryRawHtmlInject(el, context) {
+    const text = el.textContent?.trim() ?? "";
+    const m = text.match(/^\{\{\s*([\w.]+)\s*\}\}$/);
+    if (!m)
+      return false;
+    el.innerHTML = String(resolve(context, m[1]) ?? "");
+    el.replaceWith(...Array.from(el.childNodes));
+    return true;
+  }
+  function interpolateString(str, context) {
+    return str.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_m, path) => {
+      if (path === "value") {
+        if (context !== null && typeof context === "object" && "value" in context) {
+          return escape(context.value);
+        }
+        return escape(context);
+      }
+      return escape(resolve(context, path));
+    });
+  }
+
+  // src/control/components/data/fetch/render.ts
+  function processTemplate(tpl, context) {
+    const forKey = tpl.getAttribute("for");
+    const out = document.createDocumentFragment();
+    if (forKey === null) {
+      const clone = tpl.content.cloneNode(true);
+      renderFragment(clone, context);
+      out.appendChild(clone);
+      return out;
+    }
+    const items = forKey === "." ? context : resolve(context, forKey);
+    if (!Array.isArray(items)) {
+      console.warn(`cms-fetch: <template for="${forKey}"> expected an array, got`, items);
+      return out;
+    }
+    for (const item of items) {
+      const clone = tpl.content.cloneNode(true);
+      renderFragment(clone, item);
+      out.appendChild(clone);
+    }
+    return out;
+  }
+  function renderFragment(root, context) {
+    const templates = [];
+    collectDirectTemplates(root, templates);
+    for (const tpl of templates) {
+      tpl.parentNode?.replaceChild(processTemplate(tpl, context), tpl);
+    }
+    interpolateNode(root, context);
+  }
+  function collectDirectTemplates(root, out) {
+    for (const child of Array.from(root.childNodes)) {
+      if (child.nodeType !== Node.ELEMENT_NODE)
+        continue;
+      const el = child;
+      if (el.tagName === "TEMPLATE")
+        out.push(el);
+      else
+        collectDirectTemplates(el, out);
+    }
+  }
+
+  // src/control/components/data/fetch/FetchComponent.ts
+  class FetchComponent extends HTMLElement {
+    static get observedAttributes() {
+      return ["url"];
+    }
+    _template = null;
+    _renderedNodes = [];
+    connectedCallback() {
+      if (this._template) {
+        this._fetchAndRender();
+        return;
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", () => this._init(), { once: true });
+      } else {
+        this._init();
+      }
+    }
+    _init() {
+      for (const child of Array.from(this.children)) {
+        if (child.tagName === "TEMPLATE") {
+          this._template = child;
+          break;
+        }
+      }
+      if (!this._template) {
+        console.warn("cms-fetch: missing <template> child");
+        return;
+      }
+      this._fetchAndRender();
+    }
+    disconnectedCallback() {
+      for (const n2 of this._renderedNodes)
+        n2.parentNode?.removeChild(n2);
+      this._renderedNodes = [];
+    }
+    attributeChangedCallback(_name, oldVal, newVal) {
+      if (oldVal !== newVal && this.isConnected)
+        this._fetchAndRender();
+    }
+    async _fetchAndRender() {
+      const urlAttr = this.getAttribute("url");
+      if (!urlAttr)
+        return;
+      this.dispatchEvent(new CustomEvent("fetch:loading", { bubbles: true }));
+      try {
+        const url = new URL(urlAttr, window.location.href);
+        for (const [k, v] of new URLSearchParams(window.location.search))
+          url.searchParams.append(k, v);
+        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        if (!res.ok)
+          throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        this._stamp(data);
+        this.dispatchEvent(new CustomEvent("fetch:data", { bubbles: true, detail: data }));
+      } catch (err) {
+        this.dispatchEvent(new CustomEvent("fetch:error", { bubbles: true, detail: err }));
+      }
+    }
+    _stamp(data) {
+      if (!this._template)
+        return;
+      const parent = this.parentNode;
+      if (!parent)
+        return;
+      for (const n2 of this._renderedNodes)
+        n2.parentNode?.removeChild(n2);
+      this._renderedNodes = [];
+      const fragment = processTemplate(this._template, data);
+      const newNodes = Array.from(fragment.childNodes);
+      parent.insertBefore(fragment, this);
+      this._renderedNodes = newNodes;
+    }
+  }
+  customElements.define("cms-fetch", FetchComponent);
 })();

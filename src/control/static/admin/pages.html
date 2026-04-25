@@ -12,9 +12,9 @@
             <p9r-cell><strong>Visibility</strong></p9r-cell>
         </p9r-row>
 
-        <cms-fetch url="{{BASE_PATH}}/api/page/pages">
-            <template>
-                <p9r-row href="{{ editorPath }}">
+        <cms-fetch url="{{BASE_PATH}}/api/page/list">
+            <template for=".">
+                <p9r-row href="{{BASE_PATH}}/editor/page?id={{ id }}">
                     <p9r-cell><strong>{{ title }}</strong></p9r-cell>
                     <p9r-cell><p9r-tag>{{ path }}</p9r-tag></p9r-cell>
                     <p9r-cell>{{ tags }}</p9r-cell>
@@ -25,8 +25,9 @@
     </p9r-table>
 </w13c-fixed-admin-layout>
 
-<p9r-form-dialog id="create-page-dialog" action="{{BASE_PATH}}/editor/page">
-    <span slot="title">Create a new page</span>
+<cms-form 
+    target="{{BASE_PATH}}/api/page" >
     <p9r-input name="title" label="Name" placeholder="My Beautiful Article"></p9r-input>
     <p9r-input name="path" label="Path" placeholder="/article"></p9r-input>
-</p9r-form-dialog>
+    <button type="submit">Submit</button>
+</cms-form>

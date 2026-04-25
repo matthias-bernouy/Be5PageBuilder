@@ -8,8 +8,8 @@ export type TBloc = {
 }
 
 export type TPage = {
-  id?: string;
-  /** Primary key — one page per path. */
+  id: string;
+  /** path is unique */
   path: string;
   content: string;
   title: string;

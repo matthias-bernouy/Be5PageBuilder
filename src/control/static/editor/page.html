@@ -1,11 +1,19 @@
+<cms-fetch url="{{BASE_PATH}}/api/page">
 
-<cms-editor-system>
+    <template>
 
-    <link   slot="style"    rel="stylesheet" href="{{BASE_PATH}}/api/editor/style.css">
-    <script slot="script"   src="{{BASE_PATH}}/api/editor/script.js"></script>
+        <cms-editor-system>
 
-    <cms-page-configuration slot="configuration"></cms-page-configuration>
+            <link   slot="style"    rel="stylesheet" href="{{BASE_PATH}}/api/editor/style.css">
+            <script slot="script"   src="{{BASE_PATH}}/api/editor/script.js"></script>
 
-    <p></p>
+            <cms-page-configuration slot="configuration"></cms-page-configuration>
 
-</cms-editor-system>
+            <inner-html>{{content}}</inner-html>
+            
+
+        </cms-editor-system>
+
+    </template>
+
+</cms-fetch>

@@ -1,3 +1,4 @@
+import { randomUUIDv7 } from "bun";
 import type { CmsRepository } from "src/socle/contracts/Repository/CmsRepository";
 import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/socle/contracts/Repository/TModels";
 
@@ -8,10 +9,13 @@ import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "src/socle/contr
  */
 export class InMemoryCmsRepository implements CmsRepository {
 
+
+
     // ── Storage ──
 
-    private _blocs:     Map<string, TBloc>     = new Map();
-    private _pages:     Map<string, TPage>     = new Map(); // keyed by path
+    private _blocs:         Map<string, TBloc>     = new Map();
+    private _pages:         Map<string, TPage>     = new Map(); // keyed by path
+    private _pagesById:     Map<string, TPage>     = new Map(); // keyed by path
     private _snippets:  Map<string, TSnippet>  = new Map(); // keyed by ObjectId-like uid
     private _templates: Map<string, TTemplate> = new Map(); // keyed by ObjectId-like uid
 
@@ -61,6 +65,24 @@ export class InMemoryCmsRepository implements CmsRepository {
         }
         this._blocs.set(bloc.id, { ...bloc });
         return bloc;
+    }
+
+    async insertPage(path: string, title: string): Promise<void> {
+        const page = {
+            id: randomUUIDv7(),
+            path: path,
+            title: title,
+            content: "<p></p>",
+            description: "",
+            tags: [],
+            visible: false
+        }
+        this._pagesById.set(page.id, page);
+        this._pages.set(page.path, page);
+    }
+
+    async getPageById(id: string): Promise<TPage | null> {
+        return this._pagesById.get(id) ?? null;
     }
 
     async replaceBloc(bloc: TBloc): Promise<TBloc> {
