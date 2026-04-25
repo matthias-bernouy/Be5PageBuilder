@@ -52,6 +52,13 @@ export function createPointerHandlers(deps: PointerDeps): PointerHandlers {
         if (deps.pinMenu()?.contains(to)) return;
         if (deps.insertButtons().includes(to)) return;
 
+        // BAG lives in a shadow DOM; the editor target lives in its light DOM.
+        // Crossing the boundary retargets relatedTarget to the shadow host, so
+        // the contains() checks above miss. :hover sees through it.
+        if (deps.host.matches(':hover')) return;
+        if (deps.pinMenu()?.matches(':hover')) return;
+        if (deps.insertButtons().some(b => b.matches(':hover'))) return;
+
         // If leaving a child but staying within an ancestor editor, replay a
         // mouseenter on it so its hover binding re-opens BAG on the parent.
         const parentEditor = to?.closest?.(`[${p9r.attr.EDITOR.IS_EDITOR}]`) as HTMLElement | null;

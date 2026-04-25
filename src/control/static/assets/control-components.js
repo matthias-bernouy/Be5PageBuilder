@@ -11924,6 +11924,12 @@ cms-bag-breadcrumb[data-inline="right"] {
         return;
       if (deps.insertButtons().includes(to))
         return;
+      if (deps.host.matches(":hover"))
+        return;
+      if (deps.pinMenu()?.matches(":hover"))
+        return;
+      if (deps.insertButtons().some((b) => b.matches(":hover")))
+        return;
       const parentEditor = to?.closest?.(`[${p9r.attr.EDITOR.IS_EDITOR}]`);
       const tgt = deps.target();
       if (parentEditor && tgt && parentEditor.contains(tgt)) {
