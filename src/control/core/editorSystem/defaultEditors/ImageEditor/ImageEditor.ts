@@ -1,3 +1,4 @@
+import type { MediaCenter } from "src/control/components/editor/MediaCenter/MediaCenter";
 import { Editor } from "../../Editor/Editor";
 import { ResizeInstance } from "./ResizeInstance";
 
@@ -10,6 +11,7 @@ const cssStyle = `
 
 export class ImageEditor extends Editor {
 
+    private _mediaCenter: MediaCenter | null = null;
     private resizeInstance: ResizeInstance;
 
     private onClick = (e: MouseEvent) => this.handleClick(e);
@@ -36,24 +38,31 @@ export class ImageEditor extends Editor {
     private handleSelectMedia(e: any) {
         this.target.setAttribute("src", e.detail.src);
         this.target.setAttribute("alt", e.detail.alt);
-        document.EditorManager.getMediaCenter().removeEventListener("select-item", this.onSelectMedia)
+        this._mediaCenter?.removeEventListener("select-item", this.onSelectMedia)
+        this._mediaCenter?.remove();
     }
 
     private handleClick(e: MouseEvent) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        const mediaCenter = document.EditorManager.getMediaCenter();
+        const mediaCenter = document.createElement("cms-media-center") as MediaCenter;
+        document.body.append(mediaCenter);
 
-        mediaCenter.removeEventListener("select-item", this.onSelectMedia);
-        mediaCenter.addEventListener("select-item", this.onSelectMedia);
+        requestAnimationFrame(() => {
+            this._mediaCenter = mediaCenter;
+            mediaCenter.removeEventListener("select-item", this.onSelectMedia);
+            mediaCenter.addEventListener("select-item", this.onSelectMedia);
 
-        mediaCenter.show(["folder", "image"]);
+            mediaCenter.show(["folder", "image"]);
+        })
+        
     }
 
     restore() {
         this.target.removeEventListener("click", this.onClick);
-        document.EditorManager.getMediaCenter().removeEventListener("select-item", this.onSelectMedia)
+        this._mediaCenter?.removeEventListener("select-item", this.onSelectMedia)
+        this._mediaCenter?.remove();
         this.resizeInstance.stop();
     }
 }

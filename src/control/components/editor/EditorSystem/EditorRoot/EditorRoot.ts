@@ -4,6 +4,8 @@ import { isToggable } from "src/control/core/isToggable";
 import type { EDITOR_SYSTEM_MODE } from "types/w13c/EditorSystem";
 import { ObserverManager } from "src/control/components/editor/EditorSystem/ObserverManager";
 import { DragManager } from "src/control/components/editor/EditorSystem/DragManager";
+import { BlocActions } from "../BlocActions/BlocActions";
+import type { BlocLibrary } from "../BlocLibrary/BlocLibrary";
 
 
 export default class EditorRoot extends HTMLElement {
@@ -12,26 +14,32 @@ export default class EditorRoot extends HTMLElement {
 
     private _observer: ObserverManager | null = null;
     private _dragmanager: DragManager | null = null;
+    private _blocActions: BlocActions | null = null;
+    private _blocLibrary: BlocLibrary | null = null;
 
     constructor(){
         super();
         this.attachShadow({ mode: "open"} );
-        const style    = document.createElement("style") as HTMLStyleElement;
-        const template = document.createElement("template");
+        const style = document.createElement("style");
         style.innerHTML = css;
-        template.innerHTML = html as unknown as string;
         this.shadowRoot?.append(style);
-        this.shadowRoot?.append(template);
+        const template = document.createElement("template");
+        template.innerHTML = html as unknown as string;
+        this.shadowRoot?.append(template.content.cloneNode(true));
     }
 
     connectedCallback(){
 
         requestAnimationFrame(() => {
-
             const workingElement = this.shadowRoot?.querySelector("#workingElement") as HTMLElement;
-            this._observer    = new ObserverManager(workingElement);
+            this._blocActions = this.shadowRoot?.querySelector("cms-bloc-actions") as BlocActions;
+            const slot = this.shadowRoot!.querySelector("#workingElement slot") as HTMLSlotElement;
+            if (!slot) throw new Error("Working slot not found in shadow DOM");
+            
+            this._observer = new ObserverManager(slot);
             this._dragmanager = new DragManager(workingElement);
 
+            this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library") as BlocLibrary;
         })
 
     }
@@ -45,9 +53,13 @@ export default class EditorRoot extends HTMLElement {
         }))
     }
 
-    openConfig(){
-        const ele = this.shadowRoot?.querySelector("[slot=configuration]") as HTMLElement;
-        if ( !ele || !isToggable(ele) ) throw new Error("Element should be have the open function");
+    openConfig() {
+        const slot = this.shadowRoot?.querySelector<HTMLSlotElement>('slot[name="configuration"]');
+        const ele = slot?.assignedElements()[0] as HTMLElement | undefined;
+        
+        if (!ele || !isToggable(ele)) {
+            throw new Error("Configuration element must implement open()");
+        }
         ele.open();
     }
 
@@ -67,6 +79,22 @@ export default class EditorRoot extends HTMLElement {
     get dragManager(){
         if ( !this._dragmanager ) throw new Error("You try to get dragManager before his initialization");
         return this._dragmanager;
+    }
+
+    get blocActions(){
+        if ( !this._blocActions ) throw new Error("You try to get blocActions before his initialization");
+        return this._blocActions;
+    }
+
+    get editorDOM(){
+        const ele = this.shadowRoot?.querySelector("#editorSystem");
+        if (!ele ) throw new Error("You try to get editorSystem before his initialization");
+        return ele
+    }
+
+    get blocLibrary(){
+        if ( !this._blocLibrary ) throw new Error("You try to get _blocLibrary before his initialization");
+        return this._blocLibrary;
     }
 
 }

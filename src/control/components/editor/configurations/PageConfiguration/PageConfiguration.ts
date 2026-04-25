@@ -246,9 +246,9 @@ export class PageConfiguration extends Component {
         if (openBtn) openBtn.disabled = !isValidPathFormat(path);
     }
 
-    show() {
+    open() {
         const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog") as LateralDialog;
         dialog?.show();
     }
 }
-customElements.define("w13c-page-information", PageConfiguration)
+customElements.define("cms-page-configuration", PageConfiguration)

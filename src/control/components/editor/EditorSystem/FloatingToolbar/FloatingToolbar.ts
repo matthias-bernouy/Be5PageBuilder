@@ -2,8 +2,8 @@ import "@bernouy/webcomponents";
 import html from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
 import { Component } from "@bernouy/cms/component";
-import { NearestElementRequire } from "src/control/errors/NearestElementRequire";
 import { getMetaBasePath } from "src/control/core/dom/getMetaBasePath";
+import getClosestEditorSystem from "src/control/core/dom/getClosestEditorSystem";
 
 export class FloatingToolbar extends Component {
 
@@ -21,9 +21,7 @@ export class FloatingToolbar extends Component {
 
     override connectedCallback() {
 
-        const EditorSystem = this.closest("cms-editor-system");
-
-        if ( !EditorSystem ) throw new NearestElementRequire(this, "cms-editor-system");
+        const EditorSystem = getClosestEditorSystem(this);
 
         const handle = this.shadowRoot?.getElementById('drag-handle');
         handle?.addEventListener('pointerdown', this._onPointerDown.bind(this));

@@ -1,0 +1,26 @@
+<w13c-fixed-admin-layout>
+    <span slot="title">Templates</span>
+    <a slot="action" href="{{BASE_PATH}}/admin/templates/editor">
+        <p9r-button color="primary">+ New template</p9r-button>
+    </a>
+
+    <p9r-table>
+        <p9r-row slot="header">
+            <p9r-cell><strong>Name</strong></p9r-cell>
+            <p9r-cell><strong>Category</strong></p9r-cell>
+            <p9r-cell><strong>Created</strong></p9r-cell>
+            <p9r-cell></p9r-cell>
+        </p9r-row>
+
+        <cms-fetch url="{{BASE_PATH}}/api/template/templates">
+            <template>
+                <p9r-row href="{{ editorPath }}">
+                    <p9r-cell>{{ name }}</p9r-cell>
+                    <p9r-cell>{{ category }}</p9r-cell>
+                    <p9r-cell>{{ createdLabel }}</p9r-cell>
+                    <p9r-cell></p9r-cell>
+                </p9r-row>
+            </template>
+        </cms-fetch>
+    </p9r-table>
+</w13c-fixed-admin-layout>

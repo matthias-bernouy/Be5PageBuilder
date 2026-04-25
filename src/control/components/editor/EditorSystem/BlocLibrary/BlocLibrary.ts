@@ -17,15 +17,8 @@ import getClosestEditorSystem from 'src/control/core/dom/getClosestEditorSystem'
 type Section = 'blocs' | 'templates' | 'snippets';
 
 export type BlocLibraryOptions = {
-    /** Tab to open on. Defaults to 'blocs'. */
     section?: Section;
-    /** Sidebar group/category to pre-select. */
     category?: string;
-    /**
-     * When true, hides the tab bar and the sidebar, forcing the user to pick
-     * from a single category in the given section. Used by the "pick a
-     * layout" flow on new-page creation.
-     */
     locked?: boolean;
 };
 
@@ -34,11 +27,10 @@ export const ActionBarMetadata: ComponentMetadata = {
     template: html as unknown as string
 }
 
-/** Lightweight bloc metadata from `/api/blocs-list` — name/group/description by tag. */
 type BlocListEntry = { id: string; name: string; group: string; description: string };
 
 export class BlocLibrary extends Component {
-    private static instance: BlocLibrary | null = null;
+
     private _dialog: HTMLDialogElement | null = null;
     private _section: Section = 'blocs';
     private _activeGroup: string | null = null;
@@ -49,14 +41,8 @@ export class BlocLibrary extends Component {
     private _forcedCategory: string | null = null;
     private _query: string = '';
 
-    constructor(options?: BlocLibraryOptions) {
+    constructor() {
         super(ActionBarMetadata);
-        if (options?.section) this._section = options.section;
-        if (options?.category) {
-            this._forcedCategory = options.category;
-            this._activeGroup = options.category;
-        }
-        this._locked = !!options?.locked;
     }
 
     override connectedCallback() {
@@ -69,7 +55,6 @@ export class BlocLibrary extends Component {
             if (e.target === this._dialog) this.close();
         });
 
-        // Tab clicks (disabled when locked)
         s.getElementById('tabs')!.addEventListener('click', (e) => {
             if (this._locked) return;
             const tab = (e.target as HTMLElement).closest('.tab:not(.disabled)') as HTMLElement;
@@ -79,7 +64,6 @@ export class BlocLibrary extends Component {
             this._render();
         });
 
-        // Sidebar clicks (disabled when locked)
         s.getElementById('sidebar')!.addEventListener('click', (e) => {
             if (this._locked) return;
             const item = (e.target as HTMLElement).closest('.sidebar-item') as HTMLElement;
@@ -88,29 +72,22 @@ export class BlocLibrary extends Component {
             this._render();
         });
 
-        // Search input — cross-section filter. Empty query falls back to the
-        // regular tab+sidebar browse flow.
         const searchInput = s.getElementById('search') as HTMLInputElement;
         searchInput.addEventListener('input', () => {
             this._query = searchInput.value;
             this._render();
         });
 
-        // Hide chrome when locked so the user focuses on a single grid
         if (this._locked) {
             (s.getElementById('tabs') as HTMLElement).style.display = 'none';
             (s.querySelector('.groups-sidebar') as HTMLElement).style.display = 'none';
             (s.querySelector('.search-wrap') as HTMLElement).style.display = 'none';
         }
-
-        // Set initial group — respect a forced category, otherwise pick the
-        // first group of the current section.
         if (!this._activeGroup) {
             if (this._section === 'blocs') {
                 const groups = Array.from(editorManager.observer.getGroups());
                 if (groups.length > 0) this._activeGroup = groups[0]!;
             }
-            // For templates/snippets we'll pick the first group after fetch.
         }
 
         Promise.all([
@@ -118,39 +95,29 @@ export class BlocLibrary extends Component {
             this._fetchSnippets(),
             this._fetchBlocMeta(),
         ]).then(() => {
-            // If a forced category is set but we're in a section whose groups
-            // come from the fetched data, ensure we still target it even if
-            // no template in that category exists yet (empty state handles it).
             if (this._forcedCategory) this._activeGroup = this._forcedCategory;
             this._render();
-            this._dialog!.showModal();
             if (!this._locked) searchInput.focus();
         });
     }
 
     private async _fetchTemplates() {
         try {
-            const res = await fetch(new URL("templates", getMetaApiPath()));
+            const res = await fetch(new URL("template/list", getMetaApiPath()));
             if (res.ok) this._templates = await res.json();
         } catch { /* ignore */ }
     }
 
     private async _fetchSnippets() {
         try {
-            const res = await fetch(new URL("snippets", getMetaApiPath()));
+            const res = await fetch(new URL("snippet/list", getMetaApiPath()));
             if (res.ok) this._snippets = await res.json();
         } catch { /* ignore */ }
     }
 
-    /**
-     * The in-browser observer only carries tag/label/group for each bloc —
-     * descriptions live in the DB. Merge them in via the lightweight
-     * `/api/blocs-list` endpoint so cards can show a subtitle and search can
-     * match against it.
-     */
     private async _fetchBlocMeta() {
         try {
-            const res = await fetch(new URL("blocs-list", getMetaApiPath()));
+            const res = await fetch(new URL("bloc/list", getMetaApiPath()));
             if (!res.ok) return;
             const list = await res.json() as BlocListEntry[];
             this._blocMeta = new Map(list.map(b => [b.id, { description: b.description }]));
@@ -175,8 +142,6 @@ export class BlocLibrary extends Component {
     private _renderSidebar(searching: boolean) {
         const sidebar = this.shadowRoot!.getElementById('sidebar')!;
         sidebar.innerHTML = '';
-        // While searching, the grid shows cross-section results so the
-        // per-group sidebar doesn't apply — hide it to free up width.
         (sidebar as HTMLElement).style.display = searching ? 'none' : '';
         if (searching) return;
 
@@ -245,14 +210,10 @@ export class BlocLibrary extends Component {
 
     public close() {
         this._dialog?.close();
-        BlocLibrary.instance = null;
     }
 
-    static open(options?: BlocLibraryOptions) {
-        const menu = new BlocLibrary(options);
-        document.body.appendChild(menu);
-        BlocLibrary.instance = menu;
-        return menu;
+    open() {
+        this._dialog?.showModal();
     }
 }
 

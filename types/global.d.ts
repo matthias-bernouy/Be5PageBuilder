@@ -14,7 +14,12 @@ import { P9R_CACHE, P9R_EVENT, P9R_ID, P9R_MODE } from "src/socle/constants/p9r-
 declare global {
 
     interface Document {
-        EditorManager: EditorManager;
+        editors: {
+            tag:   string,
+            cl:    class,
+            label: string,
+            group: string,
+        }[];
         compIdentifierToEditor: Map<string, Editor>;
     }
 

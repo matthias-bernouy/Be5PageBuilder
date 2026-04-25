@@ -1,6 +1,8 @@
+import type EditorRoot from "src/control/components/editor/EditorSystem/EditorRoot/EditorRoot";
 import { SyncPanel } from "../../../components/editor/componentSync/SyncPanel";
 import type { StateSync } from "../../../components/editor/componentSync/sync/StateSync";
 import { PinMode } from "./PinMode";
+import getClosestEditorSystem from "../../dom/getClosestEditorSystem";
 
 export type CustomAction = {
     action: string;
@@ -45,6 +47,7 @@ export abstract class Editor {
     ]);
 
     constructor(target: HTMLElement, styles: string, editor?: string) {
+        console.debug("NEW EDITOR", target)
         this.target = target;
         this.styleElement = document.createElement("style");
         this.styleElement.innerHTML = styles;
@@ -70,9 +73,7 @@ export abstract class Editor {
             });
         });
 
-        if (document.EditorManager?.getBlocActionGroup()) {
-            document.EditorManager.getBlocActionGroup().close();
-        }
+        getClosestEditorSystem(this.target).blocActions.close();
     }
 
     /**
@@ -136,7 +137,9 @@ export abstract class Editor {
         this._panelConfig = document.createElement("p9r-config-panel") as SyncPanel;
         this._panelConfig.appendChild(this._panelFragment);
         this._panelFragment = null;
-        document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig);
+
+        
+        getClosestEditorSystem(this.target).editorDOM.append(this._panelConfig);
     }
 
     /**
@@ -171,8 +174,9 @@ export abstract class Editor {
     }
 
     private handleHover = (e: MouseEvent) => {
-        document.EditorManager.getBlocActionGroup().setEditor(this);
-        document.EditorManager.getBlocActionGroup().open(e.clientX, e.clientY);
+        const editorSystem = getClosestEditorSystem(this.target);
+        editorSystem.blocActions.setEditor(this);
+        editorSystem.blocActions.open(e.clientX, e.clientY);
     }
 
     public refreshActionBarFeatures() {
@@ -223,7 +227,8 @@ export abstract class Editor {
         const anyPinned = this.stateSyncs.some(s => s.isPinned);
         if (anyPinned) {
             this._unbindHover();
-            document.EditorManager?.getBlocActionGroup()?.close();
+            const editorSystem = getClosestEditorSystem(this.target);
+            editorSystem.blocActions.close();
             this._pinMode.enter();
         } else {
             this._pinMode.exit();

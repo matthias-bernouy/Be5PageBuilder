@@ -1,5 +1,6 @@
 import { BlocLibrary } from "src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary";
 import { Editor } from "../Editor/Editor";
+import getClosestEditorSystem from "../../dom/getClosestEditorSystem";
 
 const cssStyle = `
 :is(h1, h2, h3, h4, h5, h6, p, span, blockquote, a):empty::before {
@@ -42,18 +43,18 @@ export class TextEditor extends Editor {
     private attrObserver?: MutationObserver;
 
     observeAttributes(){
-        this.attrObserver = new MutationObserver((mutations) => {
-            for (const mutation of mutations) {
-                if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
-                    if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
-                        if ( !this.isInitializing ){
-                            this.isInitializing = true;
-                            this.init();
-                        }
-                    }
-                }
-            }
-        });
+        // this.attrObserver = new MutationObserver((mutations) => {
+        //     for (const mutation of mutations) {
+        //         if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
+        //             if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
+        //                 if ( !this.isInitializing ){
+        //                     this.isInitializing = true;
+        //                     this.init();
+        //                 }
+        //             }
+        //         }
+        //     }
+        // });
     }
 
     /**
@@ -157,7 +158,7 @@ export class TextEditor extends Editor {
             // MutationObserver path is async — a second Enter pressed before
             // it fires lands on an unbound element and falls through to the
             // native contentEditable behavior (which inserts a nested <p>).
-            const observer = document.EditorManager?.getObserver?.();
+            const observer = getClosestEditorSystem(this.target).observer;
             if (observer) {
                 observer.make_it_editor(nextEl);
             } else {
@@ -249,14 +250,16 @@ export class TextEditor extends Editor {
     }
 
     private handleInput(e: Event) {
+        const editorRoot = getClosestEditorSystem(this.target);
         if (this.target.innerHTML === "<br>") {
             this.target.innerHTML = "";
         }
         if (this.target.innerText === "/" && this.isBlocManagementEnabled && !this.isChangeComponentDisabled) {
             e.stopPropagation();
             e.stopImmediatePropagation()
-            const actionbar = BlocLibrary.open();
-            actionbar.addEventListener("insert", (e: any) => {
+            const blocLibrary = editorRoot.blocLibrary;
+            const actionbar = blocLibrary.open();
+            blocLibrary.addEventListener("insert", (e: any) => {
                 if (e.detail.type === 'template') {
                     const fragment = document.createRange().createContextualFragment(e.detail.html);
                     this.target.replaceWith(fragment);

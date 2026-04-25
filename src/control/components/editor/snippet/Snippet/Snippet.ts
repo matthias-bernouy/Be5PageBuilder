@@ -1,8 +1,8 @@
 import { Component, type ComponentMetadata } from 'src/control/core/editorSystem/Component';
-import { whenEditorManagerReady } from 'src/control/core/editorSystem/runtime/editorManagerReady';
 import { ICON_SNIPPET } from 'src/control/components/icons';
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
+import { getMetaApiPath } from 'src/control/core/dom/getMetaApiPath';
 
 const SnippetMetadata: ComponentMetadata = {
     css: css,
@@ -51,12 +51,12 @@ export class Snippet extends Component {
         }
 
         this._renderLoading();
-        whenEditorManagerReady(() => this._fetch(identifier));
+        this._fetch(identifier);
     }
 
     private async _fetch(identifier: string) {
         try {
-            const url = new URL('snippets', document.EditorManager.getApiBasePath());
+            const url = new URL('snippets', getMetaApiPath());
             url.searchParams.set('identifier', identifier);
 
             const res = await fetch(url);

@@ -28,12 +28,13 @@ export function registerEditor(props: {
     label: string,
     group: string,
 }) {
-    document.EditorManager.getObserver().register_editor({
+    if ( !document.editors ) document.editors = [];
+    document.editors.push({
         tag:   props.tag + (props.suffix || ""),
         cl:    props.cl || EmptyEditor,
         label: props.label + (props.suffix || ""),
-        group: props.group,
-    });
+        group: props.group, 
+    })
 }
 
 /**
@@ -47,10 +48,11 @@ export function registerEditor_opaque(props: {
     label: string,
     group: string,
 }) {
-    document.EditorManager.getObserver().register_editor_opaque({
+    if ( !document.editors ) document.editors = [];
+    document.editors.push({
         tag:   props.tag,
         cl:    EmptyEditor,
         label: props.label,
         group: props.group,
-    });
+    })
 }

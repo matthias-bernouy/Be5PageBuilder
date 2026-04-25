@@ -1,0 +1,39 @@
+<w13c-fixed-admin-layout>
+    <span slot="title">Settings</span>
+    <p9r-button slot="action" id="save-btn" color="primary">Save</p9r-button>
+
+    <form id="settings-form">
+        <p9r-card label="Site">
+            <p9r-input name="site.name"     label="Site name"   placeholder="My Website"></p9r-input>
+            <p9r-input name="site.host"     label="Host"        placeholder="https://example.com"></p9r-input>
+            <p9r-input name="site.favicon"  label="Favicon URL" placeholder="https://..."></p9r-input>
+            <p9r-select name="site.language" label="Language">
+                <option value="">— Default —</option>
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="de">Deutsch</option>
+                <option value="es">Español</option>
+                <option value="pt">Português</option>
+                <option value="it">Italiano</option>
+                <option value="nl">Nederlands</option>
+                <option value="pl">Polski</option>
+                <option value="ja">日本語</option>
+                <option value="zh">中文</option>
+            </p9r-select>
+            <p9r-select name="site.notFound"    label="404 page"></p9r-select>
+            <p9r-select name="site.serverError" label="500 page"></p9r-select>
+        </p9r-card>
+
+        <p9r-card label="Editor">
+            <p9r-select name="editor.layoutCategory" label="Layout category"></p9r-select>
+        </p9r-card>
+
+        <p9r-card label="Theme CSS">
+            <textarea name="site.theme" rows="16" placeholder="/* your CSS */"></textarea>
+        </p9r-card>
+    </form>
+</w13c-fixed-admin-layout>
+
+<cms-fetch id="settings-fetch" url="{{BASE_PATH}}/api/system" style="display:none"></cms-fetch>
+<cms-fetch id="pages-fetch"    url="{{BASE_PATH}}/api/page/pages" style="display:none"></cms-fetch>
+<cms-fetch id="templates-fetch" url="{{BASE_PATH}}/api/template/templates" style="display:none"></cms-fetch>

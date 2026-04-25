@@ -28,9 +28,104 @@ export class ObserverManager {
      *  are marked with `p9r-opaque` so the walker never descends into them. */
     private opaqueTags: Set<string> = new Set();
 
-    constructor(workingElement: HTMLElement) {
+    constructor(slot: HTMLSlotElement) {
+        // Le slot vit dans le shadow DOM ; le contenu éditable vit dans le light DOM du host.
+        const root = slot.getRootNode();
+        if (!(root instanceof ShadowRoot)) {
+            throw new Error("ObserverManager: slot must live in a ShadowRoot");
+        }
+        const host = root.host as HTMLElement;
+        this.workingElement = host;
 
-        this.workingElement = workingElement;
+        this._registerEditors();
+
+        // Editorize les éléments actuellement slottés (light DOM du host).
+        // flatten: true gère les slots imbriqués (slot dans slot).
+        const initialAssigned = slot.assignedElements({ flatten: true }) as HTMLElement[];
+        initialAssigned.forEach((el) => {
+            this.make_it_editor(el);
+            el.querySelectorAll('*').forEach((child) =>
+                this.make_it_editor(child as HTMLElement)
+            );
+        });
+
+        const callback = (mutationsList: MutationRecord[]) => {
+            // Collect every node added in this batch so we can recognise
+            // DOM moves (node in both removedNodes AND addedNodes).
+            const allAdded = new Set<Node>();
+            for (const mutation of mutationsList) {
+                for (const node of Array.from(mutation.addedNodes)) {
+                    allAdded.add(node);
+                }
+            }
+
+            for (const mutation of mutationsList) {
+                for (const removeNode of Array.from(mutation.removedNodes)) {
+                    const node = removeNode as any;
+                    if (!node.getAttribute) continue;
+                    const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+                    if (!identifier) continue;
+                    const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+
+                    if (allAdded.has(node)) {
+                        // DOM move — notify old parent but keep the editor (and subtree) alive
+                        document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
+                        continue;
+                    }
+
+                    document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
+                    this._disposeSubtree(node);
+                    document.compIdentifierToEditor.get(identifier)?.dispose();
+                }
+
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach((node: Node) => {
+                        if (!(node instanceof HTMLElement)) return;
+
+                        // Skip elements destined for a NAMED slot — they're not
+                        // part of the editable content (e.g. configuration panel).
+                        if (node.hasAttribute("slot")) return;
+
+                        // Moved node (already editorized) — notify new parent
+                        if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
+                            const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+                            if (newParentId) {
+                                document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded(node);
+                            }
+                            return;
+                        }
+
+                        this.make_it_editor(node);
+                        node.querySelectorAll('*').forEach((child) =>
+                            this.make_it_editor(child as HTMLElement)
+                        );
+                    });
+                }
+            }
+        };
+
+        // Observe the HOST (light DOM), because slotted-content mutations
+        // happen there — not in the shadow tree where the <slot> lives.
+        this.observer = new MutationObserver(callback);
+        this.observer.observe(host, {
+            childList: true,
+            subtree: true
+        });
+
+        // Re-editorize on slot composition changes (elements assigned/unassigned).
+        // Useful if slotted content is mounted asynchronously.
+        slot.addEventListener("slotchange", () => {
+            const current = slot.assignedElements({ flatten: true }) as HTMLElement[];
+            current.forEach((el) => {
+                if (el.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) return;
+                this.make_it_editor(el);
+                el.querySelectorAll('*').forEach((child) =>
+                    this.make_it_editor(child as HTMLElement)
+                );
+            });
+        });
+    }
+    private _registerEditors() {
         textTags.forEach((tag) => {
             if (["span", "a"].includes(tag)) {
                 this.register_editor({
@@ -73,74 +168,15 @@ export class ObserverManager {
             visible: false
         });
 
-        const existingElements = workingElement.querySelectorAll('*');
-        existingElements.forEach((el: any) => this.make_it_editor(el));
-
-        const callback = (mutationsList: MutationRecord[]) => {
-
-            // Collect every node added in this batch so we can recognise
-            // DOM moves (node in both removedNodes AND addedNodes).
-            const allAdded = new Set<Node>();
-            for (const mutation of mutationsList) {
-                for (const node of Array.from(mutation.addedNodes)) {
-                    allAdded.add(node);
+        if (document.editors) {
+            for (const editor of document.editors) {
+                if (editor.cl instanceof EmptyEditor) {
+                    this.register_editor_opaque(editor);
+                } else {
+                    this.register_editor(editor);
                 }
             }
-
-            for (const mutation of mutationsList) {
-
-                for (const removeNode of Array.from(mutation.removedNodes)) {
-                    const node = removeNode as any;
-                    if (!node.getAttribute) continue;
-                    const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
-                    if (!identifier) continue;
-                    const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-
-                    if (allAdded.has(node)) {
-                        // DOM move — notify old parent but keep the editor (and subtree) alive
-                        document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
-                        continue;
-                    }
-
-                    document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node as HTMLElement);
-                    // MutationObserver only reports the top-level removed node.
-                    // Walk the subtree so editorized descendants get disposed too —
-                    // otherwise removing a container leaks every nested editor
-                    // (and its listeners, observers, panels) into the registry.
-                    this._disposeSubtree(node);
-                    document.compIdentifierToEditor.get(identifier)?.dispose();
-                }
-
-                if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach((node: Node) => {
-                        if (node instanceof HTMLElement) {
-
-                            // Moved node (already editorized) — notify new parent
-                            if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
-                                const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
-                                if (newParentId) {
-                                    document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded(node);
-                                }
-                                return;
-                            }
-
-                            this.make_it_editor(node);
-
-                            node.querySelectorAll('*').forEach((child: Element) => {
-                                const htmlChild = child as HTMLElement;
-                                this.make_it_editor(htmlChild);
-                            });
-                        }
-                    });
-                }
-            }
-        };
-
-        this.observer = new MutationObserver(callback);
-        this.observer.observe(workingElement, {
-            childList: true,
-            subtree: true
-        });
+        }
     }
 
     dispose() {
@@ -191,8 +227,8 @@ export class ObserverManager {
             visible: element.visible ?? true
         });
         this.groups.add(element.group || "default")
-        const existingElements = this.workingElement.querySelectorAll(element.tag);
-        existingElements.forEach((el: any) => this.make_it_editor(el));
+        // const existingElements = this.workingElement.querySelectorAll(element.tag);
+        // existingElements.forEach((el: any) => this.make_it_editor(el));
     }
 
     register_editor_opaque(element: TagElement): void {
@@ -250,7 +286,7 @@ export class ObserverManager {
             node.setAttribute(p9r.attr.EDITOR.OPAQUE, "true");
         }
         const parentComponent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-        if ( parentComponent ){
+        if (parentComponent) {
             document.compIdentifierToEditor.get(parentComponent)?.onChildrenAdded(node);
         }
     }

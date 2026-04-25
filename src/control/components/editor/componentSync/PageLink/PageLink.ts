@@ -1,6 +1,9 @@
+import getClosestEditorSystem from "src/control/core/dom/getClosestEditorSystem";
 import css from "./PageLink.css" with { type: "text" };
 import { buildOptionList, filterPages, type PageRef } from "./PageLink.picker";
-import { whenEditorManagerReady } from "src/control/core/editorSystem/runtime/editorManagerReady";
+import type { MediaCenter } from "../../MediaCenter/MediaCenter";
+import { getMetaApiPath } from "src/control/core/dom/getMetaApiPath";
+import resolveApiUrl from "src/control/core/dom/resolveApiUrl";
 
 type LinkMode = "page" | "external" | "media";
 
@@ -13,6 +16,7 @@ type LinkMode = "page" | "external" | "media";
  */
 export class PageLink extends HTMLElement {
 
+    private _mediaCenter: MediaCenter | null = null;
     private _trigger: HTMLElement | null = null;
     private _display: HTMLElement | null = null;
     private _list: HTMLElement | null = null;
@@ -60,7 +64,7 @@ export class PageLink extends HTMLElement {
     connectedCallback() {
         if (!this._pagesFetched) {
             this._pagesFetched = true;
-            whenEditorManagerReady(() => this._fetchPages());
+            this._fetchPages();
         }
         this._trigger!.addEventListener("click", this._onTriggerClick);
         this._trigger!.addEventListener("keydown", this._onTriggerKeyDown);
@@ -197,17 +201,25 @@ export class PageLink extends HTMLElement {
     }
 
     private _openMediaCenter() {
-        const mediaCenter = document.EditorManager?.getMediaCenter();
-        if (!mediaCenter) return;
-        const handler = (e: Event) => {
-            mediaCenter.removeEventListener("select-item", handler);
-            const src = (e as CustomEvent).detail?.src as string | undefined;
-            if (!src) return;
-            this._setValue(src, this._mediaLabel(src));
-            this.dispatchEvent(new Event("change", { bubbles: true }));
-        };
-        mediaCenter.addEventListener("select-item", handler);
-        mediaCenter.show(["folder", "image", "other"]);
+        const mediaCenter = document.createElement("cms-media-center") as MediaCenter;
+        const editorSystem = getClosestEditorSystem(this);
+        editorSystem.editorDOM.append(mediaCenter);
+
+        requestAnimationFrame(() => {
+            this._mediaCenter = mediaCenter;
+            if (!mediaCenter) return;
+            const handler = (e: Event) => {
+                mediaCenter.removeEventListener("select-item", handler);
+                const src = (e as CustomEvent).detail?.src as string | undefined;
+                if (!src) return;
+                this._setValue(src, this._mediaLabel(src));
+                this.dispatchEvent(new Event("change", { bubbles: true }));
+                this._mediaCenter?.remove();
+            };
+            mediaCenter.addEventListener("select-item", handler);
+            mediaCenter.show(["folder", "image", "other"]);
+        })
+
     }
 
     private _mediaLabel(src: string): string {
@@ -217,11 +229,11 @@ export class PageLink extends HTMLElement {
 
     private async _fetchPages() {
         try {
-            const res = await fetch(new URL("pages", document.EditorManager.getApiBasePath()));
-            this._pages = await res.json();
+            const res = await fetch(resolveApiUrl("page/list"));
+            const json = await res.json();
+            this._pages = json.pages;
             this._refreshOptions(this._pages);
 
-            // Sync with current attribute value
             const currentValue = this.getAttribute("value") || "";
             if (currentValue) {
                 if (this._isMedia(currentValue)) {

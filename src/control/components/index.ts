@@ -1,5 +1,10 @@
+import "@bernouy/webcomponents"
+
+import "./globals"
+
 // Admin
 import "./admin/AdminLayout/AdminLayout"
+import "./admin/OpenDialog/OpenDialog"
 
 // Editor
 import "./editor/componentSync/PageLink/PageLink"

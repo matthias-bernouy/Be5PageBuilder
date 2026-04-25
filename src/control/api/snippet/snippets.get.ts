@@ -24,7 +24,14 @@ export default async function getSnippets(req: Request, cms: ControlCms) {
     }
 
     const snippets = await cms.repository.getAllSnippets();
-    return new Response(JSON.stringify(snippets), {
+    const rows = snippets.map(s => ({
+        ...s,
+        editorPath: `${cms.basePath}/admin/snippets/editor?identifier=${encodeURIComponent(s.identifier)}`,
+        updatedLabel: s.updatedAt
+            ? new Date(s.updatedAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
+            : "—",
+    }));
+    return new Response(JSON.stringify(rows), {
         headers: { "Content-Type": "application/json" }
     });
 }

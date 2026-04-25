@@ -1,52 +1,23 @@
 (() => {
-  // src/control/core/editorSystem/Component.ts
-  class Component extends HTMLElement {
-    _rawStyles = "";
-    _styles = null;
-    _template = null;
-    constructor(metadata) {
-      super();
-      const shadow = this.attachShadow({ mode: "open" });
-      if (metadata) {
-        this._rawStyles = metadata.css;
-        this._styles = document.createElement("style");
-        this._styles.innerHTML = metadata.css;
-        shadow.appendChild(this._styles);
-        this._template = document.createElement("template");
-        this._template.innerHTML = metadata ? metadata.template : "";
-        shadow.appendChild(this._template.content.cloneNode(true));
-      }
-    }
-    registerCSSVariables(items) {
-      if (!this._styles)
-        return;
-      let src = this._rawStyles;
-      Object.entries(items).forEach(([key, value]) => {
-        src = src.replaceAll("var(--" + key + ")", value);
-      });
-      this._styles.innerHTML = src;
-    }
-    connectedCallback() {}
-  }
   // ../WebComponents/dist/ui.js
   (() => {
-    var { defineProperty: H, getOwnPropertyNames: bt, getOwnPropertyDescriptor: gt } = Object, ft = Object.prototype.hasOwnProperty;
-    var B = new WeakMap, mt = (t) => {
-      var e = B.get(t), i;
+    var { defineProperty: st, getOwnPropertyNames: Re, getOwnPropertyDescriptor: je } = Object, Be = Object.prototype.hasOwnProperty;
+    var ot = new WeakMap, Fe = (t) => {
+      var e = ot.get(t), i;
       if (e)
         return e;
-      if (e = H({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
-        bt(t).map((r) => !ft.call(e, r) && H(e, r, { get: () => t[r], enumerable: !(i = gt(t, r)) || i.enumerable }));
-      return B.set(t, e), e;
+      if (e = st({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
+        Re(t).map((r) => !Be.call(e, r) && st(e, r, { get: () => t[r], enumerable: !(i = je(t, r)) || i.enumerable }));
+      return ot.set(t, e), e;
     };
-    var vt = (t, e) => {
+    var Ie = (t, e) => {
       for (var i in e)
-        H(t, i, { get: e[i], enumerable: true, configurable: true, set: (r) => e[i] = () => r });
+        st(t, i, { get: e[i], enumerable: true, configurable: true, set: (r) => e[i] = () => r });
     };
-    var ee = {};
-    vt(ee, { ToastStack: () => q, Toast: () => M, TagSuggest: () => x, Tag: () => _, TableRow: () => A, TableHeaderCell: () => L, TableCell: () => C, Table: () => z, SegmentedSwitch: () => v, P9rSizesSelect: () => m, P9rSelect: () => c, P9rRange: () => d, P9rInput: () => l, LeftMenuLayout: () => k, LateralMenuItem: () => w, LateralMenu: () => E, LateralDialog: () => h, InputFile: () => f, HorizontalActionGroup: () => y, FormSection: () => g, FormDialog: () => u, Component: () => n, Checkbox: () => b, Button: () => p });
+    var br = {};
+    Ie(br, { Tooltip: () => rt, ToastStack: () => it, Toast: () => et, Textarea: () => I, TagSuggest: () => F, Tag: () => B, Tabs: () => g, TableRow: () => J, TableHeaderCell: () => W, TableCell: () => Q, Table: () => G, TabPanel: () => tt, Switch: () => j, Stepper: () => U, Step: () => Z, Spinner: () => K, Skeleton: () => X, SegmentedSwitch: () => R, RadioGroup: () => m, Radio: () => P, Progress: () => Y, Pagination: () => $, P9rSizesSelect: () => S, P9rSelect: () => b, P9rRange: () => u, P9rInput: () => c, LeftMenuLayout: () => D, LateralMenuItem: () => V, LateralMenu: () => O, LateralDialog: () => C, InputFile: () => T, IconButton: () => H, HorizontalActionGroup: () => N, FormSection: () => q, FormDialog: () => E, Divider: () => z, Component: () => s, Checkbox: () => M, Card: () => A, Button: () => L, BreadcrumbItem: () => k, Breadcrumb: () => w, Badge: () => y, Avatar: () => x, Alert: () => _, AccordionItem: () => v, Accordion: () => f });
 
-    class n extends HTMLElement {
+    class s extends HTMLElement {
       constructor(t) {
         super();
         let e = this.attachShadow({ mode: "open" });
@@ -59,7 +30,888 @@
       }
       connectedCallback() {}
     }
-    var F = `<dialog part="dialog" aria-modal="true">
+    var lt = `<div class="accordion" part="accordion">
+    <slot></slot>
+</div>
+`;
+    var dt = `:host {
+  display: block;
+
+  --_border: var(--border-default, #e5e7eb);
+  --_radius: 8px;
+}
+
+.accordion {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--_border);
+  border-radius: var(--_radius);
+  overflow: hidden;
+}
+
+::slotted(p9r-accordion-item:not(:last-child)) {
+  border-bottom: 1px solid var(--_border);
+}
+
+:host([flush]) .accordion {
+  border: 0;
+  border-radius: 0;
+}
+
+:host([flush]) ::slotted(p9r-accordion-item) {
+  border-bottom: 1px solid var(--_border);
+}
+`;
+    var ct = `<div class="item" part="item">
+    <button class="header" part="header" type="button" aria-expanded="false">
+        <span class="title" part="title"><slot name="header"></slot></span>
+        <span class="chevron" part="chevron" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </span>
+    </button>
+    <div class="panel" part="panel" role="region">
+        <div class="content" part="content">
+            <slot></slot>
+        </div>
+    </div>
+</div>
+`;
+    var ht = `:host {
+  display: block;
+
+  --_text: var(--text-main, #1f2937);
+  --_muted: var(--text-muted, #6b7280);
+  --_bg: transparent;
+  --_hover-bg: var(--bg-base, #f8fafc);
+  --_padding-y: 0.85rem;
+  --_padding-x: 1rem;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  padding: var(--_padding-y) var(--_padding-x);
+  background: var(--_bg);
+  border: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--_text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.header:hover { background: var(--_hover-bg); }
+
+.header:focus-visible {
+  outline: 2px solid var(--primary-base, #4361ee);
+  outline-offset: -2px;
+}
+
+.title {
+  flex: 1;
+  min-width: 0;
+}
+
+.chevron {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  color: var(--_muted);
+}
+
+.chevron svg {
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chevron { transition: transform 0.18s ease; }
+  .panel { transition: grid-template-rows 0.18s ease; }
+}
+
+:host([open]) .chevron {
+  transform: rotate(180deg);
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+}
+
+:host([open]) .panel {
+  grid-template-rows: 1fr;
+}
+
+.content {
+  overflow: hidden;
+  padding: 0 var(--_padding-x);
+  font-size: 14px;
+  color: var(--_text);
+}
+
+:host([open]) .content {
+  padding-bottom: var(--_padding-y);
+}
+
+:host([disabled]) .header {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+`;
+
+    class v extends s {
+      _header;
+      static get observedAttributes() {
+        return ["open", "disabled"];
+      }
+      constructor() {
+        super({ css: ht, template: ct });
+        this._header = this.shadowRoot?.querySelector(".header") ?? null;
+      }
+      connectedCallback() {
+        for (let t of ["open", "disabled"])
+          this._upgradeProperty(t);
+        this._header?.addEventListener("click", this._toggle), this._syncAria();
+      }
+      disconnectedCallback() {
+        this._header?.removeEventListener("click", this._toggle);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "open" || t === "disabled")
+          this._syncAria();
+      }
+      _toggle = () => {
+        if (this.hasAttribute("disabled"))
+          return;
+        let t = !this.hasAttribute("open");
+        if (t)
+          this.setAttribute("open", "");
+        else
+          this.removeAttribute("open");
+        this.dispatchEvent(new CustomEvent("accordion-item-toggle", { bubbles: true, detail: { open: t } }));
+      };
+      _syncAria() {
+        if (!this._header)
+          return;
+        if (this._header.setAttribute("aria-expanded", String(this.hasAttribute("open"))), this.hasAttribute("disabled"))
+          this._header.setAttribute("disabled", "");
+        else
+          this._header.removeAttribute("disabled");
+      }
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+      get open() {
+        return this.hasAttribute("open");
+      }
+      set open(t) {
+        if (t)
+          this.setAttribute("open", "");
+        else
+          this.removeAttribute("open");
+      }
+      get disabled() {
+        return this.hasAttribute("disabled");
+      }
+      set disabled(t) {
+        if (t)
+          this.setAttribute("disabled", "");
+        else
+          this.removeAttribute("disabled");
+      }
+    }
+    if (!customElements.get("p9r-accordion-item"))
+      customElements.define("p9r-accordion-item", v);
+
+    class f extends s {
+      constructor() {
+        super({ css: dt, template: lt });
+      }
+      connectedCallback() {
+        this.addEventListener("accordion-item-toggle", this._handleItemToggle);
+      }
+      disconnectedCallback() {
+        this.removeEventListener("accordion-item-toggle", this._handleItemToggle);
+      }
+      _items() {
+        return Array.from(this.querySelectorAll("p9r-accordion-item"));
+      }
+      _handleItemToggle = (t) => {
+        if (this.hasAttribute("multiple"))
+          return;
+        if (!t.detail.open)
+          return;
+        let e = t.target;
+        for (let i of this._items())
+          if (i !== e)
+            i.removeAttribute("open");
+      };
+    }
+    if (!customElements.get("p9r-accordion"))
+      customElements.define("p9r-accordion", f);
+    var pt = `<div class="alert" part="alert" role="alert">
+    <span class="icon" part="icon" aria-hidden="true">
+        <slot name="icon"></slot>
+    </span>
+    <div class="body" part="body">
+        <strong class="title" part="title"><slot name="title"></slot></strong>
+        <div class="message" part="message"><slot></slot></div>
+    </div>
+    <button class="close" part="close" aria-label="Dismiss" hidden>&times;</button>
+</div>
+`;
+    var ut = `:host {
+  display: block;
+
+  --_bg: var(--info-muted, #eff6ff);
+  --_color: var(--info-contrasted, #1e3a8a);
+  --_accent: var(--info-base, #3b82f6);
+  --_border: var(--info-base, #3b82f6);
+  --_radius: 10px;
+  --_padding: 0.85rem 1rem;
+}
+
+:host([type="success"]) {
+  --_bg: var(--success-muted);
+  --_color: var(--success-contrasted);
+  --_accent: var(--success-base);
+  --_border: var(--success-base);
+}
+
+:host([type="warning"]) {
+  --_bg: var(--warning-muted);
+  --_color: var(--warning-contrasted);
+  --_accent: var(--warning-base);
+  --_border: var(--warning-base);
+}
+
+:host([type="error"]),
+:host([type="danger"]) {
+  --_bg: var(--danger-muted);
+  --_color: var(--danger-contrasted);
+  --_accent: var(--danger-base);
+  --_border: var(--danger-base);
+}
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: var(--_padding);
+  background: var(--_bg);
+  color: var(--_color);
+  border-radius: var(--_radius);
+  border-left: 4px solid var(--_border);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  color: var(--_accent);
+  margin-top: 1px;
+}
+
+.icon:has(slot[name="icon"]:not(:has(*))) {
+  display: none;
+}
+
+:host([icon]) .icon:has(slot[name="icon"]:not(:has(*))) {
+  display: inline-flex;
+  background-color: var(--_accent);
+  border-radius: 50%;
+  position: relative;
+}
+
+:host([icon][type="success"]) .icon::before,
+:host([type="success"]:not([icon="false"])) .icon:has(slot[name="icon"]:not(:has(*)))::before {
+  content: "✓";
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+:host([icon][type="warning"]) .icon::before,
+:host([type="warning"]:not([icon="false"])) .icon:has(slot[name="icon"]:not(:has(*)))::before,
+:host([icon][type="error"]) .icon::before,
+:host([type="error"]:not([icon="false"])) .icon:has(slot[name="icon"]:not(:has(*)))::before,
+:host([icon][type="danger"]) .icon::before,
+:host([type="danger"]:not([icon="false"])) .icon:has(slot[name="icon"]:not(:has(*)))::before {
+  content: "!";
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+:host([icon]) .icon:has(slot[name="icon"]:not(:has(*)))::before,
+:host(:not([type])) .icon:has(slot[name="icon"]:not(:has(*)))::before,
+:host([type="info"]) .icon:has(slot[name="icon"]:not(:has(*)))::before {
+  content: "i";
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.title:has(slot[name="title"]:not(:has(*))) {
+  display: none;
+}
+
+.message slot:empty {
+  display: none;
+}
+
+.close {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.6;
+}
+
+.close:hover { opacity: 1; }
+
+:host([dismissible]) .close {
+  display: inline-block;
+}
+
+:host([leaving]) {
+  animation: alert-out 160ms ease-in forwards;
+}
+
+@keyframes alert-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-6px); }
+}
+`;
+
+    class _ extends s {
+      _close;
+      static get observedAttributes() {
+        return ["dismissible"];
+      }
+      constructor() {
+        super({ css: ut, template: pt });
+        this._close = this.shadowRoot?.querySelector(".close") ?? null;
+      }
+      connectedCallback() {
+        this._syncDismissible(), this._close?.addEventListener("click", this._handleClose);
+      }
+      disconnectedCallback() {
+        this._close?.removeEventListener("click", this._handleClose);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "dismissible")
+          this._syncDismissible();
+      }
+      _syncDismissible() {
+        if (!this._close)
+          return;
+        this._close.hidden = !this.hasAttribute("dismissible");
+      }
+      _handleClose = () => {
+        if (!this.dispatchEvent(new CustomEvent("dismiss", { bubbles: true, cancelable: true })))
+          return;
+        this.setAttribute("leaving", ""), this.addEventListener("animationend", () => this.remove(), { once: true });
+      };
+      dismiss() {
+        this._handleClose();
+      }
+    }
+    if (!customElements.get("p9r-alert"))
+      customElements.define("p9r-alert", _);
+    var bt = `<div class="avatar" part="avatar">
+    <img class="image" part="image" alt="" hidden />
+    <span class="initials" part="initials" aria-hidden="true"></span>
+    <span class="fallback" part="fallback"><slot></slot></span>
+</div>
+`;
+    var mt = `:host {
+  display: inline-block;
+
+  --_size: 2.5rem;
+  --_radius: 50%;
+  --_bg: var(--secondary-muted, #e5e7eb);
+  --_color: var(--text-main, #1f2937);
+  --_border: 0px solid transparent;
+  --_font-size: calc(var(--_size) * 0.4);
+}
+
+:host([size="xs"]) { --_size: 1.25rem; }
+:host([size="sm"]) { --_size: 1.75rem; }
+:host([size="md"]) { --_size: 2.5rem; }
+:host([size="lg"]) { --_size: 3.5rem; }
+:host([size="xl"]) { --_size: 5rem; }
+
+:host([shape="square"]) { --_radius: 6px; }
+:host([shape="rounded"]) { --_radius: 12px; }
+
+:host([color="primary"]) { --_bg: var(--primary-muted); --_color: var(--primary-contrasted); }
+:host([color="danger"])  { --_bg: var(--danger-muted);  --_color: var(--danger-contrasted); }
+:host([color="success"]) { --_bg: var(--success-muted); --_color: var(--success-contrasted); }
+:host([color="info"])    { --_bg: var(--info-muted);    --_color: var(--info-contrasted); }
+:host([color="warning"]) { --_bg: var(--warning-muted); --_color: var(--warning-contrasted); }
+
+:host([bordered]) {
+  --_border: 2px solid var(--bg-surface, #fff);
+}
+
+.avatar {
+  position: relative;
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: var(--_radius);
+  background: var(--_bg);
+  color: var(--_color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: var(--_border);
+  box-sizing: border-box;
+  font-size: var(--_font-size);
+  font-weight: 600;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.image[hidden] { display: none; }
+
+.initials:empty { display: none; }
+
+.avatar:has(.image:not([hidden])) .initials,
+.avatar:has(.image:not([hidden])) .fallback {
+  display: none;
+}
+
+.fallback:has(slot:not(:has(*))) { display: none; }
+
+::slotted(svg) {
+  width: 60%;
+  height: 60%;
+}
+`;
+
+    class x extends s {
+      _img;
+      _initials;
+      static get observedAttributes() {
+        return ["src", "alt", "name", "initials"];
+      }
+      constructor() {
+        super({ css: mt, template: bt });
+        this._img = this.shadowRoot?.querySelector(".image") ?? null, this._initials = this.shadowRoot?.querySelector(".initials") ?? null;
+      }
+      connectedCallback() {
+        if (this._img)
+          this._img.addEventListener("error", this._handleImageError);
+        this._syncImage(), this._syncInitials();
+      }
+      disconnectedCallback() {
+        if (this._img)
+          this._img.removeEventListener("error", this._handleImageError);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "src" || t === "alt")
+          this._syncImage();
+        if (t === "name" || t === "initials")
+          this._syncInitials();
+      }
+      _syncImage() {
+        if (!this._img)
+          return;
+        let t = this.getAttribute("src"), e = this.getAttribute("alt") ?? this.getAttribute("name") ?? "";
+        if (t)
+          this._img.src = t, this._img.alt = e, this._img.hidden = false;
+        else
+          this._img.hidden = true, this._img.removeAttribute("src");
+      }
+      _syncInitials() {
+        if (!this._initials)
+          return;
+        let t = this.getAttribute("initials");
+        if (t) {
+          this._initials.textContent = t;
+          return;
+        }
+        let e = this.getAttribute("name");
+        if (!e) {
+          this._initials.textContent = "";
+          return;
+        }
+        this._initials.textContent = e.split(/\s+/).filter(Boolean).slice(0, 2).map((i) => i[0]).join("").toUpperCase();
+      }
+      _handleImageError = () => {
+        if (this._img)
+          this._img.hidden = true;
+      };
+    }
+    if (!customElements.get("p9r-avatar"))
+      customElements.define("p9r-avatar", x);
+    var gt = `<span class="badge" part="badge">
+    <span class="dot" part="dot" aria-hidden="true"></span>
+    <span class="content" part="content"><slot></slot></span>
+</span>
+`;
+    var vt = `:host {
+  display: inline-flex;
+
+  --_bg: var(--secondary-muted, #f1f5f9);
+  --_text: var(--text-main, #1f2937);
+  --_border: transparent;
+  --_padding-y: 0.15rem;
+  --_padding-x: 0.5rem;
+  --_radius: 999px;
+  --_size: 11px;
+  --_dot-color: var(--text-muted, #94a3b8);
+}
+
+:host([color="primary"]) { --_bg: var(--primary-muted); --_text: var(--primary-contrasted); --_dot-color: var(--primary-base); }
+:host([color="danger"])  { --_bg: var(--danger-muted);  --_text: var(--danger-contrasted);  --_dot-color: var(--danger-base); }
+:host([color="success"]) { --_bg: var(--success-muted); --_text: var(--success-contrasted); --_dot-color: var(--success-base); }
+:host([color="info"])    { --_bg: var(--info-muted);    --_text: var(--info-contrasted);    --_dot-color: var(--info-base); }
+:host([color="warning"]) { --_bg: var(--warning-muted); --_text: var(--warning-contrasted); --_dot-color: var(--warning-base); }
+
+:host([variant="filled"][color="primary"]) { --_bg: var(--primary-base); --_text: white; }
+:host([variant="filled"][color="danger"])  { --_bg: var(--danger-base);  --_text: white; }
+:host([variant="filled"][color="success"]) { --_bg: var(--success-base); --_text: white; }
+:host([variant="filled"][color="info"])    { --_bg: var(--info-base);    --_text: white; }
+:host([variant="filled"][color="warning"]) { --_bg: var(--warning-base); --_text: white; }
+
+:host([variant="outlined"]) {
+  --_bg: transparent;
+}
+:host([variant="outlined"][color="primary"]) { --_border: var(--primary-base); --_text: var(--primary-base); }
+:host([variant="outlined"][color="danger"])  { --_border: var(--danger-base);  --_text: var(--danger-base); }
+:host([variant="outlined"][color="success"]) { --_border: var(--success-base); --_text: var(--success-base); }
+:host([variant="outlined"][color="info"])    { --_border: var(--info-base);    --_text: var(--info-base); }
+:host([variant="outlined"][color="warning"]) { --_border: var(--warning-base); --_text: var(--warning-base); }
+
+:host([size="sm"]) { --_size: 10px; --_padding-y: 0.1rem; --_padding-x: 0.4rem; }
+:host([size="md"]) { --_size: 11px; --_padding-y: 0.15rem; --_padding-x: 0.5rem; }
+:host([size="lg"]) { --_size: 13px; --_padding-y: 0.25rem; --_padding-x: 0.7rem; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: var(--_padding-y) var(--_padding-x);
+  background: var(--_bg);
+  color: var(--_text);
+  border: 1px solid var(--_border);
+  border-radius: var(--_radius);
+  font-size: var(--_size);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.dot {
+  display: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--_dot-color);
+  flex-shrink: 0;
+}
+
+:host([dot]) .dot {
+  display: inline-block;
+}
+`;
+
+    class y extends s {
+      constructor() {
+        super({ css: vt, template: gt });
+      }
+    }
+    if (!customElements.get("p9r-badge"))
+      customElements.define("p9r-badge", y);
+    var ft = `<nav class="breadcrumb" part="breadcrumb" aria-label="Breadcrumb">
+    <ol class="list" part="list">
+        <slot></slot>
+    </ol>
+</nav>
+`;
+    var _t = `:host {
+  display: block;
+
+  --_separator: "/";
+  --_color: var(--text-muted, #6b7280);
+  --_color-current: var(--text-main, #1f2937);
+  --_size: 13px;
+  --_gap: 0.4rem;
+}
+
+.breadcrumb {
+  font-size: var(--_size);
+  color: var(--_color);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--_gap);
+}
+
+::slotted(p9r-breadcrumb-item:not(:last-child))::after {
+  content: var(--_separator);
+  color: var(--_color);
+  margin-left: var(--_gap);
+  display: inline;
+}
+`;
+    var xt = `<li class="item" part="item">
+    <a class="link" part="link"><slot></slot></a>
+</li>
+`;
+    var yt = `:host {
+  display: inline-flex;
+  align-items: center;
+
+  --_color: var(--text-muted, #6b7280);
+  --_color-current: var(--text-main, #1f2937);
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  list-style: none;
+}
+
+.link {
+  color: var(--_color);
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+  color: var(--_color-current);
+}
+
+:host([current]) .link {
+  color: var(--_color-current);
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+}
+`;
+
+    class k extends s {
+      _link;
+      static get observedAttributes() {
+        return ["href", "current"];
+      }
+      constructor() {
+        super({ css: yt, template: xt });
+        this._link = this.shadowRoot?.querySelector(".link") ?? null;
+      }
+      connectedCallback() {
+        this._syncHref(), this._syncCurrent();
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "href")
+          this._syncHref();
+        if (t === "current")
+          this._syncCurrent();
+      }
+      _syncHref() {
+        if (!this._link)
+          return;
+        let t = this.getAttribute("href");
+        if (t)
+          this._link.setAttribute("href", t);
+        else
+          this._link.removeAttribute("href");
+      }
+      _syncCurrent() {
+        if (!this._link)
+          return;
+        if (this.hasAttribute("current"))
+          this._link.setAttribute("aria-current", "page");
+        else
+          this._link.removeAttribute("aria-current");
+      }
+    }
+    if (!customElements.get("p9r-breadcrumb-item"))
+      customElements.define("p9r-breadcrumb-item", k);
+
+    class w extends s {
+      static get observedAttributes() {
+        return ["separator"];
+      }
+      constructor() {
+        super({ css: _t, template: ft });
+      }
+      connectedCallback() {
+        this._syncSeparator(), this._markCurrent();
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "separator")
+          this._syncSeparator();
+      }
+      _syncSeparator() {
+        let t = this.getAttribute("separator") ?? "/";
+        this.style.setProperty("--_separator", `"${t.replace(/"/g, "\\\"")}"`);
+      }
+      _markCurrent() {
+        let t = Array.from(this.querySelectorAll("p9r-breadcrumb-item")), e = t[t.length - 1];
+        if (e && !e.hasAttribute("current"))
+          e.setAttribute("current", "");
+      }
+    }
+    if (!customElements.get("p9r-breadcrumb"))
+      customElements.define("p9r-breadcrumb", w);
+    var kt = `<article class="card" part="card">
+    <header class="header" part="header">
+        <slot name="header"></slot>
+    </header>
+    <section class="body" part="body">
+        <slot></slot>
+    </section>
+    <footer class="footer" part="footer">
+        <slot name="footer"></slot>
+    </footer>
+</article>
+`;
+    var wt = `:host {
+  display: block;
+
+  --_bg: var(--bg-surface, #ffffff);
+  --_border-color: var(--border-default, #e5e7eb);
+  --_border-width: 1px;
+  --_radius: 12px;
+  --_shadow: none;
+  --_padding: 1.25rem;
+  --_gap: 0.75rem;
+  --_text: var(--text-main, #1f2937);
+}
+
+:host([variant="outlined"]) {
+  --_bg: var(--bg-surface);
+  --_shadow: none;
+}
+
+:host([variant="elevated"]) {
+  --_border-width: 0;
+  --_shadow: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+:host([variant="filled"]) {
+  --_bg: var(--bg-base, #f8fafc);
+  --_border-width: 0;
+  --_shadow: none;
+}
+
+:host([padding="none"]) { --_padding: 0; }
+:host([padding="sm"])   { --_padding: 0.75rem; }
+:host([padding="md"])   { --_padding: 1.25rem; }
+:host([padding="lg"])   { --_padding: 2rem; }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--_bg);
+  color: var(--_text);
+  border: var(--_border-width) solid var(--_border-color);
+  border-radius: var(--_radius);
+  box-shadow: var(--_shadow);
+  overflow: hidden;
+}
+
+.header,
+.body,
+.footer {
+  padding: var(--_padding);
+}
+
+.header { border-bottom: 1px solid var(--_border-color); }
+.footer { border-top: 1px solid var(--_border-color); }
+
+.body { flex: 1; }
+
+.header:has(slot[name="header"]:not(:has(*))),
+.footer:has(slot[name="footer"]:not(:has(*))) {
+  display: none;
+}
+
+:host([interactive]) {
+  cursor: pointer;
+}
+
+:host([interactive]) .card {
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :host([interactive]) .card:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+}
+`;
+
+    class A extends s {
+      constructor() {
+        super({ css: wt, template: kt });
+      }
+    }
+    if (!customElements.get("p9r-card"))
+      customElements.define("p9r-card", A);
+    var At = `<dialog part="dialog" aria-modal="true">
     <div class="modal-wrapper" part="wrapper">
         <form method="dialog" id="close-form"></form>
 
@@ -85,7 +937,7 @@
     </div>
 </dialog>
 `;
-    var j = `:host {
+    var Et = `:host {
     --_modal-width: 500px;
     --_modal-radius: 12px;
     --_modal-bg: var(--bg-surface);
@@ -213,7 +1065,7 @@ footer.actions {
 }
 `;
 
-    class u extends n {
+    class E extends s {
       _dialog;
       _form;
       _previouslyFocused = null;
@@ -221,7 +1073,7 @@ footer.actions {
         return ["action", "method", "enctype"];
       }
       constructor() {
-        super({ css: j, template: F });
+        super({ css: Et, template: At });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._form = this.shadowRoot?.querySelector("#form-validation") ?? null;
       }
       connectedCallback() {
@@ -306,8 +1158,8 @@ footer.actions {
       }
     }
     if (!customElements.get("p9r-form-dialog"))
-      customElements.define("p9r-form-dialog", u);
-    var D = `<dialog id="drawer" part="dialog" aria-modal="true" role="dialog" aria-labelledby="title">
+      customElements.define("p9r-form-dialog", E);
+    var Ct = `<dialog id="drawer" part="dialog" aria-modal="true" role="dialog" aria-labelledby="title">
     <header part="header">
         <div id="title" part="title">
             <slot name="title">Dialog</slot>
@@ -324,7 +1176,7 @@ footer.actions {
     </footer>
 </dialog>
 `;
-    var R = `:host {
+    var zt = `:host {
     --drawer-width: 400px;
     --drawer-bg: #ffffff;
     --transition-speed: 0.4s;
@@ -506,14 +1358,14 @@ footer slot[name="footer"]::slotted(button:hover) {
 }
 `;
 
-    class h extends n {
+    class C extends s {
       _dialog;
       _closeBtn;
       static get observedAttributes() {
         return ["open"];
       }
       constructor() {
-        super({ css: R, template: D });
+        super({ css: zt, template: Ct });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._closeBtn = this.shadowRoot?.querySelector("#close-btn") ?? null;
       }
       connectedCallback() {
@@ -583,8 +1435,120 @@ footer slot[name="footer"]::slotted(button:hover) {
       }
     }
     if (!customElements.get("w13c-lateral-dialog"))
-      customElements.define("w13c-lateral-dialog", h);
-    var T = `<button id="btn" class="button" part="button">
+      customElements.define("w13c-lateral-dialog", C);
+    var Lt = `<div class="divider" part="divider" role="separator">
+    <span class="line line-start" part="line"></span>
+    <span class="label" part="label"><slot></slot></span>
+    <span class="line line-end" part="line"></span>
+</div>
+`;
+    var Mt = `:host {
+  display: block;
+
+  --_color: var(--border-default, #e5e7eb);
+  --_thickness: 1px;
+  --_gap: 0.75rem;
+  --_label-color: var(--text-muted, #6b7280);
+  --_label-size: 12px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  width: 100%;
+}
+
+.line {
+  flex: 1;
+  background: var(--_color);
+  height: var(--_thickness);
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--_label-size);
+  color: var(--_label-color);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.label:has(slot:empty),
+.label slot:not([name]):empty {
+  display: none;
+}
+
+.label:has(slot:empty) ~ .line-end,
+.divider:not(:has(.label slot:not([name]):empty)) .line-end {
+  /* placeholder so :has fallback still renders both lines */
+}
+
+:host(:not([align="start"]):not([align="end"])) .line-start,
+:host(:not([align="start"]):not([align="end"])) .line-end {
+  flex: 1;
+}
+
+:host([align="start"]) .line-start { flex: 0 0 1.5rem; }
+:host([align="start"]) .line-end   { flex: 1; }
+:host([align="end"]) .line-start   { flex: 1; }
+:host([align="end"]) .line-end     { flex: 0 0 1.5rem; }
+
+:host([orientation="vertical"]) {
+  display: inline-block;
+  height: 100%;
+}
+
+:host([orientation="vertical"]) .divider {
+  flex-direction: column;
+  height: 100%;
+  width: var(--_thickness);
+}
+
+:host([orientation="vertical"]) .line {
+  width: var(--_thickness);
+  height: auto;
+  flex: 1;
+}
+
+:host([orientation="vertical"]) .label {
+  writing-mode: vertical-rl;
+}
+
+:host([variant="dashed"]) .line {
+  background: transparent;
+  border-top: var(--_thickness) dashed var(--_color);
+  height: 0;
+}
+
+:host([variant="dotted"]) .line {
+  background: transparent;
+  border-top: var(--_thickness) dotted var(--_color);
+  height: 0;
+}
+`;
+
+    class z extends s {
+      static get observedAttributes() {
+        return ["orientation"];
+      }
+      constructor() {
+        super({ css: Mt, template: Lt });
+      }
+      connectedCallback() {
+        this._syncAria();
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "orientation")
+          this._syncAria();
+      }
+      _syncAria() {
+        let t = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal";
+        this.setAttribute("aria-orientation", t);
+      }
+    }
+    if (!customElements.get("p9r-divider"))
+      customElements.define("p9r-divider", z);
+    var qt = `<button id="btn" class="button" part="button">
     <slot name="icon-left"></slot>
     <span class="label">
         <slot>Button</slot>
@@ -592,7 +1556,7 @@ footer slot[name="footer"]::slotted(button:hover) {
     <slot name="icon-right"></slot>
 </button>
 `;
-    var P = `:host {
+    var Ht = `:host {
   display: inline-block;
 
   --_btn-padding-y: 0.6rem;
@@ -727,12 +1691,12 @@ footer slot[name="footer"]::slotted(button:hover) {
 }
 `;
 
-    class p extends n {
+    class L extends s {
       static formAssociated = true;
       _internals;
       _btn;
       constructor() {
-        super({ css: P, template: T });
+        super({ css: Ht, template: qt });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       static get observedAttributes() {
@@ -789,8 +1753,8 @@ footer slot[name="footer"]::slotted(button:hover) {
       }
     }
     if (!customElements.get("p9r-button"))
-      customElements.define("p9r-button", p);
-    var S = `<label class="checkbox-container" part="container">
+      customElements.define("p9r-button", L);
+    var Tt = `<label class="checkbox-container" part="container">
     <span class="input-wrapper">
         <input type="checkbox" id="native-input" part="input" />
         <span class="custom-box" part="box" aria-hidden="true">
@@ -805,7 +1769,7 @@ footer slot[name="footer"]::slotted(button:hover) {
     </span>
 </label>
 `;
-    var I = `:host {
+    var St = `:host {
   display: inline-block;
   --cb-size: 20px;
   --cb-border: var(--border-default, #d1d5db);
@@ -941,7 +1905,7 @@ input:focus-visible ~ .custom-box {
 }
 `;
 
-    class b extends n {
+    class M extends s {
       static formAssociated = true;
       _internals;
       _input;
@@ -949,7 +1913,7 @@ input:focus-visible ~ .custom-box {
         return ["checked", "disabled", "name", "value", "indeterminate"];
       }
       constructor() {
-        super({ css: I, template: S });
+        super({ css: St, template: Tt });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
@@ -1054,8 +2018,8 @@ input:focus-visible ~ .custom-box {
       }
     }
     if (!customElements.get("w13c-checkbox"))
-      customElements.define("w13c-checkbox", b);
-    var Lt = `
+      customElements.define("w13c-checkbox", M);
+    var pi = `
     :host {
         display: block;
         margin-bottom: 8px;
@@ -1134,7 +2098,7 @@ input:focus-visible ~ .custom-box {
     .content ::slotted(*) {
         width: 100%;
     }
-`, zt = `
+`, ui = `
     <section class="section-container" part="container">
         <header id="toggle" part="header" role="button" tabindex="0" aria-expanded="true">
             <div class="accent-bar" part="accent"></div>
@@ -1149,7 +2113,7 @@ input:focus-visible ~ .custom-box {
     </section>
 `;
 
-    class g extends n {
+    class q extends s {
       static get observedAttributes() {
         return ["collapsed", "data-title"];
       }
@@ -1157,7 +2121,7 @@ input:focus-visible ~ .custom-box {
       _title;
       _content;
       constructor() {
-        super({ css: Lt, template: zt });
+        super({ css: pi, template: ui });
         this._toggle = this.shadowRoot?.getElementById("toggle") ?? null, this._title = this.shadowRoot?.querySelector(".title-wrapper") ?? null, this._content = this.shadowRoot?.getElementById("content") ?? null;
       }
       connectedCallback() {
@@ -1213,8 +2177,176 @@ input:focus-visible ~ .custom-box {
       }
     }
     if (!customElements.get("p9r-section"))
-      customElements.define("p9r-section", g);
-    var N = `<div class="field-header" part="header">
+      customElements.define("p9r-section", q);
+    var Pt = `<button id="btn" class="icon-button" part="button">
+    <slot></slot>
+</button>
+`;
+    var Rt = `:host {
+  display: inline-block;
+
+  --_size: 2.25rem;
+  --_radius: 8px;
+  --_bg: transparent;
+  --_color: var(--text-main, #1f2937);
+  --_border: 1.5px solid transparent;
+  --_hover-bg: var(--bg-base, #f1f5f9);
+  --_accent: var(--text-main);
+}
+
+:host([size="sm"]) { --_size: 1.75rem; --_radius: 6px; }
+:host([size="md"]) { --_size: 2.25rem; --_radius: 8px; }
+:host([size="lg"]) { --_size: 2.75rem; --_radius: 10px; }
+
+:host([color="primary"]) { --_accent: var(--primary-base); }
+:host([color="danger"])  { --_accent: var(--danger-base); }
+:host([color="success"]) { --_accent: var(--success-base); }
+:host([color="info"])    { --_accent: var(--info-base); }
+:host([color="warning"]) { --_accent: var(--warning-base); }
+
+:host([variant="filled"]) {
+  --_bg: var(--_accent);
+  --_color: white;
+  --_hover-bg: var(--_accent);
+}
+
+:host([variant="outlined"]) {
+  --_border: 1.5px solid var(--_accent);
+  --_color: var(--_accent);
+  --_hover-bg: color-mix(in oklab, var(--_accent) 10%, transparent);
+}
+
+:host([variant="ghost"]) {
+  --_color: var(--_accent);
+  --_hover-bg: color-mix(in oklab, var(--_accent) 10%, transparent);
+}
+
+:host([round]) { --_radius: 999px; }
+
+.icon-button {
+  width: var(--_size);
+  height: var(--_size);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--_bg);
+  color: var(--_color);
+  border: var(--_border);
+  border-radius: var(--_radius);
+  cursor: pointer;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+.icon-button:hover {
+  background: var(--_hover-bg);
+  opacity: var(--_hover-opacity, 1);
+}
+
+:host([variant="filled"]) .icon-button:hover {
+  --_hover-opacity: 0.9;
+}
+
+.icon-button:focus-visible {
+  outline: 2px solid var(--_accent);
+  outline-offset: 2px;
+}
+
+:host([disabled]) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+::slotted(svg) {
+  width: 55%;
+  height: 55%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .icon-button { transition: background-color 0.15s, color 0.15s, opacity 0.15s; }
+  .icon-button:active { transform: scale(0.95); }
+}
+`;
+
+    class H extends s {
+      static formAssociated = true;
+      _internals;
+      _btn;
+      static get observedAttributes() {
+        return ["type", "disabled", "aria-label"];
+      }
+      constructor() {
+        super({ css: Rt, template: Pt });
+        this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
+      }
+      connectedCallback() {
+        for (let t of ["type", "disabled"])
+          this._upgradeProperty(t);
+        if (!this.hasAttribute("type"))
+          this.setAttribute("type", "button");
+        if (!this.hasAttribute("variant"))
+          this.setAttribute("variant", "ghost");
+        this.addEventListener("click", this._handleClick), this._syncAriaLabel();
+      }
+      disconnectedCallback() {
+        this.removeEventListener("click", this._handleClick);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (!this._btn)
+          return;
+        if (t === "type")
+          this._btn.type = i ?? "button";
+        if (t === "disabled")
+          this._btn.disabled = this.hasAttribute("disabled");
+        if (t === "aria-label")
+          this._syncAriaLabel();
+      }
+      _syncAriaLabel() {
+        if (!this._btn)
+          return;
+        let t = this.getAttribute("aria-label");
+        if (t)
+          this._btn.setAttribute("aria-label", t);
+        else
+          this._btn.removeAttribute("aria-label");
+      }
+      _handleClick = (t) => {
+        if (this.hasAttribute("disabled")) {
+          t.stopImmediatePropagation();
+          return;
+        }
+        let e = this._internals.form;
+        if (!e)
+          return;
+        let i = this.getAttribute("type");
+        if (i === "submit")
+          e.requestSubmit();
+        if (i === "reset")
+          e.reset();
+      };
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+      get disabled() {
+        return this.hasAttribute("disabled");
+      }
+      set disabled(t) {
+        if (t)
+          this.setAttribute("disabled", "");
+        else
+          this.removeAttribute("disabled");
+      }
+    }
+    if (!customElements.get("p9r-icon-button"))
+      customElements.define("p9r-icon-button", H);
+    var jt = `<div class="field-header" part="header">
     <slot name="label"></slot>
 </div>
 
@@ -1237,7 +2369,7 @@ input:focus-visible ~ .custom-box {
 
 <div class="sr-live" role="status" aria-live="polite" aria-atomic="true"></div>
 `;
-    var O = `:host {
+    var Bt = `:host {
     display: block;
     width: 100%;
     margin: 1.25rem 0;
@@ -1336,7 +2468,7 @@ input[type="file"]:focus-visible + label {
 }
 `;
 
-    class f extends n {
+    class T extends s {
       static formAssociated = true;
       _internals;
       _input;
@@ -1344,7 +2476,7 @@ input[type="file"]:focus-visible + label {
       _dropZone;
       _liveRegion;
       constructor() {
-        super({ css: O, template: N });
+        super({ css: Bt, template: jt });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector('input[type="file"]') ?? null, this._preview = this.shadowRoot?.querySelector(".file-info") ?? null, this._dropZone = this.shadowRoot?.querySelector(".drop-zone") ?? null, this._liveRegion = this.shadowRoot?.querySelector(".sr-live") ?? null;
       }
       static get observedAttributes() {
@@ -1421,9 +2553,9 @@ input[type="file"]:focus-visible + label {
         else {
           let i = new FormData, r = this.getAttribute("name") || "";
           for (let a = 0;a < t.length; a++) {
-            let s = t.item(a);
-            if (s)
-              i.append(r, s);
+            let n = t.item(a);
+            if (n)
+              i.append(r, n);
           }
           this._internals.setFormValue(i);
         }
@@ -1499,9 +2631,9 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("w13c-input-file"))
-      customElements.define("w13c-input-file", f);
+      customElements.define("w13c-input-file", T);
 
-    class l extends HTMLElement {
+    class c extends HTMLElement {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "type", "hint", "hint-level", "max-count", "invalid", "disabled", "required"];
@@ -1519,7 +2651,7 @@ input[type="file"]:focus-visible + label {
         this._internals = this.attachInternals();
         let t = this.attachShadow({ mode: "open" });
         t.innerHTML = `
-            <style>${l._css}</style>
+            <style>${c._css}</style>
             <div class="field" part="field">
                 <label class="label" part="label"></label>
                 <input class="input" part="input" type="text" />
@@ -1529,7 +2661,7 @@ input[type="file"]:focus-visible + label {
                 </div>
             </div>
         `, this._labelEl = t.querySelector(".label"), this._input = t.querySelector(".input"), this._hintEl = t.querySelector(".hint"), this._metaEl = t.querySelector(".meta"), this._counterEl = t.querySelector(".counter"), this._countEl = t.querySelector(".count"), this._maxEl = t.querySelector(".max");
-        let e = `p9r-input-label-${++l._uid}`;
+        let e = `p9r-input-label-${++c._uid}`;
         if (this._labelEl && this._input)
           this._labelEl.id = e, this._input.setAttribute("aria-labelledby", e);
       }
@@ -1844,9 +2976,9 @@ input[type="file"]:focus-visible + label {
     `;
     }
     if (!customElements.get("p9r-input"))
-      customElements.define("p9r-input", l);
+      customElements.define("p9r-input", c);
 
-    class d extends HTMLElement {
+    class u extends HTMLElement {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "min", "max", "step", "unit", "disabled"];
@@ -1864,7 +2996,7 @@ input[type="file"]:focus-visible + label {
         this._internals = this.attachInternals();
         let t = this.attachShadow({ mode: "open" });
         t.innerHTML = `
-            <style>${d._css}</style>
+            <style>${u._css}</style>
             <div class="field" part="field">
                 <div class="header" part="header">
                     <span class="label" part="label"></span>
@@ -2195,9 +3327,9 @@ input[type="file"]:focus-visible + label {
     `;
     }
     if (!customElements.get("p9r-range"))
-      customElements.define("p9r-range", d);
+      customElements.define("p9r-range", u);
 
-    class c extends HTMLElement {
+    class b extends HTMLElement {
       _trigger = null;
       _display = null;
       _list = null;
@@ -2232,7 +3364,7 @@ input[type="file"]:focus-visible + label {
       _buildShadow() {
         let t = this.getAttribute("label") || this.getAttribute("name") || "", e = this.attachShadow({ mode: "open" });
         e.innerHTML = `
-            <style>${c._css}</style>
+            <style>${b._css}</style>
             <div class="field">
                 <span class="label">${t}</span>
                 <button class="trigger" type="button" tabindex="0">
@@ -2414,16 +3546,16 @@ input[type="file"]:focus-visible + label {
     `;
     }
     if (!customElements.get("p9r-select"))
-      customElements.define("p9r-select", c);
+      customElements.define("p9r-select", b);
 
-    class m extends HTMLElement {
+    class S extends HTMLElement {
       connectedCallback() {
         let t = this.getAttribute("label") || "Size", e = this.getAttribute("name") || "size", i = document.createElement("p9r-select");
         i.setAttribute("label", t), i.setAttribute("name", e), [{ value: "none", label: "NONE" }, { value: "xs", label: "XS" }, { value: "sm", label: "S" }, { value: "md", label: "M", selected: true }, { value: "lg", label: "L" }, { value: "xl", label: "XL" }].forEach((a) => {
-          let s = document.createElement("option");
-          if (s.value = a.value, s.textContent = a.label, a.selected)
-            s.setAttribute("selected", "");
-          i.appendChild(s);
+          let n = document.createElement("option");
+          if (n.value = a.value, n.textContent = a.label, a.selected)
+            n.setAttribute("selected", "");
+          i.appendChild(n);
         }), this.replaceWith(i);
       }
       get name() {
@@ -2434,8 +3566,366 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("p9r-sizes-select"))
-      customElements.define("p9r-sizes-select", m);
-    var $ = `<div class="switch-container" part="container">
+      customElements.define("p9r-sizes-select", S);
+    var Ft = `<label class="radio" part="container">
+    <input type="radio" id="native-input" part="input" />
+    <span class="custom" part="circle" aria-hidden="true">
+        <span class="dot" part="dot"></span>
+    </span>
+    <span class="label" part="label"><slot></slot></span>
+</label>
+`;
+    var It = `:host {
+  display: inline-block;
+
+  --_size: 18px;
+  --_border: var(--border-default, #d1d5db);
+  --_active: var(--primary-base, #4361ee);
+  --_bg: var(--bg-surface, #fff);
+  --_text: var(--text-main, #1f2937);
+  --_focus-ring: color-mix(in oklab, var(--_active) 20%, transparent);
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  font-family: inherit;
+}
+
+input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+}
+
+.custom {
+  position: relative;
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: 50%;
+  border: 2px solid var(--_border);
+  background: var(--_bg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.dot {
+  width: 50%;
+  height: 50%;
+  background: var(--_active);
+  border-radius: 50%;
+  transform: scale(0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .custom { transition: border-color 0.15s, box-shadow 0.15s; }
+  .dot    { transition: transform 0.15s; }
+}
+
+input:checked ~ .custom {
+  border-color: var(--_active);
+}
+
+input:checked ~ .custom .dot {
+  transform: scale(1);
+}
+
+input:focus-visible ~ .custom {
+  box-shadow: 0 0 0 3px var(--_focus-ring);
+}
+
+.label {
+  font-size: 14px;
+  color: var(--_text);
+}
+
+.label:has(slot:not(:has(*))) { display: none; }
+
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+`;
+
+    class P extends s {
+      _input;
+      static get observedAttributes() {
+        return ["checked", "disabled", "value", "name"];
+      }
+      constructor() {
+        super({ css: It, template: Ft });
+        this._input = this.shadowRoot?.querySelector("input") ?? null;
+      }
+      connectedCallback() {
+        for (let t of ["checked", "disabled", "value"])
+          this._upgradeProperty(t);
+        if (this._input) {
+          if (this._input.checked = this.hasAttribute("checked"), this._input.disabled = this.hasAttribute("disabled"), this._input.value = this.getAttribute("value") ?? "", this.hasAttribute("name"))
+            this._input.name = this.getAttribute("name") ?? "";
+          this._input.addEventListener("change", this._onChange), this._input.addEventListener("click", this._onClick);
+        }
+        if (this.setAttribute("role", "radio"), this.setAttribute("aria-checked", String(this.hasAttribute("checked"))), !this.hasAttribute("tabindex"))
+          this.setAttribute("tabindex", this.hasAttribute("checked") ? "0" : "-1");
+      }
+      disconnectedCallback() {
+        this._input?.removeEventListener("change", this._onChange), this._input?.removeEventListener("click", this._onClick);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (!this._input)
+          return;
+        if (t === "checked")
+          this._input.checked = i !== null, this.setAttribute("aria-checked", String(i !== null));
+        else if (t === "disabled")
+          this._input.disabled = i !== null;
+        else if (t === "value")
+          this._input.value = i ?? "";
+        else if (t === "name")
+          this._input.name = i ?? "";
+      }
+      _onChange = () => {
+        if (this._input?.checked ?? false)
+          this.setAttribute("checked", "");
+        else
+          this.removeAttribute("checked");
+        this.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      _onClick = (t) => {
+        if (this.hasAttribute("disabled"))
+          t.preventDefault(), t.stopImmediatePropagation();
+      };
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+      get checked() {
+        return this.hasAttribute("checked");
+      }
+      set checked(t) {
+        if (t)
+          this.setAttribute("checked", "");
+        else
+          this.removeAttribute("checked");
+      }
+      get disabled() {
+        return this.hasAttribute("disabled");
+      }
+      set disabled(t) {
+        if (t)
+          this.setAttribute("disabled", "");
+        else
+          this.removeAttribute("disabled");
+      }
+      get value() {
+        return this.getAttribute("value") ?? "";
+      }
+      set value(t) {
+        this.setAttribute("value", t);
+      }
+    }
+    if (!customElements.get("p9r-radio"))
+      customElements.define("p9r-radio", P);
+    var Nt = `<fieldset class="group" part="group">
+    <legend class="label" part="label"></legend>
+    <div class="options" part="options">
+        <slot></slot>
+    </div>
+</fieldset>
+`;
+    var Dt = `:host {
+  display: block;
+}
+
+.group {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #94a3b8);
+  padding: 0;
+  margin-bottom: 0.4rem;
+}
+
+.label:empty { display: none; }
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+:host([orientation="horizontal"]) .options {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+`;
+
+    class m extends s {
+      static formAssociated = true;
+      _internals;
+      _label;
+      _slot;
+      static get observedAttributes() {
+        return ["value", "label", "name", "disabled"];
+      }
+      constructor() {
+        super({ css: Dt, template: Nt });
+        this._internals = this.attachInternals(), this._label = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
+      }
+      connectedCallback() {
+        for (let t of ["value", "name", "disabled"])
+          this._upgradeProperty(t);
+        this.setAttribute("role", "radiogroup"), this._syncLabel(), this._slot?.addEventListener("slotchange", this._syncRadios), this.addEventListener("change", this._onRadioChange), this.addEventListener("keydown", this._onKeydown), this._syncRadios();
+      }
+      disconnectedCallback() {
+        this._slot?.removeEventListener("slotchange", this._syncRadios), this.removeEventListener("change", this._onRadioChange), this.removeEventListener("keydown", this._onKeydown);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "value")
+          this._applyValue(i);
+        else if (t === "label")
+          this._syncLabel();
+        else if (t === "disabled")
+          this._syncDisabled();
+      }
+      get value() {
+        return this.getAttribute("value") ?? "";
+      }
+      set value(t) {
+        this.setAttribute("value", t);
+      }
+      get name() {
+        return this.getAttribute("name") ?? "";
+      }
+      set name(t) {
+        if (t)
+          this.setAttribute("name", t);
+        else
+          this.removeAttribute("name");
+      }
+      get disabled() {
+        return this.hasAttribute("disabled");
+      }
+      set disabled(t) {
+        if (t)
+          this.setAttribute("disabled", "");
+        else
+          this.removeAttribute("disabled");
+      }
+      _radios() {
+        if (!this._slot)
+          return [];
+        return this._slot.assignedElements({ flatten: true }).filter((t) => t.tagName === "P9R-RADIO");
+      }
+      _syncRadios = () => {
+        let t = this._radios(), e = this.getAttribute("name") ?? `radiogroup-${m._uid++}`, i = this.getAttribute("value");
+        if (t.forEach((r) => {
+          r.setAttribute("name", e);
+          let a = i !== null && r.getAttribute("value") === i;
+          if (a)
+            r.setAttribute("checked", "");
+          else
+            r.removeAttribute("checked");
+          r.setAttribute("tabindex", a ? "0" : "-1");
+        }), i === null && t.length > 0)
+          t[0]?.setAttribute("tabindex", "0");
+        this._syncDisabled(), this._internals.setFormValue(i ?? null);
+      };
+      _onRadioChange = (t) => {
+        let e = t.target;
+        if (e.tagName !== "P9R-RADIO")
+          return;
+        let i = e.getAttribute("value") ?? "";
+        if (i !== this.getAttribute("value"))
+          this.setAttribute("value", i), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: i } }));
+      };
+      _onKeydown = (t) => {
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(t.key))
+          return;
+        let i = this._radios().filter((h) => !h.hasAttribute("disabled"));
+        if (i.length === 0)
+          return;
+        let r = i.findIndex((h) => h === document.activeElement), a = r === -1 ? 0 : r, n = a;
+        switch (t.key) {
+          case "ArrowLeft":
+          case "ArrowUp":
+            n = (a - 1 + i.length) % i.length;
+            break;
+          case "ArrowRight":
+          case "ArrowDown":
+            n = (a + 1) % i.length;
+            break;
+          case "Home":
+            n = 0;
+            break;
+          case "End":
+            n = i.length - 1;
+            break;
+        }
+        t.preventDefault();
+        let o = i[n];
+        if (!o)
+          return;
+        let d = o.getAttribute("value") ?? "";
+        this.setAttribute("value", d), o.focus(), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: d } }));
+      };
+      _applyValue(t) {
+        this._radios().forEach((i) => {
+          let r = t !== null && i.getAttribute("value") === t;
+          if (r)
+            i.setAttribute("checked", "");
+          else
+            i.removeAttribute("checked");
+          i.setAttribute("tabindex", r ? "0" : "-1");
+        }), this._internals.setFormValue(t ?? null);
+      }
+      _syncLabel() {
+        if (!this._label)
+          return;
+        this._label.textContent = this.getAttribute("label") ?? "";
+      }
+      _syncDisabled() {
+        let t = this.hasAttribute("disabled");
+        this._radios().forEach((e) => {
+          if (t)
+            e.setAttribute("disabled", "");
+        });
+      }
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+      static _uid = 0;
+    }
+    if (!customElements.get("p9r-radio-group"))
+      customElements.define("p9r-radio-group", m);
+    var Vt = `<div class="switch-container" part="container">
     <span class="label" id="group-label" part="label"></span>
 
     <div class="switch-wrapper" part="wrapper" role="radiogroup" aria-labelledby="group-label">
@@ -2451,7 +3941,7 @@ input[type="file"]:focus-visible + label {
     </span>
 </div>
 `;
-    var V = `:host {
+    var Ot = `:host {
   --active-index: 0;
   --total-options: 1;
   display: block;
@@ -2541,7 +4031,7 @@ input[type="file"]:focus-visible + label {
 }
 `;
 
-    class v extends n {
+    class R extends s {
       static formAssociated = true;
       _internals;
       _slider;
@@ -2553,7 +4043,7 @@ input[type="file"]:focus-visible + label {
         return ["value", "disabled", "name", "label"];
       }
       constructor() {
-        super({ css: V, template: $ });
+        super({ css: Ot, template: Vt });
         this._internals = this.attachInternals(), this._slider = this.shadowRoot?.querySelector(".selection-slider") ?? null, this._optionsContainer = this.shadowRoot?.querySelector(".options-container") ?? null, this._labelEl = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
       }
       connectedCallback() {
@@ -2649,25 +4139,25 @@ input[type="file"]:focus-visible + label {
         let i = this._getOptions();
         if (i.length === 0)
           return;
-        let r = i.findIndex((pt) => pt.getAttribute("value") === this.value), a = r === -1 ? 0 : r, s = a;
+        let r = i.findIndex((d) => d.getAttribute("value") === this.value), a = r === -1 ? 0 : r, n = a;
         switch (t.key) {
           case "ArrowLeft":
           case "ArrowUp":
-            s = (a - 1 + i.length) % i.length;
+            n = (a - 1 + i.length) % i.length;
             break;
           case "ArrowRight":
           case "ArrowDown":
-            s = (a + 1) % i.length;
+            n = (a + 1) % i.length;
             break;
           case "Home":
-            s = 0;
+            n = 0;
             break;
           case "End":
-            s = i.length - 1;
+            n = i.length - 1;
             break;
         }
         t.preventDefault();
-        let o = i[s];
+        let o = i[n];
         if (!o)
           return;
         this.value = o.getAttribute("value") || "", o.focus();
@@ -2690,8 +4180,215 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("p9r-segmented-switch"))
-      customElements.define("p9r-segmented-switch", v);
-    var Z = `<div class="container" part="container">
+      customElements.define("p9r-segmented-switch", R);
+    var $t = `<label class="switch" part="container">
+    <input type="checkbox" id="native-input" part="input" />
+    <span class="track" part="track">
+        <span class="thumb" part="thumb"></span>
+    </span>
+    <span class="label" part="label"><slot></slot></span>
+</label>
+`;
+    var Yt = `:host {
+  display: inline-block;
+
+  --_track-w: 36px;
+  --_track-h: 20px;
+  --_thumb: 14px;
+  --_gap: 3px;
+  --_off-bg: var(--border-default, #d1d5db);
+  --_on-bg: var(--primary-base, #4361ee);
+  --_thumb-bg: var(--bg-surface, #fff);
+  --_text: var(--text-main, #1f2937);
+  --_focus-ring: color-mix(in oklab, var(--_on-bg) 20%, transparent);
+}
+
+:host([size="sm"]) {
+  --_track-w: 28px;
+  --_track-h: 16px;
+  --_thumb: 11px;
+}
+
+:host([size="lg"]) {
+  --_track-w: 48px;
+  --_track-h: 26px;
+  --_thumb: 20px;
+}
+
+:host([color="danger"])  { --_on-bg: var(--danger-base); }
+:host([color="success"]) { --_on-bg: var(--success-base); }
+:host([color="info"])    { --_on-bg: var(--info-base); }
+:host([color="warning"]) { --_on-bg: var(--warning-base); }
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  font-family: inherit;
+}
+
+input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  pointer-events: none;
+}
+
+.track {
+  position: relative;
+  width: var(--_track-w);
+  height: var(--_track-h);
+  background: var(--_off-bg);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.thumb {
+  position: absolute;
+  top: var(--_gap);
+  left: var(--_gap);
+  width: var(--_thumb);
+  height: var(--_thumb);
+  background: var(--_thumb-bg);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+input:checked ~ .track {
+  background: var(--_on-bg);
+}
+
+input:checked ~ .track .thumb {
+  left: calc(100% - var(--_thumb) - var(--_gap));
+}
+
+input:focus-visible ~ .track {
+  box-shadow: 0 0 0 3px var(--_focus-ring);
+}
+
+.label {
+  font-size: 14px;
+  color: var(--_text);
+}
+
+.label:has(slot:not(:has(*))) { display: none; }
+
+:host([disabled]) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .track, .thumb {
+    transition: background-color 0.18s ease, left 0.18s ease, box-shadow 0.18s ease;
+  }
+}
+`;
+
+    class j extends s {
+      static formAssociated = true;
+      _internals;
+      _input;
+      static get observedAttributes() {
+        return ["checked", "disabled", "name", "value"];
+      }
+      constructor() {
+        super({ css: Yt, template: $t });
+        this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
+      }
+      connectedCallback() {
+        for (let t of ["checked", "disabled", "name", "value"])
+          this._upgradeProperty(t);
+        if (this._input) {
+          if (this._input.checked = this.hasAttribute("checked"), this._input.disabled = this.hasAttribute("disabled"), this.hasAttribute("name"))
+            this._input.name = this.getAttribute("name") ?? "";
+          if (this.hasAttribute("value"))
+            this._input.value = this.getAttribute("value") ?? "";
+          this._input.addEventListener("change", this._handleChange), this._input.addEventListener("click", this._handleClick);
+        }
+        this.setAttribute("role", "switch"), this.setAttribute("aria-checked", String(this.hasAttribute("checked"))), this._syncFormValue();
+      }
+      disconnectedCallback() {
+        if (this._input)
+          this._input.removeEventListener("change", this._handleChange), this._input.removeEventListener("click", this._handleClick);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (!this._input)
+          return;
+        if (t === "checked")
+          this._input.checked = i !== null, this.setAttribute("aria-checked", String(i !== null)), this._syncFormValue();
+        else if (t === "disabled")
+          this._input.disabled = i !== null;
+        else if (t === "name")
+          this._input.name = i ?? "";
+        else if (t === "value")
+          this._input.value = i ?? "", this._syncFormValue();
+      }
+      _handleChange = () => {
+        if (this._input?.checked ?? false)
+          this.setAttribute("checked", "");
+        else
+          this.removeAttribute("checked");
+        this._syncFormValue(), this.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+      _handleClick = (t) => {
+        if (this.hasAttribute("disabled"))
+          t.preventDefault(), t.stopImmediatePropagation();
+      };
+      _syncFormValue() {
+        let t = this._input?.checked ?? this.hasAttribute("checked");
+        this._internals.setFormValue(t ? this.getAttribute("value") ?? "on" : null);
+      }
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+      get checked() {
+        return this.hasAttribute("checked");
+      }
+      set checked(t) {
+        if (t)
+          this.setAttribute("checked", "");
+        else
+          this.removeAttribute("checked");
+      }
+      get disabled() {
+        return this.hasAttribute("disabled");
+      }
+      set disabled(t) {
+        if (t)
+          this.setAttribute("disabled", "");
+        else
+          this.removeAttribute("disabled");
+      }
+      get name() {
+        return this.getAttribute("name") ?? "";
+      }
+      set name(t) {
+        this.setAttribute("name", t);
+      }
+      get value() {
+        return this.getAttribute("value") ?? "on";
+      }
+      set value(t) {
+        this.setAttribute("value", t);
+      }
+      get form() {
+        return this._internals.form;
+      }
+      click() {
+        this._input?.click();
+      }
+    }
+    if (!customElements.get("p9r-switch"))
+      customElements.define("p9r-switch", j);
+    var Xt = `<div class="container" part="container">
     <label for="main-input" part="label">
         <slot name="label">Tags</slot>
     </label>
@@ -2730,7 +4427,7 @@ input[type="file"]:focus-visible + label {
     ></div>
 </div>
 `;
-    var X = `:host {
+    var Kt = `:host {
     display: block;
     font-family: system-ui, -apple-system, sans-serif;
 }
@@ -2883,10 +4580,10 @@ p9r-tag:hover {
     filter: brightness(0.92);
 }
 `;
-    var K = `<span class="label" part="label"><slot></slot></span>
+    var Zt = `<span class="label" part="label"><slot></slot></span>
 <button type="button" class="remove" part="remove" aria-label="Remove" hidden>&times;</button>
 `;
-    var Y = `:host {
+    var Ut = `:host {
     --_tag-font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 
     --_tag-bg: var(--info-muted, oklch(95% 0.02 230));
@@ -2992,13 +4689,13 @@ p9r-tag:hover {
 }
 `;
 
-    class _ extends n {
+    class B extends s {
       _removeBtn;
       static get observedAttributes() {
         return ["removable"];
       }
       constructor() {
-        super({ css: Y, template: K });
+        super({ css: Ut, template: Zt });
         this._removeBtn = this.shadowRoot?.querySelector(".remove") ?? null;
       }
       connectedCallback() {
@@ -3042,9 +4739,9 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag"))
-      customElements.define("p9r-tag", _);
+      customElements.define("p9r-tag", B);
 
-    class x extends n {
+    class F extends s {
       static formAssociated = true;
       _internals;
       _tags = [];
@@ -3058,7 +4755,7 @@ p9r-tag:hover {
       _allSuggestions = [];
       _uid;
       constructor() {
-        super({ css: X, template: Z });
+        super({ css: Kt, template: Xt });
         if (this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("#main-input"), this._display = this.shadowRoot?.querySelector("#tags-display") ?? null, this._suggestionsEl = this.shadowRoot?.querySelector("#suggestions") ?? null, this._liveRegion = this.shadowRoot?.querySelector("#live-region") ?? null, this._uid = `ts-${Math.random().toString(36).slice(2, 9)}`, this._suggestionsEl)
           this._suggestionsEl.id = `${this._uid}-listbox`;
         if (this._input)
@@ -3217,8 +4914,8 @@ p9r-tag:hover {
           i.dataset.active = String(r), i.setAttribute("aria-selected", String(r));
           let a = document.createElement("span");
           a.className = "name", a.textContent = t.value, i.appendChild(a);
-          let s = document.createElement("p9r-tag");
-          s.setAttribute("color", "secondary"), s.setAttribute("part", "count"), s.textContent = String(t.count), i.appendChild(s), i.addEventListener("mousedown", (o) => {
+          let n = document.createElement("p9r-tag");
+          n.setAttribute("color", "secondary"), n.setAttribute("part", "count"), n.textContent = String(t.count), i.appendChild(n), i.addEventListener("mousedown", (o) => {
             o.preventDefault(), this._select(t.value);
           }), this._suggestionsEl.appendChild(i);
         }), this._suggestionsEl.hidden = false, this._input.setAttribute("aria-expanded", "true"), this._activeIndex >= 0)
@@ -3306,12 +5003,356 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag-suggest"))
-      customElements.define("p9r-tag-suggest", x);
-    var G = `<div class="actions" role="toolbar" part="toolbar">
+      customElements.define("p9r-tag-suggest", F);
+    var Jt = `<div class="field" part="field">
+    <label class="label" part="label" for="ta"></label>
+    <textarea id="ta" class="textarea" part="textarea"></textarea>
+    <div class="meta" part="meta" hidden>
+        <small class="hint" part="hint"></small>
+        <small class="counter" part="counter" hidden data-over="false"><span class="count">0</span>/<span class="max">0</span></small>
+    </div>
+</div>
+`;
+    var Qt = `:host {
+  display: block;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #94a3b8);
+}
+
+.label[hidden] { display: none; }
+
+.textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main, #1e293b);
+  font-family: inherit;
+  border: 1px solid var(--border-default, #e2e8f0);
+  border-radius: 8px;
+  background: var(--bg-surface, #fff);
+  outline: none;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 4.5em;
+  line-height: 1.5;
+}
+
+:host([resize="none"]) .textarea       { resize: none; }
+:host([resize="horizontal"]) .textarea { resize: horizontal; }
+:host([resize="vertical"]) .textarea   { resize: vertical; }
+:host([resize="both"]) .textarea       { resize: both; }
+:host([autosize]) .textarea            { resize: none; overflow: hidden; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .textarea { transition: border-color 0.15s, box-shadow 0.15s; }
+}
+
+.textarea::placeholder {
+  color: var(--text-muted, #94a3b8);
+  font-weight: 400;
+}
+
+.textarea:hover:not(:disabled) {
+  border-color: var(--text-muted, #94a3b8);
+}
+
+.textarea:focus-visible {
+  border-color: var(--primary-base, #4361ee);
+  box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+}
+
+.textarea[aria-invalid="true"] {
+  border-color: var(--danger-base, #ef4444);
+}
+
+.textarea[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px rgb(239 68 68 / 0.15);
+}
+
+.textarea:disabled {
+  background: var(--bg-base, #f1f5f9);
+  color: var(--text-muted, #94a3b8);
+  cursor: not-allowed;
+}
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta[hidden] { display: none; }
+
+.hint {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.4;
+  flex: 1;
+  min-width: 0;
+}
+
+.hint[data-level="error"]   { color: var(--danger-base, #ef4444); }
+.hint[data-level="success"] { color: var(--success-base, #10b981); }
+
+.counter {
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.counter[hidden] { display: none; }
+
+.counter[data-over="true"] {
+  color: var(--danger-base, #ef4444);
+  font-weight: 600;
+}
+`;
+
+    class I extends s {
+      static formAssociated = true;
+      _internals;
+      _textarea;
+      _label;
+      _hint;
+      _meta;
+      _counter;
+      _count;
+      _max;
+      static get observedAttributes() {
+        return ["value", "label", "placeholder", "rows", "maxlength", "max-count", "hint", "hint-level", "invalid", "disabled", "required", "autosize"];
+      }
+      constructor() {
+        super({ css: Qt, template: Jt });
+        this._internals = this.attachInternals(), this._textarea = this.shadowRoot?.querySelector("textarea") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._hint = this.shadowRoot?.querySelector(".hint") ?? null, this._meta = this.shadowRoot?.querySelector(".meta") ?? null, this._counter = this.shadowRoot?.querySelector(".counter") ?? null, this._count = this.shadowRoot?.querySelector(".count") ?? null, this._max = this.shadowRoot?.querySelector(".max") ?? null;
+      }
+      connectedCallback() {
+        for (let e of ["value", "disabled", "required"])
+          this._upgradeProperty(e);
+        this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), this._syncLabel(), this._syncPlaceholder(), this._syncRows(), this._syncMaxLength(), this._syncDisabled(), this._syncRequired(), this._syncHint(), this._syncHintLevel(), this._syncInvalid(), this._syncMaxCount();
+        let t = this.getAttribute("value");
+        if (t !== null)
+          this.value = t;
+        else
+          this._updateCounter();
+      }
+      disconnectedCallback() {
+        this._textarea?.removeEventListener("input", this._onInput), this._textarea?.removeEventListener("change", this._onChange);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (!this._textarea)
+          return;
+        switch (t) {
+          case "value":
+            if (i !== null)
+              this.value = i;
+            break;
+          case "label":
+            this._syncLabel();
+            break;
+          case "placeholder":
+            this._syncPlaceholder();
+            break;
+          case "rows":
+            this._syncRows();
+            break;
+          case "maxlength":
+            this._syncMaxLength();
+            break;
+          case "disabled":
+            this._syncDisabled();
+            break;
+          case "required":
+            this._syncRequired();
+            break;
+          case "hint":
+            this._syncHint();
+            break;
+          case "hint-level":
+            this._syncHintLevel();
+            break;
+          case "invalid":
+            this._syncInvalid();
+            break;
+          case "max-count":
+            this._syncMaxCount(), this._updateCounter();
+            break;
+          case "autosize":
+            this._autosize();
+            break;
+        }
+      }
+      get value() {
+        return this._textarea?.value ?? "";
+      }
+      set value(t) {
+        if (!this._textarea)
+          return;
+        this._textarea.value = t, this._internals.setFormValue(t), this._updateCounter(), this._autosize();
+      }
+      get name() {
+        return this.getAttribute("name") ?? "";
+      }
+      get disabled() {
+        return this._textarea?.disabled ?? false;
+      }
+      set disabled(t) {
+        if (t)
+          this.setAttribute("disabled", "");
+        else
+          this.removeAttribute("disabled");
+      }
+      get required() {
+        return this.hasAttribute("required");
+      }
+      set required(t) {
+        if (t)
+          this.setAttribute("required", "");
+        else
+          this.removeAttribute("required");
+      }
+      focus() {
+        this._textarea?.focus();
+      }
+      _onInput = () => {
+        if (!this._textarea)
+          return;
+        this._internals.setFormValue(this._textarea.value), this._updateCounter(), this._autosize();
+      };
+      _onChange = () => {
+        if (!this._textarea)
+          return;
+        this._internals.setFormValue(this._textarea.value);
+      };
+      _syncLabel() {
+        if (!this._label)
+          return;
+        let t = this.getAttribute("label") ?? "";
+        this._label.textContent = t, this._label.hidden = t === "";
+      }
+      _syncPlaceholder() {
+        if (!this._textarea)
+          return;
+        let t = this.getAttribute("placeholder");
+        if (t === null)
+          this._textarea.removeAttribute("placeholder");
+        else
+          this._textarea.setAttribute("placeholder", t);
+      }
+      _syncRows() {
+        if (!this._textarea)
+          return;
+        let t = this.getAttribute("rows");
+        if (t)
+          this._textarea.rows = Number(t) || 3;
+      }
+      _syncMaxLength() {
+        if (!this._textarea)
+          return;
+        let t = this.getAttribute("maxlength");
+        if (t === null)
+          this._textarea.removeAttribute("maxlength");
+        else
+          this._textarea.setAttribute("maxlength", t);
+      }
+      _syncDisabled() {
+        if (!this._textarea)
+          return;
+        this._textarea.disabled = this.hasAttribute("disabled");
+      }
+      _syncRequired() {
+        if (!this._textarea)
+          return;
+        let t = this.hasAttribute("required");
+        if (this._textarea.required = t, t)
+          this._textarea.setAttribute("aria-required", "true");
+        else
+          this._textarea.removeAttribute("aria-required");
+      }
+      _syncHint() {
+        if (!this._hint)
+          return;
+        this._hint.textContent = this.getAttribute("hint") ?? "", this._refreshMetaVisibility();
+      }
+      _syncHintLevel() {
+        if (!this._hint)
+          return;
+        let t = this.getAttribute("hint-level") ?? "info";
+        this._hint.dataset.level = t;
+      }
+      _syncInvalid() {
+        if (!this._textarea)
+          return;
+        if (this.hasAttribute("invalid"))
+          this._textarea.setAttribute("aria-invalid", "true");
+        else
+          this._textarea.removeAttribute("aria-invalid");
+      }
+      _syncMaxCount() {
+        if (!this._counter || !this._max)
+          return;
+        let t = this._parseMaxCount();
+        if (t === null)
+          this._counter.hidden = true;
+        else
+          this._counter.hidden = false, this._max.textContent = String(t);
+        this._refreshMetaVisibility();
+      }
+      _parseMaxCount() {
+        let t = this.getAttribute("max-count");
+        if (t === null)
+          return null;
+        let e = parseInt(t, 10);
+        return Number.isFinite(e) && e > 0 ? e : null;
+      }
+      _updateCounter() {
+        if (!this._textarea || !this._counter || !this._count)
+          return;
+        let t = this._parseMaxCount();
+        if (t === null)
+          return;
+        let e = this._textarea.value.length;
+        this._count.textContent = String(e), this._counter.dataset.over = String(e > t);
+      }
+      _refreshMetaVisibility() {
+        if (!this._hint || !this._counter || !this._meta)
+          return;
+        let t = (this._hint.textContent ?? "").length > 0, e = !this._counter.hidden;
+        this._meta.hidden = !t && !e;
+      }
+      _autosize() {
+        if (!this._textarea || !this.hasAttribute("autosize"))
+          return;
+        this._textarea.style.height = "auto", this._textarea.style.height = `${this._textarea.scrollHeight}px`;
+      }
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+    }
+    if (!customElements.get("p9r-textarea"))
+      customElements.define("p9r-textarea", I);
+    var Wt = `<div class="actions" role="toolbar" part="toolbar">
     <slot></slot>
 </div>
 `;
-    var J = `:host {
+    var Gt = `:host {
   display: inline-block;
 
   --_toolbar-bg: var(--bg-overlay, #ffffff);
@@ -3403,11 +5444,11 @@ p9r-tag:hover {
 }
 `;
 
-    class y extends n {
+    class N extends s {
       static _event = "action-click";
       _toolbar;
       constructor() {
-        super({ css: J, template: G });
+        super({ css: Gt, template: Wt });
         this._toolbar = this.shadowRoot?.querySelector(".actions") ?? null;
       }
       static get observedAttributes() {
@@ -3463,8 +5504,8 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-horizontal-action-group"))
-      customElements.define("p9r-horizontal-action-group", y);
-    var Q = `<div class="app-container" part="container">
+      customElements.define("p9r-horizontal-action-group", N);
+    var te = `<div class="app-container" part="container">
     <a class="skip-link" part="skip-link" href="#main-content">
         <slot name="skip-link">Skip to main content</slot>
     </a>
@@ -3480,7 +5521,7 @@ p9r-tag:hover {
     </main>
 </div>
 `;
-    var U = `:host {
+    var ee = `:host {
     display: block;
     height: 100vh;
     width: 100vw;
@@ -3566,11 +5607,11 @@ p9r-tag:hover {
 }
 `;
 
-    class k extends n {
+    class D extends s {
       _sidebar;
       _content;
       constructor() {
-        super({ css: U, template: Q });
+        super({ css: ee, template: te });
         this._sidebar = this.shadowRoot?.querySelector(".app-sidebar") ?? null, this._content = this.shadowRoot?.querySelector(".app-content") ?? null;
       }
       static get observedAttributes() {
@@ -3619,8 +5660,8 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("w13c-left-menu-layout"))
-      customElements.define("w13c-left-menu-layout", k);
-    var W = `<a class="menu-item" part="item" tabindex="-1">
+      customElements.define("w13c-left-menu-layout", D);
+    var ie = `<a class="menu-item" part="item" tabindex="-1">
     <span class="icon-wrapper" part="icon">
         <slot name="icon"></slot>
     </span>
@@ -3630,7 +5671,7 @@ p9r-tag:hover {
     <span class="badge" part="badge" id="badge-element"></span>
 </a>
 `;
-    var tt = `:host {
+    var re = `:host {
     display: block;
     width: 100%;
     outline: none;
@@ -3753,11 +5794,11 @@ p9r-tag:hover {
 }
 `;
 
-    class w extends n {
+    class V extends s {
       _anchor;
       _badgeEl;
       constructor() {
-        super({ css: tt, template: W });
+        super({ css: re, template: ie });
         this._anchor = this.shadowRoot?.querySelector("a") ?? null, this._badgeEl = this.shadowRoot?.getElementById("badge-element") ?? null;
       }
       static get observedAttributes() {
@@ -3866,8 +5907,8 @@ p9r-tag:hover {
       };
     }
     if (!customElements.get("w13c-lateral-menu-item"))
-      customElements.define("w13c-lateral-menu-item", w);
-    var et = `<aside class="sidebar" part="sidebar">
+      customElements.define("w13c-lateral-menu-item", V);
+    var ae = `<aside class="sidebar" part="sidebar">
     <div class="sidebar-header" part="header">
         <slot name="header">
             <h3>Menu</h3>
@@ -3883,7 +5924,7 @@ p9r-tag:hover {
     </div>
 </aside>
 `;
-    var it = `:host {
+    var se = `:host {
     display: flex;
     flex-direction: column;
     width: 260px;
@@ -3962,11 +6003,11 @@ p9r-tag:hover {
 }
 `;
 
-    class E extends n {
+    class O extends s {
       _sidebar;
       _navSlot;
       constructor() {
-        super({ css: it, template: et });
+        super({ css: se, template: ae });
         this._sidebar = this.shadowRoot?.querySelector(".sidebar") ?? null, this._navSlot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
       }
       static get observedAttributes() {
@@ -4033,20 +6074,794 @@ p9r-tag:hover {
             return;
         }
         t.preventDefault();
-        let s = e[a];
-        if (s)
-          s.focus();
+        let n = e[a];
+        if (n)
+          n.focus();
       };
     }
     if (!customElements.get("w13c-lateral-menu"))
-      customElements.define("w13c-lateral-menu", E);
-    var rt = `<div class="table-container">
+      customElements.define("w13c-lateral-menu", O);
+    var ne = `<nav class="pagination" part="pagination" aria-label="Pagination">
+    <button class="prev" part="prev" type="button" aria-label="Previous page">
+        <slot name="prev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+        </slot>
+    </button>
+    <ul class="pages" part="pages"></ul>
+    <button class="next" part="next" type="button" aria-label="Next page">
+        <slot name="next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </slot>
+    </button>
+</nav>
+`;
+    var oe = `:host {
+  display: inline-block;
+
+  --_size: 32px;
+  --_radius: 6px;
+  --_color: var(--text-body, #4b5563);
+  --_active-bg: var(--primary-base, #4361ee);
+  --_active-color: white;
+  --_hover-bg: var(--bg-base, #f1f5f9);
+  --_border: var(--border-default, #e5e7eb);
+  --_font-size: 13px;
+}
+
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.pages {
+  display: inline-flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 0.25rem;
+}
+
+.page,
+.prev,
+.next {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--_border);
+  color: var(--_color);
+  cursor: pointer;
+  min-width: var(--_size);
+  height: var(--_size);
+  padding: 0 0.5rem;
+  border-radius: var(--_radius);
+  font: inherit;
+  font-size: var(--_font-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+}
+
+.page:hover:not([aria-current="page"]):not(:disabled),
+.prev:hover:not(:disabled),
+.next:hover:not(:disabled) {
+  background: var(--_hover-bg);
+}
+
+.page[aria-current="page"] {
+  background: var(--_active-bg);
+  color: var(--_active-color);
+  border-color: var(--_active-bg);
+  font-weight: 600;
+}
+
+.page:disabled,
+.prev:disabled,
+.next:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--_size);
+  height: var(--_size);
+  color: var(--text-muted, #9ca3af);
+  user-select: none;
+}
+
+.prev svg,
+.next svg {
+  width: 14px;
+  height: 14px;
+}
+
+.prev:focus-visible,
+.next:focus-visible,
+.page:focus-visible {
+  outline: 2px solid var(--_active-bg);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .page, .prev, .next { transition: background-color 0.15s, color 0.15s; }
+}
+`;
+
+    class $ extends s {
+      _pages;
+      _prev;
+      _next;
+      static get observedAttributes() {
+        return ["page", "total", "siblings", "boundary"];
+      }
+      constructor() {
+        super({ css: oe, template: ne });
+        this._pages = this.shadowRoot?.querySelector(".pages") ?? null, this._prev = this.shadowRoot?.querySelector(".prev") ?? null, this._next = this.shadowRoot?.querySelector(".next") ?? null;
+      }
+      connectedCallback() {
+        this._prev?.addEventListener("click", this._onPrev), this._next?.addEventListener("click", this._onNext), this._pages?.addEventListener("click", this._onPageClick), this._render();
+      }
+      disconnectedCallback() {
+        this._prev?.removeEventListener("click", this._onPrev), this._next?.removeEventListener("click", this._onNext), this._pages?.removeEventListener("click", this._onPageClick);
+      }
+      attributeChangedCallback(t, e, i) {
+        this._render();
+      }
+      get page() {
+        return this._intAttr("page", 1);
+      }
+      set page(t) {
+        this.setAttribute("page", String(t));
+      }
+      get total() {
+        return this._intAttr("total", 1);
+      }
+      set total(t) {
+        this.setAttribute("total", String(t));
+      }
+      _intAttr(t, e) {
+        let i = parseInt(this.getAttribute(t) ?? "", 10);
+        return Number.isFinite(i) && i > 0 ? i : e;
+      }
+      _render() {
+        if (!this._pages)
+          return;
+        let t = this.page, e = this.total, i = this._intAttr("siblings", 1), r = this._intAttr("boundary", 1);
+        this._pages.innerHTML = "";
+        for (let a of this._buildItems(t, e, i, r))
+          if (a === "…") {
+            let n = document.createElement("span");
+            n.className = "ellipsis", n.setAttribute("part", "ellipsis"), n.textContent = "…", this._pages.appendChild(n);
+          } else {
+            let n = document.createElement("li"), o = document.createElement("button");
+            if (o.type = "button", o.className = "page", o.setAttribute("part", "page"), o.dataset.page = String(a), o.textContent = String(a), a === t)
+              o.setAttribute("aria-current", "page");
+            n.appendChild(o), this._pages.appendChild(n);
+          }
+        if (this._prev)
+          this._prev.disabled = t <= 1;
+        if (this._next)
+          this._next.disabled = t >= e;
+      }
+      _buildItems(t, e, i, r) {
+        let a = [], n = Math.max(1, t - i), o = Math.min(e, t + i), d = Array.from({ length: Math.min(r, e) }, (l, p) => p + 1), h = Array.from({ length: Math.min(r, e) }, (l, p) => e - p).reverse(), nt = [];
+        for (let l = n;l <= o; l++)
+          nt.push(l);
+        let Pe = Array.from(new Set([...d, ...nt, ...h])).sort((l, p) => l - p), at = 0;
+        for (let l of Pe) {
+          if (at > 0 && l - at > 1)
+            a.push("…");
+          a.push(l), at = l;
+        }
+        return a;
+      }
+      _onPrev = () => {
+        if (this.page <= 1)
+          return;
+        this._goto(this.page - 1);
+      };
+      _onNext = () => {
+        if (this.page >= this.total)
+          return;
+        this._goto(this.page + 1);
+      };
+      _onPageClick = (t) => {
+        let e = t.target.closest(".page");
+        if (!e)
+          return;
+        let i = Number(e.dataset.page);
+        if (Number.isFinite(i))
+          this._goto(i);
+      };
+      _goto(t) {
+        if (t === this.page)
+          return;
+        if (!this.dispatchEvent(new CustomEvent("page-change", { bubbles: true, cancelable: true, detail: { page: t } })))
+          return;
+        this.setAttribute("page", String(t));
+      }
+    }
+    if (!customElements.get("p9r-pagination"))
+      customElements.define("p9r-pagination", $);
+    var le = `<div class="progress" part="progress" role="progressbar">
+    <div class="track" part="track">
+        <div class="bar" part="bar"></div>
+    </div>
+    <span class="label" part="label"><slot></slot></span>
+</div>
+`;
+    var de = `:host {
+  display: block;
+
+  --_height: 8px;
+  --_radius: 999px;
+  --_track: var(--bg-base, #f1f5f9);
+  --_color: var(--primary-base, #4361ee);
+  --_value: 0%;
+  --_label-size: 12px;
+}
+
+:host([size="sm"]) { --_height: 4px; }
+:host([size="md"]) { --_height: 8px; }
+:host([size="lg"]) { --_height: 12px; }
+
+:host([color="danger"])  { --_color: var(--danger-base); }
+:host([color="success"]) { --_color: var(--success-base); }
+:host([color="info"])    { --_color: var(--info-base); }
+:host([color="warning"]) { --_color: var(--warning-base); }
+
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.track {
+  flex: 1;
+  height: var(--_height);
+  background: var(--_track);
+  border-radius: var(--_radius);
+  overflow: hidden;
+  position: relative;
+}
+
+.bar {
+  height: 100%;
+  width: var(--_value);
+  background: var(--_color);
+  border-radius: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bar { transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+}
+
+:host([indeterminate]) .bar {
+  width: 40%;
+  position: absolute;
+  inset-block: 0;
+  animation: progress-indeterminate 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes progress-indeterminate {
+  0%   { left: -40%; }
+  100% { left: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([indeterminate]) .bar {
+    animation-duration: 3s;
+  }
+}
+
+.label {
+  font-size: var(--_label-size);
+  color: var(--text-muted, #6b7280);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.label:has(slot:not(:has(*))) {
+  display: none;
+}
+
+:host([show-value]) .label::before {
+  content: attr(data-value-text);
+  display: inline;
+}
+`;
+
+    class Y extends s {
+      _bar;
+      _label;
+      _root;
+      static get observedAttributes() {
+        return ["value", "max", "indeterminate"];
+      }
+      constructor() {
+        super({ css: de, template: le });
+        this._bar = this.shadowRoot?.querySelector(".bar") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._root = this.shadowRoot?.querySelector(".progress") ?? null;
+      }
+      connectedCallback() {
+        for (let t of ["value", "max"])
+          this._upgradeProperty(t);
+        this._sync();
+      }
+      attributeChangedCallback(t, e, i) {
+        this._sync();
+      }
+      _sync() {
+        let t = this.hasAttribute("indeterminate"), e = this._parseNumber(this.getAttribute("max"), 100), i = this._parseNumber(this.getAttribute("value"), 0), r = Math.max(0, Math.min(i, e)), a = e > 0 ? r / e * 100 : 0;
+        if (t)
+          this._root?.removeAttribute("aria-valuenow"), this._root?.setAttribute("aria-valuemin", "0"), this._root?.setAttribute("aria-valuemax", "100");
+        else
+          this._root?.setAttribute("aria-valuenow", String(r)), this._root?.setAttribute("aria-valuemin", "0"), this._root?.setAttribute("aria-valuemax", String(e)), this.style.setProperty("--_value", `${a}%`);
+        if (this._label)
+          this._label.dataset.valueText = `${Math.round(a)}%`;
+      }
+      _parseNumber(t, e) {
+        if (t === null)
+          return e;
+        let i = Number(t);
+        return Number.isFinite(i) ? i : e;
+      }
+      _upgradeProperty(t) {
+        if (Object.prototype.hasOwnProperty.call(this, t)) {
+          let e = this[t];
+          delete this[t], this[t] = e;
+        }
+      }
+      get value() {
+        return this._parseNumber(this.getAttribute("value"), 0);
+      }
+      set value(t) {
+        this.setAttribute("value", String(t));
+      }
+      get max() {
+        return this._parseNumber(this.getAttribute("max"), 100);
+      }
+      set max(t) {
+        this.setAttribute("max", String(t));
+      }
+      get indeterminate() {
+        return this.hasAttribute("indeterminate");
+      }
+      set indeterminate(t) {
+        if (t)
+          this.setAttribute("indeterminate", "");
+        else
+          this.removeAttribute("indeterminate");
+      }
+    }
+    if (!customElements.get("p9r-progress"))
+      customElements.define("p9r-progress", Y);
+    var ce = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
+`;
+    var he = `:host {
+  display: block;
+
+  --_bg: var(--bg-base, #f1f5f9);
+  --_highlight: var(--border-light, #e5e7eb);
+  --_radius: 6px;
+  --_height: 1em;
+  --_width: 100%;
+}
+
+:host([shape="circle"]) {
+  --_radius: 50%;
+  --_height: 2.5rem;
+  --_width: 2.5rem;
+  display: inline-block;
+}
+
+:host([shape="rect"]) {
+  --_radius: 8px;
+  --_height: 8rem;
+}
+
+:host([shape="text"]) {
+  --_height: 0.85em;
+  --_radius: 4px;
+}
+
+.skeleton {
+  width: var(--_width);
+  height: var(--_height);
+  border-radius: var(--_radius);
+  background: linear-gradient(90deg, var(--_bg) 0%, var(--_highlight) 50%, var(--_bg) 100%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--_bg);
+  }
+}
+`;
+
+    class X extends s {
+      static get observedAttributes() {
+        return ["width", "height"];
+      }
+      constructor() {
+        super({ css: he, template: ce });
+      }
+      connectedCallback() {
+        this._syncSize();
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "width" || t === "height")
+          this._syncSize();
+      }
+      _syncSize() {
+        let t = this.getAttribute("width"), e = this.getAttribute("height");
+        if (t !== null)
+          this.style.setProperty("--_width", this._normalize(t));
+        else
+          this.style.removeProperty("--_width");
+        if (e !== null)
+          this.style.setProperty("--_height", this._normalize(e));
+        else
+          this.style.removeProperty("--_height");
+      }
+      _normalize(t) {
+        return /^\d+(\.\d+)?$/.test(t) ? `${t}px` : t;
+      }
+    }
+    if (!customElements.get("p9r-skeleton"))
+      customElements.define("p9r-skeleton", X);
+    var pe = `<div class="spinner" part="spinner" role="status" aria-live="polite">
+    <span class="visually-hidden"><slot>Loading…</slot></span>
+</div>
+`;
+    var ue = `:host {
+  display: inline-block;
+
+  --_size: 1.25rem;
+  --_thickness: 2px;
+  --_track: var(--border-default, #e5e7eb);
+  --_color: var(--text-main, currentColor);
+  --_speed: 0.8s;
+}
+
+:host([size="sm"]) { --_size: 0.875rem; --_thickness: 2px; }
+:host([size="md"]) { --_size: 1.25rem;  --_thickness: 2px; }
+:host([size="lg"]) { --_size: 1.75rem;  --_thickness: 3px; }
+:host([size="xl"]) { --_size: 2.5rem;   --_thickness: 4px; }
+
+:host([color="primary"]) { --_color: var(--primary-base); }
+:host([color="danger"])  { --_color: var(--danger-base); }
+:host([color="success"]) { --_color: var(--success-base); }
+:host([color="info"])    { --_color: var(--info-base); }
+:host([color="warning"]) { --_color: var(--warning-base); }
+
+.spinner {
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: 50%;
+  border: var(--_thickness) solid var(--_track);
+  border-top-color: var(--_color);
+  box-sizing: border-box;
+  animation: spin var(--_speed) linear infinite;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+}
+`;
+
+    class K extends s {
+      constructor() {
+        super({ css: ue, template: pe });
+      }
+    }
+    if (!customElements.get("p9r-spinner"))
+      customElements.define("p9r-spinner", K);
+    var be = `<ol class="stepper" part="stepper">
+    <slot></slot>
+</ol>
+`;
+    var me = `:host {
+  display: block;
+
+  --_active: var(--primary-base, #4361ee);
+  --_completed: var(--success-base, #10b981);
+  --_pending: var(--border-default, #d1d5db);
+  --_text: var(--text-main, #1f2937);
+  --_muted: var(--text-muted, #6b7280);
+}
+
+.stepper {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+:host([orientation="vertical"]) .stepper {
+  flex-direction: column;
+  gap: 0;
+}
+`;
+    var ge = `<li class="step" part="step">
+    <div class="indicator" part="indicator">
+        <span class="bullet" part="bullet">
+            <span class="number"></span>
+            <svg class="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </span>
+        <span class="connector" part="connector"></span>
+    </div>
+    <div class="body" part="body">
+        <span class="label" part="label"></span>
+        <span class="description" part="description">
+            <slot></slot>
+        </span>
+    </div>
+</li>
+`;
+    var ve = `:host {
+  display: flex;
+  flex: 1;
+
+  --_size: 28px;
+  --_active: var(--primary-base, #4361ee);
+  --_completed: var(--success-base, #10b981);
+  --_pending: var(--border-default, #d1d5db);
+  --_text: var(--text-main, #1f2937);
+  --_muted: var(--text-muted, #6b7280);
+  --_bg: var(--bg-surface, #fff);
+  --_color: var(--_pending);
+  --_label-color: var(--_muted);
+}
+
+:host([data-state="active"], [state="active"]) {
+  --_color: var(--_active);
+  --_label-color: var(--_text);
+}
+
+:host([data-state="completed"], [state="completed"]) {
+  --_color: var(--_completed);
+  --_label-color: var(--_text);
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  flex: 1;
+  list-style: none;
+}
+
+:host([orientation="vertical"]) .step {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+:host(:not([orientation="vertical"])) .indicator {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+.bullet {
+  width: var(--_size);
+  height: var(--_size);
+  border-radius: 50%;
+  border: 2px solid var(--_color);
+  background: var(--_bg);
+  color: var(--_color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.number,
+.check {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.check {
+  width: 60%;
+  height: 60%;
+  margin: auto;
+  inset: auto;
+  display: none;
+}
+
+:host([data-state="active"], [state="active"]) .bullet {
+  background: var(--_color);
+  color: var(--_bg);
+}
+
+:host([data-state="completed"], [state="completed"]) .bullet {
+  background: var(--_color);
+  color: var(--_bg);
+  border-color: var(--_color);
+}
+
+:host([data-state="completed"], [state="completed"]) .number { display: none; }
+:host([data-state="completed"], [state="completed"]) .check  { display: flex; }
+
+.connector {
+  background: var(--_color);
+  flex: 1;
+}
+
+:host(:not([orientation="vertical"])) .connector {
+  height: 2px;
+  margin-inline: 0.4rem;
+  min-width: 1rem;
+}
+
+:host([orientation="vertical"]) .connector {
+  width: 2px;
+  margin-block: 0.4rem;
+  min-height: 1.5rem;
+  align-self: stretch;
+}
+
+:host([last]) .connector {
+  display: none;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+:host(:not([orientation="vertical"])) .step {
+  flex-direction: column;
+}
+
+:host(:not([orientation="vertical"])) .body {
+  text-align: center;
+  margin-top: 0.4rem;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--_label-color);
+}
+
+.label:empty { display: none; }
+
+.description {
+  font-size: 12px;
+  color: var(--_muted);
+}
+
+.description slot:empty,
+.description:has(slot:not(:has(*))) { display: none; }
+`;
+
+    class Z extends s {
+      _label;
+      _number;
+      static get observedAttributes() {
+        return ["label", "data-index"];
+      }
+      constructor() {
+        super({ css: ve, template: ge });
+        this._label = this.shadowRoot?.querySelector(".label") ?? null, this._number = this.shadowRoot?.querySelector(".number") ?? null;
+      }
+      connectedCallback() {
+        this._sync();
+      }
+      attributeChangedCallback(t, e, i) {
+        this._sync();
+      }
+      _sync() {
+        if (this._label)
+          this._label.textContent = this.getAttribute("label") ?? "";
+        if (this._number)
+          this._number.textContent = this.getAttribute("data-index") ?? "";
+      }
+    }
+    if (!customElements.get("p9r-step"))
+      customElements.define("p9r-step", Z);
+
+    class U extends s {
+      static get observedAttributes() {
+        return ["current", "orientation"];
+      }
+      constructor() {
+        super({ css: me, template: be });
+      }
+      connectedCallback() {
+        this._sync();
+      }
+      attributeChangedCallback(t, e, i) {
+        this._sync();
+      }
+      get current() {
+        let t = parseInt(this.getAttribute("current") ?? "", 10);
+        return Number.isFinite(t) ? t : 0;
+      }
+      set current(t) {
+        this.setAttribute("current", String(t));
+      }
+      _steps() {
+        return Array.from(this.querySelectorAll("p9r-step"));
+      }
+      _sync() {
+        let t = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal", e = this.current, i = this._steps();
+        i.forEach((r, a) => {
+          if (r.setAttribute("data-index", String(a + 1)), r.setAttribute("orientation", t), a === i.length - 1)
+            r.setAttribute("last", "");
+          else
+            r.removeAttribute("last");
+          if (r.hasAttribute("state"))
+            return;
+          if (a < e)
+            r.setAttribute("data-state", "completed");
+          else if (a === e)
+            r.setAttribute("data-state", "active");
+          else
+            r.setAttribute("data-state", "pending");
+        });
+      }
+    }
+    if (!customElements.get("p9r-stepper"))
+      customElements.define("p9r-stepper", U);
+    var fe = `<div class="table-container">
   <div class="p9r-table">
     <slot name="header"></slot>
     <slot></slot>
   </div>
 </div>`;
-    var at = `:host {
+    var _e = `:host {
   display: block;
   width: 100%;
 }
@@ -4079,9 +6894,9 @@ p9r-tag:hover {
 ::slotted(p9r-row:not(:first-child):hover) {
   background-color: var(--bg-base);
 }`;
-    var nt = `<slot></slot>
+    var xe = `<slot></slot>
 `;
-    var st = `:host {
+    var ye = `:host {
   display: table-row;
 }
 
@@ -4101,12 +6916,12 @@ p9r-tag:hover {
 }
 `;
 
-    class A extends n {
+    class J extends s {
       static get observedAttributes() {
         return ["href"];
       }
       constructor() {
-        super({ css: st, template: nt });
+        super({ css: ye, template: xe });
       }
       connectedCallback() {
         for (let t of ["href", "target"])
@@ -4184,10 +6999,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-row"))
-      customElements.define("p9r-row", A);
-    var ot = `<slot></slot>
+      customElements.define("p9r-row", J);
+    var ke = `<slot></slot>
 `;
-    var lt = `:host {
+    var we = `:host {
   display: table-cell;
   padding: 12px 20px;
   vertical-align: middle;
@@ -4212,9 +7027,9 @@ p9r-tag:hover {
 }
 `;
 
-    class C extends n {
+    class Q extends s {
       constructor() {
-        super({ css: lt, template: ot });
+        super({ css: we, template: ke });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -4222,9 +7037,9 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-cell"))
-      customElements.define("p9r-cell", C);
+      customElements.define("p9r-cell", Q);
 
-    class L extends HTMLElement {
+    class W extends HTMLElement {
       static get observedAttributes() {
         return ["sort", "direction", "active", "filter-name", "filter-type"];
       }
@@ -4241,8 +7056,8 @@ p9r-tag:hover {
         let e = this.getAttribute("sort");
         if (!e)
           return;
-        let i = new URL(window.location.href), r = i.searchParams.get("sort"), a = i.searchParams.get("direction"), s = r === e && a === "asc" ? "desc" : "asc";
-        i.searchParams.set("sort", e), i.searchParams.set("direction", s), window.location.href = i.toString();
+        let i = new URL(window.location.href), r = i.searchParams.get("sort"), a = i.searchParams.get("direction"), n = r === e && a === "asc" ? "desc" : "asc";
+        i.searchParams.set("sort", e), i.searchParams.set("direction", n), window.location.href = i.toString();
       };
       render() {
         let t = this.getAttribute("filter-name"), i = new URL(window.location.href).searchParams.get(`f_${t}`) || "", r = i.length > 0;
@@ -4339,22 +7154,265 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-header-cell"))
-      customElements.define("p9r-header-cell", L);
+      customElements.define("p9r-header-cell", W);
 
-    class z extends n {
+    class G extends s {
       constructor() {
-        super({ css: at, template: rt });
+        super({ css: _e, template: fe });
       }
     }
     if (!customElements.get("p9r-table"))
-      customElements.define("p9r-table", z);
-    var dt = `<div class="icon" part="icon"></div>
+      customElements.define("p9r-table", G);
+    var Ae = `<div class="tabs" part="tabs">
+    <div class="tablist" part="tablist" role="tablist"></div>
+    <div class="panels" part="panels">
+        <slot></slot>
+    </div>
+</div>
+`;
+    var Ee = `:host {
+  display: block;
+
+  --_border: var(--border-default, #e5e7eb);
+  --_active: var(--primary-base, #4361ee);
+  --_text: var(--text-body, #4b5563);
+  --_text-active: var(--primary-base, #4361ee);
+  --_pad-y: 0.6rem;
+  --_pad-x: 1rem;
+  --_size: 13px;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+}
+
+.tablist {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--_border);
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+:host([variant="pills"]) .tablist {
+  border-bottom: 0;
+  gap: 0.4rem;
+  padding: 0.25rem;
+  background: var(--bg-base, #f1f5f9);
+  border-radius: 8px;
+  width: max-content;
+}
+
+:host([orientation="vertical"]) .tabs {
+  flex-direction: row;
+  gap: 1rem;
+}
+
+:host([orientation="vertical"]) .tablist {
+  flex-direction: column;
+  border-bottom: 0;
+  border-right: 1px solid var(--_border);
+}
+
+.tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: var(--_pad-y) var(--_pad-x);
+  font: inherit;
+  font-size: var(--_size);
+  font-weight: 500;
+  color: var(--_text);
+  cursor: pointer;
+  position: relative;
+  white-space: nowrap;
+}
+
+.tab[aria-selected="true"] {
+  color: var(--_text-active);
+}
+
+.tab[aria-selected="true"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--_active);
+}
+
+:host([variant="pills"]) .tab[aria-selected="true"]::after {
+  display: none;
+}
+
+:host([variant="pills"]) .tab {
+  border-radius: 6px;
+}
+
+:host([variant="pills"]) .tab[aria-selected="true"] {
+  background: var(--bg-surface, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  color: var(--text-main);
+}
+
+.tab:hover:not([aria-selected="true"]) {
+  color: var(--text-main, #1f2937);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--_active);
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+.tab[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.panels {
+  padding-top: 1rem;
+  flex: 1;
+}
+
+:host([orientation="vertical"]) .panels {
+  padding-top: 0;
+  padding-left: 1rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tab { transition: color 0.15s; }
+}
+`;
+    var Ce = `<div class="panel" part="panel">
+    <slot></slot>
+</div>
+`;
+    var ze = `:host {
+  display: block;
+}
+
+:host([hidden]) { display: none; }
+
+.panel {
+  outline: none;
+}
+`;
+
+    class tt extends s {
+      constructor() {
+        super({ css: ze, template: Ce });
+      }
+    }
+    if (!customElements.get("p9r-tab-panel"))
+      customElements.define("p9r-tab-panel", tt);
+
+    class g extends s {
+      _tablist;
+      _slot;
+      static get observedAttributes() {
+        return ["active"];
+      }
+      constructor() {
+        super({ css: Ee, template: Ae });
+        this._tablist = this.shadowRoot?.querySelector(".tablist") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
+      }
+      connectedCallback() {
+        this._slot?.addEventListener("slotchange", this._rebuild), this._tablist?.addEventListener("click", this._onTablistClick), this._tablist?.addEventListener("keydown", this._onKeydown), this._rebuild();
+      }
+      disconnectedCallback() {
+        this._slot?.removeEventListener("slotchange", this._rebuild), this._tablist?.removeEventListener("click", this._onTablistClick), this._tablist?.removeEventListener("keydown", this._onKeydown);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "active" && i !== null)
+          this._activate(i);
+      }
+      get active() {
+        return this.getAttribute("active") ?? "";
+      }
+      set active(t) {
+        this.setAttribute("active", t);
+      }
+      _panels() {
+        if (!this._slot)
+          return [];
+        return this._slot.assignedElements({ flatten: true }).filter((t) => t.tagName === "P9R-TAB-PANEL");
+      }
+      _rebuild = () => {
+        if (!this._tablist)
+          return;
+        this._tablist.innerHTML = "";
+        let t = this._panels(), e = this.getAttribute("active");
+        if (!e && t.length > 0)
+          e = t[0]?.getAttribute("id") ?? null;
+        if (t.forEach((i, r) => {
+          let a = i.getAttribute("id") ?? `tabpanel-${g._uid++}`;
+          if (!i.id)
+            i.id = a;
+          let n = i.getAttribute("label") ?? `Tab ${r + 1}`, o = document.createElement("button");
+          if (o.type = "button", o.className = "tab", o.setAttribute("part", "tab"), o.setAttribute("role", "tab"), o.setAttribute("id", `tab-${a}`), o.setAttribute("aria-controls", a), o.dataset.target = a, o.textContent = n, i.hasAttribute("disabled"))
+            o.setAttribute("disabled", "");
+          this._tablist.appendChild(o), i.setAttribute("role", "tabpanel"), i.setAttribute("aria-labelledby", `tab-${a}`);
+        }), e)
+          this._activate(e);
+      };
+      _activate(t) {
+        let e = this._panels(), i = Array.from(this._tablist?.querySelectorAll(".tab") ?? []), r = false;
+        if (e.forEach((a) => {
+          let n = a.id === t;
+          if (n)
+            r = true;
+          a.toggleAttribute("hidden", !n);
+        }), i.forEach((a) => {
+          let n = a.dataset.target === t;
+          a.setAttribute("aria-selected", String(n)), a.setAttribute("tabindex", n ? "0" : "-1");
+        }), r && this.getAttribute("active") !== t)
+          this.setAttribute("active", t), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { active: t } }));
+      }
+      _onTablistClick = (t) => {
+        let e = t.target.closest(".tab");
+        if (!e || e.hasAttribute("disabled"))
+          return;
+        let i = e.dataset.target;
+        if (i)
+          this._activate(i);
+      };
+      _onKeydown = (t) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(t.key))
+          return;
+        let e = Array.from(this._tablist?.querySelectorAll(".tab:not([disabled])") ?? []);
+        if (e.length === 0)
+          return;
+        let i = e.findIndex((d) => d === document.activeElement), r = i === -1 ? 0 : i, a = r;
+        if (t.key === "ArrowLeft")
+          a = (r - 1 + e.length) % e.length;
+        if (t.key === "ArrowRight")
+          a = (r + 1) % e.length;
+        if (t.key === "Home")
+          a = 0;
+        if (t.key === "End")
+          a = e.length - 1;
+        t.preventDefault();
+        let n = e[a];
+        if (!n)
+          return;
+        let o = n.dataset.target;
+        if (o)
+          this._activate(o);
+        n.focus();
+      };
+      static _uid = 0;
+    }
+    if (!customElements.get("p9r-tabs"))
+      customElements.define("p9r-tabs", g);
+    var Le = `<div class="icon" part="icon"></div>
 <div class="content">
     <span class="message"><slot></slot></span>
 </div>
 <button class="close" aria-label="Dismiss">&times;</button>
 `;
-    var ct = `:host {
+    var Me = `:host {
     --_bg: var(--bg-surface, #ffffff);
     --_color: var(--text-main, #1f2937);
     --_border: var(--border-default, #e5e7eb);
@@ -4481,10 +7539,10 @@ p9r-tag:hover {
 }
 `;
 
-    class M extends n {
+    class et extends s {
       _timer = null;
       constructor() {
-        super({ css: ct, template: dt });
+        super({ css: Me, template: Le });
       }
       connectedCallback() {
         this.shadowRoot?.querySelector(".close")?.addEventListener("click", () => this.dismiss());
@@ -4507,10 +7565,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-toast"))
-      customElements.define("p9r-toast", M);
-    var ut = `<slot></slot>
+      customElements.define("p9r-toast", et);
+    var qe = `<slot></slot>
 `;
-    var ht = `:host {
+    var He = `:host {
     position: fixed;
     top: 24px;
     left: 24px;
@@ -4560,9 +7618,9 @@ p9r-tag:hover {
 }
 `;
 
-    class q extends n {
+    class it extends s {
       constructor() {
-        super({ css: ht, template: ut });
+        super({ css: He, template: qe });
       }
       connectedCallback() {
         if (!this.hasAttribute("popover"))
@@ -4579,9 +7637,249 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-toast-stack"))
-      customElements.define("p9r-toast-stack", q);
+      customElements.define("p9r-toast-stack", it);
+    var Te = `<div class="trigger" part="trigger">
+    <slot></slot>
+</div>
+<div class="tooltip" part="tooltip" role="tooltip" aria-hidden="true">
+    <slot name="content"></slot>
+    <span class="text"></span>
+</div>
+`;
+    var Se = `:host {
+  display: inline-block;
+  position: relative;
+
+  --_bg: var(--text-main, #1f2937);
+  --_color: var(--bg-surface, #fff);
+  --_radius: 6px;
+  --_padding: 6px 10px;
+  --_size: 12px;
+  --_offset: 8px;
+  --_max-w: 240px;
+  --_arrow-size: 5px;
+}
+
+.trigger {
+  display: contents;
+}
+
+.tooltip {
+  position: absolute;
+  z-index: 9999;
+  background: var(--_bg);
+  color: var(--_color);
+  padding: var(--_padding);
+  border-radius: var(--_radius);
+  font-size: var(--_size);
+  font-weight: 500;
+  line-height: 1.4;
+  max-width: var(--_max-w);
+  width: max-content;
+  pointer-events: none;
+  opacity: 0;
+  white-space: normal;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:host([open]) .tooltip {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tooltip { transition: opacity 0.12s ease; }
+}
+
+.text:empty { display: none; }
+
+/* default position: top */
+.tooltip {
+  bottom: calc(100% + var(--_offset));
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([position="bottom"]) .tooltip {
+  top: calc(100% + var(--_offset));
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+:host([position="left"]) .tooltip {
+  right: calc(100% + var(--_offset));
+  left: auto;
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host([position="right"]) .tooltip {
+  left: calc(100% + var(--_offset));
+  bottom: auto;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* arrow */
+.tooltip::after {
+  content: "";
+  position: absolute;
+  border: var(--_arrow-size) solid transparent;
+}
+
+.tooltip::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--_bg);
+}
+
+:host([position="bottom"]) .tooltip::after {
+  top: auto;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: transparent;
+  border-bottom-color: var(--_bg);
+}
+
+:host([position="left"]) .tooltip::after {
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  border-top-color: transparent;
+  border-left-color: var(--_bg);
+}
+
+:host([position="right"]) .tooltip::after {
+  top: 50%;
+  left: auto;
+  right: 100%;
+  transform: translateY(-50%);
+  border-top-color: transparent;
+  border-right-color: var(--_bg);
+}
+`;
+
+    class rt extends s {
+      _tooltip;
+      _text;
+      _showTimer = null;
+      _hideTimer = null;
+      static get observedAttributes() {
+        return ["text"];
+      }
+      constructor() {
+        super({ css: Se, template: Te });
+        this._tooltip = this.shadowRoot?.querySelector(".tooltip") ?? null, this._text = this.shadowRoot?.querySelector(".text") ?? null;
+      }
+      connectedCallback() {
+        this._syncText(), this.addEventListener("mouseenter", this._show), this.addEventListener("mouseleave", this._hide), this.addEventListener("focusin", this._show), this.addEventListener("focusout", this._hide);
+      }
+      disconnectedCallback() {
+        if (this.removeEventListener("mouseenter", this._show), this.removeEventListener("mouseleave", this._hide), this.removeEventListener("focusin", this._show), this.removeEventListener("focusout", this._hide), this._showTimer)
+          clearTimeout(this._showTimer);
+        if (this._hideTimer)
+          clearTimeout(this._hideTimer);
+      }
+      attributeChangedCallback(t, e, i) {
+        if (t === "text")
+          this._syncText();
+      }
+      _syncText() {
+        if (this._text)
+          this._text.textContent = this.getAttribute("text") ?? "";
+      }
+      _show = () => {
+        if (this._hideTimer)
+          clearTimeout(this._hideTimer), this._hideTimer = null;
+        let t = Number(this.getAttribute("delay") ?? 100);
+        this._showTimer = setTimeout(() => {
+          this.setAttribute("open", ""), this._tooltip?.setAttribute("aria-hidden", "false");
+        }, t);
+      };
+      _hide = () => {
+        if (this._showTimer)
+          clearTimeout(this._showTimer), this._showTimer = null;
+        this._hideTimer = setTimeout(() => {
+          this.removeAttribute("open"), this._tooltip?.setAttribute("aria-hidden", "true");
+        }, 80);
+      };
+    }
+    if (!customElements.get("p9r-tooltip"))
+      customElements.define("p9r-tooltip", rt);
   })();
 
+  // src/socle/constants/editorAttributes.ts
+  var P9R_ATTR = {
+    ACTION: {
+      DISABLE_DELETE: "p9r-action-disable-delete",
+      DISABLE_ADD_BEFORE: "p9r-action-disable-add-before",
+      DISABLE_ADD_AFTER: "p9r-action-disable-add-after",
+      DISABLE_DRAGGING: "p9r-action-disable-dragging",
+      DISABLE_DUPLICATE: "p9r-action-disable-duplicate",
+      DISABLE_SAVE_AS_TEMPLATE: "p9r-action-disable-save-as-template",
+      DISABLE_CHANGE_COMPONENT: "p9r-action-disable-change-component",
+      INLINE_ADDING: "inline-adding",
+      ALLOW_RESIZE_IMAGE: "p9r-allow-resize-image"
+    },
+    TEXT: {
+      DISABLE_TYPE: "p9r-text-disable-type",
+      DISABLE_EDITING: "p9r-text-disable-editing",
+      DISABLE_BOLD: "p9r-text-disable-bold",
+      DISABLE_ITALIC: "p9r-text-disable-italic",
+      DISABLE_UNDERLINE: "p9r-text-disable-underline",
+      DISABLE_OVERLINE: "p9r-text-disable-overline",
+      DISABLE_LINE_THROUGH: "p9r-text-disable-line-through",
+      EDITABLE: "p9r-text-editable",
+      BLOC_MANAGEMENT: "p9r-text-bloc-management",
+      PLACEHOLDER: "p9r-text-placeholder"
+    },
+    EDITOR: {
+      IDENTIFIER: "p9r-identifier",
+      PARENT_IDENTIFIER: "p9r-parent-identifier",
+      IS_EDITOR: "p9r-is-editor",
+      OPAQUE: "p9r-opaque",
+      IS_CREATING: "p9r-is-creating",
+      PERSISTENT_IDENTIFIER: "p9r-persistent-identifier"
+    }
+  };
+
+  // src/control/components/globals.ts
+  window.p9r = {
+    attr: P9R_ATTR
+  };
+
+  // src/control/core/editorSystem/Component.ts
+  class Component extends HTMLElement {
+    _rawStyles = "";
+    _styles = null;
+    _template = null;
+    constructor(metadata) {
+      super();
+      const shadow = this.attachShadow({ mode: "open" });
+      if (metadata) {
+        this._rawStyles = metadata.css;
+        this._styles = document.createElement("style");
+        this._styles.innerHTML = metadata.css;
+        shadow.appendChild(this._styles);
+        this._template = document.createElement("template");
+        this._template.innerHTML = metadata ? metadata.template : "";
+        shadow.appendChild(this._template.content.cloneNode(true));
+      }
+    }
+    registerCSSVariables(items) {
+      if (!this._styles)
+        return;
+      let src = this._rawStyles;
+      Object.entries(items).forEach(([key, value]) => {
+        src = src.replaceAll("var(--" + key + ")", value);
+      });
+      this._styles.innerHTML = src;
+    }
+    connectedCallback() {}
+  }
   // src/control/components/admin/AdminLayout/template.html
   var template_default = `<w13c-left-menu-layout>
 
@@ -4712,6 +8010,49 @@ p9r-tag:hover {
     }
   }
   customElements.define("w13c-fixed-admin-layout", FixedAdminLayout);
+
+  // src/control/components/admin/OpenDialog/OpenDialog.ts
+  class OpenDialog extends HTMLElement {
+    connectedCallback() {
+      this.addEventListener("click", this.handleClick);
+    }
+    disconnectedCallback() {
+      this.removeEventListener("click", this.handleClick);
+    }
+    handleClick = () => {
+      const target = this.getAttribute("target");
+      if (!target)
+        return;
+      const dialog = document.getElementById(target);
+      dialog?.showModal?.();
+    };
+  }
+  customElements.define("w13c-open-dialog", OpenDialog);
+
+  // src/control/errors/NearestElementRequire.ts
+  class NearestElementRequire extends Error {
+    constructor(ele, target) {
+      super("The element " + ele.tagName + " should be placed under <" + target + ">");
+    }
+  }
+
+  // src/control/core/dom/getClosestEditorSystem.ts
+  function getClosestEditorSystem(ele) {
+    let current = ele;
+    while (current) {
+      if (current instanceof Element) {
+        const editorManager = current.closest("cms-editor-system");
+        if (editorManager)
+          return editorManager;
+      }
+      if (current instanceof ShadowRoot) {
+        current = current.host;
+      } else {
+        current = current.parentNode;
+      }
+    }
+    throw new NearestElementRequire(ele, "cms-editor-system");
+  }
 
   // src/control/components/editor/componentSync/PageLink/PageLink.css
   var PageLink_default = `:host {
@@ -5067,18 +8408,37 @@ p9r-tag:hover {
     return options;
   }
 
-  // src/control/core/editorSystem/runtime/editorManagerReady.ts
-  var EDITOR_MANAGER_READY_EVENT = "p9r:editor-manager-ready";
-  function whenEditorManagerReady(callback) {
-    if (document.EditorManager) {
-      callback();
-      return;
-    }
-    document.addEventListener(EDITOR_MANAGER_READY_EVENT, () => callback(), { once: true });
+  // src/control/core/dom/getMetaBasePath.ts
+  function getMetaBasePath() {
+    const meta = document.querySelector('meta[name="basePath"]');
+    if (!meta)
+      return "/";
+    if (meta && (meta.getAttribute("content") === "" || meta.getAttribute("content") === undefined))
+      return "/";
+    else
+      return meta.getAttribute("content");
+  }
+
+  // src/control/core/dom/getMetaApiPath.ts
+  function getMetaApiPath() {
+    const base = getMetaBasePath();
+    if (base === undefined || base === null || base === "")
+      return "/api";
+    return base.endsWith("/") ? base + "api" : base + "/api";
+  }
+
+  // src/control/core/dom/resolveApiUrl.ts
+  function resolveApiUrl(path) {
+    const apiPath = getMetaApiPath();
+    const base = /^https?:\/\//.test(apiPath) ? apiPath : new URL(apiPath, window.location.origin).href;
+    const cleanBase = base.endsWith("/") ? base.slice(0, -1) : base;
+    const cleanPath = path.startsWith("/") ? path : "/" + path;
+    return new URL(cleanBase + cleanPath);
   }
 
   // src/control/components/editor/componentSync/PageLink/PageLink.ts
   class PageLink extends HTMLElement {
+    _mediaCenter = null;
     _trigger = null;
     _display = null;
     _list = null;
@@ -5123,7 +8483,7 @@ p9r-tag:hover {
     connectedCallback() {
       if (!this._pagesFetched) {
         this._pagesFetched = true;
-        whenEditorManagerReady(() => this._fetchPages());
+        this._fetchPages();
       }
       this._trigger.addEventListener("click", this._onTriggerClick);
       this._trigger.addEventListener("keydown", this._onTriggerKeyDown);
@@ -5261,19 +8621,25 @@ p9r-tag:hover {
       this._tabMedia.classList.toggle("active", this._mode === "media");
     }
     _openMediaCenter() {
-      const mediaCenter = document.EditorManager?.getMediaCenter();
-      if (!mediaCenter)
-        return;
-      const handler = (e) => {
-        mediaCenter.removeEventListener("select-item", handler);
-        const src = e.detail?.src;
-        if (!src)
+      const mediaCenter = document.createElement("cms-media-center");
+      const editorSystem = getClosestEditorSystem(this);
+      editorSystem.editorDOM.append(mediaCenter);
+      requestAnimationFrame(() => {
+        this._mediaCenter = mediaCenter;
+        if (!mediaCenter)
           return;
-        this._setValue(src, this._mediaLabel(src));
-        this.dispatchEvent(new Event("change", { bubbles: true }));
-      };
-      mediaCenter.addEventListener("select-item", handler);
-      mediaCenter.show(["folder", "image", "other"]);
+        const handler = (e) => {
+          mediaCenter.removeEventListener("select-item", handler);
+          const src = e.detail?.src;
+          if (!src)
+            return;
+          this._setValue(src, this._mediaLabel(src));
+          this.dispatchEvent(new Event("change", { bubbles: true }));
+          this._mediaCenter?.remove();
+        };
+        mediaCenter.addEventListener("select-item", handler);
+        mediaCenter.show(["folder", "image", "other"]);
+      });
     }
     _mediaLabel(src) {
       const m = src.match(/id=([^&]+)/);
@@ -5281,8 +8647,9 @@ p9r-tag:hover {
     }
     async _fetchPages() {
       try {
-        const res = await fetch(new URL("pages", document.EditorManager.getApiBasePath()));
-        this._pages = await res.json();
+        const res = await fetch(resolveApiUrl("page/list"));
+        const json = await res.json();
+        this._pages = json.pages;
         this._refreshOptions(this._pages);
         const currentValue = this.getAttribute("value") || "";
         if (currentValue) {
@@ -6781,12 +10148,12 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
       if (openBtn)
         openBtn.disabled = !isValidPathFormat(path);
     }
-    show() {
+    open() {
       const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
       dialog?.show();
     }
   }
-  customElements.define("w13c-page-information", PageConfiguration);
+  customElements.define("cms-page-configuration", PageConfiguration);
 
   // src/control/components/editor/configurations/TemplateConfiguration/template.html
   var template_default3 = `<w13c-lateral-dialog>
@@ -7547,301 +10914,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 
 /* ── Dialog ── */
 
-.action-bar-modal {
-    padding: 0;
-    border: none;
-    background: transparent;
-    overflow: visible;
-    animation: dialogFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes dialogFadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.action-bar-modal::backdrop {
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-}
-
-/* ── Container ── */
-
-.container {
-    width: 90vw;
-    max-width: 1000px;
-    height: 70vh;
-    background: var(--bg-main);
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-}
-
-/* ── Header with tabs ── */
-
-.header {
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    border-bottom: 1px solid var(--border);
-    height: 54px;
-    flex-shrink: 0;
-}
-
-.search-wrap {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.search-input {
-    all: unset;
-    width: 100%;
-    max-width: 360px;
-    box-sizing: border-box;
-    padding: 7px 12px;
-    font-size: 13px;
-    color: var(--text-primary);
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid transparent;
-    border-radius: 8px;
-    transition: all 0.15s;
-}
-
-.search-input:focus {
-    background: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
-}
-
-.search-input::placeholder {
-    color: var(--text-secondary);
-}
-
-.tabs {
-    display: flex;
-    gap: 4px;
-}
-
-.tab {
-    all: unset;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.15s;
-}
-
-.tab:hover:not(.active):not(.disabled) {
-    background: rgba(0, 0, 0, 0.04);
-    color: var(--text-primary);
-}
-
-.tab.active {
-    background: var(--accent);
-    color: #fff;
-    font-weight: 600;
-}
-
-.tab.disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
-
-form[method="dialog"] {
-    display: flex;
-    align-items: center;
-}
-
-.default-close {
-    all: unset;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-secondary);
-    font-size: 1.4rem;
-    transition: all 0.2s;
-}
-
-.default-close:hover {
-    background: rgba(255, 59, 48, 0.1);
-    color: #ff3b30;
-    transform: rotate(90deg);
-}
-
-/* ── Content ── */
-
-.content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-/* ── Sidebar ── */
-
-.groups-sidebar {
-    width: var(--sidebar-width);
-    padding: 16px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow-y: auto;
-    flex-shrink: 0;
-}
-
-.sidebar-item {
-    all: unset;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-}
-
-.sidebar-item:hover:not(.active) {
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-primary);
-}
-
-.sidebar-item.active {
-    background: rgba(0, 122, 255, 0.08);
-    color: var(--accent);
-    font-weight: 600;
-}
-
-/* ── Grid ── */
-
-.blocs-grid {
-    flex: 1;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-    overflow-y: auto;
-    align-content: start;
-}
-
-/* Section header used when cross-section search results are shown. Spans
- * the whole grid row so the following cards flow normally underneath. */
-.section-header {
-    grid-column: 1 / -1;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    padding: 6px 4px 2px;
-    margin-top: 4px;
-}
-
-.section-header:first-child {
-    margin-top: 0;
-}
-
-/* ── Cards ── */
-
-.card {
-    all: unset;
-    background: var(--bg-card);
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 12px 14px;
-    min-height: 72px;
-    display: grid;
-    grid-template-columns: 32px 1fr;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: 0.15s;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.card .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent);
-}
-
-.card svg {
-    width: 28px;
-    height: 28px;
-}
-
-.card:hover {
-    border-color: var(--accent);
-    background: #f8fbff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-}
-
-.card .text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-.card .title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary);
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.card .description {
-    font-size: 11px;
-    font-weight: 400;
-    color: var(--text-secondary);
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* ── Empty state ── */
-
-.empty-state {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 48px 24px;
-    color: var(--text-secondary);
-    text-align: center;
-}
-
-.empty-state svg {
-    width: 40px;
-    height: 40px;
-    opacity: 0.3;
-}
-
-.empty-state p {
-    margin: 0;
-    font-size: 13px;
-}
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/sections.ts
@@ -7933,34 +11005,6 @@ form[method="dialog"] {
     grid.appendChild(header);
   }
 
-  // src/control/core/dom/getMetaBasePath.ts
-  function getMetaBasePath() {
-    const meta = document.querySelector('meta[name="basePath"]');
-    const path = meta ? meta.getAttribute("content") : "/";
-    return path;
-  }
-
-  // src/control/core/dom/getMetaApiPath.ts
-  function getMetaApiPath() {
-    const base = getMetaBasePath();
-    return base + "api";
-  }
-
-  // src/control/errors/NearestElementRequire.ts
-  class NearestElementRequire extends Error {
-    constructor(ele, target) {
-      super("The element " + ele.tagName + " should be placed under <" + target + ">");
-    }
-  }
-
-  // src/control/core/dom/getClosestEditorSystem.ts
-  function getClosestEditorSystem(ele) {
-    const editorManager = ele.closest("cms-editor-system");
-    if (!editorManager)
-      throw new NearestElementRequire(ele, "cms-editor-system");
-    return editorManager;
-  }
-
   // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
   var ActionBarMetadata = {
     css: style_default4,
@@ -7968,7 +11012,6 @@ form[method="dialog"] {
   };
 
   class BlocLibrary extends Component {
-    static instance = null;
     _dialog = null;
     _section = "blocs";
     _activeGroup = null;
@@ -7978,15 +11021,8 @@ form[method="dialog"] {
     _locked = false;
     _forcedCategory = null;
     _query = "";
-    constructor(options) {
+    constructor() {
       super(ActionBarMetadata);
-      if (options?.section)
-        this._section = options.section;
-      if (options?.category) {
-        this._forcedCategory = options.category;
-        this._activeGroup = options.category;
-      }
-      this._locked = !!options?.locked;
     }
     connectedCallback() {
       const editorManager = getClosestEditorSystem(this);
@@ -8041,28 +11077,27 @@ form[method="dialog"] {
         if (this._forcedCategory)
           this._activeGroup = this._forcedCategory;
         this._render();
-        this._dialog.showModal();
         if (!this._locked)
           searchInput.focus();
       });
     }
     async _fetchTemplates() {
       try {
-        const res = await fetch(new URL("templates", getMetaApiPath()));
+        const res = await fetch(new URL("template/list", getMetaApiPath()));
         if (res.ok)
           this._templates = await res.json();
       } catch {}
     }
     async _fetchSnippets() {
       try {
-        const res = await fetch(new URL("snippets", getMetaApiPath()));
+        const res = await fetch(new URL("snippet/list", getMetaApiPath()));
         if (res.ok)
           this._snippets = await res.json();
       } catch {}
     }
     async _fetchBlocMeta() {
       try {
-        const res = await fetch(new URL("blocs-list", getMetaApiPath()));
+        const res = await fetch(new URL("bloc/list", getMetaApiPath()));
         if (!res.ok)
           return;
         const list = await res.json();
@@ -8144,13 +11179,9 @@ form[method="dialog"] {
     }
     close() {
       this._dialog?.close();
-      BlocLibrary.instance = null;
     }
-    static open(options) {
-      const menu = new BlocLibrary(options);
-      document.body.appendChild(menu);
-      BlocLibrary.instance = menu;
-      return menu;
+    open() {
+      this._dialog?.showModal();
     }
   }
   if (!customElements.get("cms-bloc-library")) {
@@ -9027,7 +12058,9 @@ form[method="dialog"] {
   // src/control/components/editor/EditorSystem/EditorRoot/template.html
   var template_default6 = `<div>
     <div id="workingElement">
-        <slot></slot>
+        <slot>
+            <p></p>
+        </slot>
     </div>
     <div id="editorSystem">
         <cms-floating-toolbar />
@@ -9203,6 +12236,7 @@ form[method="dialog"] {
       ["saveAsTemplate", false]
     ]);
     constructor(target, styles, editor) {
+      console.debug("NEW EDITOR", target);
       this.target = target;
       this.styleElement = document.createElement("style");
       this.styleElement.innerHTML = styles;
@@ -9223,9 +12257,7 @@ form[method="dialog"] {
           this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);
         });
       });
-      if (document.EditorManager?.getBlocActionGroup()) {
-        document.EditorManager.getBlocActionGroup().close();
-      }
+      getClosestEditorSystem(this.target).blocActions.close();
     }
     onSwitchMode(mode) {
       if (mode === p9r.mode.EDITOR)
@@ -9260,7 +12292,7 @@ form[method="dialog"] {
       this._panelConfig = document.createElement("p9r-config-panel");
       this._panelConfig.appendChild(this._panelFragment);
       this._panelFragment = null;
-      document.EditorManager.getEditorSystemHTMLElement().append(this._panelConfig);
+      getClosestEditorSystem(this.target).editorDOM.append(this._panelConfig);
     }
     get hasConfigPanel() {
       return this._panelConfig != null || this._panelFragment != null;
@@ -9282,8 +12314,9 @@ form[method="dialog"] {
       }
     }
     handleHover = (e) => {
-      document.EditorManager.getBlocActionGroup().setEditor(this);
-      document.EditorManager.getBlocActionGroup().open(e.clientX, e.clientY);
+      const editorSystem = getClosestEditorSystem(this.target);
+      editorSystem.blocActions.setEditor(this);
+      editorSystem.blocActions.open(e.clientX, e.clientY);
     };
     refreshActionBarFeatures() {
       this._actionBarFeatures.set("delete", this.target.getAttribute(p9r.attr.ACTION.DISABLE_DELETE) !== "true");
@@ -9310,7 +12343,8 @@ form[method="dialog"] {
       const anyPinned = this.stateSyncs.some((s2) => s2.isPinned);
       if (anyPinned) {
         this._unbindHover();
-        document.EditorManager?.getBlocActionGroup()?.close();
+        const editorSystem = getClosestEditorSystem(this.target);
+        editorSystem.blocActions.close();
         this._pinMode.enter();
       } else {
         this._pinMode.exit();
@@ -9557,6 +12591,7 @@ form[method="dialog"] {
 `;
 
   class ImageEditor extends Editor {
+    _mediaCenter = null;
     resizeInstance;
     onClick = (e) => this.handleClick(e);
     onSelectMedia = (e) => this.handleSelectMedia(e);
@@ -9580,19 +12615,25 @@ form[method="dialog"] {
     handleSelectMedia(e) {
       this.target.setAttribute("src", e.detail.src);
       this.target.setAttribute("alt", e.detail.alt);
-      document.EditorManager.getMediaCenter().removeEventListener("select-item", this.onSelectMedia);
+      this._mediaCenter?.removeEventListener("select-item", this.onSelectMedia);
+      this._mediaCenter?.remove();
     }
     handleClick(e) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      const mediaCenter = document.EditorManager.getMediaCenter();
-      mediaCenter.removeEventListener("select-item", this.onSelectMedia);
-      mediaCenter.addEventListener("select-item", this.onSelectMedia);
-      mediaCenter.show(["folder", "image"]);
+      const mediaCenter = document.createElement("cms-media-center");
+      document.body.append(mediaCenter);
+      requestAnimationFrame(() => {
+        this._mediaCenter = mediaCenter;
+        mediaCenter.removeEventListener("select-item", this.onSelectMedia);
+        mediaCenter.addEventListener("select-item", this.onSelectMedia);
+        mediaCenter.show(["folder", "image"]);
+      });
     }
     restore() {
       this.target.removeEventListener("click", this.onClick);
-      document.EditorManager.getMediaCenter().removeEventListener("select-item", this.onSelectMedia);
+      this._mediaCenter?.removeEventListener("select-item", this.onSelectMedia);
+      this._mediaCenter?.remove();
       this.resizeInstance.stop();
     }
   }
@@ -9636,20 +12677,7 @@ form[method="dialog"] {
       this.observeAttributes();
     }
     attrObserver;
-    observeAttributes() {
-      this.attrObserver = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          if (mutation.type === "attributes" && mutation.attributeName?.startsWith("p9r-")) {
-            if (document.EditorManager.getMode() === p9r.mode.EDITOR) {
-              if (!this.isInitializing) {
-                this.isInitializing = true;
-                this.init();
-              }
-            }
-          }
-        }
-      });
-    }
+    observeAttributes() {}
     onSwitchMode(mode) {
       super.onSwitchMode(mode);
       if (!this.attrObserver)
@@ -9723,7 +12751,7 @@ form[method="dialog"] {
           nextEl.appendChild(fragment);
         }
         this.target.after(nextEl);
-        const observer = document.EditorManager?.getObserver?.();
+        const observer = getClosestEditorSystem(this.target).observer;
         if (observer) {
           observer.make_it_editor(nextEl);
         } else {
@@ -9814,14 +12842,16 @@ form[method="dialog"] {
       sel.addRange(range);
     }
     handleInput(e) {
+      const editorRoot = getClosestEditorSystem(this.target);
       if (this.target.innerHTML === "<br>") {
         this.target.innerHTML = "";
       }
       if (this.target.innerText === "/" && this.isBlocManagementEnabled && !this.isChangeComponentDisabled) {
         e.stopPropagation();
         e.stopImmediatePropagation();
-        const actionbar = BlocLibrary.open();
-        actionbar.addEventListener("insert", (e2) => {
+        const blocLibrary = editorRoot.blocLibrary;
+        const actionbar = blocLibrary.open();
+        blocLibrary.addEventListener("insert", (e2) => {
           if (e2.detail.type === "template") {
             const fragment = document.createRange().createContextualFragment(e2.detail.html);
             this.target.replaceWith(fragment);
@@ -10011,7 +13041,7 @@ form[method="dialog"] {
           const identifier = target.getAttribute("identifier");
           if (!identifier)
             return;
-          window.open(document.EditorManager.basePath + `admin/snippets/editor?identifier=${encodeURIComponent(identifier)}`, "_blank");
+          window.open(getMetaBasePath() + `admin/snippets/editor?identifier=${encodeURIComponent(identifier)}`, "_blank");
         }
       });
     }
@@ -10026,8 +13056,78 @@ form[method="dialog"] {
     editors = new Map;
     groups = new Set(["default"]);
     opaqueTags = new Set;
-    constructor(workingElement) {
-      this.workingElement = workingElement;
+    constructor(slot) {
+      const root = slot.getRootNode();
+      if (!(root instanceof ShadowRoot)) {
+        throw new Error("ObserverManager: slot must live in a ShadowRoot");
+      }
+      const host = root.host;
+      this.workingElement = host;
+      this._registerEditors();
+      const initialAssigned = slot.assignedElements({ flatten: true });
+      initialAssigned.forEach((el) => {
+        this.make_it_editor(el);
+        el.querySelectorAll("*").forEach((child) => this.make_it_editor(child));
+      });
+      const callback = (mutationsList) => {
+        const allAdded = new Set;
+        for (const mutation of mutationsList) {
+          for (const node of Array.from(mutation.addedNodes)) {
+            allAdded.add(node);
+          }
+        }
+        for (const mutation of mutationsList) {
+          for (const removeNode of Array.from(mutation.removedNodes)) {
+            const node = removeNode;
+            if (!node.getAttribute)
+              continue;
+            const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+            if (!identifier)
+              continue;
+            const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
+            if (allAdded.has(node)) {
+              document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node);
+              continue;
+            }
+            document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node);
+            this._disposeSubtree(node);
+            document.compIdentifierToEditor.get(identifier)?.dispose();
+          }
+          if (mutation.type === "childList") {
+            mutation.addedNodes.forEach((node) => {
+              if (!(node instanceof HTMLElement))
+                return;
+              if (node.hasAttribute("slot"))
+                return;
+              if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
+                const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+                if (newParentId) {
+                  document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded(node);
+                }
+                return;
+              }
+              this.make_it_editor(node);
+              node.querySelectorAll("*").forEach((child) => this.make_it_editor(child));
+            });
+          }
+        }
+      };
+      this.observer = new MutationObserver(callback);
+      this.observer.observe(host, {
+        childList: true,
+        subtree: true
+      });
+      slot.addEventListener("slotchange", () => {
+        const current = slot.assignedElements({ flatten: true });
+        current.forEach((el) => {
+          if (el.getAttribute(p9r.attr.EDITOR.IS_EDITOR))
+            return;
+          this.make_it_editor(el);
+          el.querySelectorAll("*").forEach((child) => this.make_it_editor(child));
+        });
+      });
+    }
+    _registerEditors() {
       textTags.forEach((tag) => {
         if (["span", "a"].includes(tag)) {
           this.register_editor({
@@ -10065,57 +13165,15 @@ form[method="dialog"] {
         label: "snippet",
         visible: false
       });
-      const existingElements = workingElement.querySelectorAll("*");
-      existingElements.forEach((el) => this.make_it_editor(el));
-      const callback = (mutationsList) => {
-        const allAdded = new Set;
-        for (const mutation of mutationsList) {
-          for (const node of Array.from(mutation.addedNodes)) {
-            allAdded.add(node);
+      if (document.editors) {
+        for (const editor of document.editors) {
+          if (editor.cl instanceof EmptyEditor) {
+            this.register_editor_opaque(editor);
+          } else {
+            this.register_editor(editor);
           }
         }
-        for (const mutation of mutationsList) {
-          for (const removeNode of Array.from(mutation.removedNodes)) {
-            const node = removeNode;
-            if (!node.getAttribute)
-              continue;
-            const identifier = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
-            if (!identifier)
-              continue;
-            const componentParent = node.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
-            if (allAdded.has(node)) {
-              document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node);
-              continue;
-            }
-            document.compIdentifierToEditor.get(componentParent)?.onChildrenRemoved(node);
-            this._disposeSubtree(node);
-            document.compIdentifierToEditor.get(identifier)?.dispose();
-          }
-          if (mutation.type === "childList") {
-            mutation.addedNodes.forEach((node) => {
-              if (node instanceof HTMLElement) {
-                if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
-                  const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
-                  if (newParentId) {
-                    document.compIdentifierToEditor.get(newParentId)?.onChildrenAdded(node);
-                  }
-                  return;
-                }
-                this.make_it_editor(node);
-                node.querySelectorAll("*").forEach((child) => {
-                  const htmlChild = child;
-                  this.make_it_editor(htmlChild);
-                });
-              }
-            });
-          }
-        }
-      };
-      this.observer = new MutationObserver(callback);
-      this.observer.observe(workingElement, {
-        childList: true,
-        subtree: true
-      });
+      }
     }
     dispose() {
       this.observer?.disconnect();
@@ -10159,8 +13217,6 @@ form[method="dialog"] {
         visible: element.visible ?? true
       });
       this.groups.add(element.group || "default");
-      const existingElements = this.workingElement.querySelectorAll(element.tag);
-      existingElements.forEach((el) => this.make_it_editor(el));
     }
     register_editor_opaque(element) {
       this.opaqueTags.add(element.tag);
@@ -10221,21 +13277,28 @@ form[method="dialog"] {
     mode = "editor";
     _observer = null;
     _dragmanager = null;
+    _blocActions = null;
+    _blocLibrary = null;
     constructor() {
       super();
       this.attachShadow({ mode: "open" });
       const style = document.createElement("style");
-      const template = document.createElement("template");
       style.innerHTML = style_default5;
-      template.innerHTML = template_default6;
       this.shadowRoot?.append(style);
-      this.shadowRoot?.append(template);
+      const template = document.createElement("template");
+      template.innerHTML = template_default6;
+      this.shadowRoot?.append(template.content.cloneNode(true));
     }
     connectedCallback() {
       requestAnimationFrame(() => {
         const workingElement = this.shadowRoot?.querySelector("#workingElement");
-        this._observer = new ObserverManager(workingElement);
+        this._blocActions = this.shadowRoot?.querySelector("cms-bloc-actions");
+        const slot = this.shadowRoot.querySelector("#workingElement slot");
+        if (!slot)
+          throw new Error("Working slot not found in shadow DOM");
+        this._observer = new ObserverManager(slot);
         this._dragmanager = new DragManager(workingElement);
+        this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library");
       });
     }
     save() {
@@ -10247,9 +13310,11 @@ form[method="dialog"] {
       }));
     }
     openConfig() {
-      const ele = this.shadowRoot?.querySelector("[slot=configuration]");
-      if (!ele || !isToggable(ele))
-        throw new Error("Element should be have the open function");
+      const slot = this.shadowRoot?.querySelector('slot[name="configuration"]');
+      const ele = slot?.assignedElements()[0];
+      if (!ele || !isToggable(ele)) {
+        throw new Error("Configuration element must implement open()");
+      }
       ele.open();
     }
     switchMode() {
@@ -10268,6 +13333,22 @@ form[method="dialog"] {
       if (!this._dragmanager)
         throw new Error("You try to get dragManager before his initialization");
       return this._dragmanager;
+    }
+    get blocActions() {
+      if (!this._blocActions)
+        throw new Error("You try to get blocActions before his initialization");
+      return this._blocActions;
+    }
+    get editorDOM() {
+      const ele = this.shadowRoot?.querySelector("#editorSystem");
+      if (!ele)
+        throw new Error("You try to get editorSystem before his initialization");
+      return ele;
+    }
+    get blocLibrary() {
+      if (!this._blocLibrary)
+        throw new Error("You try to get _blocLibrary before his initialization");
+      return this._blocLibrary;
     }
   }
   if (!customElements.get("cms-editor-system")) {
@@ -10396,9 +13477,7 @@ button span {
       this._onPointerUp = this._onPointerUp.bind(this);
     }
     connectedCallback() {
-      const EditorSystem = this.closest("cms-editor-system");
-      if (!EditorSystem)
-        throw new NearestElementRequire(this, "cms-editor-system");
+      const EditorSystem = getClosestEditorSystem(this);
       const handle = this.shadowRoot?.getElementById("drag-handle");
       handle?.addEventListener("pointerdown", this._onPointerDown.bind(this));
       this.shadowRoot?.querySelector(".actions")?.addEventListener("click", (e) => {
@@ -11454,7 +14533,7 @@ dialog::backdrop {
       this._refresh();
     }
   }
-  customElements.define("w13c-mediacenter", MediaCenter);
+  customElements.define("cms-media-center", MediaCenter);
 
   // src/control/components/editor/RichTextBar/template.html
   var template_default10 = `<div class="toolbar">
@@ -12475,11 +15554,11 @@ button.active svg {
         return;
       }
       this._renderLoading();
-      whenEditorManagerReady(() => this._fetch(identifier));
+      this._fetch(identifier);
     }
     async _fetch(identifier) {
       try {
-        const url = new URL("snippets", document.EditorManager.getApiBasePath());
+        const url = new URL("snippets", getMetaApiPath());
         url.searchParams.set("identifier", identifier);
         const res = await fetch(url);
         if (!res.ok) {

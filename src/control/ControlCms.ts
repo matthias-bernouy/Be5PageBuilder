@@ -1,10 +1,11 @@
-import { registerEndpoints } from "./endpoints/registerEndpoints";
 import type { Authentication, Media, Runner } from "@bernouy/socle";
 import type { CmsRepository } from "../socle/contracts/Repository/CmsRepository";
 import type { Cache } from "../socle/contracts/Cache/Cache";
 import { InMemoryCache } from "../socle/providers/memory/Cache/InMemoryCache";
 import type { CMS_ROLES } from "types/roles";
 import serveStaticFolder from "./core/registerEndpoints/serveStaticFolder/serveStaticFolder";
+import { serveApi } from "./core/registerEndpoints/serveApiFolder";
+import { join } from "node:path"
 
 type Configuration = {
     /**
@@ -67,6 +68,10 @@ export class ControlCms {
         this._cache = cache || new InMemoryCache();
 
         serveStaticFolder(runner);
+        runner.group("/api", (apiRunner) => {
+            console.log(apiRunner.basePath);
+            serveApi(apiRunner, join(__dirname, "./api"), this);
+        })
     }
 
     get media(){

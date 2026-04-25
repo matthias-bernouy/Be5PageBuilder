@@ -47,7 +47,7 @@ export async function serveApi<T>(runner: Runner, folder: string, system: T): Pr
         if (typeof handler !== "function") {
             throw new Error(`[serveApi] "${file}" must have a default export function`);
         }
-
+        
         runner.addEndpoint(method, `/${route}`, (req: Request) => handler(req, system));
     }
 }

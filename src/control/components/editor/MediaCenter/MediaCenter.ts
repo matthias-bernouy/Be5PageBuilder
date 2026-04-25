@@ -233,4 +233,4 @@ export class MediaCenter extends Component {
     }
 }
 
-customElements.define("w13c-mediacenter", MediaCenter);
+customElements.define("cms-media-center", MediaCenter);
