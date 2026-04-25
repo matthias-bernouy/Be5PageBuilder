@@ -16,20 +16,8 @@ export abstract class Editor {
     private targetIdentifier: string;
     public target: HTMLElement;
     private styleElement: HTMLStyleElement;
-    // Shared per-tag stylesheet + refcount. Each light-DOM editor of a tag
-    // holds one ref; the shared <style> is appended on the first ref and
-    // removed on the last. Previously this was a boolean flag keyed by tag,
-    // which meant (a) disposing the first editor yanked the style element
-    // that every sibling still relied on, and (b) viewClient deleted the
-    // map entry even when other editors of the same tag were still active.
     private static bodyStyle: Map<string, { el: HTMLStyleElement, count: number }> = new Map();
     private _holdsBodyStyle = false;
-    // Panel is lazy: we parse the editor HTML into a detached fragment at
-    // construction time (so syncs can run their slot-defaulting logic on
-    // the target), but we only wrap it in a real <p9r-config-panel> and
-    // attach it to the DOM the first time the user opens the panel. This
-    // saves the lateral dialog + shadow DOM + UI rendering cost per editor
-    // during bulk template inserts.
     public _panelConfig: SyncPanel | null = null;
     private _panelFragment: DocumentFragment | null = null;
     private _panelSyncs: HTMLElement[] = [];
@@ -174,7 +162,9 @@ export abstract class Editor {
     }
 
     private handleHover = (e: MouseEvent) => {
+        console.log("Handle Hover");
         const editorSystem = getClosestEditorSystem(this.target);
+        console.log("Handle Hover", editorSystem);
         editorSystem.blocActions.setEditor(this);
         editorSystem.blocActions.open(e.clientX, e.clientY);
     }

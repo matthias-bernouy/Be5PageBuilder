@@ -10914,6 +10914,301 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 
 /* ── Dialog ── */
 
+.action-bar-modal {
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: visible;
+    animation: dialogFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dialogFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.action-bar-modal::backdrop {
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+}
+
+/* ── Container ── */
+
+.container {
+    width: 90vw;
+    max-width: 1000px;
+    height: 70vh;
+    background: var(--bg-main);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+/* ── Header with tabs ── */
+
+.header {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    height: 54px;
+    flex-shrink: 0;
+}
+
+.search-wrap {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input {
+    all: unset;
+    width: 100%;
+    max-width: 360px;
+    box-sizing: border-box;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.15s;
+}
+
+.search-input:focus {
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.tab {
+    all: unset;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+}
+
+.tab:hover:not(.active):not(.disabled) {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-primary);
+}
+
+.tab.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+.tab.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+form[method="dialog"] {
+    display: flex;
+    align-items: center;
+}
+
+.default-close {
+    all: unset;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    transition: all 0.2s;
+}
+
+.default-close:hover {
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+    transform: rotate(90deg);
+}
+
+/* ── Content ── */
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+/* ── Sidebar ── */
+
+.groups-sidebar {
+    width: var(--sidebar-width);
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.sidebar-item {
+    all: unset;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+}
+
+.sidebar-item:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-primary);
+}
+
+.sidebar-item.active {
+    background: rgba(0, 122, 255, 0.08);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* ── Grid ── */
+
+.blocs-grid {
+    flex: 1;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    overflow-y: auto;
+    align-content: start;
+}
+
+/* Section header used when cross-section search results are shown. Spans
+ * the whole grid row so the following cards flow normally underneath. */
+.section-header {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    padding: 6px 4px 2px;
+    margin-top: 4px;
+}
+
+.section-header:first-child {
+    margin-top: 0;
+}
+
+/* ── Cards ── */
+
+.card {
+    all: unset;
+    background: var(--bg-card);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 12px 14px;
+    min-height: 72px;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: 0.15s;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.card .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+}
+
+.card svg {
+    width: 28px;
+    height: 28px;
+}
+
+.card:hover {
+    border-color: var(--accent);
+    background: #f8fbff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.card .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.card .title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card .description {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── Empty state ── */
+
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.empty-state svg {
+    width: 40px;
+    height: 40px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 13px;
+}
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/sections.ts
@@ -11028,7 +11323,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
       const editorManager = getClosestEditorSystem(this);
       const s2 = this.shadowRoot;
       this._dialog = s2.querySelector("#action-bar-dialog");
-      this._dialog.addEventListener("close", () => this.remove());
       this._dialog.addEventListener("click", (e) => {
         if (e.target === this._dialog)
           this.close();
@@ -12063,10 +12357,10 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
         </slot>
     </div>
     <div id="editorSystem">
-        <cms-floating-toolbar />
-        <cms-richtextbar />
-        <cms-bloc-actions />
-        <cms-bloc-library />
+        <cms-floating-toolbar></cms-floating-toolbar>
+        <cms-richtextbar></cms-richtextbar>
+        <cms-bloc-actions></cms-bloc-actions>
+        <cms-bloc-library></cms-bloc-library>
 
         <slot name="configuration"></slot>
     </div>
@@ -12314,7 +12608,9 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
       }
     }
     handleHover = (e) => {
+      console.log("Handle Hover");
       const editorSystem = getClosestEditorSystem(this.target);
+      console.log("Handle Hover", editorSystem);
       editorSystem.blocActions.setEditor(this);
       editorSystem.blocActions.open(e.clientX, e.clientY);
     };
@@ -12677,7 +12973,20 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
       this.observeAttributes();
     }
     attrObserver;
-    observeAttributes() {}
+    observeAttributes() {
+      this.attrObserver = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.type === "attributes" && mutation.attributeName?.startsWith("p9r-")) {
+            if (document.EditorManager.getMode() === p9r.mode.EDITOR) {
+              if (!this.isInitializing) {
+                this.isInitializing = true;
+                this.init();
+              }
+            }
+          }
+        }
+      });
+    }
     onSwitchMode(mode) {
       super.onSwitchMode(mode);
       if (!this.attrObserver)

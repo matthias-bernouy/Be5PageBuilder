@@ -1,5 +1,4 @@
 import { HorizontalActionGroup } from '@bernouy/webcomponents/blocs/horizontal-action-group';
-import type { Editor } from '../../runtime/Editor';
 import css from './style.css' with { type: 'text' };
 import template from './template.html' with { type: 'text' };
 import insertBtnCss from './insert-btn.css' with { type: 'text' };
@@ -8,8 +7,9 @@ import { computeGroupPosition, positionInsertButtons, type VAnchor } from './pos
 import { resolveActionBarAnchor } from './anchor';
 import { duplicateSibling, insertBlankSibling, openChangeComponentPicker } from './actions';
 import { ICON_PARENT, ICON_PIN } from '../../../icons';
-import type { StateSync } from '../../configuration/sync/StateSync';
 import getClosestEditorSystem from 'src/control/core/dom/getClosestEditorSystem';
+import type { Editor } from '@bernouy/cms/editor';
+import type { StateSync } from '../../componentSync/sync/StateSync';
 
 export class BlocActions extends HorizontalActionGroup {
 
@@ -77,18 +77,11 @@ export class BlocActions extends HorizontalActionGroup {
         const hasCustomActions = editor.customActions.length > 0;
         const hasStateSyncs = editor.stateSyncs.length > 0;
         if (allDisabled && !hasCustomActions && !hasStateSyncs && !editor.hasConfigPanel) {
-            // Nothing to render — clear so a subsequent open() is a no-op
-            // instead of showing an empty circle.
             this.close();
             this._editor = null;
             this._target = null;
             return;
         }
-        // open() binds `mouseleave` on the current hover anchor. When setEditor
-        // swaps editor without going through close() first (the hover path
-        // calls setEditor + open without an intervening close if BAG is
-        // already visible on another bloc), the old anchor keeps the
-        // listener — one leak per hovered bloc for the life of the page.
         if (this._listenersAttached) {
             this._hoverEl?.removeEventListener("mouseleave", this.handleLeave);
             this._hoverEl?.removeEventListener("mousemove", this.handleMouseMove);
@@ -430,12 +423,6 @@ export class BlocActions extends HorizontalActionGroup {
         });
     }
 
-    /** Rebind the BAG to an arbitrary ancestor editor while keeping the bar
-     *  visually in place. Freezes transform AND vAnchor so the subsequent
-     *  open() — which recomputes both from the new target's rect — doesn't
-     *  warp the bar away from the cursor (→ mouseleave close) or flip the
-     *  breadcrumb from above-BAG to below-BAG (→ user perceives the BAG as
-     *  jumping when it hasn't actually moved). */
     private _switchToEditor(target: Editor) {
         const savedTransform = this.style.transform;
         const savedVAnchor = this.getAttribute("data-v-anchor") as VAnchor | null;
@@ -446,9 +433,6 @@ export class BlocActions extends HorizontalActionGroup {
         if (savedVAnchor !== null) {
             this.setAttribute("data-v-anchor", savedVAnchor);
             this._lastVAnchor = savedVAnchor;
-            // Re-run after data-v-anchor restoration — the breadcrumb CSS
-            // side depends on it, so the clipping check must see the final
-            // state to decide whether to fall back to an inline layout.
             this._refineBreadcrumbPosition();
         }
     }
@@ -459,17 +443,12 @@ export class BlocActions extends HorizontalActionGroup {
         this._switchToEditor(parent);
     }
 
-    /** After layout, if the breadcrumb's vertical placement (above or below
-     *  the BAG per `data-v-anchor`) gets clipped by the viewport, flip to an
-     *  inline placement — left of the BAG by default, right if no left room. */
     private _refineBreadcrumbPosition() {
         this._metaEl.classList.remove("p9r-bag-meta--inline-left", "p9r-bag-meta--inline-right");
         if (!this._metaEl.children.length) return;
 
         const margin = 4;
         const metaRect = this._metaEl.getBoundingClientRect();
-        // A zero-sized rect happens before the meta is laid out (no children
-        // or display:none ancestor). Bail rather than running a bogus check.
         if (metaRect.width === 0 && metaRect.height === 0) return;
 
         const fitsVertically =

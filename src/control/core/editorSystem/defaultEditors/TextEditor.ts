@@ -43,18 +43,18 @@ export class TextEditor extends Editor {
     private attrObserver?: MutationObserver;
 
     observeAttributes(){
-        // this.attrObserver = new MutationObserver((mutations) => {
-        //     for (const mutation of mutations) {
-        //         if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
-        //             if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
-        //                 if ( !this.isInitializing ){
-        //                     this.isInitializing = true;
-        //                     this.init();
-        //                 }
-        //             }
-        //         }
-        //     }
-        // });
+        this.attrObserver = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                if (mutation.type === 'attributes' && mutation.attributeName?.startsWith('p9r-')) {
+                    if ( document.EditorManager.getMode() === p9r.mode.EDITOR ){
+                        if ( !this.isInitializing ){
+                            this.isInitializing = true;
+                            this.init();
+                        }
+                    }
+                }
+            }
+        });
     }
 
     /**

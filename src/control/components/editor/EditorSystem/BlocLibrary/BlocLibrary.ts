@@ -50,7 +50,6 @@ export class BlocLibrary extends Component {
         const s = this.shadowRoot!;
         this._dialog = s.querySelector('#action-bar-dialog') as HTMLDialogElement;
 
-        this._dialog.addEventListener('close', () => this.remove());
         this._dialog.addEventListener('click', (e) => {
             if (e.target === this._dialog) this.close();
         });
