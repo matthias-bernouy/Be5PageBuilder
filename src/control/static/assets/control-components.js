@@ -11432,6 +11432,7 @@ form[method="dialog"] {
     _templates = [];
     _snippets = [];
     _blocMeta = new Map;
+    _dataLoaded = false;
     constructor() {
       super(Metadata3);
     }
@@ -11445,29 +11446,31 @@ form[method="dialog"] {
       s2.getElementById("tabs").addEventListener("click", (e) => this._onTabClick(e));
       s2.getElementById("sidebar").addEventListener("click", (e) => this._onSidebarClick(e));
       s2.getElementById("search").addEventListener("input", (e) => this._onSearchInput(e));
-      this._loadData();
     }
     open() {
       this._dialog.showModal();
+      this._refresh();
     }
     close() {
       this._dialog.close();
     }
-    async _loadData() {
-      const editorSystem = getClosestEditorSystem(this);
+    async _refresh() {
+      if (!this._dataLoaded) {
+        const [templates, snippets, blocMeta] = await Promise.all([
+          fetchTemplates(),
+          fetchSnippets(),
+          fetchBlocMeta()
+        ]);
+        this._templates = templates;
+        this._snippets = snippets;
+        this._blocMeta = blocMeta;
+        this._dataLoaded = true;
+      }
       if (!this._activeGroup && this._section === "blocs") {
-        const groups = Array.from(editorSystem.observer.getGroups());
+        const groups = Array.from(getClosestEditorSystem(this).observer.getGroups());
         if (groups.length > 0)
           this._activeGroup = groups[0];
       }
-      const [templates, snippets, blocMeta] = await Promise.all([
-        fetchTemplates(),
-        fetchSnippets(),
-        fetchBlocMeta()
-      ]);
-      this._templates = templates;
-      this._snippets = snippets;
-      this._blocMeta = blocMeta;
       this._render();
       this.shadowRoot.getElementById("search").focus();
     }

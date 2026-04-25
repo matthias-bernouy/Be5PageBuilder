@@ -27,6 +27,7 @@ export class BlocLibrary extends Component {
     private _templates: TemplateItem[] = [];
     private _snippets: SnippetItem[] = [];
     private _blocMeta: Map<string, BlocMeta> = new Map();
+    private _dataLoaded: boolean = false;
 
     constructor() {
         super(Metadata);
@@ -43,32 +44,35 @@ export class BlocLibrary extends Component {
         s.getElementById('tabs')!.addEventListener('click', (e) => this._onTabClick(e));
         s.getElementById('sidebar')!.addEventListener('click', (e) => this._onSidebarClick(e));
         s.getElementById('search')!.addEventListener('input', (e) => this._onSearchInput(e));
-
-        void this._loadData();
     }
 
     open() {
         this._dialog.showModal();
+        void this._refresh();
     }
 
     close() {
         this._dialog.close();
     }
 
-    private async _loadData() {
-        const editorSystem = getClosestEditorSystem(this);
+    private async _refresh() {
+        if (!this._dataLoaded) {
+            const [templates, snippets, blocMeta] = await Promise.all([
+                fetchTemplates(),
+                fetchSnippets(),
+                fetchBlocMeta(),
+            ]);
+            this._templates = templates;
+            this._snippets = snippets;
+            this._blocMeta = blocMeta;
+            this._dataLoaded = true;
+        }
+
         if (!this._activeGroup && this._section === 'blocs') {
-            const groups = Array.from(editorSystem.observer.getGroups());
+            const groups = Array.from(getClosestEditorSystem(this).observer.getGroups());
             if (groups.length > 0) this._activeGroup = groups[0]!;
         }
-        const [templates, snippets, blocMeta] = await Promise.all([
-            fetchTemplates(),
-            fetchSnippets(),
-            fetchBlocMeta(),
-        ]);
-        this._templates = templates;
-        this._snippets = snippets;
-        this._blocMeta = blocMeta;
+
         this._render();
         (this.shadowRoot!.getElementById('search') as HTMLInputElement).focus();
     }
