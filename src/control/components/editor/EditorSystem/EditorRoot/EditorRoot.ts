@@ -29,6 +29,7 @@ export default class EditorRoot extends HTMLElement {
 
         requestAnimationFrame(() => {
             const workingElement = this.shadowRoot?.querySelector("#workingElement") as HTMLElement;
+            workingElement.style.visibility = "hidden";
             this._blocActions = this.shadowRoot?.querySelector("cms-bloc-actions") as BlocActions;
             const slot = this.shadowRoot!.querySelector("#workingElement slot") as HTMLSlotElement;
             if (!slot) throw new Error("Working slot not found in shadow DOM");
@@ -38,6 +39,8 @@ export default class EditorRoot extends HTMLElement {
                 this._dragmanager = new DragManager(workingElement);
 
                 this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library") as BlocLibrary;
+
+                workingElement.style.visibility = "visible";
             })
         })
 
