@@ -6,6 +6,8 @@ import type { CMS_ROLES } from "types/roles";
 import serveStaticFolder from "./core/registerEndpoints/serveStaticFolder/serveStaticFolder";
 import { serveApi } from "./core/registerEndpoints/serveApiFolder";
 import { join } from "node:path"
+import { buildMediaHydrationScript } from "./core/authentication/buildMediaHydrationScript";
+import { appendFile } from "node:fs/promises";
 
 type Configuration = {
     /**
@@ -66,6 +68,9 @@ export class ControlCms {
         this._repository = repository;
         this._media = media;
         this._cache = cache || new InMemoryCache();
+
+        const hydration = buildMediaHydrationScript(this["_media"]);
+        appendFile(join(__dirname, "./static/assets/control-components.js"), hydration);
 
         serveStaticFolder(runner);
         runner.group("/api", (apiRunner) => {
