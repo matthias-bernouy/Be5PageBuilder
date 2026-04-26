@@ -1,4 +1,4 @@
-import type { MediaItem } from "./types";
+import type { MediaItem } from "../types";
 
 type ContextMenuCallbacks = {
     onRename: (item: MediaItem) => void;

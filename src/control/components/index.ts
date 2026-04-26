@@ -37,6 +37,7 @@ import "./media/CardMedia/CardMedia"
 import "./media/CropSystem/CropSystem"
 import "./media/DetailMedia/DetailMedia"
 import "./media/GridMedia/GridMedia"
+import "./media/MediaAdmin/MediaAdmin"
 
 // Form
 import "./form/Form/Form";

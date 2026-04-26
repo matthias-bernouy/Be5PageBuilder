@@ -1,5 +1,5 @@
-import type { MediaItem, BreadcrumbEntry } from "./types";
-import { escapeHtml, escapeAttr, variantUrl } from "./types";
+import type { MediaItem, BreadcrumbEntry } from "../types";
+import { escapeHtml, escapeAttr, variantUrl } from "../types";
 
 export function renderGrid(grid: HTMLElement, items: MediaItem[]) {
     grid.innerHTML = "";

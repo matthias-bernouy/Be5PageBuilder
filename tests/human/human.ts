@@ -3,6 +3,8 @@ import { ControlCms } from "src/control/ControlCms";
 import { InMemoryCmsRepository } from "src/socle/providers/memory/CmsRepositoryInMemory";
 import { InMemoryAuthentication } from "./InMemoryAuthentication";
 import { InMemoryMedia } from "./InMemoryMedia";
+import { InMemoryMediaServer } from "./InMemoryMediaServer";
+import { HttpMedia } from "./HttpMedia";
 
 
 export default function humanTest(){
@@ -27,11 +29,15 @@ export default function humanTest(){
         ]
     })
 
+    runner.group(".media", (r) => {
+        const mediaServer = new InMemoryMediaServer(r);
+    })
+
     const controlCms = new ControlCms(
         runner,
         new InMemoryCmsRepository(),
         compositeAuth,
-        new InMemoryMedia()
+        new HttpMedia("/.media")
     )
 
     runner.start();

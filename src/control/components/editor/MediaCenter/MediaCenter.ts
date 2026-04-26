@@ -5,8 +5,7 @@ import { Component } from 'src/control/core/editorSystem/Component';
 import "src/control/components/media/CardMedia/CardMedia";
 import type { MediaItem, BreadcrumbEntry } from "src/control/components/media/GridMedia/types";
 import { uploadFiles, createFolder, fetchItems, type LocalTypeFilter } from "src/control/components/media/GridMedia/api";
-import { renderGrid, renderBreadcrumb } from "src/control/components/media/GridMedia/render";
-import { getMetaApiPath } from 'src/control/core/dom/meta/getMetaApiPath';
+import { renderBreadcrumb, renderGrid } from '../../media/GridMedia/view/render';
 
 export class MediaCenter extends Component {
     private _dialog: HTMLDialogElement | null = null;
@@ -57,7 +56,7 @@ export class MediaCenter extends Component {
         s.getElementById("btnUpload")!.addEventListener("click", () => fileInput.click());
         fileInput.addEventListener("change", async () => {
             if (!fileInput.files?.length) return;
-            await uploadFiles(this._apiBase, fileInput.files, this._folder);
+            await uploadFiles(fileInput.files, this._folder);
             fileInput.value = "";
             this._refresh();
         });
@@ -122,7 +121,7 @@ export class MediaCenter extends Component {
             this._dragCounter = 0;
             overlay.classList.remove("active");
             if (e.dataTransfer?.files.length) {
-                await uploadFiles(this._apiBase, e.dataTransfer.files, this._folder);
+                await uploadFiles(e.dataTransfer.files, this._folder);
                 this._refresh();
             }
         });
@@ -140,11 +139,6 @@ export class MediaCenter extends Component {
         this._refresh();
     }
 
-    private get _apiBase(): string {
-        const raw = getMetaApiPath();
-        return raw.endsWith("/") ? raw.slice(0, -1) : raw;
-    }
-
     private async _refresh() {
         this._items = await this._fetchItems();
         this._selectedItem = null;
@@ -153,7 +147,7 @@ export class MediaCenter extends Component {
     }
 
     private async _fetchItems(): Promise<MediaItem[]> {
-        return fetchItems(this._apiBase, this._folder, this._types as LocalTypeFilter);
+        return fetchItems(this._folder, this._types as LocalTypeFilter);
     }
 
     private _render() {
@@ -227,7 +221,7 @@ export class MediaCenter extends Component {
     private async _createFolder(input: HTMLInputElement, backdrop: HTMLElement) {
         const name = input.value.trim();
         if (!name) return;
-        await createFolder(this._apiBase, name, this._folder);
+        await createFolder(name, this._folder);
         backdrop.classList.remove("open");
         this._refresh();
     }

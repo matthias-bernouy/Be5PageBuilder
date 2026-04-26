@@ -71,7 +71,6 @@ export class ObserverManager {
 
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node: Node) => {
-                        console.log("added node", node)
                         if (!(node instanceof HTMLElement)) return;
 
                         //if (node.hasAttribute("slot")) return;
@@ -247,9 +246,7 @@ export class ObserverManager {
     }
 
     make_it_editor(node: HTMLElement) {
-        console.log("make editor", node)
         if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) return;
-        // If any ancestor is an opaque bloc, the entire subtree is sealed.
         if (node.parentElement?.closest(`[${p9r.attr.EDITOR.OPAQUE}]`)) return;
         const tag = node.tagName.toLowerCase();
         if (!this.editors.has(tag)) return
@@ -258,9 +255,6 @@ export class ObserverManager {
             const editor = new cl(node);
             editor.viewEditor();
         }
-        // Mark opaque roots *after* editorizing so the bloc itself still gets
-        // its parent-level action bar. The walker / mutation observer visits
-        // parents before children, so descendants see the marker and bail.
         if (this.opaqueTags.has(tag)) {
             node.setAttribute(p9r.attr.EDITOR.OPAQUE, "true");
         }
