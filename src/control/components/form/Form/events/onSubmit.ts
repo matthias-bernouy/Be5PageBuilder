@@ -1,9 +1,9 @@
+import BubblesEvent from "src/control/core/dom/BubblesEvent";
 import type CmsForm from "../Form";
 
 
 export default function onSubmit(e: SubmitEvent, me: CmsForm){
     
-    console.log(e);
     e.preventDefault();
 
     const formData = new FormData(e.target as HTMLFormElement);
@@ -15,6 +15,15 @@ export default function onSubmit(e: SubmitEvent, me: CmsForm){
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
+    }).then((res) => {
+        if ( res.ok ){
+            me.dispatchEvent(new BubblesEvent("form:success"));
+            if ( me.emit ) {
+                document.dispatchEvent(new BubblesEvent(me.emit));
+            }
+        } else {
+            me.dispatchEvent(new BubblesEvent("form:failed"))
+        }
     })
 
 }

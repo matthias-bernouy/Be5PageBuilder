@@ -14,13 +14,16 @@ import { processTemplate } from './render';
  */
 export class FetchComponent extends HTMLElement {
 
-    static get observedAttributes() { return ['url']; }
+    static get observedAttributes() { return ['url', 'reload-on']; }
 
     private _template: HTMLTemplateElement | null = null;
     /** Nodes the last render inserted into our parent — torn down on re-render. */
     private _renderedNodes: Node[] = [];
+    private _reloadEvents: string[] = [];
+    private _onReloadEvent = () => { if (this.isConnected) this._fetchAndRender(); };
 
     connectedCallback(): void {
+        this._refreshReloadListeners();
         if (this._template) { this._fetchAndRender(); return; }
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this._init(), { once: true });
@@ -43,10 +46,23 @@ export class FetchComponent extends HTMLElement {
     disconnectedCallback(): void {
         for (const n of this._renderedNodes) n.parentNode?.removeChild(n);
         this._renderedNodes = [];
+        for (const ev of this._reloadEvents) document.removeEventListener(ev, this._onReloadEvent);
+        this._reloadEvents = [];
     }
 
-    attributeChangedCallback(_name: string, oldVal: string | null, newVal: string | null): void {
-        if (oldVal !== newVal && this.isConnected) this._fetchAndRender();
+    attributeChangedCallback(name: string, oldVal: string | null, newVal: string | null): void {
+        if (oldVal === newVal) return;
+        if (name === 'reload-on') {
+            this._refreshReloadListeners();
+            return;
+        }
+        if (this.isConnected) this._fetchAndRender();
+    }
+
+    private _refreshReloadListeners(): void {
+        for (const ev of this._reloadEvents) document.removeEventListener(ev, this._onReloadEvent);
+        this._reloadEvents = (this.getAttribute('reload-on') || '').split(/\s+/).filter(Boolean);
+        for (const ev of this._reloadEvents) document.addEventListener(ev, this._onReloadEvent);
     }
 
     private async _fetchAndRender(): Promise<void> {

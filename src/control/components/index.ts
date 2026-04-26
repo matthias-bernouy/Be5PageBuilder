@@ -39,4 +39,5 @@ import "./media/GridMedia/GridMedia"
 
 // Form
 import "./form/Form/Form";
+import "./form/Validate/Validate";
 import "./data/fetch/FetchComponent"

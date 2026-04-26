@@ -1,8 +1,8 @@
 <w13c-fixed-admin-layout>
     <span slot="title">Pages</span>
-    <w13c-open-dialog slot="action" target="create-page-dialog">
+    <p9r-open-modal modal-target="create-page-modal" slot="action">
         <p9r-button color="primary">+ New page</p9r-button>
-    </w13c-open-dialog>
+    </p9r-open-modal>
 
     <p9r-table>
         <p9r-row slot="header">
@@ -25,9 +25,13 @@
     </p9r-table>
 </w13c-fixed-admin-layout>
 
-<cms-form 
-    target="{{BASE_PATH}}/api/page" >
-    <p9r-input name="title" label="Name" placeholder="My Beautiful Article"></p9r-input>
-    <p9r-input name="path" label="Path" placeholder="/article"></p9r-input>
-    <button type="submit">Submit</button>
-</cms-form>
+<p9r-modal id="create-page-modal" aria-label="Create a new page">
+    <span slot="title">Page creation</span>
+    <cms-form target="{{BASE_PATH}}/api/page" >
+        <p9r-stack gap="m">
+            <p9r-input name="title" label="Name" placeholder="My Beautiful Article"></p9r-input>
+            <p9r-input name="path" label="Path" placeholder="/article"></p9r-input>
+            <p9r-button color="primary" fullWidth type="submit">Create new page</p9r-button>
+        </p9r-stack>
+    </cms-form>
+</p9r-modal>

@@ -1,4 +1,5 @@
 import { CustomHTMLElement } from "../../CustomHTMLElement";
+import { onKeyboardEvent } from "./events/onKeyboardEvent";
 import onSubmit from "./events/onSubmit";
 
 
@@ -7,7 +8,7 @@ export default class CmsForm extends CustomHTMLElement {
     private _nativeForm: HTMLFormElement | null = null;
 
     static override get observedAttributes(): string[] {
-        return [ "redirect", "target", "method" ]
+        return [ "redirect", "target", "method", "emit" ]
     }
 
     private _handleInternalSubmit = (e: Event) => {
@@ -27,11 +28,13 @@ export default class CmsForm extends CustomHTMLElement {
             
             this.appendChild(this._nativeForm);
             this._nativeForm.addEventListener("submit", this._handleInternalSubmit);
+            this.addEventListener("keydown", (e) => onKeyboardEvent(e, this._nativeForm!));
         });
     }
 
     override disconnectedCallback(): void {
-        this.removeEventListener("submit", (e) => onSubmit(e, this));
+        this.removeEventListener("submit",  (e) => onSubmit(e, this));
+        this.removeEventListener("keydown", (e) => onKeyboardEvent(e, this._nativeForm!));
     }
 
     override attributeChangedCallback(name: any, oldValue: any, newValue: any): void {
@@ -45,6 +48,7 @@ export default class CmsForm extends CustomHTMLElement {
         return val;  
     }
     get method  () { return this.getAttribute("method"  );  }
+    get emit () { return this.getAttribute("emit") }
 
 }
 
