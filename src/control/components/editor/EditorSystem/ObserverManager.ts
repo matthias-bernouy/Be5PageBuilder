@@ -71,9 +71,10 @@ export class ObserverManager {
 
                 if (mutation.type === 'childList') {
                     mutation.addedNodes.forEach((node: Node) => {
+                        console.log("added node", node)
                         if (!(node instanceof HTMLElement)) return;
 
-                        if (node.hasAttribute("slot")) return;
+                        //if (node.hasAttribute("slot")) return;
 
                         if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
                             const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
@@ -246,6 +247,7 @@ export class ObserverManager {
     }
 
     make_it_editor(node: HTMLElement) {
+        console.log("make editor", node)
         if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) return;
         // If any ancestor is an opaque bloc, the entire subtree is sealed.
         if (node.parentElement?.closest(`[${p9r.attr.EDITOR.OPAQUE}]`)) return;
