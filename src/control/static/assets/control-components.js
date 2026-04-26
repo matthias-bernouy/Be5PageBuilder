@@ -9317,6 +9317,139 @@ p9r-tag:hover {
 }
 `;
 
+  // src/control/components/editor/componentSync/PageLink/template.ts
+  function buildShadow(host, label) {
+    const shadow = host.attachShadow({ mode: "open" });
+    shadow.innerHTML = `
+        <style>${PageLink_default}</style>
+        <div class="field">
+            ${label ? `<span class="label">${label}</span>` : ""}
+            <div class="input-row">
+                <button class="trigger" type="button" tabindex="0">
+                    <svg class="link-icon" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" fill="none">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                    <span class="value">No link</span>
+                    <svg class="chevron" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" fill="none">
+                        <path d="m6 9 6 6 6-6"/>
+                    </svg>
+                </button>
+                <button class="clear-btn" type="button" title="Remove link">
+                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14" fill="none">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="panel">
+                <div class="tabs">
+                    <button type="button" class="tab tab-page" data-mode="page">Page</button>
+                    <button type="button" class="tab tab-external" data-mode="external">External URL</button>
+                    <button type="button" class="tab tab-media" data-mode="media">Media</button>
+                </div>
+                <div class="page-section">
+                    <div class="search-wrap"><input class="search" type="text" placeholder="Search for a page..."></div>
+                    <ul class="list"></ul>
+                    <div class="empty">No pages found</div>
+                </div>
+                <div class="external-section"><input class="external-input" type="url" placeholder="https://example.com" spellcheck="false"></div>
+                <div class="media-section">
+                    <button type="button" class="media-pick-btn">Choose a media file…</button>
+                    <div class="media-current"></div>
+                </div>
+            </div>
+        </div>
+        <div hidden><slot></slot></div>
+    `;
+    return {
+      trigger: shadow.querySelector(".trigger"),
+      display: shadow.querySelector(".value"),
+      list: shadow.querySelector(".list"),
+      panel: shadow.querySelector(".panel"),
+      empty: shadow.querySelector(".empty"),
+      clearBtn: shadow.querySelector(".clear-btn"),
+      pageSection: shadow.querySelector(".page-section"),
+      externalSection: shadow.querySelector(".external-section"),
+      mediaSection: shadow.querySelector(".media-section"),
+      externalInput: shadow.querySelector(".external-input"),
+      mediaPickBtn: shadow.querySelector(".media-pick-btn"),
+      mediaCurrent: shadow.querySelector(".media-current"),
+      tabPage: shadow.querySelector(".tab-page"),
+      tabExternal: shadow.querySelector(".tab-external"),
+      tabMedia: shadow.querySelector(".tab-media"),
+      search: shadow.querySelector(".search")
+    };
+  }
+
+  // src/control/components/editor/componentSync/PageLink/detect.ts
+  function isExternal(v) {
+    return /^(https?:|mailto:|tel:|\/\/)/i.test(v);
+  }
+  function isMedia(v) {
+    return /(^|\/)media\?id=/.test(v);
+  }
+  function mediaLabel(src) {
+    const m = src.match(/id=([^&]+)/);
+    return m ? `Media ${m[1]}` : src;
+  }
+
+  // src/control/core/dom/meta/getMetaBasePath.ts
+  function getMetaBasePath() {
+    const meta = document.querySelector('meta[name="basePath"]');
+    if (!meta)
+      return "/";
+    if (meta && (meta.getAttribute("content") === "" || meta.getAttribute("content") === undefined))
+      return "/";
+    else
+      return meta.getAttribute("content");
+  }
+
+  // src/control/core/dom/meta/getMetaApiPath.ts
+  function getMetaApiPath() {
+    const base = getMetaBasePath();
+    if (base === undefined || base === null || base === "")
+      return "/api";
+    return base.endsWith("/") ? base + "api" : base + "/api";
+  }
+
+  // src/control/core/dom/meta/resolveApiUrl.ts
+  function resolveApiUrl(path) {
+    const apiPath = getMetaApiPath();
+    const base = /^https?:\/\//.test(apiPath) ? apiPath : new URL(apiPath, window.location.origin).href;
+    const cleanBase = base.endsWith("/") ? base.slice(0, -1) : base;
+    const cleanPath = path.startsWith("/") ? path : "/" + path;
+    return new URL(cleanBase + cleanPath);
+  }
+
+  // src/control/components/editor/componentSync/PageLink/parts/flows.ts
+  async function fetchPages() {
+    try {
+      const res = await fetch(resolveApiUrl("page/links"));
+      return await res.json();
+    } catch (e) {
+      console.warn("P9rLink: failed to fetch pages", e);
+      return [];
+    }
+  }
+  function openMediaCenter(host, onPick) {
+    const mediaCenter = document.createElement("cms-media-center");
+    const editorSystem = getClosestEditorSystem(host);
+    editorSystem.editorDOM.append(mediaCenter);
+    requestAnimationFrame(() => {
+      const handler = (e) => {
+        mediaCenter.removeEventListener("select-item", handler);
+        const src = e.detail?.src;
+        if (!src)
+          return;
+        onPick(src);
+        mediaCenter.remove();
+      };
+      mediaCenter.addEventListener("select-item", handler);
+      mediaCenter.show(["folder", "image", "other"]);
+    });
+  }
+
   // src/control/components/editor/componentSync/PageLink/PageLink.picker.ts
   function filterPages(pages, query) {
     const q = query.toLowerCase();
@@ -9348,57 +9481,117 @@ p9r-tag:hover {
     return options;
   }
 
-  // src/control/core/dom/meta/getMetaBasePath.ts
-  function getMetaBasePath() {
-    const meta = document.querySelector('meta[name="basePath"]');
-    if (!meta)
-      return "/";
-    if (meta && (meta.getAttribute("content") === "" || meta.getAttribute("content") === undefined))
-      return "/";
-    else
-      return meta.getAttribute("content");
+  // src/control/components/editor/componentSync/PageLink/parts/controller.ts
+  function applyMode(host) {
+    const { _refs: r, _mode: m } = host;
+    r.pageSection.style.display = m === "page" ? "" : "none";
+    r.externalSection.style.display = m === "external" ? "" : "none";
+    r.mediaSection.style.display = m === "media" ? "" : "none";
+    r.tabPage.classList.toggle("active", m === "page");
+    r.tabExternal.classList.toggle("active", m === "external");
+    r.tabMedia.classList.toggle("active", m === "media");
+  }
+  function setMode(host, m) {
+    host._mode = m;
+    applyMode(host);
+    if (m === "external")
+      requestAnimationFrame(() => host._refs.externalInput.focus());
+  }
+  function refresh(host, pages) {
+    host._options = buildOptionList(host._refs.list, host._refs.empty, pages, (p) => select(host, p.path, p.title));
+    host._options.forEach((li) => li.classList.toggle("selected", li.dataset.value === host._value));
+  }
+  function select(host, v, label) {
+    setValue(host, v, label);
+    closePanel(host);
+    host.dispatchEvent(new Event("change", { bubbles: true }));
+  }
+  function setValue(host, v, label) {
+    host._value = v;
+    const r = host._refs;
+    r.display.textContent = v ? label : "No link";
+    r.trigger.classList.toggle("has-value", !!v);
+    r.clearBtn.style.display = v ? "flex" : "none";
+    host._options.forEach((li) => li.classList.toggle("selected", li.dataset.value === v));
+    const m = isMedia(v);
+    r.mediaCurrent.textContent = m ? v : "";
+    r.mediaCurrent.classList.toggle("has-value", m);
+  }
+  function openPanel(host) {
+    document.querySelectorAll("p9r-link, p9r-select").forEach((el) => {
+      if (el !== host && "_close" in el)
+        el._close();
+    });
+    host._isOpen = true;
+    host._refs.panel.classList.add("open");
+    host._refs.trigger.classList.add("open");
+    host._refs.search.value = "";
+    refresh(host, host._pages);
+    requestAnimationFrame(() => {
+      if (host._mode === "page")
+        host._refs.search.focus();
+      else if (host._mode === "external")
+        host._refs.externalInput.focus();
+    });
+  }
+  function closePanel(host) {
+    host._isOpen = false;
+    host._refs.panel.classList.remove("open");
+    host._refs.trigger.classList.remove("open");
   }
 
-  // src/control/core/dom/meta/getMetaApiPath.ts
-  function getMetaApiPath() {
-    const base = getMetaBasePath();
-    if (base === undefined || base === null || base === "")
-      return "/api";
-    return base.endsWith("/") ? base + "api" : base + "/api";
-  }
-
-  // src/control/core/dom/meta/resolveApiUrl.ts
-  function resolveApiUrl(path) {
-    const apiPath = getMetaApiPath();
-    const base = /^https?:\/\//.test(apiPath) ? apiPath : new URL(apiPath, window.location.origin).href;
-    const cleanBase = base.endsWith("/") ? base.slice(0, -1) : base;
-    const cleanPath = path.startsWith("/") ? path : "/" + path;
-    return new URL(cleanBase + cleanPath);
+  // src/control/components/editor/componentSync/PageLink/parts/wiring.ts
+  function wire(host) {
+    const r = host._refs;
+    const fire = () => host.dispatchEvent(new Event("change", { bubbles: true }));
+    r.search.addEventListener("input", () => refresh(host, filterPages(host._pages, r.search.value)));
+    r.clearBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      select(host, "", "No link");
+    });
+    r.tabPage.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setMode(host, "page");
+    });
+    r.tabExternal.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setMode(host, "external");
+    });
+    r.tabMedia.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setMode(host, "media");
+    });
+    r.externalInput.addEventListener("input", () => {
+      const url = r.externalInput.value.trim();
+      setValue(host, url, url || "No link");
+      fire();
+    });
+    r.externalInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        closePanel(host);
+      } else if (e.key === "Escape")
+        closePanel(host);
+    });
+    r.mediaPickBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openMediaCenter(host, (src) => {
+        setValue(host, src, mediaLabel(src));
+        fire();
+      });
+    });
+    applyMode(host);
   }
 
   // src/control/components/editor/componentSync/PageLink/PageLink.ts
   class PageLink extends HTMLElement {
-    _mediaCenter = null;
-    _trigger = null;
-    _display = null;
-    _list = null;
-    _empty = null;
-    _panel = null;
-    _clearBtn = null;
-    _pageSection = null;
-    _externalSection = null;
-    _mediaSection = null;
-    _externalInput = null;
-    _mediaPickBtn = null;
-    _mediaCurrent = null;
-    _tabPage = null;
-    _tabExternal = null;
-    _tabMedia = null;
+    _refs;
     _options = [];
     _pages = [];
     _isOpen = false;
     _value = "";
     _mode = "page";
+    _pagesFetched = false;
     _onWindowClick = (e) => {
       if (this._isOpen && !this.contains(e.target))
         this._close();
@@ -9407,287 +9600,70 @@ p9r-tag:hover {
       e.stopPropagation();
       this._isOpen ? this._close() : this._open();
     };
-    _onTriggerKeyDown = (e) => {
+    _onKey = (e) => {
       if (e.key === "Escape")
         this._close();
-      if (e.key === "Enter" || e.key === " ") {
+      else if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         this._isOpen ? this._close() : this._open();
       }
     };
-    _pagesFetched = false;
     constructor() {
       super();
-      this._buildShadow();
+      this._refs = buildShadow(this, this.getAttribute("label"));
+      wire(this);
     }
     connectedCallback() {
       if (!this._pagesFetched) {
         this._pagesFetched = true;
-        this._fetchPages();
+        this._loadPages();
       }
-      this._trigger.addEventListener("click", this._onTriggerClick);
-      this._trigger.addEventListener("keydown", this._onTriggerKeyDown);
+      this._refs.trigger.addEventListener("click", this._onTriggerClick);
+      this._refs.trigger.addEventListener("keydown", this._onKey);
       window.addEventListener("click", this._onWindowClick);
     }
     disconnectedCallback() {
-      this._trigger?.removeEventListener("click", this._onTriggerClick);
-      this._trigger?.removeEventListener("keydown", this._onTriggerKeyDown);
+      this._refs.trigger.removeEventListener("click", this._onTriggerClick);
+      this._refs.trigger.removeEventListener("keydown", this._onKey);
       window.removeEventListener("click", this._onWindowClick);
     }
-    _buildShadow() {
-      const label = this.getAttribute("label");
-      const shadow = this.attachShadow({ mode: "open" });
-      shadow.innerHTML = `
-            <style>${PageLink_default}</style>
-            <div class="field">
-                ${label ? `<span class="label">${label}</span>` : ""}
-                <div class="input-row">
-                    <button class="trigger" type="button" tabindex="0">
-                        <svg class="link-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                        </svg>
-                        <span class="value">No link</span>
-                        <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <button class="clear-btn" type="button" title="Remove link">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="panel">
-                    <div class="tabs">
-                        <button type="button" class="tab tab-page" data-mode="page">Page</button>
-                        <button type="button" class="tab tab-external" data-mode="external">External URL</button>
-                        <button type="button" class="tab tab-media" data-mode="media">Media</button>
-                    </div>
-                    <div class="page-section">
-                        <div class="search-wrap">
-                            <input class="search" type="text" placeholder="Search for a page...">
-                        </div>
-                        <ul class="list"></ul>
-                        <div class="empty">No pages found</div>
-                    </div>
-                    <div class="external-section">
-                        <input class="external-input" type="url" placeholder="https://example.com" spellcheck="false">
-                    </div>
-                    <div class="media-section">
-                        <button type="button" class="media-pick-btn">Choose a media file…</button>
-                        <div class="media-current"></div>
-                    </div>
-                </div>
-            </div>
-            <div hidden><slot></slot></div>
-        `;
-      this._trigger = shadow.querySelector(".trigger");
-      this._display = shadow.querySelector(".value");
-      this._list = shadow.querySelector(".list");
-      this._panel = shadow.querySelector(".panel");
-      this._empty = shadow.querySelector(".empty");
-      this._clearBtn = shadow.querySelector(".clear-btn");
-      this._pageSection = shadow.querySelector(".page-section");
-      this._externalSection = shadow.querySelector(".external-section");
-      this._mediaSection = shadow.querySelector(".media-section");
-      this._externalInput = shadow.querySelector(".external-input");
-      this._mediaPickBtn = shadow.querySelector(".media-pick-btn");
-      this._mediaCurrent = shadow.querySelector(".media-current");
-      this._tabPage = shadow.querySelector(".tab-page");
-      this._tabExternal = shadow.querySelector(".tab-external");
-      this._tabMedia = shadow.querySelector(".tab-media");
-      const searchInput = shadow.querySelector(".search");
-      searchInput.addEventListener("input", () => this._refreshOptions(filterPages(this._pages, searchInput.value)));
-      this._clearBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._select("", "No link");
-      });
-      this._tabPage.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._setMode("page");
-      });
-      this._tabExternal.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._setMode("external");
-      });
-      this._tabMedia.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._setMode("media");
-      });
-      this._externalInput.addEventListener("input", () => {
-        const url = this._externalInput.value.trim();
-        this._setValue(url, url || "No link");
-        this.dispatchEvent(new Event("change", { bubbles: true }));
-      });
-      this._externalInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          this._close();
-        }
-        if (e.key === "Escape")
-          this._close();
-      });
-      this._mediaPickBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._openMediaCenter();
-      });
-      this._applyMode();
-    }
-    _isExternal(v) {
-      return /^(https?:|mailto:|tel:|\/\/)/i.test(v);
-    }
-    _isMedia(v) {
-      return /(^|\/)media\?id=/.test(v);
-    }
-    _setMode(mode) {
-      this._mode = mode;
-      this._applyMode();
-      if (mode === "external")
-        requestAnimationFrame(() => this._externalInput.focus());
-    }
-    _applyMode() {
-      if (!this._pageSection)
-        return;
-      this._pageSection.style.display = this._mode === "page" ? "" : "none";
-      this._externalSection.style.display = this._mode === "external" ? "" : "none";
-      this._mediaSection.style.display = this._mode === "media" ? "" : "none";
-      this._tabPage.classList.toggle("active", this._mode === "page");
-      this._tabExternal.classList.toggle("active", this._mode === "external");
-      this._tabMedia.classList.toggle("active", this._mode === "media");
-    }
-    _openMediaCenter() {
-      const mediaCenter = document.createElement("cms-media-center");
-      const editorSystem = getClosestEditorSystem(this);
-      editorSystem.editorDOM.append(mediaCenter);
-      requestAnimationFrame(() => {
-        this._mediaCenter = mediaCenter;
-        if (!mediaCenter)
-          return;
-        const handler = (e) => {
-          mediaCenter.removeEventListener("select-item", handler);
-          const src = e.detail?.src;
-          if (!src)
-            return;
-          this._setValue(src, this._mediaLabel(src));
-          this.dispatchEvent(new Event("change", { bubbles: true }));
-          this._mediaCenter?.remove();
-        };
-        mediaCenter.addEventListener("select-item", handler);
-        mediaCenter.show(["folder", "image", "other"]);
-      });
-    }
-    _mediaLabel(src) {
-      const m = src.match(/id=([^&]+)/);
-      return m ? `Media ${m[1]}` : src;
-    }
-    async _fetchPages() {
-      try {
-        const res = await fetch(resolveApiUrl("page/list"));
-        const json = await res.json();
-        this._pages = json.pages;
-        this._refreshOptions(this._pages);
-        const currentValue = this.getAttribute("value") || "";
-        if (currentValue) {
-          if (this._isMedia(currentValue)) {
-            this._mode = "media";
-            this._setValue(currentValue, this._mediaLabel(currentValue));
-          } else if (this._isExternal(currentValue)) {
-            this._mode = "external";
-            this._externalInput.value = currentValue;
-            this._setValue(currentValue, currentValue);
-          } else {
-            const match = this._pages.find((p) => p.path === currentValue);
-            if (match)
-              this._setValue(match.path, match.title);
-          }
-          this._applyMode();
-        }
-      } catch (e) {
-        console.warn("P9rLink: failed to fetch pages", e);
-      }
-    }
-    _refreshOptions(pages) {
-      this._options = buildOptionList(this._list, this._empty, pages, (page) => this._select(page.path, page.title));
-      this._options.forEach((li) => {
-        li.classList.toggle("selected", li.dataset.value === this._value);
-      });
-    }
-    _select(value, label) {
-      this._setValue(value, label);
-      this._close();
-      this.dispatchEvent(new Event("change", { bubbles: true }));
-    }
-    _setValue(value, label) {
-      this._value = value;
-      this._display.textContent = value ? label : "No link";
-      this._trigger.classList.toggle("has-value", !!value);
-      this._clearBtn.style.display = value ? "flex" : "none";
-      this._options.forEach((li) => {
-        li.classList.toggle("selected", li.dataset.value === value);
-      });
-      if (this._mediaCurrent) {
-        const isMediaValue = this._isMedia(value);
-        this._mediaCurrent.textContent = isMediaValue ? value : "";
-        this._mediaCurrent.classList.toggle("has-value", isMediaValue);
-      }
-    }
     _open() {
-      document.querySelectorAll("p9r-link, p9r-select").forEach((el) => {
-        if (el !== this && "_close" in el)
-          el._close();
-      });
-      this._isOpen = true;
-      this._panel.classList.add("open");
-      this._trigger.classList.add("open");
-      const searchInput = this.shadowRoot.querySelector(".search");
-      searchInput.value = "";
-      this._refreshOptions(this._pages);
-      requestAnimationFrame(() => {
-        if (this._mode === "page")
-          searchInput.focus();
-        else if (this._mode === "external")
-          this._externalInput.focus();
-      });
+      openPanel(this);
     }
     _close() {
-      this._isOpen = false;
-      this._panel.classList.remove("open");
-      this._trigger.classList.remove("open");
+      closePanel(this);
+    }
+    async _loadPages() {
+      this._pages = await fetchPages();
+      refresh(this, this._pages);
+      const v = this.getAttribute("value") || "";
+      if (v)
+        this.value = v;
     }
     get value() {
       return this._value;
     }
     set value(v) {
-      if (this._isMedia(v)) {
+      if (isMedia(v)) {
         this._mode = "media";
-        this._setValue(v, this._mediaLabel(v));
-      } else if (this._isExternal(v)) {
+        setValue(this, v, mediaLabel(v));
+      } else if (isExternal(v)) {
         this._mode = "external";
-        if (this._externalInput)
-          this._externalInput.value = v;
-        this._setValue(v, v);
+        this._refs.externalInput.value = v;
+        setValue(this, v, v);
       } else {
         this._mode = "page";
-        const match = this._pages.find((p) => p.path === v);
-        if (match)
-          this._setValue(match.path, match.title);
-        else
-          this._setValue(v, v || "No link");
+        const m = this._pages.find((p) => p.path === v);
+        setValue(this, v, m ? m.title : v || "No link");
       }
-      this._applyMode();
+      applyMode(this);
     }
     get name() {
       return this.getAttribute("name");
     }
   }
-  if (!customElements.get("p9r-link")) {
+  if (!customElements.get("p9r-link"))
     customElements.define("p9r-link", PageLink);
-  }
 
   // src/control/components/editor/componentSync/sync/AttrSync.ts
   class AttrSync extends HTMLElement {
@@ -10918,9 +10894,9 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
           this._updateUrlPreview();
         return;
       }
-      const select = this.shadowRoot?.querySelector(`p9r-select[name=${fieldName}]`);
-      if (select && "value" in select) {
-        select.value = defVal === "on" ? "on" : "";
+      const select2 = this.shadowRoot?.querySelector(`p9r-select[name=${fieldName}]`);
+      if (select2 && "value" in select2) {
+        select2.value = defVal === "on" ? "on" : "";
         return;
       }
       const tagSuggest = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${fieldName}]`);
@@ -14359,6 +14335,7 @@ form[method="dialog"] {
       });
     }
     make_it_editor(node) {
+      console.log("make editor", node);
       if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR))
         return;
       if (node.parentElement?.closest(`[${p9r.attr.EDITOR.OPAQUE}]`))

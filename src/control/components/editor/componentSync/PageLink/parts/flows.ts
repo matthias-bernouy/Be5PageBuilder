@@ -5,9 +5,8 @@ import type { PageRef } from "../PageLink.picker";
 
 export async function fetchPages(): Promise<PageRef[]> {
     try {
-        const res = await fetch(resolveApiUrl("page/list"));
-        const json = await res.json();
-        return json.pages as PageRef[];
+        const res = await fetch(resolveApiUrl("page/links"));
+        return await res.json() as PageRef[];
     } catch (e) {
         console.warn("P9rLink: failed to fetch pages", e);
         return [];

@@ -67,6 +67,15 @@ export class InMemoryCmsRepository implements CmsRepository {
         return bloc;
     }
 
+    async getLinks(){
+        const array = Array.from(this._pages.values());
+        array.map((v) => {
+            v.path,
+            v.title
+        })
+        return array;
+    }
+
     async insertPage(path: string, title: string): Promise<void> {
         const page = {
             id: randomUUIDv7(),

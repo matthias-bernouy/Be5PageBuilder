@@ -7,9 +7,9 @@ export type BlocListItemResponse = {
     description: string
 }
 
-export type PageLinks = {
+export type PageLink = {
     path: string;
-    label: string;
+    title: string;
 }
 
 export interface CmsRepository {
@@ -33,7 +33,7 @@ export interface CmsRepository {
     insertPage(path: string, title: string): Promise<void>;
     getPageById(id: string): Promise<TPage | null>;
     updatePage(page: Partial<TPage>): Promise<void>;
-    getLinks(): Promise<PageLinks[]>
+    getLinks(): Promise<PageLink[]>
 
 
     // SYSTEM
