@@ -13,6 +13,7 @@ import { switchToEditor, selectParent } from './navigate';
 import { reflow } from './reflow';
 import { open as openBag } from './open';
 import { isInteractive } from './isInteractive';
+import { Highlight } from '../../../Highlight';
 
 /**
  * Owns BAG's runtime state + sub-controllers. The custom element class is
@@ -33,6 +34,7 @@ export class BagController {
     pin: PinController;
     events: EventManager;
     ro: ResizeObserver;
+    highlight: Highlight | null = null;
 
     constructor(public host: HTMLElement) {
         const s = document.createElement('style');
@@ -56,6 +58,8 @@ export class BagController {
         this.editor = editor;
         this.target = editor.target;
         this.hoverEl = editor.getActionBarAnchor?.() ?? editor.target;
+        this.highlight?.dispose();
+        this.highlight = new Highlight(this.target, { color: 'var(--primary-base, #3b82f6)' });
         this.events.rebindHover(prev);
         this.insertBtns.resolveTarget(editor);
     }
@@ -66,6 +70,8 @@ export class BagController {
 
     close() {
         this.pin.close();
+        this.highlight?.dispose();
+        this.highlight = null;
         this.target?.classList.remove('p9r-active');
         document.querySelectorAll('.p9r-breadcrumb-hover').forEach(el => el.classList.remove('p9r-breadcrumb-hover'));
         this.host.style.cssText = 'visibility:hidden;opacity:0;pointer-events:none;';
