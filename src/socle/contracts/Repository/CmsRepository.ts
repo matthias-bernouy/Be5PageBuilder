@@ -7,6 +7,11 @@ export type BlocListItemResponse = {
     description: string
 }
 
+export type PageLinks = {
+    path: string;
+    label: string;
+}
+
 export interface CmsRepository {
 
     // BLOC
@@ -28,6 +33,7 @@ export interface CmsRepository {
     insertPage(path: string, title: string): Promise<void>;
     getPageById(id: string): Promise<TPage | null>;
     updatePage(page: Partial<TPage>): Promise<void>;
+    getLinks(): Promise<PageLinks[]>
 
 
     // SYSTEM
