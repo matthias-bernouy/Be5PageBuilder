@@ -6,7 +6,7 @@ import "src/control/components/media/CardMedia/CardMedia";
 import type { MediaItem, BreadcrumbEntry } from "src/control/components/media/GridMedia/types";
 import { uploadFiles, createFolder, fetchItems, type LocalTypeFilter } from "src/control/components/media/GridMedia/api";
 import { renderGrid, renderBreadcrumb } from "src/control/components/media/GridMedia/render";
-import { getMetaApiPath } from 'src/control/core/dom/getMetaApiPath';
+import { getMetaApiPath } from 'src/control/core/dom/meta/getMetaApiPath';
 
 export class MediaCenter extends Component {
     private _dialog: HTMLDialogElement | null = null;

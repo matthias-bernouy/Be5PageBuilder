@@ -1,5 +1,5 @@
 import type { StateSync } from '../../../components/editor/componentSync/sync/StateSync';
-import getClosestEditorSystem from '../../dom/getClosestEditorSystem';
+import getClosestEditorSystem from '../../dom/editor/getClosestEditorSystem';
 import { PinMode } from './PinMode';
 import { PanelConfig } from './panel';
 import { HoverBinding } from './hoverBinding';
@@ -56,7 +56,7 @@ export abstract class Editor {
             onViewMode: () => this.viewClient(),
             afterSwitch: (mode) => this.onSwitchMode(mode),
         });
-        
+
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
                 this.target.removeAttribute(p9r.attr.EDITOR.IS_CREATING);

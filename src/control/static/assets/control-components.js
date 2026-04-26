@@ -15,7 +15,7 @@
         lt(t, i, { get: e[i], enumerable: true, configurable: true, set: (r) => e[i] = () => r });
     };
     var Hr = {};
-    Qe(Hr, { Tooltip: () => ot, ToastStack: () => st, Toast: () => at, Textarea: () => N, TagSuggest: () => D, Tag: () => F, Tabs: () => g, TableRow: () => G, TableHeaderCell: () => et, TableCell: () => tt, Table: () => it, TabPanel: () => rt, Switch: () => I, Stepper: () => W, Step: () => Q, Stack: () => $, Spinner: () => J, Skeleton: () => U, SegmentedSwitch: () => B, RadioGroup: () => m, Radio: () => P, Progress: () => Z, Pagination: () => X, P9rSizesSelect: () => R, P9rSelect: () => b, P9rRange: () => u, P9rInput: () => c, OpenModal: () => L, Modal: () => z, LeftMenuLayout: () => V, LateralMenuItem: () => Y, LateralMenu: () => K, LateralDialog: () => C, InputFile: () => j, IconButton: () => S, HorizontalActionGroup: () => O, FormSection: () => H, FormDialog: () => E, Divider: () => M, Component: () => s, Checkbox: () => T, Card: () => A, Button: () => q, BreadcrumbItem: () => k, Breadcrumb: () => w, Badge: () => y, Avatar: () => x, Alert: () => _, AccordionItem: () => v, Accordion: () => f });
+    Qe(Hr, { Tooltip: () => ot, ToastStack: () => st, Toast: () => at, Textarea: () => N, TagSuggest: () => V, Tag: () => F, Tabs: () => g, TableRow: () => G, TableHeaderCell: () => et, TableCell: () => tt, Table: () => it, TabPanel: () => rt, Switch: () => I, Stepper: () => W, Step: () => Q, Stack: () => $, Spinner: () => J, Skeleton: () => U, SegmentedSwitch: () => B, RadioGroup: () => m, Radio: () => P, Progress: () => Z, Pagination: () => X, P9rSizesSelect: () => j, P9rSelect: () => b, P9rRange: () => u, P9rInput: () => c, OpenModal: () => L, Modal: () => z, LeftMenuLayout: () => O, LateralMenuItem: () => Y, LateralMenu: () => K, LateralDialog: () => C, InputFile: () => R, IconButton: () => S, HorizontalActionGroup: () => D, FormSection: () => H, FormDialog: () => E, Divider: () => M, Component: () => s, Checkbox: () => T, Card: () => A, Button: () => q, BreadcrumbItem: () => k, Breadcrumb: () => w, Badge: () => y, Avatar: () => x, Alert: () => _, AccordionItem: () => v, Accordion: () => f });
 
     class s extends HTMLElement {
       constructor(t) {
@@ -1446,7 +1446,7 @@ footer slot[name="footer"]::slotted(button:hover) {
         t.removeAttribute("open");
       t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
     };
-    var jt = `<dialog part="dialog">
+    var Rt = `<dialog part="dialog">
     <form method="dialog" id="m-close"></form>
     <div class="panel" part="panel">
         <header class="header" part="header">
@@ -1458,7 +1458,7 @@ footer slot[name="footer"]::slotted(button:hover) {
     </div>
 </dialog>
 `;
-    var Rt = `:host {
+    var jt = `:host {
     --modal-width: var(--p9r-modal-width, 520px);
     --modal-radius: var(--p9r-modal-radius, 12px);
     --modal-bg: var(--p9r-modal-bg, var(--bg-surface, #ffffff));
@@ -1547,7 +1547,7 @@ dialog[open]::backdrop { opacity: 1; }
         return ["open", "aria-label"];
       }
       constructor() {
-        super({ css: Rt, template: jt });
+        super({ css: jt, template: Rt });
       }
       connectedCallback() {
         this._dialog ??= this.shadowRoot?.querySelector("dialog") ?? null, this._upgradeProperty("open"), this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("cancel", this._onCancel), this._dialog?.addEventListener("close", this._onClose), this.addEventListener("form:success", this.hide), this._syncLabel(), this._syncOpen();
@@ -1774,7 +1774,7 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-divider"))
       customElements.define("p9r-divider", M);
-    var Dt = `<button id="btn" class="button" part="button">
+    var Vt = `<button id="btn" class="button" part="button">
     <slot name="icon-left"></slot>
     <span class="label">
         <slot>Button</slot>
@@ -1922,7 +1922,7 @@ dialog[open]::backdrop { opacity: 1; }
       _internals;
       _btn;
       constructor() {
-        super({ css: Nt, template: Dt });
+        super({ css: Nt, template: Vt });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       static get observedAttributes() {
@@ -1980,7 +1980,7 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-button"))
       customElements.define("p9r-button", q);
-    var Ot = `<label class="checkbox-container" part="container">
+    var Dt = `<label class="checkbox-container" part="container">
     <span class="input-wrapper">
         <input type="checkbox" id="native-input" part="input" />
         <span class="custom-box" part="box" aria-hidden="true">
@@ -1995,7 +1995,7 @@ dialog[open]::backdrop { opacity: 1; }
     </span>
 </label>
 `;
-    var Vt = `:host {
+    var Ot = `:host {
   display: inline-block;
   --cb-size: 20px;
   --cb-border: var(--border-default, #d1d5db);
@@ -2135,14 +2135,19 @@ input:focus-visible ~ .custom-box {
       static formAssociated = true;
       _internals;
       _input;
+      _defaultChecked = false;
+      _defaultIndeterminate = false;
+      _defaultsCaptured = false;
       static get observedAttributes() {
         return ["checked", "disabled", "name", "value", "indeterminate"];
       }
       constructor() {
-        super({ css: Vt, template: Ot });
+        super({ css: Ot, template: Dt });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultChecked = this.hasAttribute("checked"), this._defaultIndeterminate = this.hasAttribute("indeterminate"), this._defaultsCaptured = true;
         for (let t of ["checked", "disabled", "name", "value", "indeterminate"])
           this._upgradeProperty(t);
         if (this._input) {
@@ -2157,6 +2162,9 @@ input:focus-visible ~ .custom-box {
       disconnectedCallback() {
         if (this._input)
           this._input.removeEventListener("change", this._handleChange), this._input.removeEventListener("click", this._handleClick);
+      }
+      formResetCallback() {
+        this.indeterminate = this._defaultIndeterminate, this.checked = this._defaultChecked;
       }
       attributeChangedCallback(t, e, i) {
         if (!this._input)
@@ -2694,7 +2702,7 @@ input[type="file"]:focus-visible + label {
 }
 `;
 
-    class j extends s {
+    class R extends s {
       static formAssociated = true;
       _internals;
       _input;
@@ -2717,6 +2725,13 @@ input[type="file"]:focus-visible + label {
       disconnectedCallback() {
         if (this._input?.removeEventListener("change", this._onInputChange), this._dropZone)
           this._dropZone.removeEventListener("dragover", this._onDragOver), this._dropZone.removeEventListener("dragleave", this._onDragLeave), this._dropZone.removeEventListener("drop", this._onDrop);
+      }
+      formResetCallback() {
+        if (this._input)
+          this._input.value = "";
+        if (this._internals.setFormValue(null), this._preview)
+          this._preview.textContent = "No file selected";
+        this.removeAttribute("dragging");
       }
       attributeChangedCallback(t, e, i) {
         if (!this._input)
@@ -2857,7 +2872,7 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("w13c-input-file"))
-      customElements.define("w13c-input-file", j);
+      customElements.define("w13c-input-file", R);
 
     class c extends HTMLElement {
       static formAssociated = true;
@@ -2872,6 +2887,8 @@ input[type="file"]:focus-visible + label {
       _counterEl;
       _countEl;
       _maxEl;
+      _defaultValue = "";
+      _defaultsCaptured = false;
       constructor() {
         super();
         this._internals = this.attachInternals();
@@ -2892,6 +2909,8 @@ input[type="file"]:focus-visible + label {
           this._labelEl.id = e, this._input.setAttribute("aria-labelledby", e);
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
         for (let e of ["value", "disabled", "required"])
           this._upgradeProperty(e);
         this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("change", this._onChange), this._syncLabel(), this._syncPlaceholder(), this._syncType(), this._syncDisabled(), this._syncRequired(), this._syncHint(), this._syncHintLevel(), this._syncInvalid(), this._syncMaxCount();
@@ -2903,6 +2922,9 @@ input[type="file"]:focus-visible + label {
       }
       disconnectedCallback() {
         this._input?.removeEventListener("input", this._onInput), this._input?.removeEventListener("change", this._onChange);
+      }
+      formResetCallback() {
+        this.value = this._defaultValue;
       }
       attributeChangedCallback(t, e, i) {
         if (!this._input)
@@ -3217,6 +3239,8 @@ input[type="file"]:focus-visible + label {
       _unitEl;
       _minEl;
       _maxEl;
+      _defaultValue = "";
+      _defaultsCaptured = false;
       constructor() {
         super();
         this._internals = this.attachInternals();
@@ -3245,12 +3269,19 @@ input[type="file"]:focus-visible + label {
         `, this._slider = t.querySelector(".slider"), this._input = t.querySelector(".number"), this._fill = t.querySelector(".fill"), this._labelEl = t.querySelector(".label"), this._unitEl = t.querySelector(".unit"), this._minEl = t.querySelector(".min-bound"), this._maxEl = t.querySelector(".max-bound");
       }
       connectedCallback() {
-        for (let t of ["value", "disabled"])
-          this._upgradeProperty(t);
-        this._syncLabel(), this._syncBounds(), this._syncUnit(), this._syncDisabled(), this._syncValue(this.getAttribute("value") ?? this.getAttribute("min") ?? "0"), this._slider?.addEventListener("input", this._onSliderInput), this._slider?.addEventListener("change", this._onSliderChange), this._input?.addEventListener("input", this._onNumberInput), this._input?.addEventListener("change", this._onNumberChange), this._input?.addEventListener("blur", this._onNumberBlur);
+        for (let e of ["value", "disabled"])
+          this._upgradeProperty(e);
+        this._syncLabel(), this._syncBounds(), this._syncUnit(), this._syncDisabled();
+        let t = this.getAttribute("value") ?? this.getAttribute("min") ?? "0";
+        if (!this._defaultsCaptured)
+          this._defaultValue = t, this._defaultsCaptured = true;
+        this._syncValue(t), this._slider?.addEventListener("input", this._onSliderInput), this._slider?.addEventListener("change", this._onSliderChange), this._input?.addEventListener("input", this._onNumberInput), this._input?.addEventListener("change", this._onNumberChange), this._input?.addEventListener("blur", this._onNumberBlur);
       }
       disconnectedCallback() {
         this._slider?.removeEventListener("input", this._onSliderInput), this._slider?.removeEventListener("change", this._onSliderChange), this._input?.removeEventListener("input", this._onNumberInput), this._input?.removeEventListener("change", this._onNumberChange), this._input?.removeEventListener("blur", this._onNumberBlur);
+      }
+      formResetCallback() {
+        this._syncValue(this._defaultValue);
       }
       attributeChangedCallback(t, e, i) {
         if (!this._slider || !this._input)
@@ -3774,7 +3805,7 @@ input[type="file"]:focus-visible + label {
     if (!customElements.get("p9r-select"))
       customElements.define("p9r-select", b);
 
-    class R extends HTMLElement {
+    class j extends HTMLElement {
       connectedCallback() {
         let t = this.getAttribute("label") || "Size", e = this.getAttribute("name") || "size", i = document.createElement("p9r-select");
         i.setAttribute("label", t), i.setAttribute("name", e), [{ value: "none", label: "NONE" }, { value: "xs", label: "XS" }, { value: "sm", label: "S" }, { value: "md", label: "M", selected: true }, { value: "lg", label: "L" }, { value: "xl", label: "XL" }].forEach((a) => {
@@ -3792,7 +3823,7 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("p9r-sizes-select"))
-      customElements.define("p9r-sizes-select", R);
+      customElements.define("p9r-sizes-select", j);
     var Zt = `<label class="radio" part="container">
     <input type="radio" id="native-input" part="input" />
     <span class="custom" part="circle" aria-hidden="true">
@@ -4015,6 +4046,8 @@ input:focus-visible ~ .custom {
       _internals;
       _label;
       _slot;
+      _defaultValue = null;
+      _defaultsCaptured = false;
       static get observedAttributes() {
         return ["value", "label", "name", "disabled"];
       }
@@ -4023,12 +4056,20 @@ input:focus-visible ~ .custom {
         this._internals = this.attachInternals(), this._label = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultValue = this.getAttribute("value"), this._defaultsCaptured = true;
         for (let t of ["value", "name", "disabled"])
           this._upgradeProperty(t);
         this.setAttribute("role", "radiogroup"), this._syncLabel(), this._slot?.addEventListener("slotchange", this._syncRadios), this.addEventListener("change", this._onRadioChange), this.addEventListener("keydown", this._onKeydown), this._syncRadios();
       }
       disconnectedCallback() {
         this._slot?.removeEventListener("slotchange", this._syncRadios), this.removeEventListener("change", this._onRadioChange), this.removeEventListener("keydown", this._onKeydown);
+      }
+      formResetCallback() {
+        if (this._defaultValue === null)
+          this.removeAttribute("value");
+        else
+          this.setAttribute("value", this._defaultValue);
       }
       attributeChangedCallback(t, e, i) {
         if (t === "value")
@@ -4265,6 +4306,9 @@ input:focus-visible ~ .custom {
       _labelEl;
       _slot;
       _optionCount = 0;
+      _defaultValue = "";
+      _defaultsCaptured = false;
+      _silentValueChange = false;
       static get observedAttributes() {
         return ["value", "disabled", "name", "label"];
       }
@@ -4273,6 +4317,8 @@ input:focus-visible ~ .custom {
         this._internals = this.attachInternals(), this._slider = this.shadowRoot?.querySelector(".selection-slider") ?? null, this._optionsContainer = this.shadowRoot?.querySelector(".options-container") ?? null, this._labelEl = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
         for (let t of ["value", "disabled", "name", "label"])
           this._upgradeProperty(t);
         if (this._slot)
@@ -4283,6 +4329,14 @@ input:focus-visible ~ .custom {
         if (this._slot)
           this._slot.removeEventListener("slotchange", this._handleSlotChange);
         this.removeEventListener("keydown", this._handleKeydown);
+      }
+      formResetCallback() {
+        this._silentValueChange = true;
+        try {
+          this.value = this._defaultValue;
+        } finally {
+          this._silentValueChange = false;
+        }
       }
       attributeChangedCallback(t, e, i) {
         if (!this.shadowRoot)
@@ -4298,7 +4352,8 @@ input:focus-visible ~ .custom {
       set value(t) {
         if (this.getAttribute("value") !== t)
           this.setAttribute("value", t);
-        this._internals.setFormValue(t), this._updateSliderPosition(), this._updateSlottedSelections(t), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: t } }));
+        if (this._internals.setFormValue(t), this._updateSliderPosition(), this._updateSlottedSelections(t), !this._silentValueChange)
+          this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: t } }));
       }
       get name() {
         return this.getAttribute("name") || "";
@@ -4519,6 +4574,8 @@ input:focus-visible ~ .track {
       static formAssociated = true;
       _internals;
       _input;
+      _defaultChecked = false;
+      _defaultsCaptured = false;
       static get observedAttributes() {
         return ["checked", "disabled", "name", "value"];
       }
@@ -4527,6 +4584,8 @@ input:focus-visible ~ .track {
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultChecked = this.hasAttribute("checked"), this._defaultsCaptured = true;
         for (let t of ["checked", "disabled", "name", "value"])
           this._upgradeProperty(t);
         if (this._input) {
@@ -4541,6 +4600,9 @@ input:focus-visible ~ .track {
       disconnectedCallback() {
         if (this._input)
           this._input.removeEventListener("change", this._handleChange), this._input.removeEventListener("click", this._handleClick);
+      }
+      formResetCallback() {
+        this.checked = this._defaultChecked;
       }
       attributeChangedCallback(t, e, i) {
         if (!this._input)
@@ -4967,7 +5029,7 @@ p9r-tag:hover {
     if (!customElements.get("p9r-tag"))
       customElements.define("p9r-tag", F);
 
-    class D extends s {
+    class V extends s {
       static formAssociated = true;
       _internals;
       _tags = [];
@@ -4980,6 +5042,9 @@ p9r-tag:hover {
       _loaded = false;
       _allSuggestions = [];
       _uid;
+      _defaultValue = "";
+      _defaultsCaptured = false;
+      _silent = false;
       constructor() {
         super({ css: re, template: ie });
         if (this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("#main-input"), this._display = this.shadowRoot?.querySelector("#tags-display") ?? null, this._suggestionsEl = this.shadowRoot?.querySelector("#suggestions") ?? null, this._liveRegion = this.shadowRoot?.querySelector("#live-region") ?? null, this._uid = `ts-${Math.random().toString(36).slice(2, 9)}`, this._suggestionsEl)
@@ -4991,6 +5056,8 @@ p9r-tag:hover {
         return ["placeholder", "mode", "resource", "api", "disabled", "value"];
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
         for (let t of ["placeholder", "mode", "resource", "api", "disabled", "value"])
           this._upgradeProperty(t);
         if (this._input)
@@ -5000,6 +5067,14 @@ p9r-tag:hover {
       disconnectedCallback() {
         if (this._input)
           this._input.removeEventListener("input", this._onInput), this._input.removeEventListener("keydown", this._onKeyDown), this._input.removeEventListener("focus", this._onFocus), this._input.removeEventListener("blur", this._onBlur);
+      }
+      formResetCallback() {
+        this._silent = true;
+        try {
+          this.value = this._defaultValue;
+        } finally {
+          this._silent = false;
+        }
       }
       attributeChangedCallback(t, e, i) {
         if (!this._input)
@@ -5107,7 +5182,9 @@ p9r-tag:hover {
         this._removeTagAt(this._tags.length - 1);
       }
       _update() {
-        this._renderTags(), this._internals.setFormValue(this.value), this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: this.value, tags: [...this._tags] } }));
+        if (this._renderTags(), this._internals.setFormValue(this.value), this._silent)
+          return;
+        this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: this.value, tags: [...this._tags] } }));
       }
       _renderTags() {
         if (!this._display)
@@ -5231,7 +5308,7 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag-suggest"))
-      customElements.define("p9r-tag-suggest", D);
+      customElements.define("p9r-tag-suggest", V);
     var oe = `<div class="field" part="field">
     <label class="label" part="label" for="ta"></label>
     <textarea id="ta" class="textarea" part="textarea"></textarea>
@@ -5361,6 +5438,8 @@ p9r-tag:hover {
       _counter;
       _count;
       _max;
+      _defaultValue = "";
+      _defaultsCaptured = false;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "rows", "maxlength", "max-count", "hint", "hint-level", "invalid", "disabled", "required", "autosize"];
       }
@@ -5369,6 +5448,8 @@ p9r-tag:hover {
         this._internals = this.attachInternals(), this._textarea = this.shadowRoot?.querySelector("textarea") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._hint = this.shadowRoot?.querySelector(".hint") ?? null, this._meta = this.shadowRoot?.querySelector(".meta") ?? null, this._counter = this.shadowRoot?.querySelector(".counter") ?? null, this._count = this.shadowRoot?.querySelector(".count") ?? null, this._max = this.shadowRoot?.querySelector(".max") ?? null;
       }
       connectedCallback() {
+        if (!this._defaultsCaptured)
+          this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
         for (let e of ["value", "disabled", "required"])
           this._upgradeProperty(e);
         this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), this._syncLabel(), this._syncPlaceholder(), this._syncRows(), this._syncMaxLength(), this._syncDisabled(), this._syncRequired(), this._syncHint(), this._syncHintLevel(), this._syncInvalid(), this._syncMaxCount();
@@ -5380,6 +5461,9 @@ p9r-tag:hover {
       }
       disconnectedCallback() {
         this._textarea?.removeEventListener("input", this._onInput), this._textarea?.removeEventListener("change", this._onChange);
+      }
+      formResetCallback() {
+        this.value = this._defaultValue;
       }
       attributeChangedCallback(t, e, i) {
         if (!this._textarea)
@@ -5672,7 +5756,7 @@ p9r-tag:hover {
 }
 `;
 
-    class O extends s {
+    class D extends s {
       static _event = "action-click";
       _toolbar;
       constructor() {
@@ -5732,7 +5816,7 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-horizontal-action-group"))
-      customElements.define("p9r-horizontal-action-group", O);
+      customElements.define("p9r-horizontal-action-group", D);
     var ce = `<div class="app-container" part="container">
     <a class="skip-link" part="skip-link" href="#main-content">
         <slot name="skip-link">Skip to main content</slot>
@@ -5835,7 +5919,7 @@ p9r-tag:hover {
 }
 `;
 
-    class V extends s {
+    class O extends s {
       _sidebar;
       _content;
       constructor() {
@@ -5888,7 +5972,7 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("w13c-left-menu-layout"))
-      customElements.define("w13c-left-menu-layout", V);
+      customElements.define("w13c-left-menu-layout", O);
     var pe = `<slot></slot>
 `;
     var ue = `:host {
@@ -7283,9 +7367,9 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-row"))
       customElements.define("p9r-row", G);
-    var je = `<slot></slot>
+    var Re = `<slot></slot>
 `;
-    var Re = `:host {
+    var je = `:host {
   display: table-cell;
   padding: 12px 20px;
   vertical-align: middle;
@@ -7312,7 +7396,7 @@ p9r-tag:hover {
 
     class tt extends s {
       constructor() {
-        super({ css: Re, template: je });
+        super({ css: je, template: Re });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -7689,7 +7773,7 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-tabs"))
       customElements.define("p9r-tabs", g);
-    var De = `<div class="icon" part="icon"></div>
+    var Ve = `<div class="icon" part="icon"></div>
 <div class="content">
     <span class="message"><slot></slot></span>
 </div>
@@ -7825,7 +7909,7 @@ p9r-tag:hover {
     class at extends s {
       _timer = null;
       constructor() {
-        super({ css: Ne, template: De });
+        super({ css: Ne, template: Ve });
       }
       connectedCallback() {
         this.shadowRoot?.querySelector(".close")?.addEventListener("click", () => this.dismiss());
@@ -7849,9 +7933,9 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-toast"))
       customElements.define("p9r-toast", at);
-    var Oe = `<slot></slot>
+    var De = `<slot></slot>
 `;
-    var Ve = `:host {
+    var Oe = `:host {
     position: fixed;
     top: 24px;
     left: 24px;
@@ -7903,7 +7987,7 @@ p9r-tag:hover {
 
     class st extends s {
       constructor() {
-        super({ css: Ve, template: Oe });
+        super({ css: Oe, template: De });
       }
       connectedCallback() {
         if (!this.hasAttribute("popover"))
@@ -8130,7 +8214,7 @@ p9r-tag:hover {
     }
   }
 
-  // src/control/core/dom/getClosestEditorSystem.ts
+  // src/control/core/dom/editor/getClosestEditorSystem.ts
   function getClosestEditorSystem(ele) {
     let current = ele;
     while (current) {
@@ -9264,7 +9348,7 @@ p9r-tag:hover {
     return options;
   }
 
-  // src/control/core/dom/getMetaBasePath.ts
+  // src/control/core/dom/meta/getMetaBasePath.ts
   function getMetaBasePath() {
     const meta = document.querySelector('meta[name="basePath"]');
     if (!meta)
@@ -9275,7 +9359,7 @@ p9r-tag:hover {
       return meta.getAttribute("content");
   }
 
-  // src/control/core/dom/getMetaApiPath.ts
+  // src/control/core/dom/meta/getMetaApiPath.ts
   function getMetaApiPath() {
     const base = getMetaBasePath();
     if (base === undefined || base === null || base === "")
@@ -9283,7 +9367,7 @@ p9r-tag:hover {
     return base.endsWith("/") ? base + "api" : base + "/api";
   }
 
-  // src/control/core/dom/resolveApiUrl.ts
+  // src/control/core/dom/meta/resolveApiUrl.ts
   function resolveApiUrl(path) {
     const apiPath = getMetaApiPath();
     const base = /^https?:\/\//.test(apiPath) ? apiPath : new URL(apiPath, window.location.origin).href;
@@ -16534,7 +16618,7 @@ button.active svg {
 
 </w13c-lateral-dialog>`;
 
-  // src/control/components/editor/configurations/Configuration/getFormData.ts
+  // src/control/core/dom/getFormData.ts
   function getFormData(formEle, slotTarget) {
     const formData = new FormData(formEle);
     const elements = slotTarget?.assignedElements();
@@ -18519,7 +18603,8 @@ button.active svg {
   // src/control/components/form/Form/events/onSubmit.ts
   function onSubmit(e, me) {
     e.preventDefault();
-    const formData = new FormData(e.target);
+    const form = e.target;
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     fetch(me.target, {
       method: me.method || "POST",
@@ -18529,9 +18614,10 @@ button.active svg {
       body: JSON.stringify(data)
     }).then((res) => {
       if (res.ok) {
+        form.reset();
         me.dispatchEvent(new BubblesEvent("form:success"));
         if (me.emit) {
-          me.dispatchEvent(new BubblesEvent(me.emit));
+          document.dispatchEvent(new BubblesEvent(me.emit));
         }
       } else {
         me.dispatchEvent(new BubblesEvent("form:failed"));
@@ -18674,6 +18760,48 @@ button.active svg {
     customElements.define("cms-validate", CmsValidate);
   }
 
+  // src/control/components/data/fetch/templates.ts
+  function collectTemplates(host) {
+    const map = {};
+    for (const child of Array.from(host.children)) {
+      if (child.tagName !== "TEMPLATE")
+        continue;
+      const slot = child.getAttribute("slot") || "default";
+      if (!map[slot])
+        map[slot] = child;
+    }
+    return map;
+  }
+
+  // src/control/components/data/fetch/state.ts
+  function isEmpty(data) {
+    if (data === null || data === undefined)
+      return true;
+    if (Array.isArray(data))
+      return data.length === 0;
+    if (typeof data === "object")
+      return Object.keys(data).length === 0;
+    return false;
+  }
+
+  // src/control/components/data/fetch/fetcher.ts
+  async function runFetch(url, signal) {
+    try {
+      const u = new URL(url, window.location.href);
+      for (const [k, v] of new URLSearchParams(window.location.search))
+        u.searchParams.append(k, v);
+      const res = await fetch(u, { headers: { Accept: "application/json" }, signal });
+      if (!res.ok)
+        return { kind: "error", error: new Error(`HTTP ${res.status}`) };
+      const data = await res.json();
+      return { kind: "success", data };
+    } catch (error) {
+      if (error.name === "AbortError")
+        return { kind: "aborted" };
+      return { kind: "error", error };
+    }
+  }
+
   // src/control/components/data/fetch/pathHelpers.ts
   function resolve(obj, path) {
     return path.split(".").reduce((acc, k) => acc != null ? acc[k] : undefined, obj);
@@ -18770,16 +18898,40 @@ button.active svg {
     }
   }
 
+  // src/control/components/data/fetch/stamp.ts
+  function stampSiblingsOf(host, tpl, context, previous) {
+    clearStamped(previous);
+    const parent = host.parentNode;
+    if (!parent)
+      return [];
+    const fragment = processTemplate(tpl, context);
+    const newNodes = Array.from(fragment.childNodes);
+    parent.insertBefore(fragment, host);
+    return newNodes;
+  }
+  function clearStamped(nodes) {
+    for (const n2 of nodes)
+      n2.parentNode?.removeChild(n2);
+  }
+
   // src/control/components/data/fetch/FetchComponent.ts
   class FetchComponent extends HTMLElement {
     static get observedAttributes() {
-      return ["url"];
+      return ["url", "reload-on"];
     }
-    _template = null;
-    _renderedNodes = [];
+    _templates = {};
+    _stamped = [];
+    _reloadEvents = [];
+    _abort = null;
+    _onReloadEvent = () => {
+      if (this.isConnected)
+        this.reload();
+    };
     connectedCallback() {
-      if (this._template) {
-        this._fetchAndRender();
+      this._refreshReloadListeners();
+      document.addEventListener("cms-fetch:reload", this._onReloadEvent);
+      if (this._templates.default) {
+        this.reload();
         return;
       }
       if (document.readyState === "loading") {
@@ -18788,60 +18940,70 @@ button.active svg {
         this._init();
       }
     }
-    _init() {
-      for (const child of Array.from(this.children)) {
-        if (child.tagName === "TEMPLATE") {
-          this._template = child;
-          break;
-        }
-      }
-      if (!this._template) {
-        console.warn("cms-fetch: missing <template> child");
-        return;
-      }
-      this._fetchAndRender();
-    }
     disconnectedCallback() {
-      for (const n2 of this._renderedNodes)
-        n2.parentNode?.removeChild(n2);
-      this._renderedNodes = [];
+      clearStamped(this._stamped);
+      this._stamped = [];
+      for (const ev of this._reloadEvents)
+        document.removeEventListener(ev, this._onReloadEvent);
+      document.removeEventListener("cms-fetch:reload", this._onReloadEvent);
+      this._reloadEvents = [];
+      this._abort?.abort();
+      this._abort = null;
     }
-    attributeChangedCallback(_name, oldVal, newVal) {
-      if (oldVal !== newVal && this.isConnected)
-        this._fetchAndRender();
-    }
-    async _fetchAndRender() {
-      const urlAttr = this.getAttribute("url");
-      if (!urlAttr)
+    attributeChangedCallback(name, oldVal, newVal) {
+      if (oldVal === newVal)
         return;
-      this.dispatchEvent(new CustomEvent("fetch:loading", { bubbles: true }));
-      try {
-        const url = new URL(urlAttr, window.location.href);
-        for (const [k, v] of new URLSearchParams(window.location.search))
-          url.searchParams.append(k, v);
-        const res = await fetch(url, { headers: { Accept: "application/json" } });
-        if (!res.ok)
-          throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        this._stamp(data);
-        this.dispatchEvent(new CustomEvent("fetch:data", { bubbles: true, detail: data }));
-      } catch (err) {
-        this.dispatchEvent(new CustomEvent("fetch:error", { bubbles: true, detail: err }));
+      if (name === "reload-on") {
+        this._refreshReloadListeners();
+        return;
+      }
+      if (this.isConnected)
+        this.reload();
+    }
+    reload() {
+      this._run();
+    }
+    _init() {
+      this._templates = collectTemplates(this);
+      if (!this._templates.default) {
+        console.warn("cms-fetch: missing <template> child (default slot)");
+        return;
+      }
+      this.reload();
+    }
+    _refreshReloadListeners() {
+      for (const ev of this._reloadEvents)
+        document.removeEventListener(ev, this._onReloadEvent);
+      this._reloadEvents = (this.getAttribute("reload-on") || "").split(/\s+/).filter(Boolean);
+      for (const ev of this._reloadEvents)
+        document.addEventListener(ev, this._onReloadEvent);
+    }
+    async _run() {
+      const urlAttr = this.getAttribute("url");
+      if (!urlAttr || !this._templates.default)
+        return;
+      this._abort?.abort();
+      this._abort = new AbortController;
+      const signal = this._abort.signal;
+      this._renderSlot("loading", null);
+      this.dispatchEvent(new BubblesEvent("fetch:loading"));
+      const outcome = await runFetch(urlAttr, signal);
+      if (signal.aborted || outcome.kind === "aborted")
+        return;
+      if (outcome.kind === "success") {
+        const slot = isEmpty(outcome.data) && this._templates.empty ? "empty" : "default";
+        this._renderSlot(slot, outcome.data);
+        this.dispatchEvent(new CustomEvent("fetch:data", { bubbles: true, composed: true, detail: outcome.data }));
+      } else {
+        this._renderSlot("error", outcome.error);
+        this.dispatchEvent(new CustomEvent("fetch:error", { bubbles: true, composed: true, detail: outcome.error }));
       }
     }
-    _stamp(data) {
-      if (!this._template)
+    _renderSlot(slot, context) {
+      const tpl = this._templates[slot];
+      if (!tpl)
         return;
-      const parent = this.parentNode;
-      if (!parent)
-        return;
-      for (const n2 of this._renderedNodes)
-        n2.parentNode?.removeChild(n2);
-      this._renderedNodes = [];
-      const fragment = processTemplate(this._template, data);
-      const newNodes = Array.from(fragment.childNodes);
-      parent.insertBefore(fragment, this);
-      this._renderedNodes = newNodes;
+      this._stamped = stampSiblingsOf(this, tpl, context, this._stamped);
     }
   }
   customElements.define("cms-fetch", FetchComponent);

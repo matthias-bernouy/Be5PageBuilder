@@ -6,7 +6,9 @@ export default function onSubmit(e: SubmitEvent, me: CmsForm){
     
     e.preventDefault();
 
-    const formData = new FormData(e.target as HTMLFormElement);
+    const form = e.target as HTMLFormElement;
+
+    const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
     fetch(me.target, {
@@ -17,6 +19,7 @@ export default function onSubmit(e: SubmitEvent, me: CmsForm){
         body: JSON.stringify(data)
     }).then((res) => {
         if ( res.ok ){
+            form.reset();
             me.dispatchEvent(new BubblesEvent("form:success"));
             if ( me.emit ) {
                 document.dispatchEvent(new BubblesEvent(me.emit));

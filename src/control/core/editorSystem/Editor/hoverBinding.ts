@@ -1,4 +1,4 @@
-import getClosestEditorSystem from '../../dom/getClosestEditorSystem';
+import getClosestEditorSystem from '../../dom/editor/getClosestEditorSystem';
 import type { Editor } from './Editor';
 
 export class HoverBinding {

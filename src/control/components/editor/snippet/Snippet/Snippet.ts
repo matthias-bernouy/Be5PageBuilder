@@ -2,7 +2,7 @@ import { Component, type ComponentMetadata } from 'src/control/core/editorSystem
 import { ICON_SNIPPET } from 'src/control/components/icons';
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { getMetaApiPath } from 'src/control/core/dom/getMetaApiPath';
+import { getMetaApiPath } from 'src/control/core/dom/meta/getMetaApiPath';
 
 const SnippetMetadata: ComponentMetadata = {
     css: css,

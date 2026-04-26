@@ -1,6 +1,6 @@
 import type { EDITOR_SYSTEM_MODE } from 'types/w13c/EditorSystem';
 import type EditorRoot from '../../../components/editor/EditorSystem/EditorRoot/EditorRoot';
-import getClosestEditorSystem from '../../dom/getClosestEditorSystem';
+import getClosestEditorSystem from '../../dom/editor/getClosestEditorSystem';
 
 const EVENT_NAME = 'editor-system-switch-mode';
 

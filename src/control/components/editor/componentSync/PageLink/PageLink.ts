@@ -1,9 +1,9 @@
-import getClosestEditorSystem from "src/control/core/dom/getClosestEditorSystem";
+import getClosestEditorSystem from "src/control/core/dom/editor/getClosestEditorSystem";
 import css from "./PageLink.css" with { type: "text" };
 import { buildOptionList, filterPages, type PageRef } from "./PageLink.picker";
 import type { MediaCenter } from "../../MediaCenter/MediaCenter";
-import { getMetaApiPath } from "src/control/core/dom/getMetaApiPath";
-import resolveApiUrl from "src/control/core/dom/resolveApiUrl";
+import { getMetaApiPath } from "src/control/core/dom/meta/getMetaApiPath";
+import resolveApiUrl from "src/control/core/dom/meta/resolveApiUrl";
 
 type LinkMode = "page" | "external" | "media";
 

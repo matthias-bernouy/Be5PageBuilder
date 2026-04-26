@@ -1,6 +1,6 @@
-import { getMetaApiPath } from 'src/control/core/dom/getMetaApiPath';
+import { getMetaApiPath } from 'src/control/core/dom/meta/getMetaApiPath';
 import type { BlocMeta, SnippetItem, TemplateItem } from './types';
-import resolveApiUrl from 'src/control/core/dom/resolveApiUrl';
+import resolveApiUrl from 'src/control/core/dom/meta/resolveApiUrl';
 import type { BlocListItemResponse } from 'src/socle/contracts/Repository/CmsRepository';
 
 async function fetchJson<T>(path: string, fallback: T): Promise<T> {

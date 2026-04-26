@@ -2,9 +2,9 @@ import { CustomHTMLElement } from "src/control/components/CustomHTMLElement";
 
 import html from "./template.html" with { type: "text" }
 import css  from "./template.html" with { type: "text" }
-import getClosestEditorSystem from "src/control/core/dom/getClosestEditorSystem";
+import getClosestEditorSystem from "src/control/core/dom/editor/getClosestEditorSystem";
 import type { LateralDialog } from "@bernouy/webcomponents";
-import { getFormData } from "./getFormData";
+import { getFormData } from "../../../../core/dom/getFormData";
 
 /**
  * This class is used to add the "content" key from the editorSystem to the fetch.
