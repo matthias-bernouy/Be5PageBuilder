@@ -4,7 +4,7 @@ export abstract class CustomHTMLElement extends HTMLElement {
         super();
         if ( shadow ) {
             const ele = this.attachShadow({mode: "open"});
-            ele.innerHTML = `${css}${html}`;
+            ele.innerHTML = `<style>${css ?? ""}</style>${html ?? ""}`;
         }
     }
 

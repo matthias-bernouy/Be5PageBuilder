@@ -1,10 +1,10 @@
-p9r-image-sync {
+:host {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-p9r-image-sync .image-sync-label {
+.image-sync-label {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -12,7 +12,7 @@ p9r-image-sync .image-sync-label {
     color: var(--text-muted, #94a3b8);
 }
 
-p9r-image-sync .image-sync-card {
+.image-sync-card {
     position: relative;
     border: 1px dashed var(--border-default, #e2e8f0);
     border-radius: 10px;
@@ -22,18 +22,18 @@ p9r-image-sync .image-sync-card {
     background: var(--bg-base, #f8fafc);
 }
 
-p9r-image-sync .image-sync-card:hover {
+.image-sync-card:hover {
     border-color: var(--primary-base, #4361ee);
 }
 
-p9r-image-sync .image-sync-card.has-image {
+.image-sync-card.has-image {
     border-style: solid;
     padding: 1rem;
 }
 
 /* ── Preview image ── */
 
-p9r-image-sync .image-sync-card img {
+.image-sync-card img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -43,7 +43,7 @@ p9r-image-sync .image-sync-card img {
 
 /* ── Empty state ── */
 
-p9r-image-sync .image-sync-empty {
+.image-sync-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -53,12 +53,12 @@ p9r-image-sync .image-sync-empty {
     aspect-ratio: 16 / 9;
 }
 
-p9r-image-sync .image-sync-empty svg {
+.image-sync-empty svg {
     color: var(--text-muted, #94a3b8);
     opacity: 0.5;
 }
 
-p9r-image-sync .image-sync-empty span {
+.image-sync-empty span {
     font-size: 11px;
     font-weight: 500;
     color: var(--text-muted, #94a3b8);
@@ -66,7 +66,7 @@ p9r-image-sync .image-sync-empty span {
 
 /* ── Overlay actions ── */
 
-p9r-image-sync .image-sync-overlay {
+.image-sync-overlay {
     position: absolute;
     inset: 0;
     display: flex;
@@ -78,12 +78,12 @@ p9r-image-sync .image-sync-overlay {
     opacity: 0;
 }
 
-p9r-image-sync .image-sync-card:hover .image-sync-overlay {
+.image-sync-card:hover .image-sync-overlay {
     opacity: 1;
     background: rgb(0 0 0 / 0.4);
 }
 
-p9r-image-sync .image-sync-overlay button {
+.image-sync-overlay button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -99,20 +99,20 @@ p9r-image-sync .image-sync-overlay button {
     -webkit-backdrop-filter: blur(4px);
 }
 
-p9r-image-sync .image-sync-overlay button:active {
+.image-sync-overlay button:active {
     transform: scale(0.95);
 }
 
-p9r-image-sync .image-sync-overlay .btn-change {
+.image-sync-overlay .btn-change {
     background: rgb(255 255 255 / 0.9);
     color: var(--text-main, #1e293b);
 }
 
-p9r-image-sync .image-sync-overlay .btn-remove {
+.image-sync-overlay .btn-remove {
     background: rgb(255 255 255 / 0.15);
     color: #fff;
 }
 
-p9r-image-sync .image-sync-overlay .btn-remove:hover {
+.image-sync-overlay .btn-remove:hover {
     background: var(--danger-base, #ef4444);
 }
