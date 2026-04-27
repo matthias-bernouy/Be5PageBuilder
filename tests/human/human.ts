@@ -37,7 +37,8 @@ export default function humanTest(){
         runner,
         new InMemoryCmsRepository(),
         compositeAuth,
-        new HttpMedia("/.media")
+        new HttpMedia("/.media"),
+        { tokensUrl: "/.auth/tokens" }
     )
 
     runner.start();

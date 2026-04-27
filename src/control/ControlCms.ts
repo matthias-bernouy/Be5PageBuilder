@@ -12,12 +12,12 @@ import { appendFile } from "node:fs/promises";
 type Configuration = {
     /**
      * Absolute URL to the external token management interface. Surfaced on
-     * the admin Profile page as the "Manage tokens" button; left undefined
-     * keeps the button disabled. Deliberately a CMS-level config rather than
-     * pulled from `auth.profileUrl` because that Socle contract is too
-     * ambiguous (profile vs tokens vs account management).
+     * the admin Profile page as the "Manage tokens" button. Required:
+     * deliberately a CMS-level config rather than pulled from
+     * `auth.profileUrl` because that Socle contract is too ambiguous
+     * (profile vs tokens vs account management).
      */
-    tokensUrl?: string;
+    tokensUrl: string;
     /**
      * Absolute URL of the Delivery service paired with this Control instance.
      * Used by admin UI surfaces that need to construct public-facing URLs
@@ -59,7 +59,7 @@ export class ControlCms {
         repository: CmsRepository,
         auth: Authentication<CMS_ROLES>,
         media: Media,
-        configuration: Configuration = {},
+        configuration: Configuration,
         cache?: Cache
     ){
         this.configuration = configuration;
