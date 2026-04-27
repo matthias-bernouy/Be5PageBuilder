@@ -130,10 +130,6 @@ export class InMemoryCmsRepository implements CmsRepository {
         return bloc;
     }
 
-    async getBlocsEditorJS(): Promise<{ id: string; editorJS: string }[]> {
-        return Array.from(this._blocs.values()).map(b => ({ id: b.id, editorJS: b.editorJS }));
-    }
-
     async getBlocsJS(): Promise<{ id: string; editorJS: string; viewJS: string }[]> {
         return Array.from(this._blocs.values()).map(b => ({ id: b.id, editorJS: b.editorJS, viewJS: b.viewJS }));
     }
@@ -152,15 +148,6 @@ export class InMemoryCmsRepository implements CmsRepository {
     }
 
     // ── Pages ──
-
-    async createPage(page: TPage, oldPath?: string): Promise<TPage> {
-        const key = oldPath ?? page.path;
-        if (oldPath && this._pages.has(oldPath)) {
-            this._pages.delete(oldPath);
-        }
-        this._pages.set(page.path, { ...page });
-        return page;
-    }
 
     async getPage(path: string): Promise<TPage | null> {
         return this._pages.get(path) ?? null;

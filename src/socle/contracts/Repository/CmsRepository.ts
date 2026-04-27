@@ -18,18 +18,14 @@ export interface CmsRepository {
     createBloc(bloc: TBloc): Promise<TBloc>;
     replaceBloc(bloc: TBloc): Promise<TBloc>;
 
-    getBlocsEditorJS(): Promise<{ id: string, editorJS: string }[]>;
     getBlocsJS(): Promise<{ id: string, editorJS: string, viewJS: string }[]>;
     getBlocsList(): Promise<BlocListItemResponse[]>;
     getBlocViewJS(htmlTag: string): Promise<string | null>;
 
 
     // PAGE
-    createPage(page: TPage, oldPath?: string): Promise<TPage>;
     getPage(path: string): Promise<TPage | null>;
     getAllPages(): Promise<TPage[]>;
-
-    // NEW VERSION
     insertPage(path: string, title: string): Promise<void>;
     getPageById(id: string): Promise<TPage | null>;
     updatePage(page: Partial<TPage>): Promise<void>;
