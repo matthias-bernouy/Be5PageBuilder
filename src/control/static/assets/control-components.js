@@ -16109,6 +16109,13 @@ button.active svg {
     display: flex;
 }
 
+.color-panel.below {
+    bottom: auto;
+    top: 100%;
+    margin-bottom: 0;
+    margin-top: 8px;
+}
+
 .color-swatch {
     width: 28px;
     height: 28px;
@@ -16243,6 +16250,29 @@ button.active svg {
     color: #ef4444;
 }
 `;
+
+  // src/control/components/editor/RichTextBar/selection.ts
+  class SelectionTracker {
+    savedRange = null;
+    save() {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        this.savedRange = sel.getRangeAt(0).cloneRange();
+      }
+    }
+    restore() {
+      if (!this.savedRange)
+        return;
+      const sel = window.getSelection();
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(this.savedRange);
+      }
+    }
+    get range() {
+      return this.savedRange;
+    }
+  }
 
   // src/control/components/editor/RichTextBar/commands.ts
   function focusElement() {
@@ -16412,54 +16442,238 @@ button.active svg {
     return el?.closest("a")?.getAttribute("href") || null;
   }
 
-  // src/control/components/editor/RichTextBar/selection.ts
-  class SelectionTracker {
-    savedRange = null;
-    save() {
-      const sel = window.getSelection();
-      if (sel && sel.rangeCount > 0) {
-        this.savedRange = sel.getRangeAt(0).cloneRange();
-      }
-    }
-    restore() {
-      if (!this.savedRange)
-        return;
-      const sel = window.getSelection();
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(this.savedRange);
-      }
-    }
-    get range() {
-      return this.savedRange;
-    }
-  }
-
-  // src/control/components/editor/RichTextBar/RichTextBar.ts
+  // src/control/components/editor/RichTextBar/state.ts
   var FORMAT_COMMANDS = ["bold", "italic", "underline", "strikeThrough"];
   var ALIGN_COMMANDS = ["justifyLeft", "justifyCenter", "justifyRight"];
   var ACTIVE_COMMANDS = [...FORMAT_COMMANDS, ...ALIGN_COMMANDS];
+  function updateState(self) {
+    for (const cmd of ACTIVE_COMMANDS) {
+      const btn = self.shadowRoot.querySelector(`button[data-command="${cmd}"]`);
+      if (btn)
+        btn.classList.toggle("active", queryCommandState(cmd));
+    }
+    const linkBtn = self.shadowRoot.querySelector('[data-action="link"]');
+    if (linkBtn)
+      linkBtn.classList.toggle("active", !!getExistingLink(self.selection.range));
+    updateSizeDisplay(self);
+    updateColorState(self);
+  }
+  function updateSizeDisplay(self, size) {
+    const display = self.shadowRoot.querySelector(".size-display");
+    if (display)
+      display.textContent = String(size ?? getCurrentFontSize());
+  }
+  function updateColorState(self) {
+    const trigger = self.shadowRoot.querySelector(".color-swatch-current");
+    if (!trigger)
+      return;
+    const color = getCurrentColor();
+    if (color)
+      trigger.style.background = color;
+  }
 
+  // src/control/components/editor/RichTextBar/actions.ts
+  function runCommand(cmd) {
+    switch (cmd) {
+      case "bold":
+        return toggleFormat("b");
+      case "italic":
+        return toggleFormat("i");
+      case "underline":
+        return toggleFormat("u");
+      case "strikeThrough":
+        return toggleFormat("s");
+      case "justifyLeft":
+        return applyBlockAlignment("left");
+      case "justifyCenter":
+        return applyBlockAlignment("center");
+      case "justifyRight":
+        return applyBlockAlignment("right");
+    }
+  }
+  function changeSize(self, delta) {
+    self.selection.restore();
+    const next = Math.max(8, Math.min(96, getCurrentFontSize() + delta));
+    applyInlineStyle("fontSize", `${next}px`);
+    self.selection.save();
+    updateSizeDisplay(self, next);
+  }
+  function toggleColorPanel(self) {
+    const panel = self.shadowRoot.querySelector(".color-panel");
+    const isOpen = panel.classList.toggle("open");
+    closeLinkBar(self);
+    if (isOpen)
+      placeColorPanel(self, panel);
+  }
+  function placeColorPanel(self, panel) {
+    const trigger = self.shadowRoot.querySelector(".color-trigger");
+    if (!trigger)
+      return;
+    const gap = 8;
+    const triggerRect = trigger.getBoundingClientRect();
+    const panelHeight = panel.offsetHeight;
+    panel.classList.toggle("below", triggerRect.top < panelHeight + gap);
+  }
+  function applyColor(self, color) {
+    self.selection.restore();
+    if (color === "inherit") {
+      removeInlineStyle("color");
+    } else {
+      applyInlineStyle("color", color);
+    }
+    self.selection.save();
+    self.shadowRoot.querySelector(".color-panel").classList.remove("open");
+    updateColorState(self);
+  }
+  function toggleLinkBar(self) {
+    const bar = self.shadowRoot.querySelector(".link-bar");
+    const isOpen = bar.classList.contains("open");
+    self.shadowRoot.querySelector(".color-panel")?.classList.remove("open");
+    if (isOpen) {
+      closeLinkBar(self);
+      return;
+    }
+    const existing = getExistingLink(self.selection.range);
+    const input = self.shadowRoot.querySelector(".link-input");
+    input.value = existing || "";
+    if (self.pageLink && existing) {
+      self.pageLink.value = existing;
+    }
+    bar.classList.add("open");
+  }
+  function closeLinkBar(self) {
+    self.shadowRoot.querySelector(".link-bar")?.classList.remove("open");
+  }
+  function switchLinkType(self, type) {
+    const root2 = self.shadowRoot;
+    root2.querySelectorAll(".link-type-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.linkType === type));
+    root2.querySelectorAll(".link-field").forEach((f) => {
+      f.style.display = f.dataset.linkField === type ? "" : "none";
+    });
+  }
+  function applyLink(self) {
+    self.selection.restore();
+    const activeType = self.shadowRoot.querySelector(".link-type-btn.active");
+    const type = activeType?.dataset.linkType || "external";
+    let url = "";
+    if (type === "external") {
+      url = self.shadowRoot.querySelector(".link-input").value.trim();
+    } else if (type === "internal" && self.pageLink) {
+      url = self.pageLink.value || "";
+    }
+    applyLinkUrl(url);
+    self.selection.save();
+    closeLinkBar(self);
+    updateState(self);
+  }
+  function removeLink(self) {
+    self.selection.restore();
+    removeLinkAtSelection();
+    self.selection.save();
+    closeLinkBar(self);
+    updateState(self);
+  }
+  function insertListAction(self, tag) {
+    self.selection.restore();
+    insertList(tag);
+    self.hide();
+  }
+
+  // src/control/components/editor/RichTextBar/listener.ts
+  function handleClick(self, e) {
+    const target = e.target;
+    const btn = target.closest("button");
+    if (!btn)
+      return;
+    const command = btn.dataset.command;
+    if (command) {
+      self.selection.restore();
+      runCommand(command);
+      self.selection.save();
+      updateState(self);
+      return;
+    }
+    const action = btn.dataset.action;
+    if (action === "size-up")
+      return changeSize(self, 2);
+    if (action === "size-down")
+      return changeSize(self, -2);
+    if (action === "color")
+      return toggleColorPanel(self);
+    if (action === "link")
+      return toggleLinkBar(self);
+    if (action === "list-ul")
+      return insertListAction(self, "ul");
+    if (action === "list-ol")
+      return insertListAction(self, "ol");
+    const color = btn.dataset.color;
+    if (color !== undefined)
+      return applyColor(self, color);
+    const linkType = btn.dataset.linkType;
+    if (linkType)
+      return switchLinkType(self, linkType);
+    if (btn.classList.contains("link-apply"))
+      return applyLink(self);
+    if (btn.classList.contains("link-unlink"))
+      return removeLink(self);
+  }
+  function handleSelection(self) {
+    if (self.interacting)
+      return;
+    const activeEl = self.shadowRoot.activeElement;
+    if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName.includes("-"))) {
+      return;
+    }
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.toString().trim() === "") {
+      self.hide();
+      return;
+    }
+    const rect = sel.getRangeAt(0).getBoundingClientRect();
+    self.selection.save();
+    self.show(rect);
+    updateState(self);
+  }
+  function handleRootMousedown(self, e) {
+    const target = e.target;
+    self.interacting = true;
+    if (target.tagName === "INPUT" || target.tagName.includes("-") || target.closest("p9r-link")) {
+      return;
+    }
+    e.preventDefault();
+  }
+  function handleRootMouseup(self) {
+    setTimeout(() => {
+      self.interacting = false;
+    }, 50);
+  }
+  function handleOutsideMouseDown(self, e) {
+    if (!self.classList.contains("visible"))
+      return;
+    const path = e.composedPath();
+    if (path.includes(self) || path.includes(self.shadowRoot))
+      return;
+    const range = self.selection.range;
+    if (range) {
+      const anchor = range.commonAncestorContainer;
+      const el = anchor.nodeType === 1 ? anchor : anchor.parentElement;
+      const editable = el?.closest?.('[contenteditable="true"]');
+      if (editable && path.includes(editable))
+        return;
+    }
+    self.hide();
+  }
+
+  // src/control/components/editor/RichTextBar/RichTextBar.ts
   class RichTextBar extends Component {
     selection = new SelectionTracker;
     interacting = false;
     pageLink = null;
-    _onRootMousedown = (e) => {
-      const target = e.target;
-      this.interacting = true;
-      if (target.tagName === "INPUT" || target.tagName.includes("-") || target.closest("p9r-link")) {
-        return;
-      }
-      e.preventDefault();
-    };
-    _onRootMouseup = () => {
-      setTimeout(() => {
-        this.interacting = false;
-      }, 50);
-    };
-    _onRootClick = (e) => this.handleClick(e);
-    _onSelectionChange = () => this.handleSelection();
-    _onOutsideMousedown = (e) => this.handleOutsideMouseDown(e);
+    _onRootMousedown = (e) => handleRootMousedown(this, e);
+    _onRootMouseup = () => handleRootMouseup(this);
+    _onRootClick = (e) => handleClick(this, e);
+    _onSelectionChange = () => handleSelection(this);
+    _onOutsideMousedown = (e) => handleOutsideMouseDown(this, e);
     _rootListenersAttached = false;
     constructor() {
       super({
@@ -16488,182 +16702,10 @@ button.active svg {
       document.removeEventListener("selectionchange", this._onSelectionChange);
       document.removeEventListener("mousedown", this._onOutsideMousedown);
     }
-    handleClick(e) {
-      const target = e.target;
-      const btn = target.closest("button");
-      if (!btn)
-        return;
-      const command = btn.dataset.command;
-      if (command) {
-        this.selection.restore();
-        this.runCommand(command);
-        this.selection.save();
-        this.updateState();
-        return;
-      }
-      const action = btn.dataset.action;
-      if (action === "size-up")
-        return this.changeSize(2);
-      if (action === "size-down")
-        return this.changeSize(-2);
-      if (action === "color")
-        return this.toggleColorPanel();
-      if (action === "link")
-        return this.toggleLinkBar();
-      if (action === "list-ul")
-        return this.insertListAction("ul");
-      if (action === "list-ol")
-        return this.insertListAction("ol");
-      const color = btn.dataset.color;
-      if (color !== undefined)
-        return this.applyColor(color);
-      const linkType = btn.dataset.linkType;
-      if (linkType)
-        return this.switchLinkType(linkType);
-      if (btn.classList.contains("link-apply"))
-        return this.applyLink();
-      if (btn.classList.contains("link-unlink"))
-        return this.removeLink();
-    }
-    runCommand(cmd) {
-      switch (cmd) {
-        case "bold":
-          return toggleFormat("b");
-        case "italic":
-          return toggleFormat("i");
-        case "underline":
-          return toggleFormat("u");
-        case "strikeThrough":
-          return toggleFormat("s");
-        case "justifyLeft":
-          return applyBlockAlignment("left");
-        case "justifyCenter":
-          return applyBlockAlignment("center");
-        case "justifyRight":
-          return applyBlockAlignment("right");
-      }
-    }
-    handleSelection() {
-      if (this.interacting)
-        return;
-      const activeEl = this.shadowRoot.activeElement;
-      if (activeEl && (activeEl.tagName === "INPUT" || activeEl.tagName.includes("-"))) {
-        return;
-      }
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed || sel.toString().trim() === "") {
-        this.hide();
-        return;
-      }
-      const rect = sel.getRangeAt(0).getBoundingClientRect();
-      this.selection.save();
-      this.show(rect);
-      this.updateState();
-    }
-    changeSize(delta) {
-      this.selection.restore();
-      const next = Math.max(8, Math.min(96, getCurrentFontSize() + delta));
-      applyInlineStyle("fontSize", `${next}px`);
-      this.selection.save();
-      this.updateSizeDisplay(next);
-    }
-    applyColor(color) {
-      this.selection.restore();
-      if (color === "inherit") {
-        removeInlineStyle("color");
-      } else {
-        applyInlineStyle("color", color);
-      }
-      this.selection.save();
-      this.shadowRoot.querySelector(".color-panel").classList.remove("open");
-      this.updateColorState();
-    }
-    insertListAction(tag) {
-      this.selection.restore();
-      insertList(tag);
-      this.hide();
-    }
-    applyLink() {
-      this.selection.restore();
-      const activeType = this.shadowRoot.querySelector(".link-type-btn.active");
-      const type = activeType?.dataset.linkType || "external";
-      let url = "";
-      if (type === "external") {
-        url = this.shadowRoot.querySelector(".link-input").value.trim();
-      } else if (type === "internal" && this.pageLink) {
-        url = this.pageLink.value || "";
-      }
-      applyLinkUrl(url);
-      this.selection.save();
-      this.closeLinkBar();
-      this.updateState();
-    }
-    removeLink() {
-      this.selection.restore();
-      removeLinkAtSelection();
-      this.selection.save();
-      this.closeLinkBar();
-      this.updateState();
-    }
-    toggleColorPanel() {
-      this.shadowRoot.querySelector(".color-panel").classList.toggle("open");
-      this.closeLinkBar();
-    }
-    toggleLinkBar() {
-      const bar = this.shadowRoot.querySelector(".link-bar");
-      const isOpen = bar.classList.contains("open");
-      this.shadowRoot.querySelector(".color-panel")?.classList.remove("open");
-      if (isOpen) {
-        this.closeLinkBar();
-        return;
-      }
-      const existing = getExistingLink(this.selection.range);
-      const input = this.shadowRoot.querySelector(".link-input");
-      input.value = existing || "";
-      if (this.pageLink && existing) {
-        this.pageLink.value = existing;
-      }
-      bar.classList.add("open");
-    }
-    closeLinkBar() {
-      this.shadowRoot.querySelector(".link-bar")?.classList.remove("open");
-    }
-    switchLinkType(type) {
-      const root2 = this.shadowRoot;
-      root2.querySelectorAll(".link-type-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.linkType === type));
-      root2.querySelectorAll(".link-field").forEach((f) => {
-        f.style.display = f.dataset.linkField === type ? "" : "none";
-      });
-    }
-    updateState() {
-      for (const cmd of ACTIVE_COMMANDS) {
-        const btn = this.shadowRoot.querySelector(`button[data-command="${cmd}"]`);
-        if (btn)
-          btn.classList.toggle("active", queryCommandState(cmd));
-      }
-      const linkBtn = this.shadowRoot.querySelector('[data-action="link"]');
-      if (linkBtn)
-        linkBtn.classList.toggle("active", !!getExistingLink(this.selection.range));
-      this.updateSizeDisplay();
-      this.updateColorState();
-    }
-    updateSizeDisplay(size) {
-      const display = this.shadowRoot.querySelector(".size-display");
-      if (display)
-        display.textContent = String(size ?? getCurrentFontSize());
-    }
-    updateColorState() {
-      const trigger = this.shadowRoot.querySelector(".color-swatch-current");
-      if (!trigger)
-        return;
-      const color = getCurrentColor();
-      if (color)
-        trigger.style.background = color;
-    }
     show(rect) {
       this.classList.add("visible");
       this.shadowRoot.querySelector(".color-panel")?.classList.remove("open");
-      this.closeLinkBar();
+      closeLinkBar(this);
       const scrollX = window.scrollX;
       const scrollY = window.scrollY;
       const gap = 10;
@@ -16682,26 +16724,10 @@ button.active svg {
       this.style.top = `${top}px`;
       this.style.left = `${left}px`;
     }
-    handleOutsideMouseDown(e) {
-      if (!this.classList.contains("visible"))
-        return;
-      const t = e.target;
-      if (this === t || this.contains(t) || this.shadowRoot.contains(t))
-        return;
-      const range = this.selection.range;
-      if (range) {
-        const anchor = range.commonAncestorContainer;
-        const el = anchor.nodeType === 1 ? anchor : anchor.parentElement;
-        const editable = el?.closest?.('[contenteditable="true"]');
-        if (editable && editable.contains(t))
-          return;
-      }
-      this.hide();
-    }
     hide() {
       this.classList.remove("visible");
       this.shadowRoot.querySelector(".color-panel")?.classList.remove("open");
-      this.closeLinkBar();
+      closeLinkBar(this);
     }
   }
   customElements.define("cms-richtextbar", RichTextBar);
@@ -17095,13 +17121,9 @@ button.active svg {
       });
       Array.from(this.attributes).filter((attr) => attr.name.startsWith("default-")).forEach((attr) => this._setDefaultValue(attr.name));
       this._lockIdentifier();
-      if (this.hasAttribute("default-identifier")) {
-        this._loadUsages(this.getAttribute("default-identifier"));
-      }
     }
     _collectFormData() {
       return {
-        identifier: this._getInputValue("identifier"),
         name: this._getInputValue("name"),
         description: this._getInputValue("description"),
         category: this._getTagSuggestValue("category")
@@ -17135,25 +17157,6 @@ button.active svg {
       const input = this._getInputElement("identifier");
       if (input)
         input.disabled = true;
-    }
-    async _loadUsages(identifier) {
-      try {
-        const endpoint = new URL("../../api/snippets", window.location.href);
-        endpoint.searchParams.set("identifier", identifier);
-        endpoint.searchParams.set("usages", "true");
-        const res = await fetch(endpoint);
-        if (!res.ok)
-          return;
-        const { pages } = await res.json();
-        const list = this.shadowRoot?.querySelector(".usages-list");
-        if (!list)
-          return;
-        if (pages.length === 0) {
-          list.innerHTML = `<li class="usages-empty">Not used on any page yet.</li>`;
-          return;
-        }
-        list.innerHTML = pages.map((p) => `<li>• ${p.title || p.identifier} <small>(${p.path})</small></li>`).join("");
-      } catch {}
     }
     show() {
       const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
@@ -19157,25 +19160,4 @@ button.active svg {
     }
   }
   customElements.define("cms-fetch", FetchComponent);
-})();
-(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
 })();
