@@ -95,7 +95,7 @@ export class InMemoryMediaServer {
         const bytes = this._bytes.get(id);
         if (!item || item.type === "folder" || !bytes) return new Response("", { status: 404 });
         const file = item as FileMetadata;
-        return new Response(new Blob([bytes]), {
+        return new Response(new Blob([bytes as Uint8Array<ArrayBuffer>]), {
             headers: { "Content-Type": file.mimeType, "Content-Length": String(file.size) },
         });
     }

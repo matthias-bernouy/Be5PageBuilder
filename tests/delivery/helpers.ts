@@ -134,6 +134,7 @@ export function testRepository(opts: TestRepositoryOpts = {}): DeliveryRepositor
         getSnippetByIdentifier: async (id): Promise<TSnippet | null> => {
             if (!opts.snippets || !(id in opts.snippets)) return null;
             return {
+                id: `snippet-${id}`,
                 identifier: id,
                 name: id,
                 description: "",
@@ -183,6 +184,7 @@ export function makeDelivery(opts: {
 
 export function page(over: Partial<TPage> = {}): TPage {
     return {
+        id: "test-page",
         path: "/about",
         title: "About",
         description: "About desc",

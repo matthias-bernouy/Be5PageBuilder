@@ -139,7 +139,7 @@ export class InMemoryMedia implements Media {
         if (opts.data instanceof Blob) {
             absoluteURL = URL.createObjectURL(opts.data);
         } else if (opts.data instanceof Uint8Array) {
-            absoluteURL = URL.createObjectURL(new Blob([opts.data], { type: mimeType }));
+            absoluteURL = URL.createObjectURL(new Blob([opts.data as Uint8Array<ArrayBuffer>], { type: mimeType }));
         } else {
             // ReadableStream: consume into a Blob first.
             const reader = opts.data.getReader();
@@ -149,7 +149,7 @@ export class InMemoryMedia implements Media {
                 if (done) break;
                 if (value) chunks.push(value);
             }
-            absoluteURL = URL.createObjectURL(new Blob(chunks, { type: mimeType }));
+            absoluteURL = URL.createObjectURL(new Blob(chunks as Uint8Array<ArrayBuffer>[], { type: mimeType }));
         }
 
         const now  = new Date();

@@ -80,7 +80,7 @@ export class HttpMedia implements Media {
         const blob = opts.data instanceof Blob
             ? opts.data
             : opts.data instanceof Uint8Array
-                ? new Blob([opts.data], { type: opts.mimeType ?? "application/octet-stream" })
+                ? new Blob([opts.data as Uint8Array<ArrayBuffer>], { type: opts.mimeType ?? "application/octet-stream" })
                 : await this._streamToBlob(opts.data, opts.mimeType ?? "application/octet-stream");
 
         const fd = new FormData();
@@ -162,7 +162,7 @@ export class HttpMedia implements Media {
             if (done) break;
             if (value) chunks.push(value);
         }
-        return new Blob(chunks, { type: mimeType });
+        return new Blob(chunks as Uint8Array<ArrayBuffer>[], { type: mimeType });
     }
 
     private _readImageDimensions(blob: Blob): Promise<{ width: number; height: number }> {
