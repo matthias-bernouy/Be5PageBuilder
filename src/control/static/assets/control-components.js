@@ -1,23 +1,23 @@
 (() => {
   // ../WebComponents/dist/ui.js
   (() => {
-    var { defineProperty: Rt, getOwnPropertyNames: fo, getOwnPropertyDescriptor: vo } = Object, _o = Object.prototype.hasOwnProperty;
-    var fe = new WeakMap, xo = (t) => {
+    var { defineProperty: Rt, getOwnPropertyNames: fa, getOwnPropertyDescriptor: va } = Object, _a = Object.prototype.hasOwnProperty;
+    var fe = new WeakMap, xa = (t) => {
       var e = fe.get(t), r;
       if (e)
         return e;
       if (e = Rt({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
-        fo(t).map((i) => !_o.call(e, i) && Rt(e, i, { get: () => t[i], enumerable: !(r = vo(t, i)) || r.enumerable }));
+        fa(t).map((i) => !_a.call(e, i) && Rt(e, i, { get: () => t[i], enumerable: !(r = va(t, i)) || r.enumerable }));
       return fe.set(t, e), e;
     };
-    var yo = (t, e) => {
+    var ya = (t, e) => {
       for (var r in e)
         Rt(t, r, { get: e[r], enumerable: true, configurable: true, set: (i) => e[r] = () => i });
     };
-    var gl = {};
-    yo(gl, { showToast: () => ho, Tooltip: () => Pt, ToastStack: () => It, Toast: () => zt, Textarea: () => pt, TagSuggest: () => ut, Tag: () => st, Tabs: () => St, TableRow: () => Lt, TableHeaderCell: () => Tt, TableCell: () => Ct, Table: () => Mt, TabPanel: () => Ht, Switch: () => ot, Stepper: () => At, Step: () => Et, Stack: () => gt, Spinner: () => kt, Skeleton: () => wt, SegmentedSwitch: () => nt, RadioGroup: () => et, Radio: () => Q, Progress: () => yt, Pagination: () => xt, P9rSizesSelect: () => J, P9rSelect: () => G, P9rRange: () => Z, P9rInput: () => W, OpenModal: () => O, Modal: () => D, LeftMenuLayout: () => bt, LateralMenuItem: () => ft, LateralMenu: () => vt, LateralDialog: () => F, InputFile: () => X, IconButton: () => U, HorizontalActionGroup: () => ht, FormSection: () => $, FormDialog: () => V, Divider: () => j, Container: () => mt, Component: () => s, Checkbox: () => K, Card: () => B, Button: () => N, BreadcrumbItem: () => R, Breadcrumb: () => q, Badge: () => P, Avatar: () => I, Alert: () => z, AccordionItem: () => H, Accordion: () => S });
+    var fl = {};
+    ya(fl, { showToast: () => ha, Tooltip: () => Pt, ToastStack: () => It, Toast: () => zt, Textarea: () => ut, TagSuggest: () => pt, Tag: () => ot, Tabs: () => St, TableRow: () => Lt, TableHeaderCell: () => Tt, TableCell: () => Ct, Table: () => Mt, TabPanel: () => Ht, Switch: () => at, Stepper: () => At, Step: () => Et, Stack: () => gt, Spinner: () => kt, Skeleton: () => wt, SegmentedSwitch: () => nt, RadioGroup: () => et, Radio: () => Q, Progress: () => yt, Pagination: () => xt, P9rSizesSelect: () => J, P9rSelect: () => G, P9rRange: () => Z, P9rInput: () => W, OpenModal: () => O, Modal: () => D, LeftMenuLayout: () => bt, LateralMenuItem: () => ft, LateralMenu: () => vt, LateralDialog: () => F, InputFile: () => X, IconButton: () => U, HorizontalActionGroup: () => ht, FormSection: () => $, FormDialog: () => V, Divider: () => j, Container: () => mt, Component: () => o, Checkbox: () => K, Card: () => B, Button: () => N, BreadcrumbItem: () => R, Breadcrumb: () => q, Badge: () => P, Avatar: () => I, Alert: () => z, AccordionItem: () => H, Accordion: () => S });
 
-    class s extends HTMLElement {
+    class o extends HTMLElement {
       constructor(t) {
         super();
         let e = this.attachShadow({ mode: "open" });
@@ -170,7 +170,7 @@
 }
 `;
 
-    class H extends s {
+    class H extends o {
       _header;
       static get observedAttributes() {
         return ["open", "disabled"];
@@ -237,7 +237,7 @@
     if (!customElements.get("p9r-accordion-item"))
       customElements.define("p9r-accordion-item", H);
 
-    class S extends s {
+    class S extends o {
       constructor() {
         super({ css: _e, template: ve });
       }
@@ -420,15 +420,15 @@
   to   { opacity: 0; transform: translateY(-6px); }
 }
 `;
-    var Mo = ke + Ee;
+    var Ma = ke + Ee;
 
-    class z extends s {
+    class z extends o {
       _close;
       static get observedAttributes() {
         return ["dismissible"];
       }
       constructor() {
-        super({ css: Mo, template: we });
+        super({ css: Ma, template: we });
         this._close = this.shadowRoot?.querySelector(".close") ?? null;
       }
       connectedCallback() {
@@ -539,7 +539,7 @@
 }
 `;
 
-    class I extends s {
+    class I extends o {
       _img;
       _initials;
       static get observedAttributes() {
@@ -668,7 +668,7 @@
 }
 `;
 
-    class P extends s {
+    class P extends o {
       constructor() {
         super({ css: Te, template: Ce });
       }
@@ -751,7 +751,7 @@
 }
 `;
 
-    class R extends s {
+    class R extends o {
       _link;
       static get observedAttributes() {
         return ["href", "current"];
@@ -790,7 +790,7 @@
     if (!customElements.get("p9r-breadcrumb-item"))
       customElements.define("p9r-breadcrumb-item", R);
 
-    class q extends s {
+    class q extends o {
       static get observedAttributes() {
         return ["separator"];
       }
@@ -905,7 +905,7 @@
 }
 `;
 
-    class B extends s {
+    class B extends o {
       constructor() {
         super({ css: Pe, template: Ie });
       }
@@ -1085,14 +1085,14 @@ footer.actions {
         t.close();
     }, je = (t, e) => {
       t.querySelectorAll("[name]").forEach((i) => {
-        let n = i.getAttribute("name"), o = i.value;
-        if (n && o !== undefined && o !== null && o !== "")
-          e.formData.append(n, String(o));
+        let n = i.getAttribute("name"), a = i.value;
+        if (n && a !== undefined && a !== null && a !== "")
+          e.formData.append(n, String(a));
       });
     };
-    var No = qe + Be;
+    var Na = qe + Be;
 
-    class V extends s {
+    class V extends o {
       _dialog;
       _form;
       _previouslyFocused = null;
@@ -1100,7 +1100,7 @@ footer.actions {
         return ["action", "method", "enctype"];
       }
       constructor() {
-        super({ css: No, template: Re });
+        super({ css: Na, template: Re });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._form = this.shadowRoot?.querySelector("#form-validation") ?? null;
       }
       connectedCallback() {
@@ -1377,16 +1377,16 @@ footer slot[name="footer"]::slotted(button:hover) {
         t.removeAttribute("open");
       We(t);
     };
-    var Xo = Ke + $e + Ue;
+    var Xa = Ke + $e + Ue;
 
-    class F extends s {
+    class F extends o {
       _dialog;
       _closeBtn;
       static get observedAttributes() {
         return ["open"];
       }
       constructor() {
-        super({ css: Xo, template: Ne });
+        super({ css: Xa, template: Ne });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._closeBtn = this.shadowRoot?.querySelector("#close-btn") ?? null;
       }
       connectedCallback() {
@@ -1542,7 +1542,7 @@ dialog[open]::backdrop { opacity: 1; }
 .body { padding: var(--modal-pad); overflow: auto; }
 `;
 
-    class D extends s {
+    class D extends o {
       _dialog = null;
       _onBackdrop = (t) => tr(this, t);
       _onCancel = (t) => er(this, t);
@@ -1615,17 +1615,17 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-modal"))
       customElements.define("p9r-modal", D);
-    var or = `<slot></slot>
+    var ar = `<slot></slot>
 `;
-    var sr = `:host {
+    var or = `:host {
     display: contents;
     cursor: pointer;
 }
 `;
 
-    class O extends s {
+    class O extends o {
       constructor() {
-        super({ css: sr, template: or });
+        super({ css: or, template: ar });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -1666,7 +1666,7 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-open-modal"))
       customElements.define("p9r-open-modal", O);
-    var ar = `<div class="divider" part="divider" role="separator">
+    var sr = `<div class="divider" part="divider" role="separator">
     <span class="line line-start" part="line"></span>
     <span class="label" part="label"><slot></slot></span>
     <span class="line line-end" part="line"></span>
@@ -1757,12 +1757,12 @@ dialog[open]::backdrop { opacity: 1; }
 }
 `;
 
-    class j extends s {
+    class j extends o {
       static get observedAttributes() {
         return ["orientation"];
       }
       constructor() {
-        super({ css: lr, template: ar });
+        super({ css: lr, template: sr });
       }
       connectedCallback() {
         this._syncAria();
@@ -1844,7 +1844,7 @@ dialog[open]::backdrop { opacity: 1; }
   width: 1.2rem;
 }
 `;
-    var ur = `:host([color="primary"]) {
+    var pr = `:host([color="primary"]) {
   --_accent-base: var(--primary-base);
   --_accent-muted: var(--primary-muted);
   --_accent-contrast: oklch(100% 0 0);
@@ -1920,14 +1920,14 @@ dialog[open]::backdrop { opacity: 1; }
   }
 }
 `;
-    var ns = cr + ur;
+    var no = cr + pr;
 
-    class N extends s {
+    class N extends o {
       static formAssociated = true;
       _internals;
       _btn;
       constructor() {
-        super({ css: ns, template: dr });
+        super({ css: no, template: dr });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       static get observedAttributes() {
@@ -1985,7 +1985,7 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-button"))
       customElements.define("p9r-button", N);
-    var pr = `<label class="checkbox-container" part="container">
+    var ur = `<label class="checkbox-container" part="container">
     <span class="input-wrapper">
         <input type="checkbox" id="native-input" part="input" />
         <span class="custom-box" part="box" aria-hidden="true">
@@ -2176,9 +2176,9 @@ input:focus-visible ~ .custom-box {
       if (t.hasAttribute("disabled"))
         e.preventDefault(), e.stopImmediatePropagation();
     };
-    var ls = hr + mr;
+    var lo = hr + mr;
 
-    class K extends s {
+    class K extends o {
       static formAssociated = true;
       _internals;
       _input;
@@ -2189,7 +2189,7 @@ input:focus-visible ~ .custom-box {
         return ["checked", "disabled", "name", "value", "indeterminate"];
       }
       constructor() {
-        super({ css: ls, template: pr });
+        super({ css: lo, template: ur });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
@@ -2366,7 +2366,7 @@ header:focus-visible {
       e.preventDefault(), Vt(t);
     };
 
-    class $ extends s {
+    class $ extends o {
       static get observedAttributes() {
         return ["collapsed", "data-title"];
       }
@@ -2496,7 +2496,7 @@ header:focus-visible {
 }
 `;
 
-    class U extends s {
+    class U extends o {
       static formAssociated = true;
       _internals;
       _btn;
@@ -2710,28 +2710,28 @@ input[type="file"]:focus-visible + label {
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { files: e } }));
     };
     var Y = (t, e, r, i, n) => {
-      let o = e?.files;
-      if (!o || o.length === 0) {
+      let a = e?.files;
+      if (!a || a.length === 0) {
         if (r)
           r.textContent = "No file selected";
         n.setFormValue(null), Ft(i, "No file selected"), Dt(t, null);
         return;
       }
-      let a = o.length === 1 && o[0] ? `${o[0].name} (${Hr(o[0].size)})` : `${o.length} files selected`;
+      let s = a.length === 1 && a[0] ? `${a[0].name} (${Hr(a[0].size)})` : `${a.length} files selected`;
       if (r)
-        r.textContent = a;
-      if (o.length === 1 && o[0])
-        n.setFormValue(o[0]);
+        r.textContent = s;
+      if (a.length === 1 && a[0])
+        n.setFormValue(a[0]);
       else {
         let l = new FormData, d = t.getAttribute("name") ?? "";
-        for (let c = 0;c < o.length; c++) {
-          let u = o.item(c);
-          if (u)
-            l.append(d, u);
+        for (let c = 0;c < a.length; c++) {
+          let p = a.item(c);
+          if (p)
+            l.append(d, p);
         }
         n.setFormValue(l);
       }
-      Ft(i, `Selected: ${a}`), Dt(t, o);
+      Ft(i, `Selected: ${s}`), Dt(t, a);
     };
     var Sr = (t, e) => {
       if (e.preventDefault(), t.hasAttribute("disabled"))
@@ -2739,15 +2739,15 @@ input[type="file"]:focus-visible + label {
       t.toggleAttribute("dragging", true);
     }, zr = (t, e) => {
       e.preventDefault(), t.toggleAttribute("dragging", false);
-    }, Ir = (t, e, r, i, n, o) => {
-      let a = o;
-      if (a.preventDefault(), t.removeAttribute("dragging"), t.hasAttribute("disabled"))
+    }, Ir = (t, e, r, i, n, a) => {
+      let s = a;
+      if (s.preventDefault(), t.removeAttribute("dragging"), t.hasAttribute("disabled"))
         return;
-      if (a.dataTransfer?.files && e)
-        e.files = a.dataTransfer.files, Y(t, e, r, i, n);
+      if (s.dataTransfer?.files && e)
+        e.files = s.dataTransfer.files, Y(t, e, r, i, n);
     };
 
-    class X extends s {
+    class X extends o {
       static formAssociated = true;
       _internals;
       _input;
@@ -2987,20 +2987,20 @@ input[type="file"]:focus-visible + label {
       let n = Ot(t);
       if (n === null)
         return;
-      let o = e.value.length;
-      i.textContent = String(o), r.dataset.over = String(o > n);
+      let a = e.value.length;
+      i.textContent = String(a), r.dataset.over = String(a > n);
     }, jt = (t, e, r) => {
       if (!t || !e || !r)
         return;
       let i = (t.textContent ?? "").length > 0, n = !e.hidden;
       r.hidden = !i && !n;
-    }, _s = 0, Fr = () => `p9r-input-label-${++_s}`;
+    }, xo = 0, Fr = () => `p9r-input-label-${++xo}`;
     var Nt = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("label") ?? "";
       e.textContent = r, e.hidden = r === "";
-    }, xs = (t, e) => {
+    }, yo = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("placeholder");
@@ -3008,14 +3008,14 @@ input[type="file"]:focus-visible + label {
         e.removeAttribute("placeholder");
       else
         e.setAttribute("placeholder", r);
-    }, ys = (t, e) => {
+    }, wo = (t, e) => {
       if (!e)
         return;
       e.setAttribute("type", t.getAttribute("type") ?? "text");
-    }, ws = (t, e) => {
+    }, ko = (t, e) => {
       if (e)
         e.disabled = t.hasAttribute("disabled");
-    }, ks = (t, e) => {
+    }, Eo = (t, e) => {
       if (!e)
         return;
       let r = t.hasAttribute("required");
@@ -3023,15 +3023,15 @@ input[type="file"]:focus-visible + label {
         e.setAttribute("aria-required", "true");
       else
         e.removeAttribute("aria-required");
-    }, Es = (t, e, r, i) => {
+    }, Ao = (t, e, r, i) => {
       if (!e)
         return;
       e.textContent = t.getAttribute("hint") ?? "", jt(e, r, i);
-    }, As = (t, e) => {
+    }, Lo = (t, e) => {
       if (!e)
         return;
       e.dataset.level = t.getAttribute("hint-level") ?? "info";
-    }, Ls = (t, e) => {
+    }, Co = (t, e) => {
       if (!e)
         return;
       if (t.hasAttribute("invalid"))
@@ -3041,14 +3041,14 @@ input[type="file"]:focus-visible + label {
     }, Kt = (t, e, r, i, n) => {
       if (!e || !r)
         return;
-      let o = Ot(t);
-      if (o === null)
+      let a = Ot(t);
+      if (a === null)
         e.hidden = true;
       else
-        e.hidden = false, r.textContent = String(o);
+        e.hidden = false, r.textContent = String(a);
       jt(i, e, n);
-    }, $t = (t, e, r, i, n, o, a) => {
-      Nt(t, r), xs(t, e), ys(t, e), ws(t, e), ks(t, e), Es(t, i, o, n), As(t, i), Ls(t, e), Kt(t, o, a, i, n);
+    }, $t = (t, e, r, i, n, a, s) => {
+      Nt(t, r), yo(t, e), wo(t, e), ko(t, e), Eo(t, e), Ao(t, i, a, n), Lo(t, i), Co(t, e), Kt(t, a, s, i, n);
     };
     var Dr = (t, e, r, i, n) => {
       if (!e)
@@ -3059,9 +3059,9 @@ input[type="file"]:focus-visible + label {
         return;
       e.setFormValue(t.value);
     };
-    var Cs = Rr + qr + Br;
+    var To = Rr + qr + Br;
 
-    class W extends s {
+    class W extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "type", "hint", "hint-level", "max-count", "invalid", "disabled", "required"];
@@ -3077,7 +3077,7 @@ input[type="file"]:focus-visible + label {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super({ css: Cs, template: Pr });
+        super({ css: To, template: Pr });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         this._labelEl = t.querySelector(".label"), this._input = t.querySelector(".input"), this._hintEl = t.querySelector(".hint"), this._metaEl = t.querySelector(".meta"), this._counterEl = t.querySelector(".counter"), this._countEl = t.querySelector(".count"), this._maxEl = t.querySelector(".max");
@@ -3351,14 +3351,14 @@ input[type="file"]:focus-visible + label {
     }, _ = (t, e) => {
       if (!t || !e)
         return;
-      let r = Number(t.min), i = Number(t.max), n = Number(t.value), o = i === r ? 0 : (n - r) / (i - r) * 100;
-      e.style.width = `${o}%`;
+      let r = Number(t.min), i = Number(t.max), n = Number(t.value), a = i === r ? 0 : (n - r) / (i - r) * 100;
+      e.style.width = `${a}%`;
     };
     var Ut = (t, e, r, i, n) => {
       if (!e || !r || !i || !n)
         return;
-      let o = t.getAttribute("min") ?? "0", a = t.getAttribute("max") ?? "100", l = t.getAttribute("step") ?? "1";
-      e.min = o, e.max = a, e.step = l, r.min = o, r.max = a, r.step = l, i.textContent = o, n.textContent = a;
+      let a = t.getAttribute("min") ?? "0", s = t.getAttribute("max") ?? "100", l = t.getAttribute("step") ?? "1";
+      e.min = a, e.max = s, e.step = l, r.min = a, r.max = s, r.step = l, i.textContent = a, n.textContent = s;
     }, Yt = (t, e, r, i) => {
       if (!e || !r || !i)
         return;
@@ -3378,8 +3378,8 @@ input[type="file"]:focus-visible + label {
     }, L = (t, e, r, i, n) => {
       if (!t || !e)
         return;
-      let o = A(t, Number(n));
-      t.value = String(o), e.value = String(o), i.setFormValue(t.value), _(t, r);
+      let a = A(t, Number(n));
+      t.value = String(a), e.value = String(a), i.setFormValue(t.value), _(t, r);
     };
     var Yr = (t, e, r, i, n) => {
       if (!e || !r)
@@ -3394,21 +3394,21 @@ input[type="file"]:focus-visible + label {
         return;
       if (r.value === "")
         return;
-      let o = A(e, Number(r.value));
-      e.value = String(o), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+      let a = A(e, Number(r.value));
+      e.value = String(a), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
     }, Zr = (t, e, r, i, n) => {
       if (!e || !r)
         return;
-      let o = A(e, Number(r.value));
-      e.value = String(o), r.value = String(o), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+      let a = A(e, Number(r.value));
+      e.value = String(a), r.value = String(a), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
     }, Gr = (t, e) => {
       if (!t || !e)
         return;
       e.value = t.value;
     };
-    var zs = Nr + Kr + $r;
+    var Io = Nr + Kr + $r;
 
-    class Z extends s {
+    class Z extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "min", "max", "step", "unit", "disabled"];
@@ -3424,7 +3424,7 @@ input[type="file"]:focus-visible + label {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super({ css: zs, template: jr });
+        super({ css: Io, template: jr });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         this._slider = t.querySelector(".slider"), this._input = t.querySelector(".number"), this._fill = t.querySelector(".fill"), this._labelEl = t.querySelector(".label"), this._unitEl = t.querySelector(".unit"), this._minEl = t.querySelector(".min-bound"), this._maxEl = t.querySelector(".max-bound");
@@ -3586,16 +3586,14 @@ input[type="file"]:focus-visible + label {
 }
 
 .panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    margin-top: 4px;
+    /* \`top\`, \`left\`, \`width\` set inline by \`_repositionPanel\`. Fixed so the
+     * dropdown escapes any ancestor with \`overflow: hidden|auto\`. */
+    position: fixed;
     background: var(--bg-surface, #fff);
     border: 1px solid var(--border-default, #e2e8f0);
     border-radius: 8px;
     box-shadow: 0 8px 20px rgb(0 0 0 / 0.08);
-    z-index: 50;
+    z-index: 9999;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-4px);
@@ -3635,23 +3633,23 @@ input[type="file"]:focus-visible + label {
       let i = Array.from(t.querySelectorAll("option"));
       if (e)
         e.innerHTML = "";
-      let n = [], o = "", a = "";
+      let n = [], a = "", s = "";
       if (i.forEach((l) => {
         let d = document.createElement("li");
-        if (d.className = "option", d.textContent = l.textContent, d.dataset.value = l.value, d.addEventListener("click", () => r(l.value, l.textContent ?? "")), e?.appendChild(d), n.push(d), l.hasAttribute("selected") && !o)
-          o = l.value, a = l.textContent ?? "";
-      }), !o && i.length > 0)
-        o = i[0].value, a = i[0].textContent ?? "";
-      return { options: n, initialValue: o, initialLabel: a };
-    }, oi = (t, e, r, i) => {
+        if (d.className = "option", d.textContent = l.textContent, d.dataset.value = l.value, d.addEventListener("click", () => r(l.value, l.textContent ?? "")), e?.appendChild(d), n.push(d), l.hasAttribute("selected") && !a)
+          a = l.value, s = l.textContent ?? "";
+      }), !a && i.length > 0)
+        a = i[0].value, s = i[0].textContent ?? "";
+      return { options: n, initialValue: a, initialLabel: s };
+    }, ai = (t, e, r, i) => {
       if (e)
         e.textContent = i;
       ei(t, r);
     };
-    var si = (t, e) => {
+    var oi = (t, e) => {
       if (t._isOpen && !t.contains(e.target))
         t._close();
-    }, ai = (t, e) => {
+    }, si = (t, e) => {
       if (e.stopPropagation(), t._isOpen)
         t._close();
       else
@@ -3665,9 +3663,9 @@ input[type="file"]:focus-visible + label {
         else
           t._open();
     };
-    var qs = Qr + ti;
+    var Bo = Qr + ti;
 
-    class G extends s {
+    class G extends o {
       static formAssociated = true;
       _internals;
       _trigger;
@@ -3678,21 +3676,22 @@ input[type="file"]:focus-visible + label {
       _isOpen = false;
       _value = "";
       constructor() {
-        super({ css: qs, template: Jr });
+        super({ css: Bo, template: Jr });
         this._internals = this.attachInternals(), this._trigger = this.shadowRoot.querySelector(".trigger"), this._display = this.shadowRoot.querySelector(".value"), this._list = this.shadowRoot.querySelector(".list"), this._panel = this.shadowRoot.querySelector(".panel");
       }
       connectedCallback() {
         ri(this.shadowRoot.querySelector(".label"), this), this.shadowRoot.querySelector("slot").addEventListener("slotchange", this._onSlot), this._trigger?.addEventListener("click", this._onClick), this._trigger?.addEventListener("keydown", this._onKey), window.addEventListener("click", this._onWindow), this._syncFromSlot();
       }
       disconnectedCallback() {
-        this.shadowRoot.querySelector("slot")?.removeEventListener("slotchange", this._onSlot), this._trigger?.removeEventListener("click", this._onClick), this._trigger?.removeEventListener("keydown", this._onKey), window.removeEventListener("click", this._onWindow);
+        if (this.shadowRoot.querySelector("slot")?.removeEventListener("slotchange", this._onSlot), this._trigger?.removeEventListener("click", this._onClick), this._trigger?.removeEventListener("keydown", this._onKey), window.removeEventListener("click", this._onWindow), this._isOpen)
+          this._close();
       }
       _syncFromSlot = () => {
-        let { options: t, initialValue: e, initialLabel: r } = ni(this, this._list, (n, o) => this._select(n, o));
+        let { options: t, initialValue: e, initialLabel: r } = ni(this, this._list, (n, a) => this._select(n, a));
         this._options = t;
         let i = this.getAttribute("value");
         if (i !== null) {
-          let n = t.find((o) => o.dataset.value === i);
+          let n = t.find((a) => a.dataset.value === i);
           if (n) {
             this._setValue(i, n.textContent ?? "");
             return;
@@ -3705,14 +3704,20 @@ input[type="file"]:focus-visible + label {
         this._setValue(t, e), this._close(), this.dispatchEvent(new Event("change", { bubbles: true }));
       }
       _setValue(t, e) {
-        this._value = t, this._internals.setFormValue(t), oi(this._options, this._display, t, e);
+        this._value = t, this._internals.setFormValue(t), ai(this._options, this._display, t, e);
       }
       _open() {
-        ii(this), this._isOpen = true, this._panel?.classList.add("open"), this._trigger?.classList.add("open");
+        ii(this), this._isOpen = true, this._panel?.classList.add("open"), this._trigger?.classList.add("open"), this._reposition(), window.addEventListener("scroll", this._reposition, { capture: true, passive: true }), window.addEventListener("resize", this._reposition);
       }
       _close() {
-        this._isOpen = false, this._panel?.classList.remove("open"), this._trigger?.classList.remove("open");
+        this._isOpen = false, this._panel?.classList.remove("open"), this._trigger?.classList.remove("open"), window.removeEventListener("scroll", this._reposition, { capture: true }), window.removeEventListener("resize", this._reposition);
       }
+      _reposition = () => {
+        if (!this._trigger || !this._panel)
+          return;
+        let t = this._trigger.getBoundingClientRect();
+        this._panel.style.top = `${t.bottom + 4}px`, this._panel.style.left = `${t.left}px`, this._panel.style.width = `${t.width}px`;
+      };
       get value() {
         return this._value;
       }
@@ -3725,9 +3730,9 @@ input[type="file"]:focus-visible + label {
         return this.getAttribute("name");
       }
       _onSlot = () => this._syncFromSlot();
-      _onClick = (t) => ai(this, t);
+      _onClick = (t) => si(this, t);
       _onKey = (t) => li(this, t);
-      _onWindow = (t) => si(this, t);
+      _onWindow = (t) => oi(this, t);
     }
     if (!customElements.get("p9r-select"))
       customElements.define("p9r-select", G);
@@ -3736,10 +3741,10 @@ input[type="file"]:focus-visible + label {
       connectedCallback() {
         let t = this.getAttribute("label") || "Size", e = this.getAttribute("name") || "size", r = document.createElement("p9r-select");
         r.setAttribute("label", t), r.setAttribute("name", e), [{ value: "none", label: "NONE" }, { value: "xs", label: "XS" }, { value: "sm", label: "S" }, { value: "md", label: "M", selected: true }, { value: "lg", label: "L" }, { value: "xl", label: "XL" }].forEach((n) => {
-          let o = document.createElement("option");
-          if (o.value = n.value, o.textContent = n.label, n.selected)
-            o.setAttribute("selected", "");
-          r.appendChild(o);
+          let a = document.createElement("option");
+          if (a.value = n.value, a.textContent = n.label, n.selected)
+            a.setAttribute("selected", "");
+          r.appendChild(a);
         }), this.replaceWith(r);
       }
       get name() {
@@ -3839,7 +3844,7 @@ input:focus-visible ~ .custom {
 }
 `;
 
-    class Q extends s {
+    class Q extends o {
       _input;
       static get observedAttributes() {
         return ["checked", "disabled", "value", "name"];
@@ -3918,14 +3923,14 @@ input:focus-visible ~ .custom {
     }
     if (!customElements.get("p9r-radio"))
       customElements.define("p9r-radio", Q);
-    var ui = `<fieldset class="group" part="group">
+    var pi = `<fieldset class="group" part="group">
     <legend class="label" part="label"></legend>
     <div class="options" part="options">
         <slot></slot>
     </div>
 </fieldset>
 `;
-    var pi = `:host {
+    var ui = `:host {
   display: block;
 }
 
@@ -3976,7 +3981,7 @@ input:focus-visible ~ .custom {
       if (!t)
         return [];
       return t.assignedElements({ flatten: true }).filter((e) => e.tagName === "P9R-RADIO");
-    }, Os = 0, mi = () => `radiogroup-${Os++}`, bi = (t, e, r) => {
+    }, jo = 0, mi = () => `radiogroup-${jo++}`, bi = (t, e, r) => {
       t.forEach((i) => {
         let n = e !== null && i.getAttribute("value") === e;
         if (n)
@@ -3997,18 +4002,18 @@ input:focus-visible ~ .custom {
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: e } }));
     };
     var Jt = (t, e, r) => {
-      let i = x(e), n = t.getAttribute("name") ?? mi(), o = t.getAttribute("value");
-      if (i.forEach((a) => {
-        a.setAttribute("name", n);
-        let l = o !== null && a.getAttribute("value") === o;
+      let i = x(e), n = t.getAttribute("name") ?? mi(), a = t.getAttribute("value");
+      if (i.forEach((s) => {
+        s.setAttribute("name", n);
+        let l = a !== null && s.getAttribute("value") === a;
         if (l)
-          a.setAttribute("checked", "");
+          s.setAttribute("checked", "");
         else
-          a.removeAttribute("checked");
-        a.setAttribute("tabindex", l ? "0" : "-1");
-      }), o === null && i.length > 0)
+          s.removeAttribute("checked");
+        s.setAttribute("tabindex", l ? "0" : "-1");
+      }), a === null && i.length > 0)
         i[0]?.setAttribute("tabindex", "0");
-      tt(i, t.hasAttribute("disabled")), r.setFormValue(o ?? null);
+      tt(i, t.hasAttribute("disabled")), r.setFormValue(a ?? null);
     }, gi = (t, e) => {
       let r = e.target;
       if (r.tagName !== "P9R-RADIO")
@@ -4019,18 +4024,18 @@ input:focus-visible ~ .custom {
     }, fi = (t, e, r) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(r.key))
         return;
-      let n = x(e).filter((u) => !u.hasAttribute("disabled"));
+      let n = x(e).filter((p) => !p.hasAttribute("disabled"));
       if (n.length === 0)
         return;
-      let o = n.findIndex((u) => u === document.activeElement), a = o === -1 ? 0 : o, l = a;
+      let a = n.findIndex((p) => p === document.activeElement), s = a === -1 ? 0 : a, l = s;
       switch (r.key) {
         case "ArrowLeft":
         case "ArrowUp":
-          l = (a - 1 + n.length) % n.length;
+          l = (s - 1 + n.length) % n.length;
           break;
         case "ArrowRight":
         case "ArrowDown":
-          l = (a + 1) % n.length;
+          l = (s + 1) % n.length;
           break;
         case "Home":
           l = 0;
@@ -4047,7 +4052,7 @@ input:focus-visible ~ .custom {
       t.setAttribute("value", c), d.focus(), Gt(t, c);
     };
 
-    class et extends s {
+    class et extends o {
       static formAssociated = true;
       _internals;
       _label;
@@ -4058,7 +4063,7 @@ input:focus-visible ~ .custom {
         return ["value", "label", "name", "disabled"];
       }
       constructor() {
-        super({ css: pi, template: ui });
+        super({ css: ui, template: pi });
         this._internals = this.attachInternals(), this._label = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
@@ -4230,9 +4235,9 @@ input:focus-visible ~ .custom {
       let i = e.findIndex((n) => n.getAttribute("value") === r);
       if (i === -1)
         return;
-      t.style.setProperty("--active-index", i.toString()), e.forEach((n, o) => {
-        let a = o === i;
-        n.setAttribute("aria-checked", a.toString()), n.setAttribute("tabindex", a ? "0" : "-1");
+      t.style.setProperty("--active-index", i.toString()), e.forEach((n, a) => {
+        let s = a === i;
+        n.setAttribute("aria-checked", s.toString()), n.setAttribute("tabindex", s ? "0" : "-1");
       });
     }, it = (t, e) => {
       t.forEach((r) => {
@@ -4261,15 +4266,15 @@ input:focus-visible ~ .custom {
       let n = C(e);
       if (n.length === 0)
         return;
-      let o = n.findIndex((c) => c.getAttribute("value") === t.value), a = o === -1 ? 0 : o, l = a;
+      let a = n.findIndex((c) => c.getAttribute("value") === t.value), s = a === -1 ? 0 : a, l = s;
       switch (r.key) {
         case "ArrowLeft":
         case "ArrowUp":
-          l = (a - 1 + n.length) % n.length;
+          l = (s - 1 + n.length) % n.length;
           break;
         case "ArrowRight":
         case "ArrowDown":
-          l = (a + 1) % n.length;
+          l = (s + 1) % n.length;
           break;
         case "Home":
           l = 0;
@@ -4285,7 +4290,7 @@ input:focus-visible ~ .custom {
       t.value = d.getAttribute("value") ?? "", d.focus();
     };
 
-    class nt extends s {
+    class nt extends o {
       static formAssociated = true;
       _internals;
       _labelEl;
@@ -4489,7 +4494,7 @@ input:focus-visible ~ .track {
         e.preventDefault(), e.stopImmediatePropagation();
     };
 
-    class ot extends s {
+    class at extends o {
       static formAssociated = true;
       _internals;
       _input;
@@ -4568,7 +4573,7 @@ input:focus-visible ~ .track {
       }
     }
     if (!customElements.get("p9r-switch"))
-      customElements.define("p9r-switch", ot);
+      customElements.define("p9r-switch", at);
     var Ci = `<div class="container" part="container">
     <label for="main-input" part="label">
         <slot name="label">Tags</slot>
@@ -4862,15 +4867,15 @@ p9r-tag:hover {
     --_tag-border: var(--secondary-contrasted, oklch(25% 0.08 265));
 }
 `;
-    var Js = Si + zi;
+    var Qo = Si + zi;
 
-    class st extends s {
+    class ot extends o {
       _removeBtn;
       static get observedAttributes() {
         return ["removable"];
       }
       constructor() {
-        super({ css: Js, template: Hi });
+        super({ css: Qo, template: Hi });
         this._removeBtn = this.shadowRoot?.querySelector(".remove") ?? null;
       }
       connectedCallback() {
@@ -4914,13 +4919,13 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag"))
-      customElements.define("p9r-tag", st);
+      customElements.define("p9r-tag", ot);
     var Ii = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, at = (t, e) => {
+    }, st = (t, e) => {
       if (!t)
         return;
       t.textContent = "", window.setTimeout(() => {
@@ -4948,27 +4953,27 @@ p9r-tag:hover {
         return;
       if (t.innerHTML = "", e !== "multiple")
         return;
-      r.forEach((n, o) => {
-        let a = document.createElement("p9r-tag");
-        a.setAttribute("color", "primary"), a.setAttribute("part", "chip"), a.setAttribute("role", "listitem"), a.textContent = n, a.title = `Remove ${n}`, a.setAttribute("aria-label", `Remove ${n}`), a.addEventListener("click", () => i(o)), t.appendChild(a);
+      r.forEach((n, a) => {
+        let s = document.createElement("p9r-tag");
+        s.setAttribute("color", "primary"), s.setAttribute("part", "chip"), s.setAttribute("role", "listitem"), s.textContent = n, s.title = `Remove ${n}`, s.setAttribute("aria-label", `Remove ${n}`), s.addEventListener("click", () => i(a)), t.appendChild(s);
       });
-    }, Ri = (t, e, r, i, n, o) => {
+    }, Ri = (t, e, r, i, n, a) => {
       if (!t || !e)
         return;
       if (r.length === 0) {
         re(t, e);
         return;
       }
-      if (t.innerHTML = "", r.forEach((a, l) => {
+      if (t.innerHTML = "", r.forEach((s, l) => {
         let d = document.createElement("div");
         d.className = "suggestion", d.id = `${n}-opt-${l}`, d.setAttribute("role", "option"), d.setAttribute("part", "option");
         let c = l === i;
         d.dataset.active = String(c), d.setAttribute("aria-selected", String(c));
-        let u = document.createElement("span");
-        u.className = "name", u.textContent = a.value, d.appendChild(u);
-        let m = document.createElement("p9r-tag");
-        m.setAttribute("color", "secondary"), m.setAttribute("part", "count"), m.textContent = String(a.count), d.appendChild(m), d.addEventListener("mousedown", (p) => {
-          p.preventDefault(), o(a.value);
+        let p = document.createElement("span");
+        p.className = "name", p.textContent = s.value, d.appendChild(p);
+        let b = document.createElement("p9r-tag");
+        b.setAttribute("color", "secondary"), b.setAttribute("part", "count"), b.textContent = String(s.count), d.appendChild(b), d.addEventListener("mousedown", (u) => {
+          u.preventDefault(), a(s.value);
         }), t.appendChild(d);
       }), t.hidden = false, e.setAttribute("aria-expanded", "true"), i >= 0)
         e.setAttribute("aria-activedescendant", `${n}-opt-${i}`);
@@ -4994,56 +4999,62 @@ p9r-tag:hover {
         return e ? e.split(",").map((r) => r.trim()).filter((r) => r !== "") : [];
       return e ? [e.trim()] : [];
     };
-    var b = (t) => t, T = (t, e) => {
-      let r = b(t), i = t.getAttribute("mode") || "multiple", n = e.trim();
+    var h = (t) => t, T = (t, e) => {
+      let r = h(t), i = t.getAttribute("mode") || "multiple", n = e.trim();
       if (!n || !r._input)
         return;
       if (i === "multiple") {
         if (!r._tags.includes(n))
-          r._tags.push(n), at(r._liveRegion, `${n} added`);
+          r._tags.push(n), st(r._liveRegion, `${n} added`);
         r._input.value = "";
       } else
-        r._tags = [n], r._input.value = n, at(r._liveRegion, `${n} selected`);
+        r._tags = [n], r._input.value = n, st(r._liveRegion, `${n} selected`);
       r._activeIndex = -1, lt(t), ct(t);
     }, Fi = (t, e) => {
-      let r = b(t), i = r._tags[e];
+      let r = h(t), i = e.trim();
+      if (r._tags = i ? [i] : [], r._internals.setFormValue(r.value), r._silent)
+        return;
+      t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: r.value, tags: [...r._tags] } }));
+    }, Di = (t, e) => {
+      let r = h(t), i = r._tags[e];
       if (i === undefined)
         return;
-      r._tags.splice(e, 1), at(r._liveRegion, `${i} removed`), lt(t), r._input?.focus();
-    }, Di = (t) => {
-      let e = b(t);
+      r._tags.splice(e, 1), st(r._liveRegion, `${i} removed`), lt(t), r._input?.focus();
+    }, Oi = (t) => {
+      let e = h(t);
       if (e._tags.length === 0)
         return;
-      Fi(t, e._tags.length - 1);
+      Di(t, e._tags.length - 1);
     }, lt = (t) => {
-      let e = b(t);
+      let e = h(t);
       if (ie(t), e._internals.setFormValue(e.value), e._silent)
         return;
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: e.value, tags: [...e._tags] } }));
     }, ie = (t) => {
-      let e = b(t);
-      Pi(e._display, t.getAttribute("mode") || "multiple", e._tags, (r) => Fi(t, r));
+      let e = h(t);
+      Pi(e._display, t.getAttribute("mode") || "multiple", e._tags, (r) => Di(t, r));
     }, ne = (t, e) => {
-      let r = b(t), n = (t.getAttribute("mode") || "multiple") === "multiple" ? r._tags : [];
+      let r = h(t), n = (t.getAttribute("mode") || "multiple") === "multiple" ? r._tags : [];
       r._suggestions = qi(r._allSuggestions, n, e), r._activeIndex = -1, dt(t);
     }, dt = (t) => {
-      let e = b(t);
+      let e = h(t);
       Ri(e._suggestionsEl, e._input, e._suggestions, e._activeIndex, e._uid, (r) => T(t, r));
     }, ct = (t) => {
-      let e = b(t);
+      let e = h(t);
       re(e._suggestionsEl, e._input), e._activeIndex = -1;
     };
-    var Oi = (t, e) => {
+    var ji = (t, e) => {
       if (!e)
         return;
       ne(t, e.value.trim().toLowerCase());
-    }, ji = (t) => {
+    }, Ni = (t) => {
       setTimeout(() => ct(t), 150);
-    }, Ni = (t, e) => {
+    }, Ki = (t, e) => {
       if (!e)
         return;
-      ne(t, e.value.trim().toLowerCase());
-    }, Ki = (t, e, r) => {
+      if (ne(t, e.value.trim().toLowerCase()), (t.getAttribute("mode") || "multiple") === "single")
+        Fi(t, e.value);
+    }, $i = (t, e, r) => {
       if (!e)
         return;
       let i = t.getAttribute("mode") || "multiple", n = t;
@@ -5057,28 +5068,28 @@ p9r-tag:hover {
         n._activeIndex = Math.max(n._activeIndex - 1, -1), dt(t);
       } else if (r.key === "Enter") {
         r.preventDefault();
-        let o = n._activeIndex >= 0 ? n._suggestions[n._activeIndex] : undefined;
-        if (o)
-          T(t, o.value);
+        let a = n._activeIndex >= 0 ? n._suggestions[n._activeIndex] : undefined;
+        if (a)
+          T(t, a.value);
         else {
-          let a = e.value.trim();
-          if (a)
-            T(t, a);
+          let s = e.value.trim();
+          if (s)
+            T(t, s);
         }
       } else if (r.key === "Escape")
         r.preventDefault(), ct(t);
       else if (r.key === "Backspace" && e.value === "" && i === "multiple")
-        Di(t);
+        Oi(t);
       else if (r.key === "," && i === "multiple") {
         r.preventDefault();
-        let o = e.value.trim();
-        if (o)
-          T(t, o);
+        let a = e.value.trim();
+        if (a)
+          T(t, a);
       }
     };
-    var Qs = Ti + Mi;
+    var ts = Ti + Mi;
 
-    class ut extends s {
+    class pt extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["placeholder", "mode", "resource", "api", "disabled", "value"];
@@ -5097,7 +5108,7 @@ p9r-tag:hover {
       _defaultsCaptured = false;
       _silent = false;
       constructor() {
-        super({ css: Qs, template: Ci });
+        super({ css: ts, template: Ci });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         if (this._input = t.querySelector("#main-input"), this._display = t.querySelector("#tags-display"), this._suggestionsEl = t.querySelector("#suggestions"), this._liveRegion = t.querySelector("#live-region"), this._uid = `ts-${Math.random().toString(36).slice(2, 9)}`, this._suggestionsEl)
@@ -5141,10 +5152,10 @@ p9r-tag:hover {
         else if (t === "value")
           this.value = r ?? "";
       }
-      _onFocus = () => Oi(this, this._input);
-      _onBlur = () => ji(this);
-      _onInput = () => Ni(this, this._input);
-      _onKeyDown = (t) => Ki(this, this._input, t);
+      _onFocus = () => ji(this, this._input);
+      _onBlur = () => Ni(this);
+      _onInput = () => Ki(this, this._input);
+      _onKeyDown = (t) => $i(this, this._input, t);
       get value() {
         return Bi(this.getAttribute("mode") || "multiple", this._tags);
       }
@@ -5192,8 +5203,8 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag-suggest"))
-      customElements.define("p9r-tag-suggest", ut);
-    var $i = `<div class="field" part="field">
+      customElements.define("p9r-tag-suggest", pt);
+    var Ui = `<div class="field" part="field">
     <label class="label" part="label" for="ta"></label>
     <textarea id="ta" class="textarea" part="textarea"></textarea>
     <div class="meta" part="meta" hidden>
@@ -5202,7 +5213,7 @@ p9r-tag:hover {
     </div>
 </div>
 `;
-    var Ui = `:host {
+    var Yi = `:host {
   display: block;
 }
 
@@ -5257,7 +5268,7 @@ p9r-tag:hover {
 
 .meta[hidden] { display: none; }
 `;
-    var Yi = `:host([resize="none"]) .textarea       { resize: none; }
+    var Xi = `:host([resize="none"]) .textarea       { resize: none; }
 :host([resize="horizontal"]) .textarea { resize: horizontal; }
 :host([resize="vertical"]) .textarea   { resize: vertical; }
 :host([resize="both"]) .textarea       { resize: both; }
@@ -5311,12 +5322,12 @@ p9r-tag:hover {
   font-weight: 600;
 }
 `;
-    var Xi = (t, e) => {
+    var Wi = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, oe = (t) => {
+    }, ae = (t) => {
       let e = t.getAttribute("max-count");
       if (e === null)
         return null;
@@ -5325,12 +5336,12 @@ p9r-tag:hover {
     }, w = (t, e, r, i) => {
       if (!e || !r || !i)
         return;
-      let n = oe(t);
+      let n = ae(t);
       if (n === null)
         return;
-      let o = e.value.length;
-      i.textContent = String(o), r.dataset.over = String(o > n);
-    }, se = (t, e, r) => {
+      let a = e.value.length;
+      i.textContent = String(a), r.dataset.over = String(a > n);
+    }, oe = (t, e, r) => {
       if (!t || !e || !r)
         return;
       let i = (t.textContent ?? "").length > 0, n = !e.hidden;
@@ -5340,12 +5351,12 @@ p9r-tag:hover {
         return;
       e.style.height = "auto", e.style.height = `${e.scrollHeight}px`;
     };
-    var ia = (t, e) => {
+    var ns = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("label") ?? "";
       e.textContent = r, e.hidden = r === "";
-    }, na = (t, e) => {
+    }, as = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("placeholder");
@@ -5353,13 +5364,13 @@ p9r-tag:hover {
         e.removeAttribute("placeholder");
       else
         e.setAttribute("placeholder", r);
-    }, oa = (t, e) => {
+    }, os = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("rows");
       if (r)
         e.rows = Number(r) || 3;
-    }, sa = (t, e) => {
+    }, ss = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("maxlength");
@@ -5367,10 +5378,10 @@ p9r-tag:hover {
         e.removeAttribute("maxlength");
       else
         e.setAttribute("maxlength", r);
-    }, aa = (t, e) => {
+    }, ls = (t, e) => {
       if (e)
         e.disabled = t.hasAttribute("disabled");
-    }, la = (t, e) => {
+    }, ds = (t, e) => {
       if (!e)
         return;
       let r = t.hasAttribute("required");
@@ -5378,45 +5389,45 @@ p9r-tag:hover {
         e.setAttribute("aria-required", "true");
       else
         e.removeAttribute("aria-required");
-    }, da = (t, e, r, i) => {
+    }, cs = (t, e, r, i) => {
       if (!e)
         return;
-      e.textContent = t.getAttribute("hint") ?? "", se(e, r, i);
-    }, ca = (t, e) => {
+      e.textContent = t.getAttribute("hint") ?? "", oe(e, r, i);
+    }, ps = (t, e) => {
       if (!e)
         return;
       e.dataset.level = t.getAttribute("hint-level") ?? "info";
-    }, ua = (t, e) => {
+    }, us = (t, e) => {
       if (!e)
         return;
       if (t.hasAttribute("invalid"))
         e.setAttribute("aria-invalid", "true");
       else
         e.removeAttribute("aria-invalid");
-    }, ae = (t, e, r, i, n) => {
+    }, se = (t, e, r, i, n) => {
       if (!e || !r)
         return;
-      let o = oe(t);
-      if (o === null)
+      let a = ae(t);
+      if (a === null)
         e.hidden = true;
       else
-        e.hidden = false, r.textContent = String(o);
-      se(i, e, n);
-    }, le = (t, e, r, i, n, o, a) => {
-      ia(t, r), na(t, e), oa(t, e), sa(t, e), aa(t, e), la(t, e), da(t, i, o, n), ca(t, i), ua(t, e), ae(t, o, a, i, n);
+        e.hidden = false, r.textContent = String(a);
+      oe(i, e, n);
+    }, le = (t, e, r, i, n, a, s) => {
+      ns(t, r), as(t, e), os(t, e), ss(t, e), ls(t, e), ds(t, e), cs(t, i, a, n), ps(t, i), us(t, e), se(t, a, s, i, n);
     };
-    var Wi = (t, e, r, i, n) => {
+    var Zi = (t, e, r, i, n) => {
       if (!e)
         return;
       r.setFormValue(e.value), w(t, e, i, n), M(t, e);
-    }, Zi = (t, e) => {
+    }, Gi = (t, e) => {
       if (!t)
         return;
       e.setFormValue(t.value);
     };
-    var pa = Ui + Yi;
+    var hs = Yi + Xi;
 
-    class pt extends s {
+    class ut extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "rows", "maxlength", "max-count", "hint", "hint-level", "invalid", "disabled", "required", "autosize"];
@@ -5432,7 +5443,7 @@ p9r-tag:hover {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super({ css: pa, template: $i });
+        super({ css: hs, template: Ui });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         this._textarea = t.querySelector("textarea"), this._label = t.querySelector(".label"), this._hint = t.querySelector(".hint"), this._meta = t.querySelector(".meta"), this._counter = t.querySelector(".counter"), this._count = t.querySelector(".count"), this._max = t.querySelector(".max");
@@ -5440,7 +5451,7 @@ p9r-tag:hover {
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        ["value", "disabled", "required"].forEach((e) => Xi(this, e)), this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), le(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
+        ["value", "disabled", "required"].forEach((e) => Wi(this, e)), this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), le(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
         let t = this.getAttribute("value");
         if (t !== null)
           this.value = t;
@@ -5459,7 +5470,7 @@ p9r-tag:hover {
         if (t === "value" && r !== null)
           this.value = r;
         else if (t === "max-count")
-          ae(this, this._counter, this._max, this._hint, this._meta), w(this, this._textarea, this._counter, this._count);
+          se(this, this._counter, this._max, this._hint, this._meta), w(this, this._textarea, this._counter, this._count);
         else if (t === "autosize")
           M(this, this._textarea);
         else
@@ -5491,16 +5502,16 @@ p9r-tag:hover {
       focus() {
         this._textarea?.focus();
       }
-      _onInput = () => Wi(this, this._textarea, this._internals, this._counter, this._count);
-      _onChange = () => Zi(this._textarea, this._internals);
+      _onInput = () => Zi(this, this._textarea, this._internals, this._counter, this._count);
+      _onChange = () => Gi(this._textarea, this._internals);
     }
     if (!customElements.get("p9r-textarea"))
-      customElements.define("p9r-textarea", pt);
-    var Gi = `<div class="actions" role="toolbar" part="toolbar">
+      customElements.define("p9r-textarea", ut);
+    var Ji = `<div class="actions" role="toolbar" part="toolbar">
     <slot></slot>
 </div>
 `;
-    var Ji = `:host {
+    var Qi = `:host {
   display: inline-block;
 
   --_toolbar-bg: var(--bg-overlay, #ffffff);
@@ -5592,11 +5603,11 @@ p9r-tag:hover {
 }
 `;
 
-    class ht extends s {
+    class ht extends o {
       static _event = "action-click";
       _toolbar;
       constructor() {
-        super({ css: Ji, template: Gi });
+        super({ css: Qi, template: Ji });
         this._toolbar = this.shadowRoot?.querySelector(".actions") ?? null;
       }
       static get observedAttributes() {
@@ -5653,9 +5664,9 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-horizontal-action-group"))
       customElements.define("p9r-horizontal-action-group", ht);
-    var Qi = `<slot></slot>
+    var tn = `<slot></slot>
 `;
-    var tn = `:host {
+    var en = `:host {
     --max-width: var(--p9r-container-md, 768px);
     display: block;
     width: 100%;
@@ -5676,14 +5687,14 @@ p9r-tag:hover {
 :host([align="end"])    { margin-inline-start: auto; margin-inline-end: 0;    }
 `;
 
-    class mt extends s {
+    class mt extends o {
       constructor() {
-        super({ css: tn, template: Qi });
+        super({ css: en, template: tn });
       }
     }
     if (!customElements.get("p9r-container"))
       customElements.define("p9r-container", mt);
-    var en = `<div class="app-container" part="container">
+    var rn = `<div class="app-container" part="container">
     <a class="skip-link" part="skip-link" href="#main-content">
         <slot name="skip-link">Skip to main content</slot>
     </a>
@@ -5699,7 +5710,7 @@ p9r-tag:hover {
     </main>
 </div>
 `;
-    var rn = `:host {
+    var nn = `:host {
     display: block;
     height: 100vh;
     width: 100vw;
@@ -5785,11 +5796,11 @@ p9r-tag:hover {
 }
 `;
 
-    class bt extends s {
+    class bt extends o {
       _sidebar;
       _content;
       constructor() {
-        super({ css: rn, template: en });
+        super({ css: nn, template: rn });
         this._sidebar = this.shadowRoot?.querySelector(".app-sidebar") ?? null, this._content = this.shadowRoot?.querySelector(".app-content") ?? null;
       }
       static get observedAttributes() {
@@ -5839,7 +5850,7 @@ p9r-tag:hover {
     }
     if (!customElements.get("w13c-left-menu-layout"))
       customElements.define("w13c-left-menu-layout", bt);
-    var nn = `<slot></slot>
+    var an = `<slot></slot>
 `;
     var on = `:host {
     --gap: var(--p9r-space-md, 16px);
@@ -5886,9 +5897,9 @@ p9r-tag:hover {
 }
 `;
 
-    class gt extends s {
+    class gt extends o {
       constructor() {
-        super({ css: on, template: nn });
+        super({ css: on, template: an });
       }
     }
     if (!customElements.get("p9r-stack"))
@@ -5903,7 +5914,7 @@ p9r-tag:hover {
     <span class="badge" part="badge" id="badge-element"></span>
 </a>
 `;
-    var an = `:host {
+    var ln = `:host {
     display: block;
     width: 100%;
     outline: none;
@@ -5975,7 +5986,7 @@ p9r-tag:hover {
     flex-shrink: 0;
 }
 `;
-    var ln = `.menu-item:hover {
+    var dn = `.menu-item:hover {
     background-color: var(--item-bg-active);
     color: var(--item-color-active);
 }
@@ -6025,7 +6036,7 @@ p9r-tag:hover {
     box-shadow: 0 2px 4px color-mix(in oklab, var(--item-color-active), transparent 80%);
 }
 `;
-    var dn = (t, e) => {
+    var cn = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -6044,15 +6055,15 @@ p9r-tag:hover {
         t.textContent = e, t.style.display = "inline-flex";
       else
         t.textContent = "", t.style.display = "none";
-    }, ue = (t, e) => {
+    }, pe = (t, e) => {
       if (!e || !t.hasAttribute("href"))
         return;
       let r = t.getAttribute("href");
       if (!r)
         return;
       try {
-        let i = new URL(r, window.location.href), o = new URL(window.location.href).pathname, a = i.pathname;
-        if (a === "/" ? o === "/" : o === a || o.startsWith(a + "/"))
+        let i = new URL(r, window.location.href), a = new URL(window.location.href).pathname, s = i.pathname;
+        if (s === "/" ? a === "/" : a === s || a.startsWith(s + "/"))
           t.setAttribute("active", ""), t.setAttribute("aria-current", "page"), e.classList.add("active");
         else
           t.removeAttribute("active"), t.removeAttribute("aria-current"), e.classList.remove("active");
@@ -6060,7 +6071,7 @@ p9r-tag:hover {
         console.warn("Invalid href in LateralMenuItem:", r);
       }
     };
-    var cn = (t, e, r) => {
+    var pn = (t, e, r) => {
       if (t.hasAttribute("disabled"))
         return;
       if (r.key !== "Enter" && r.key !== " ")
@@ -6069,13 +6080,13 @@ p9r-tag:hover {
         return;
       r.preventDefault(), e?.click();
     };
-    var Ea = an + ln;
+    var As = ln + dn;
 
-    class ft extends s {
+    class ft extends o {
       _anchor;
       _badgeEl;
       constructor() {
-        super({ css: Ea, template: sn });
+        super({ css: As, template: sn });
         this._anchor = this.shadowRoot?.querySelector("a") ?? null, this._badgeEl = this.shadowRoot?.getElementById("badge-element") ?? null;
       }
       static get observedAttributes() {
@@ -6083,12 +6094,12 @@ p9r-tag:hover {
       }
       connectedCallback() {
         for (let t of ["href", "badge", "disabled"])
-          dn(this, t);
+          cn(this, t);
         if (!this.hasAttribute("role"))
           this.setAttribute("role", "listitem");
         if (!this.hasAttribute("tabindex"))
           this.setAttribute("tabindex", "0");
-        de(this._anchor, this.getAttribute("href")), ce(this._badgeEl, this.getAttribute("badge")), ue(this, this._anchor), window.addEventListener("popstate", this._onPopstate), this.addEventListener("keydown", this._onKey);
+        de(this._anchor, this.getAttribute("href")), ce(this._badgeEl, this.getAttribute("badge")), pe(this, this._anchor), window.addEventListener("popstate", this._onPopstate), this.addEventListener("keydown", this._onKey);
       }
       disconnectedCallback() {
         window.removeEventListener("popstate", this._onPopstate), this.removeEventListener("keydown", this._onKey);
@@ -6123,8 +6134,8 @@ p9r-tag:hover {
       set disabled(t) {
         t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
-      _onPopstate = () => ue(this, this._anchor);
-      _onKey = (t) => cn(this, this._anchor, t);
+      _onPopstate = () => pe(this, this._anchor);
+      _onKey = (t) => pn(this, this._anchor, t);
     }
     if (!customElements.get("w13c-lateral-menu-item"))
       customElements.define("w13c-lateral-menu-item", ft);
@@ -6144,7 +6155,7 @@ p9r-tag:hover {
     </div>
 </aside>
 `;
-    var pn = `:host {
+    var hn = `:host {
     display: flex;
     flex-direction: column;
     width: 260px;
@@ -6223,54 +6234,54 @@ p9r-tag:hover {
     --item-bg-hover: var(--primary-muted);
 }
 `;
-    var hn = (t, e) => {
+    var mn = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, mn = (t) => {
+    }, bn = (t) => {
       if (!t)
         return [];
       return t.assignedElements({ flatten: true }).filter((e) => e instanceof HTMLElement && e.tagName.toLowerCase() === "w13c-lateral-menu-item" && !e.hasAttribute("disabled"));
     };
-    var bn = (t, e) => {
-      let r = t.shadowRoot?.querySelector("slot:not([name])"), i = mn(r);
+    var gn = (t, e) => {
+      let r = t.shadowRoot?.querySelector("slot:not([name])"), i = bn(r);
       if (i.length === 0)
         return;
-      let n = document.activeElement, o = i.findIndex((d) => d === n || d.contains(n)), a = -1;
+      let n = document.activeElement, a = i.findIndex((d) => d === n || d.contains(n)), s = -1;
       switch (e.key) {
         case "ArrowDown":
-          a = o < 0 ? 0 : (o + 1) % i.length;
+          s = a < 0 ? 0 : (a + 1) % i.length;
           break;
         case "ArrowUp":
-          a = o < 0 ? i.length - 1 : (o - 1 + i.length) % i.length;
+          s = a < 0 ? i.length - 1 : (a - 1 + i.length) % i.length;
           break;
         case "Home":
-          a = 0;
+          s = 0;
           break;
         case "End":
-          a = i.length - 1;
+          s = i.length - 1;
           break;
         default:
           return;
       }
       e.preventDefault();
-      let l = i[a];
+      let l = i[s];
       if (l)
         l.focus();
     };
 
-    class vt extends s {
+    class vt extends o {
       _sidebar;
       constructor() {
-        super({ css: pn, template: un });
+        super({ css: hn, template: un });
         this._sidebar = this.shadowRoot?.querySelector(".sidebar") ?? null;
       }
       static get observedAttributes() {
         return ["collapsed"];
       }
       connectedCallback() {
-        if (hn(this, "collapsed"), !this.hasAttribute("aria-label"))
+        if (mn(this, "collapsed"), !this.hasAttribute("aria-label"))
           this.setAttribute("aria-label", "Main navigation");
         this.addEventListener("keydown", this._onKey);
       }
@@ -6295,11 +6306,11 @@ p9r-tag:hover {
         else
           this.removeAttribute("collapsed");
       }
-      _onKey = (t) => bn(this, t);
+      _onKey = (t) => gn(this, t);
     }
     if (!customElements.get("w13c-lateral-menu"))
       customElements.define("w13c-lateral-menu", vt);
-    var gn = `<nav class="pagination" part="pagination" aria-label="Pagination">
+    var fn = `<nav class="pagination" part="pagination" aria-label="Pagination">
     <button class="prev" part="prev" type="button" aria-label="Previous page">
         <slot name="prev">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -6317,7 +6328,7 @@ p9r-tag:hover {
     </button>
 </nav>
 `;
-    var fn = `:host {
+    var vn = `:host {
   display: inline-block;
 
   --_size: 32px;
@@ -6415,37 +6426,37 @@ p9r-tag:hover {
     var g = (t, e, r) => {
       let i = parseInt(t.getAttribute(e) ?? "", 10);
       return Number.isFinite(i) && i > 0 ? i : r;
-    }, vn = (t, e, r, i) => {
-      let n = [], o = Math.max(1, t - r), a = Math.min(e, t + r), l = Array.from({ length: Math.min(i, e) }, (p, E) => E + 1), d = Array.from({ length: Math.min(i, e) }, (p, E) => e - E).reverse(), c = [];
-      for (let p = o;p <= a; p++)
-        c.push(p);
-      let u = Array.from(new Set([...l, ...c, ...d])).sort((p, E) => p - E), m = 0;
-      for (let p of u) {
-        if (m > 0 && p - m > 1)
+    }, _n = (t, e, r, i) => {
+      let n = [], a = Math.max(1, t - r), s = Math.min(e, t + r), l = Array.from({ length: Math.min(i, e) }, (u, E) => E + 1), d = Array.from({ length: Math.min(i, e) }, (u, E) => e - E).reverse(), c = [];
+      for (let u = a;u <= s; u++)
+        c.push(u);
+      let p = Array.from(new Set([...l, ...c, ...d])).sort((u, E) => u - E), b = 0;
+      for (let u of p) {
+        if (b > 0 && u - b > 1)
           n.push("…");
-        n.push(p), m = p;
+        n.push(u), b = u;
       }
       return n;
     };
-    var _n = (t, e, r, i) => {
+    var xn = (t, e, r, i) => {
       if (!e)
         return;
-      let n = g(t, "page", 1), o = g(t, "total", 1), a = g(t, "siblings", 1), l = g(t, "boundary", 1);
+      let n = g(t, "page", 1), a = g(t, "total", 1), s = g(t, "siblings", 1), l = g(t, "boundary", 1);
       e.innerHTML = "";
-      for (let d of vn(n, o, a, l))
+      for (let d of _n(n, a, s, l))
         if (d === "…") {
           let c = document.createElement("span");
           c.className = "ellipsis", c.setAttribute("part", "ellipsis"), c.textContent = "…", e.appendChild(c);
         } else {
-          let c = document.createElement("li"), u = document.createElement("button");
-          if (u.type = "button", u.className = "page", u.setAttribute("part", "page"), u.dataset.page = String(d), u.textContent = String(d), d === n)
-            u.setAttribute("aria-current", "page");
-          c.appendChild(u), e.appendChild(c);
+          let c = document.createElement("li"), p = document.createElement("button");
+          if (p.type = "button", p.className = "page", p.setAttribute("part", "page"), p.dataset.page = String(d), p.textContent = String(d), d === n)
+            p.setAttribute("aria-current", "page");
+          c.appendChild(p), e.appendChild(c);
         }
       if (r)
         r.disabled = n <= 1;
       if (i)
-        i.disabled = n >= o;
+        i.disabled = n >= a;
     };
     var _t = (t, e, r) => {
       if (r === e)
@@ -6454,15 +6465,15 @@ p9r-tag:hover {
         return;
       t.setAttribute("page", String(r));
     };
-    var xn = (t, e) => {
+    var yn = (t, e) => {
       if (e <= 1)
         return;
       _t(t, e, e - 1);
-    }, yn = (t, e, r) => {
+    }, wn = (t, e, r) => {
       if (e >= r)
         return;
       _t(t, e, e + 1);
-    }, wn = (t, e, r) => {
+    }, kn = (t, e, r) => {
       let i = r.target.closest(".page");
       if (!i)
         return;
@@ -6471,7 +6482,7 @@ p9r-tag:hover {
         _t(t, e, n);
     };
 
-    class xt extends s {
+    class xt extends o {
       _pages;
       _prev;
       _next;
@@ -6479,7 +6490,7 @@ p9r-tag:hover {
         return ["page", "total", "siblings", "boundary"];
       }
       constructor() {
-        super({ css: fn, template: gn });
+        super({ css: vn, template: fn });
         this._pages = this.shadowRoot?.querySelector(".pages") ?? null, this._prev = this.shadowRoot?.querySelector(".prev") ?? null, this._next = this.shadowRoot?.querySelector(".next") ?? null;
       }
       connectedCallback() {
@@ -6504,22 +6515,22 @@ p9r-tag:hover {
         this.setAttribute("total", String(t));
       }
       _render() {
-        _n(this, this._pages, this._prev, this._next);
+        xn(this, this._pages, this._prev, this._next);
       }
-      _onPrev = () => xn(this, this.page);
-      _onNext = () => yn(this, this.page, this.total);
-      _onPageClick = (t) => wn(this, this.page, t);
+      _onPrev = () => yn(this, this.page);
+      _onNext = () => wn(this, this.page, this.total);
+      _onPageClick = (t) => kn(this, this.page, t);
     }
     if (!customElements.get("p9r-pagination"))
       customElements.define("p9r-pagination", xt);
-    var kn = `<div class="progress" part="progress" role="progressbar">
+    var En = `<div class="progress" part="progress" role="progressbar">
     <div class="track" part="track">
         <div class="bar" part="bar"></div>
     </div>
     <span class="label" part="label"><slot></slot></span>
 </div>
 `;
-    var En = `:host {
+    var An = `:host {
   display: block;
 
   --_height: 8px;
@@ -6600,7 +6611,7 @@ p9r-tag:hover {
 }
 `;
 
-    class yt extends s {
+    class yt extends o {
       _bar;
       _label;
       _root;
@@ -6608,7 +6619,7 @@ p9r-tag:hover {
         return ["value", "max", "indeterminate"];
       }
       constructor() {
-        super({ css: En, template: kn });
+        super({ css: An, template: En });
         this._bar = this.shadowRoot?.querySelector(".bar") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._root = this.shadowRoot?.querySelector(".progress") ?? null;
       }
       connectedCallback() {
@@ -6664,9 +6675,9 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-progress"))
       customElements.define("p9r-progress", yt);
-    var An = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
+    var Ln = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
 `;
-    var Ln = `:host {
+    var Cn = `:host {
   display: block;
 
   --_bg: var(--bg-base, #f1f5f9);
@@ -6715,12 +6726,12 @@ p9r-tag:hover {
 }
 `;
 
-    class wt extends s {
+    class wt extends o {
       static get observedAttributes() {
         return ["width", "height"];
       }
       constructor() {
-        super({ css: Ln, template: An });
+        super({ css: Cn, template: Ln });
       }
       connectedCallback() {
         this._syncSize();
@@ -6746,11 +6757,11 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-skeleton"))
       customElements.define("p9r-skeleton", wt);
-    var Cn = `<div class="spinner" part="spinner" role="status" aria-live="polite">
+    var Tn = `<div class="spinner" part="spinner" role="status" aria-live="polite">
     <span class="visually-hidden"><slot>Loading…</slot></span>
 </div>
 `;
-    var Tn = `:host {
+    var Mn = `:host {
   display: inline-block;
 
   --_size: 1.25rem;
@@ -6802,18 +6813,18 @@ p9r-tag:hover {
 }
 `;
 
-    class kt extends s {
+    class kt extends o {
       constructor() {
-        super({ css: Tn, template: Cn });
+        super({ css: Mn, template: Tn });
       }
     }
     if (!customElements.get("p9r-spinner"))
       customElements.define("p9r-spinner", kt);
-    var Mn = `<ol class="stepper" part="stepper">
+    var Hn = `<ol class="stepper" part="stepper">
     <slot></slot>
 </ol>
 `;
-    var Hn = `:host {
+    var Sn = `:host {
   display: block;
 
   --_active: var(--primary-base, #4361ee);
@@ -6837,7 +6848,7 @@ p9r-tag:hover {
   gap: 0;
 }
 `;
-    var Sn = `<li class="step" part="step">
+    var zn = `<li class="step" part="step">
     <div class="indicator" part="indicator">
         <span class="bullet" part="bullet">
             <span class="number"></span>
@@ -6855,7 +6866,7 @@ p9r-tag:hover {
     </div>
 </li>
 `;
-    var zn = `:host {
+    var In = `:host {
   display: flex;
   flex: 1;
 
@@ -6945,7 +6956,7 @@ p9r-tag:hover {
 .description slot:empty,
 .description:has(slot:not(:has(*))) { display: none; }
 `;
-    var In = `:host([data-state="active"], [state="active"]) {
+    var Pn = `:host([data-state="active"], [state="active"]) {
   --_color: var(--_active);
   --_label-color: var(--_text);
 }
@@ -7006,16 +7017,16 @@ p9r-tag:hover {
   margin-top: 0.4rem;
 }
 `;
-    var Da = zn + In;
+    var Os = In + Pn;
 
-    class Et extends s {
+    class Et extends o {
       _label;
       _number;
       static get observedAttributes() {
         return ["label", "data-index"];
       }
       constructor() {
-        super({ css: Da, template: Sn });
+        super({ css: Os, template: zn });
         this._label = this.shadowRoot?.querySelector(".label") ?? null, this._number = this.shadowRoot?.querySelector(".number") ?? null;
       }
       connectedCallback() {
@@ -7034,12 +7045,12 @@ p9r-tag:hover {
     if (!customElements.get("p9r-step"))
       customElements.define("p9r-step", Et);
 
-    class At extends s {
+    class At extends o {
       static get observedAttributes() {
         return ["current", "orientation"];
       }
       constructor() {
-        super({ css: Hn, template: Mn });
+        super({ css: Sn, template: Hn });
       }
       connectedCallback() {
         this._sync();
@@ -7077,13 +7088,13 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-stepper"))
       customElements.define("p9r-stepper", At);
-    var Pn = `<div class="table-container">
+    var Rn = `<div class="table-container">
   <div class="p9r-table">
     <slot name="header"></slot>
     <slot></slot>
   </div>
 </div>`;
-    var Rn = `:host {
+    var qn = `:host {
   display: block;
   width: 100%;
 }
@@ -7116,9 +7127,9 @@ p9r-tag:hover {
 ::slotted(p9r-row:not(:first-child):hover) {
   background-color: var(--bg-base);
 }`;
-    var qn = `<slot></slot>
+    var Bn = `<slot></slot>
 `;
-    var Bn = `:host {
+    var Vn = `:host {
   display: table-row;
 }
 
@@ -7137,7 +7148,7 @@ p9r-tag:hover {
   }
 }
 `;
-    var pe = (t) => {
+    var ue = (t) => {
       let e = t.getAttribute("href");
       if (!e)
         return;
@@ -7149,17 +7160,17 @@ p9r-tag:hover {
       else
         window.location.href = e;
     };
-    var Vn = (t) => {
+    var Fn = (t) => {
       if (!t.hasAttribute("href"))
         return;
-      pe(t);
-    }, Fn = (t, e) => {
+      ue(t);
+    }, Dn = (t, e) => {
       if (!t.hasAttribute("href"))
         return;
       if (e.key === "Enter" || e.key === " ")
-        e.preventDefault(), pe(t);
+        e.preventDefault(), ue(t);
     };
-    var Dn = (t, e) => {
+    var On = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -7180,16 +7191,16 @@ p9r-tag:hover {
       }
     };
 
-    class Lt extends s {
+    class Lt extends o {
       static get observedAttributes() {
         return ["href"];
       }
       constructor() {
-        super({ css: Bn, template: qn });
+        super({ css: Vn, template: Bn });
       }
       connectedCallback() {
         for (let t of ["href", "target"])
-          Dn(this, t);
+          On(this, t);
         this.addEventListener("click", this._onClick), this.addEventListener("keydown", this._onKey), he(this);
       }
       disconnectedCallback() {
@@ -7199,8 +7210,8 @@ p9r-tag:hover {
         if (t === "href")
           he(this);
       }
-      _onClick = () => Vn(this);
-      _onKey = (t) => Fn(this, t);
+      _onClick = () => Fn(this);
+      _onKey = (t) => Dn(this, t);
       get href() {
         return this.getAttribute("href");
       }
@@ -7222,9 +7233,9 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-row"))
       customElements.define("p9r-row", Lt);
-    var On = `<slot></slot>
+    var jn = `<slot></slot>
 `;
-    var jn = `:host {
+    var Nn = `:host {
   display: table-cell;
   padding: 12px 20px;
   vertical-align: middle;
@@ -7249,9 +7260,9 @@ p9r-tag:hover {
 }
 `;
 
-    class Ct extends s {
+    class Ct extends o {
       constructor() {
-        super({ css: jn, template: On });
+        super({ css: Nn, template: jn });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -7260,7 +7271,7 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-cell"))
       customElements.define("p9r-cell", Ct);
-    var Nn = `<div class="header-wrapper" part="wrapper">
+    var Kn = `<div class="header-wrapper" part="wrapper">
   <button
     type="button"
     class="label-section"
@@ -7290,7 +7301,7 @@ p9r-tag:hover {
   </div>
 </div>
 `;
-    var Kn = `:host {
+    var $n = `:host {
   display: table-cell;
   padding: 12px 20px;
   border-bottom: 2px solid var(--border-light);
@@ -7361,7 +7372,7 @@ p9r-tag:hover {
   box-sizing: border-box;
 }
 `;
-    var $n = `:host([sort]) .label-section {
+    var Un = `:host([sort]) .label-section {
   cursor: pointer;
 }
 
@@ -7408,7 +7419,7 @@ p9r-tag:hover {
   background: var(--bg-base, #eee);
 }
 `;
-    var Za = (t) => {
+    var Gs = (t) => {
       let e = t.getAttribute("filter-name");
       if (!e)
         return "";
@@ -7422,7 +7433,7 @@ p9r-tag:hover {
         return;
       }
       e.removeAttribute("hidden");
-      let n = Za(t);
+      let n = Gs(t);
       if (r)
         r.value = n;
       if (n)
@@ -7430,13 +7441,13 @@ p9r-tag:hover {
       else
         t.removeAttribute("data-has-filter");
     };
-    var Un = (t) => {
+    var Yn = (t) => {
       let e = t.getAttribute("sort");
       if (!e)
         return;
-      let r = new URL(window.location.href), i = r.searchParams.get("sort"), n = r.searchParams.get("direction"), o = i === e && n === "asc" ? "desc" : "asc";
-      r.searchParams.set("sort", e), r.searchParams.set("direction", o), window.location.href = r.toString();
-    }, Yn = (t, e) => {
+      let r = new URL(window.location.href), i = r.searchParams.get("sort"), n = r.searchParams.get("direction"), a = i === e && n === "asc" ? "desc" : "asc";
+      r.searchParams.set("sort", e), r.searchParams.set("direction", a), window.location.href = r.toString();
+    }, Xn = (t, e) => {
       let r = t.getAttribute("filter-name");
       if (!r)
         return;
@@ -7447,27 +7458,27 @@ p9r-tag:hover {
         i.searchParams.delete(`f_${r}`);
       window.location.href = i.toString();
     };
-    var Xn = (t, e) => {
+    var Wn = (t, e) => {
       if (e.composedPath().some((r) => r instanceof HTMLInputElement))
         return;
-      Un(t);
-    }, Wn = (t, e, r, i) => {
+      Yn(t);
+    }, Zn = (t, e, r, i) => {
       if (t.stopPropagation(), !r || !e)
         return;
       if (r.hasAttribute("hidden"))
         r.removeAttribute("hidden"), e.setAttribute("aria-expanded", "true"), i?.focus();
       else
         r.setAttribute("hidden", ""), e.setAttribute("aria-expanded", "false");
-    }, Zn = (t, e, r) => {
+    }, Gn = (t, e, r) => {
       if (r.key !== "Enter" || !e)
         return;
-      Yn(t, e.value);
-    }, Gn = (t, e) => {
+      Xn(t, e.value);
+    }, Jn = (t, e) => {
       e?.setAttribute("hidden", ""), t?.setAttribute("aria-expanded", "false");
     };
-    var Ga = Kn + $n;
+    var Js = $n + Un;
 
-    class Tt extends s {
+    class Tt extends o {
       _sortTrigger;
       _filterBtn;
       _filterPopover;
@@ -7476,7 +7487,7 @@ p9r-tag:hover {
         return ["sort", "filter-name"];
       }
       constructor() {
-        super({ css: Ga, template: Nn });
+        super({ css: Js, template: Kn });
         this._sortTrigger = this.shadowRoot?.querySelector("#sort-trigger") ?? null, this._filterBtn = this.shadowRoot?.querySelector("#filter-btn") ?? null, this._filterPopover = this.shadowRoot?.querySelector("#filter-popover") ?? null, this._filterInput = this.shadowRoot?.querySelector("#filter-input") ?? null;
       }
       connectedCallback() {
@@ -7488,30 +7499,30 @@ p9r-tag:hover {
       attributeChangedCallback() {
         me(this, this._filterBtn, this._filterInput);
       }
-      _onSort = (t) => Xn(this, t);
-      _onFilterToggle = (t) => Wn(t, this._filterBtn, this._filterPopover, this._filterInput);
-      _onFilterKey = (t) => Zn(this, this._filterInput, t);
-      _onWindowClick = () => Gn(this._filterBtn, this._filterPopover);
+      _onSort = (t) => Wn(this, t);
+      _onFilterToggle = (t) => Zn(t, this._filterBtn, this._filterPopover, this._filterInput);
+      _onFilterKey = (t) => Gn(this, this._filterInput, t);
+      _onWindowClick = () => Jn(this._filterBtn, this._filterPopover);
       _stopPropagation = (t) => t.stopPropagation();
     }
     if (!customElements.get("p9r-header-cell"))
       customElements.define("p9r-header-cell", Tt);
 
-    class Mt extends s {
+    class Mt extends o {
       constructor() {
-        super({ css: Rn, template: Pn });
+        super({ css: qn, template: Rn });
       }
     }
     if (!customElements.get("p9r-table"))
       customElements.define("p9r-table", Mt);
-    var Jn = `<div class="tabs" part="tabs">
+    var Qn = `<div class="tabs" part="tabs">
     <div class="tablist" part="tablist" role="tablist"></div>
     <div class="panels" part="panels">
         <slot></slot>
     </div>
 </div>
 `;
-    var Qn = `:host {
+    var ta = `:host {
   display: block;
 
   --_border: var(--border-default, #e5e7eb);
@@ -7587,7 +7598,7 @@ p9r-tag:hover {
   .tab { transition: color 0.15s; }
 }
 `;
-    var to = `:host([variant="pills"]) .tablist {
+    var ea = `:host([variant="pills"]) .tablist {
   border-bottom: 0;
   gap: 0.4rem;
   padding: 0.25rem;
@@ -7626,11 +7637,11 @@ p9r-tag:hover {
   padding-left: 1rem;
 }
 `;
-    var eo = `<div class="panel" part="panel">
+    var ra = `<div class="panel" part="panel">
     <slot></slot>
 </div>
 `;
-    var ro = `:host {
+    var ia = `:host {
   display: block;
 }
 
@@ -7641,9 +7652,9 @@ p9r-tag:hover {
 }
 `;
 
-    class Ht extends s {
+    class Ht extends o {
       constructor() {
-        super({ css: ro, template: eo });
+        super({ css: ia, template: ra });
       }
     }
     if (!customElements.get("p9r-tab-panel"))
@@ -7652,8 +7663,8 @@ p9r-tag:hover {
       if (!t)
         return [];
       return t.assignedElements({ flatten: true }).filter((e) => e.tagName === "P9R-TAB-PANEL");
-    }, il = 0, io = () => `tabpanel-${il++}`;
-    var no = (t, e) => {
+    }, nl = 0, na = () => `tabpanel-${nl++}`;
+    var aa = (t, e) => {
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { active: e } }));
     };
     var ge = (t, e, r) => {
@@ -7663,47 +7674,47 @@ p9r-tag:hover {
       let i = be(r), n = t.getAttribute("active");
       if (!n && i.length > 0)
         n = i[0]?.getAttribute("id") ?? null;
-      if (i.forEach((o, a) => {
-        let l = o.getAttribute("id") ?? io();
-        if (!o.id)
-          o.id = l;
-        let d = o.getAttribute("label") ?? `Tab ${a + 1}`, c = document.createElement("button");
-        if (c.type = "button", c.className = "tab", c.setAttribute("part", "tab"), c.setAttribute("role", "tab"), c.setAttribute("id", `tab-${l}`), c.setAttribute("aria-controls", l), c.dataset.target = l, c.textContent = d, o.hasAttribute("disabled"))
+      if (i.forEach((a, s) => {
+        let l = a.getAttribute("id") ?? na();
+        if (!a.id)
+          a.id = l;
+        let d = a.getAttribute("label") ?? `Tab ${s + 1}`, c = document.createElement("button");
+        if (c.type = "button", c.className = "tab", c.setAttribute("part", "tab"), c.setAttribute("role", "tab"), c.setAttribute("id", `tab-${l}`), c.setAttribute("aria-controls", l), c.dataset.target = l, c.textContent = d, a.hasAttribute("disabled"))
           c.setAttribute("disabled", "");
-        e.appendChild(c), o.setAttribute("role", "tabpanel"), o.setAttribute("aria-labelledby", `tab-${l}`);
+        e.appendChild(c), a.setAttribute("role", "tabpanel"), a.setAttribute("aria-labelledby", `tab-${l}`);
       }), n)
         k(t, e, r, n);
     }, k = (t, e, r, i) => {
-      let n = be(r), o = Array.from(e?.querySelectorAll(".tab") ?? []), a = false;
+      let n = be(r), a = Array.from(e?.querySelectorAll(".tab") ?? []), s = false;
       if (n.forEach((l) => {
         let d = l.id === i;
         if (d)
-          a = true;
+          s = true;
         l.toggleAttribute("hidden", !d);
-      }), o.forEach((l) => {
+      }), a.forEach((l) => {
         let d = l.dataset.target === i;
         l.setAttribute("aria-selected", String(d)), l.setAttribute("tabindex", d ? "0" : "-1");
-      }), a && t.getAttribute("active") !== i)
-        t.setAttribute("active", i), no(t, i);
+      }), s && t.getAttribute("active") !== i)
+        t.setAttribute("active", i), aa(t, i);
     };
-    var oo = (t, e, r, i) => {
+    var oa = (t, e, r, i) => {
       let n = i.target.closest(".tab");
       if (!n || n.hasAttribute("disabled"))
         return;
-      let o = n.dataset.target;
-      if (o)
-        k(t, e, r, o);
-    }, so = (t, e, r, i) => {
+      let a = n.dataset.target;
+      if (a)
+        k(t, e, r, a);
+    }, sa = (t, e, r, i) => {
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(i.key))
         return;
       let n = Array.from(e?.querySelectorAll(".tab:not([disabled])") ?? []);
       if (n.length === 0)
         return;
-      let o = n.findIndex((u) => u === document.activeElement), a = o === -1 ? 0 : o, l = a;
+      let a = n.findIndex((p) => p === document.activeElement), s = a === -1 ? 0 : a, l = s;
       if (i.key === "ArrowLeft")
-        l = (a - 1 + n.length) % n.length;
+        l = (s - 1 + n.length) % n.length;
       if (i.key === "ArrowRight")
-        l = (a + 1) % n.length;
+        l = (s + 1) % n.length;
       if (i.key === "Home")
         l = 0;
       if (i.key === "End")
@@ -7717,16 +7728,16 @@ p9r-tag:hover {
         k(t, e, r, c);
       d.focus();
     };
-    var nl = Qn + to;
+    var al = ta + ea;
 
-    class St extends s {
+    class St extends o {
       _tablist;
       _slot;
       static get observedAttributes() {
         return ["active"];
       }
       constructor() {
-        super({ css: nl, template: Jn });
+        super({ css: al, template: Qn });
         this._tablist = this.shadowRoot?.querySelector(".tablist") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
@@ -7746,18 +7757,18 @@ p9r-tag:hover {
         this.setAttribute("active", t);
       }
       _onRebuild = () => ge(this, this._tablist, this._slot);
-      _onClick = (t) => oo(this, this._tablist, this._slot, t);
-      _onKey = (t) => so(this, this._tablist, this._slot, t);
+      _onClick = (t) => oa(this, this._tablist, this._slot, t);
+      _onKey = (t) => sa(this, this._tablist, this._slot, t);
     }
     if (!customElements.get("p9r-tabs"))
       customElements.define("p9r-tabs", St);
-    var ao = `<div class="icon" part="icon"></div>
+    var la = `<div class="icon" part="icon"></div>
 <div class="content">
     <span class="message"><slot></slot></span>
 </div>
 <button class="close" aria-label="Dismiss">&times;</button>
 `;
-    var lo = `:host {
+    var da = `:host {
     --_bg: var(--bg-surface, #ffffff);
     --_color: var(--text-main, #1f2937);
     --_border: var(--border-default, #e5e7eb);
@@ -7828,7 +7839,7 @@ p9r-tag:hover {
     opacity: 1;
 }
 `;
-    var co = `:host([leaving]) {
+    var ca = `:host([leaving]) {
     animation: toast-out 160ms ease-in forwards;
 }
 
@@ -7871,12 +7882,12 @@ p9r-tag:hover {
     to   { opacity: 0; transform: translateX(-20px); }
 }
 `;
-    var ll = lo + co;
+    var dl = da + ca;
 
-    class zt extends s {
+    class zt extends o {
       _timer = null;
       constructor() {
-        super({ css: ll, template: ao });
+        super({ css: dl, template: la });
       }
       connectedCallback() {
         this.shadowRoot?.querySelector(".close")?.addEventListener("click", () => this.dismiss());
@@ -7900,9 +7911,9 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-toast"))
       customElements.define("p9r-toast", zt);
-    var uo = `<slot></slot>
+    var pa = `<slot></slot>
 `;
-    var po = `:host {
+    var ua = `:host {
     position: fixed;
     top: 24px;
     left: 24px;
@@ -7952,9 +7963,9 @@ p9r-tag:hover {
 }
 `;
 
-    class It extends s {
+    class It extends o {
       constructor() {
-        super({ css: po, template: uo });
+        super({ css: ua, template: pa });
       }
       connectedCallback() {
         if (!this.hasAttribute("popover"))
@@ -7972,18 +7983,18 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-toast-stack"))
       customElements.define("p9r-toast-stack", It);
-    var h = null;
+    var m = null;
     function ul() {
-      if (h && h.isConnected)
-        return h;
-      if (h = document.querySelector("p9r-toast-stack"), h)
-        return h;
-      return h = document.createElement("p9r-toast-stack"), document.body.appendChild(h), h;
+      if (m && m.isConnected)
+        return m;
+      if (m = document.querySelector("p9r-toast-stack"), m)
+        return m;
+      return m = document.createElement("p9r-toast-stack"), document.body.appendChild(m), m;
     }
-    function ho(t, e = {}) {
+    function ha(t, e = {}) {
       return ul().push(t, e);
     }
-    var mo = `<div class="trigger" part="trigger">
+    var ma = `<div class="trigger" part="trigger">
     <slot></slot>
 </div>
 <div class="tooltip" part="tooltip" role="tooltip" aria-hidden="true">
@@ -7991,7 +8002,7 @@ p9r-tag:hover {
     <span class="text"></span>
 </div>
 `;
-    var bo = `:host {
+    var ba = `:host {
   display: inline-block;
   position: relative;
 
@@ -8056,7 +8067,7 @@ p9r-tag:hover {
   border-top-color: var(--_bg);
 }
 `;
-    var go = `:host([position="bottom"]) .tooltip {
+    var ga = `:host([position="bottom"]) .tooltip {
   top: calc(100% + var(--_offset));
   bottom: auto;
   left: 50%;
@@ -8104,9 +8115,9 @@ p9r-tag:hover {
   border-right-color: var(--_bg);
 }
 `;
-    var bl = bo + go;
+    var gl = ba + ga;
 
-    class Pt extends s {
+    class Pt extends o {
       _tooltip;
       _text;
       _showTimer = null;
@@ -8115,7 +8126,7 @@ p9r-tag:hover {
         return ["text"];
       }
       constructor() {
-        super({ css: bl, template: mo });
+        super({ css: gl, template: ma });
         this._tooltip = this.shadowRoot?.querySelector(".tooltip") ?? null, this._text = this.shadowRoot?.querySelector(".text") ?? null;
       }
       connectedCallback() {
@@ -10859,6 +10870,11 @@ p9r-tag:hover {
       return true;
     return /^(?:\/[a-zA-Z0-9-]+)+$/.test(path);
   }
+  function isValidSnippetIdentifier(id) {
+    if (!id || typeof id !== "string")
+      return false;
+    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id);
+  }
 
   // src/control/components/editor/configurations/PageConfiguration/PageConfiguration.ts
   class PageConfiguration extends Component {
@@ -11929,13 +11945,13 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/domain/insertBlankSibling.ts
-  function resolveDefaultTag(target) {
+  function resolveSiblingTemplate(target) {
     const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
     if (!parentId)
-      return "p";
+      return null;
     const parentEditor = document.compIdentifierToEditor?.get(parentId);
     if (!parentEditor)
-      return "p";
+      return null;
     const slotName = target.getAttribute("slot");
     const compSyncs = parentEditor.queryPanelChildren("p9r-comp-sync");
     for (const cs of compSyncs) {
@@ -11944,14 +11960,14 @@ cms-bag-breadcrumb[data-inline="right"] {
         continue;
       const tSlot = template.getAttribute("slot");
       if ((slotName ?? null) === (tSlot ?? null)) {
-        return template.tagName.toLowerCase();
+        return template;
       }
     }
-    return "p";
+    return null;
   }
   function insertBlankSibling(target, position) {
-    const tag = resolveDefaultTag(target);
-    const fresh = document.createElement(tag);
+    const template = resolveSiblingTemplate(target);
+    const fresh = template ? template.cloneNode(true) : document.createElement("p");
     const parentId = target.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
     if (parentId)
       fresh.setAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER, parentId);
@@ -17080,6 +17096,8 @@ button.active svg {
 
   // src/control/components/editor/configurations/SnippetConfiguration/SnippetConfiguration.ts
   class SnippetConfiguration extends Component {
+    _identifierCheckToken = 0;
+    _identifierValid = true;
     constructor() {
       super({
         css: style_default17,
@@ -17091,39 +17109,62 @@ button.active svg {
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = this._collectFormData();
-        const id = new URL(window.location.href).searchParams.get("id") || this.getAttribute("default-id");
-        if (!id) {
-          showToast("Missing snippet id. Create the snippet from the snippets list first.", { type: "error", duration: 6000 });
+        const isCreate = !this.getAttribute("default-id");
+        if (isCreate && !this._identifierValid) {
+          showToast("Fix the identifier before saving.", { type: "error" });
+          return;
+        }
+        if (isCreate && !data.identifier) {
+          showToast("An identifier is required.", { type: "error" });
           return;
         }
         const content = document.EditorManager.getContent();
+        const url = new URL(window.location.href);
+        const id = url.searchParams.get("id") || this.getAttribute("default-id");
         const endpoint = new URL("../../api/snippet", window.location.href);
+        if (id)
+          endpoint.searchParams.set("id", id);
+        const payload = {
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          content
+        };
+        if (!id)
+          payload.identifier = data.identifier;
         try {
           const res = await fetch(endpoint, {
-            method: "PUT",
+            method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id,
-              name: data.name,
-              description: data.description,
-              category: data.category,
-              content
-            })
+            body: JSON.stringify(payload)
           });
           if (!res.ok) {
             showToast("Failed to save snippet: " + await res.text(), { type: "error", duration: 6000 });
             return;
           }
-          showToast("Snippet updated", { type: "success" });
+          const result = await res.json();
+          if (!id && result.id) {
+            url.searchParams.set("identifier", result.identifier);
+            url.searchParams.delete("id");
+            window.history.pushState({}, "", url);
+            this.setAttribute("default-id", result.id);
+            this._lockIdentifier();
+          }
+          showToast(id ? "Snippet updated" : "Snippet created", { type: "success" });
         } catch (err) {
           showToast("Failed to save snippet: " + (err?.message || err), { type: "error", duration: 6000 });
         }
       });
       Array.from(this.attributes).filter((attr) => attr.name.startsWith("default-")).forEach((attr) => this._setDefaultValue(attr.name));
-      this._lockIdentifier();
+      this._wireIdentifierValidation();
+      if (this.hasAttribute("default-identifier")) {
+        this._lockIdentifier();
+        this._loadUsages(this.getAttribute("default-identifier"));
+      }
     }
     _collectFormData() {
       return {
+        identifier: this._getInputValue("identifier"),
         name: this._getInputValue("name"),
         description: this._getInputValue("description"),
         category: this._getTagSuggestValue("category")
@@ -17155,8 +17196,106 @@ button.active svg {
     }
     _lockIdentifier() {
       const input = this._getInputElement("identifier");
-      if (input)
-        input.disabled = true;
+      if (!input)
+        return;
+      input.disabled = true;
+      this._setIdentifierHint("info", "Immutable after creation.");
+      this._setIdentifierValid(true);
+    }
+    _wireIdentifierValidation() {
+      const input = this._getInputElement("identifier");
+      if (!input)
+        return;
+      if (this.hasAttribute("default-identifier"))
+        return;
+      input.addEventListener("input", () => this._validateIdentifierFormatSync());
+      input.addEventListener("blur", () => this._validateIdentifierRemote());
+      this._validateIdentifierFormatSync();
+    }
+    _setIdentifierHint(level, text) {
+      this._getInputElement("identifier")?.setHint(level, text);
+    }
+    _setIdentifierValid(valid) {
+      this._identifierValid = valid;
+      this._getInputElement("identifier")?.setInvalid(!valid);
+      const btn = this.shadowRoot?.getElementById("save-btn");
+      if (btn) {
+        if (valid)
+          btn.removeAttribute("aria-disabled");
+        else
+          btn.setAttribute("aria-disabled", "true");
+      }
+    }
+    _validateIdentifierFormatSync() {
+      const input = this._getInputElement("identifier");
+      if (!input)
+        return;
+      const id = input.value.trim();
+      if (id === "") {
+        this._setIdentifierHint("error", "Identifier is required.");
+        this._setIdentifierValid(false);
+        return;
+      }
+      if (!isValidSnippetIdentifier(id)) {
+        this._setIdentifierHint("error", "Lowercase letters, digits and dashes only (e.g. hero-v1).");
+        this._setIdentifierValid(false);
+        return;
+      }
+      this._setIdentifierHint("info", "Lowercase letters, numbers and dashes. Immutable after creation.");
+      this._setIdentifierValid(true);
+    }
+    async _validateIdentifierRemote() {
+      const input = this._getInputElement("identifier");
+      if (!input)
+        return;
+      const id = input.value.trim();
+      if (id === "" || !isValidSnippetIdentifier(id))
+        return;
+      const token = ++this._identifierCheckToken;
+      try {
+        const url = new URL("../../api/snippet-exists", window.location.href);
+        url.searchParams.set("identifier", id);
+        const res = await fetch(url);
+        if (token !== this._identifierCheckToken)
+          return;
+        if (!res.ok) {
+          this._setIdentifierHint("error", "Could not validate the identifier (server error).");
+          this._setIdentifierValid(false);
+          return;
+        }
+        const body = await res.json();
+        if (body.exists) {
+          this._setIdentifierHint("error", `"${id}" is already used by another snippet.`);
+          this._setIdentifierValid(false);
+        } else {
+          this._setIdentifierHint("success", "Identifier is available.");
+          this._setIdentifierValid(true);
+        }
+      } catch {
+        if (token !== this._identifierCheckToken)
+          return;
+        this._setIdentifierHint("error", "Could not reach the server to validate the identifier.");
+        this._setIdentifierValid(false);
+      }
+    }
+    async _loadUsages(identifier) {
+      try {
+        const endpoint = new URL("../../api/snippets", window.location.href);
+        endpoint.searchParams.set("identifier", identifier);
+        endpoint.searchParams.set("usages", "true");
+        const res = await fetch(endpoint);
+        if (!res.ok)
+          return;
+        const { pages } = await res.json();
+        const list = this.shadowRoot?.querySelector(".usages-list");
+        if (!list)
+          return;
+        if (pages.length === 0) {
+          list.innerHTML = `<li class="usages-empty">Not used on any page yet.</li>`;
+          return;
+        }
+        list.innerHTML = pages.map((p) => `<li>• ${p.title || p.identifier} <small>(${p.path})</small></li>`).join("");
+      } catch {}
     }
     show() {
       const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
@@ -19160,4 +19299,25 @@ button.active svg {
     }
   }
   customElements.define("cms-fetch", FetchComponent);
+})();
+(() => {
+    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
+    const Klass = (0, eval)("(" + __src + ")");
+    const revive = (_k, v) => {
+        if (v && typeof v === "object" && v.__cms_type) {
+            if (v.__cms_type === "Date")       return new Date(v.v);
+            if (v.__cms_type === "Map")        return new Map(v.v);
+            if (v.__cms_type === "Set")        return new Set(v.v);
+            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
+        }
+        return v;
+    };
+    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
+    const instance = Object.create(Klass.prototype);
+    Object.assign(instance, state);
+    window._cms = window._cms || {};
+    window._cms.Media = instance;
+    if ("HttpMedia" && !(instance instanceof Klass)) {
+        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
+    }
 })();
