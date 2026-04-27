@@ -34,6 +34,7 @@ export interface CmsRepository {
     getPageById(id: string): Promise<TPage | null>;
     updatePage(page: Partial<TPage>): Promise<void>;
     getLinks(): Promise<PageLink[]>
+    getPagesMetadata(): Promise<{id: string, path: string, title: string, tags: string[], visible: boolean}[]>
     getTemplatesMetadata(): Promise<{id: string, name: string, category: string, createdAt: string}[]>
 
 

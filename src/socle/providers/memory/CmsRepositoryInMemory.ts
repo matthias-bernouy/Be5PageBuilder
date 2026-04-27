@@ -93,6 +93,16 @@ export class InMemoryCmsRepository implements CmsRepository {
         this._pages.set(page.path, page);
     }
 
+    async getPagesMetadata(): Promise<{ id: string; path: string; title: string; tags: string[]; visible: boolean; }[]> {
+        return Array.from(this._pages.values()).map((val) => ({
+            id: val.id,
+            path: val.path,
+            title: val.title,
+            tags: val.tags,
+            visible: val.visible,
+        }));
+    }
+
     async getTemplatesMetadata(): Promise<{ id: string; name: string; category: string; createdAt: string; }[]> {
         return this._templates.values().map((val) => {
             return {

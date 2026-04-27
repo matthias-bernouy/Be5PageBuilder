@@ -17,7 +17,11 @@
                 <p9r-row href="{{BASE_PATH}}/editor/page?id={{ id }}">
                     <p9r-cell><strong>{{ title }}</strong></p9r-cell>
                     <p9r-cell><p9r-tag>{{ path }}</p9r-tag></p9r-cell>
-                    <p9r-cell>{{ tags }}</p9r-cell>
+                    <p9r-cell>
+                        <template for="tags">
+                            <p9r-tag>{{value}}</p9r-tag>
+                        </template>
+                    </p9r-cell>
                     <p9r-cell><p9r-tag color="{{ visibleColor }}">{{ visibleLabel }}</p9r-tag></p9r-cell>
                 </p9r-row>
             </template>
