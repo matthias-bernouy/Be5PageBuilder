@@ -8,6 +8,7 @@ function makeSystem(identifiers: string[]) {
             getSnippetByIdentifier: async (identifier: string): Promise<TSnippet | null> => {
                 if (!identifiers.includes(identifier)) return null;
                 return {
+                    id: `snippet-${identifier}`,
                     identifier,
                     name: "",
                     description: "",

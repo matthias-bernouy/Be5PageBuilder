@@ -127,6 +127,7 @@ describe("snippet.post — create", () => {
         const { cms, createCalls } = makeSystem({
             existingByIdentifier: {
                 hero: {
+                    id: "snippet-hero",
                     identifier: "hero",
                     name: "Hero",
                     description: "",
@@ -160,8 +161,8 @@ describe("snippet.post — update", () => {
         const { cms, deleteSpy } = makeSystem({
             pagesUsingSnippet: {
                 "kept-identifier": [
-                    { path: "/a", content: "", title: "", description: "", visible: true, tags: [] },
-                    { path: "/b", content: "", title: "", description: "", visible: true, tags: [] },
+                    { id: "page-a", path: "/a", content: "", title: "", description: "", visible: true, tags: [] },
+                    { id: "page-b", path: "/b", content: "", title: "", description: "", visible: true, tags: [] },
                 ],
             },
         });

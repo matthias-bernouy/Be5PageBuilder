@@ -8,6 +8,7 @@ function makeSystem(paths: string[]) {
             getPage: async (path: string): Promise<TPage | null> => {
                 if (!paths.includes(path)) return null;
                 return {
+                    id: `page-${path}`,
                     path,
                     title: "",
                     description: "",

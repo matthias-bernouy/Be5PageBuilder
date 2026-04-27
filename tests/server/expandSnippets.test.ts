@@ -11,6 +11,7 @@ function makeSystem(snippets: Record<string, string>) {
                 fetchLog.push(id);
                 if (id in snippets) {
                     return {
+                        id: `snippet-${id}`,
                         identifier: id,
                         name: id,
                         description: "",

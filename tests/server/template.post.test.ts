@@ -68,6 +68,7 @@ describe("template.post", () => {
     test("update path: calls updateTemplate when ?id is set", async () => {
         const { cms, updateCalls, createCalls } = makeSystem({
             existingTemplate: {
+                id: "tpl-1",
                 name: "old",
                 description: "",
                 content: "",
@@ -99,6 +100,7 @@ describe("template.post", () => {
         // Update must be allowed even when the partial body omits name/content.
         const { cms, updateCalls } = makeSystem({
             existingTemplate: {
+                id: "tpl-1",
                 name: "old",
                 description: "",
                 content: "",
