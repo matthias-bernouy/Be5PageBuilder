@@ -6,6 +6,7 @@ import { DragManager } from "src/control/components/editor/EditorSystem/DragMana
 import { BlocActions } from "../BlocActions/BlocActions";
 import type { BlocLibrary } from "../BlocLibrary/BlocLibrary";
 import { waitForScripts } from "./waitForScripts";
+import type { TemplatePicker } from "./TemplatePicker/TemplatePicker";
 
 
 export default class EditorRoot extends HTMLElement {
@@ -34,16 +35,49 @@ export default class EditorRoot extends HTMLElement {
             const slot = this.shadowRoot!.querySelector("#workingElement slot") as HTMLSlotElement;
             if (!slot) throw new Error("Working slot not found in shadow DOM");
             
-            waitForScripts(this).then(() => {
+            waitForScripts(this).then(async () => {
                 this._observer = new ObserverManager(slot);
                 this._dragmanager = new DragManager(workingElement);
 
                 this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library") as BlocLibrary;
 
+                if (this._isWorkingEmpty()) await this._maybePickTemplate();
+
                 workingElement.style.visibility = "visible";
             })
         })
 
+    }
+
+    private _isWorkingEmpty(): boolean {
+        const slot = this.shadowRoot!.querySelector("#workingElement slot") as HTMLSlotElement;
+        const nodes = slot.assignedNodes({ flatten: true }).filter(n =>
+            n.nodeType === Node.ELEMENT_NODE ||
+            (n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim() !== "")
+        );
+        if (nodes.length === 0) return true;
+        if (nodes.length !== 1 || nodes[0]!.nodeType !== Node.ELEMENT_NODE) return false;
+        const el = nodes[0] as Element;
+        if (el.tagName !== "P") return false;
+        const text = (el.textContent ?? "").trim();
+        if (text !== "") return false;
+        const onlyBr = el.children.length === 1 && el.children[0]!.tagName === "BR";
+        return el.children.length === 0 || onlyBr;
+    }
+
+    private async _maybePickTemplate(): Promise<void> {
+        const picker = document.createElement("cms-template-picker") as TemplatePicker;
+        this.shadowRoot!.appendChild(picker);
+        const html = await picker.open();
+        picker.remove();
+        if (!html) return;
+        // Surgical: only replace the default-slotted children (the page
+        // content). Named slots — `style` / `script` / `configuration` —
+        // must survive, otherwise the editor loses its config panel.
+        Array.from(this.children).forEach(c => { if (!c.hasAttribute("slot")) c.remove(); });
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = html;
+        while (wrapper.firstChild) this.appendChild(wrapper.firstChild);
     }
 
     save(){

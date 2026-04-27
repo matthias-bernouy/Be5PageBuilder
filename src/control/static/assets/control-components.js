@@ -14578,8 +14578,16 @@ form[method="dialog"] {
       this.shadowRoot.appendChild(picker);
       const html = await picker.open();
       picker.remove();
-      if (html)
-        this.innerHTML = html;
+      if (!html)
+        return;
+      Array.from(this.children).forEach((c) => {
+        if (!c.hasAttribute("slot"))
+          c.remove();
+      });
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = html;
+      while (wrapper.firstChild)
+        this.appendChild(wrapper.firstChild);
     }
     save() {
       const ele = this.shadowRoot?.querySelector("#workingElement");
@@ -14645,6 +14653,200 @@ form[method="dialog"] {
   }
   if (!customElements.get("cms-editor-system")) {
     customElements.define("cms-editor-system", EditorRoot);
+  }
+
+  // src/control/components/editor/EditorSystem/EditorRoot/TemplatePicker/TemplatePicker.style.css
+  var TemplatePicker_style_default = `:host { display: contents; }
+
+dialog {
+    width: clamp(400px, 50vw, 640px);
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 64px);
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 12px 40px rgb(0 0 0 / 0.18);
+    background: var(--bg-surface, #fff);
+    color: var(--text-main, #1e293b);
+    overflow: hidden;
+}
+dialog::backdrop {
+    background: rgb(0 0 0 / 0.4);
+    backdrop-filter: blur(2px);
+}
+
+.head {
+    padding: 24px 24px 12px;
+    text-align: center;
+}
+.title { font-size: 1.125rem; font-weight: 600; }
+.subtitle { font-size: 0.875rem; color: var(--text-muted, #94a3b8); margin-top: 4px; }
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+.card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 12px;
+    background: var(--bg-surface, #fff);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.12s, border-color 0.12s, transform 0.08s;
+}
+.card:hover {
+    background: var(--bg-base, #f8fafc);
+    border-color: var(--primary-base, #4361ee);
+}
+.card:active { transform: scale(0.99); }
+
+.icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: var(--primary-muted, rgb(67 97 238 / 0.12));
+    color: var(--primary-base, #4361ee);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.icon svg { width: 22px; height: 22px; }
+.name { font-size: 0.9375rem; font-weight: 500; }
+
+.foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--border-default, #e2e8f0);
+}
+.skip {
+    background: transparent;
+    border: 0;
+    padding: 8px 14px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted, #94a3b8);
+    cursor: pointer;
+    border-radius: 8px;
+}
+.skip:hover { color: var(--text-main, #1e293b); background: var(--bg-base, #f8fafc); }
+`;
+
+  // src/control/components/editor/EditorSystem/EditorRoot/TemplatePicker/TemplatePicker.ts
+  var ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>`;
+
+  class TemplatePicker extends HTMLElement {
+    _dialog = null;
+    _resolve = null;
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" }).innerHTML = `<style>${TemplatePicker_style_default}</style>`;
+    }
+    async open() {
+      const category = await this._fetchLayoutCategory();
+      if (!category)
+        return null;
+      const templates = await this._fetchTemplates(category);
+      if (templates.length === 0)
+        return null;
+      this._render(templates);
+      return new Promise((resolve) => {
+        this._resolve = resolve;
+      });
+    }
+    async _fetchLayoutCategory() {
+      try {
+        const res = await fetch(resolveApiUrl("system/settings"));
+        if (!res.ok)
+          return null;
+        const data = await res.json();
+        return data?.editor?.layoutCategory || null;
+      } catch {
+        return null;
+      }
+    }
+    async _fetchTemplates(category) {
+      try {
+        const res = await fetch(resolveApiUrl("template/list"));
+        if (!res.ok)
+          return [];
+        const all = await res.json();
+        return all.filter((t) => t.category === category);
+      } catch {
+        return [];
+      }
+    }
+    async _fetchContent(id) {
+      try {
+        const res = await fetch(resolveApiUrl(`template?id=${encodeURIComponent(id)}`));
+        if (!res.ok)
+          return null;
+        const tpl = await res.json();
+        return tpl.content ?? null;
+      } catch {
+        return null;
+      }
+    }
+    _render(items) {
+      const dialog = document.createElement("dialog");
+      dialog.innerHTML = `
+            <div class="head">
+                <div class="title">Pick a starting template</div>
+                <div class="subtitle">Choose a layout for your new page, or start from scratch.</div>
+            </div>
+            <div class="list">
+                ${items.map((t) => `
+                    <button type="button" class="card" data-id="${t.id}">
+                        <span class="icon">${ICON}</span>
+                        <span class="name">${escapeHtml(t.name)}</span>
+                    </button>
+                `).join("")}
+            </div>
+            <div class="foot">
+                <button type="button" class="skip">Start from scratch</button>
+            </div>
+        `;
+      dialog.querySelectorAll(".card").forEach((btn) => {
+        btn.addEventListener("click", () => this._pick(btn.dataset.id));
+      });
+      dialog.querySelector(".skip").addEventListener("click", () => this._close(null));
+      dialog.addEventListener("cancel", () => this._close(null));
+      dialog.addEventListener("click", (e) => {
+        if (e.target === dialog)
+          this._close(null);
+      });
+      this.shadowRoot.appendChild(dialog);
+      this._dialog = dialog;
+      dialog.showModal();
+    }
+    async _pick(id) {
+      const html = await this._fetchContent(id);
+      this._close(html);
+    }
+    _close(html) {
+      this._dialog?.close();
+      this._dialog?.remove();
+      this._dialog = null;
+      const r = this._resolve;
+      this._resolve = null;
+      r?.(html);
+    }
+  }
+  function escapeHtml(s2) {
+    return s2.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  if (!customElements.get("cms-template-picker")) {
+    customElements.define("cms-template-picker", TemplatePicker);
   }
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/template.html
@@ -15559,7 +15761,7 @@ dialog::backdrop {
       return (bytes / 1024).toFixed(1) + " KB";
     return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   }
-  function escapeHtml(s2) {
+  function escapeHtml2(s2) {
     return s2.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
   function escapeAttr(s2) {
@@ -15633,9 +15835,9 @@ dialog::backdrop {
       const isLast = i === breadcrumb.length - 1;
       html += `<span class="bc-sep">/</span>`;
       if (isLast) {
-        html += `<span class="bc-current">${escapeHtml(crumb.label)}</span>`;
+        html += `<span class="bc-current">${escapeHtml2(crumb.label)}</span>`;
       } else {
-        html += `<span class="bc-item" data-folder="${escapeAttr(crumb.id)}" data-index="${i}">${escapeHtml(crumb.label)}</span>`;
+        html += `<span class="bc-item" data-folder="${escapeAttr(crumb.id)}" data-index="${i}">${escapeHtml2(crumb.label)}</span>`;
       }
     }
     container.innerHTML = html;
@@ -18538,12 +18740,12 @@ button.active svg {
         ${isImage ? `
         <div class="detail-field">
             <label>Alt text</label>
-            <textarea id="detail-alt" rows="2">${escapeHtml(item.alt || "")}</textarea>
+            <textarea id="detail-alt" rows="2">${escapeHtml2(item.alt || "")}</textarea>
         </div>` : ""}
         <div class="detail-meta-row">
             <div class="detail-field">
                 <label>Type</label>
-                <span class="detail-value">${escapeHtml(item.mimetype || item.type)}</span>
+                <span class="detail-value">${escapeHtml2(item.mimetype || item.type)}</span>
             </div>
             <div class="detail-field">
                 <label>Size</label>
@@ -18553,12 +18755,12 @@ button.active svg {
         ${dims ? `
         <div class="detail-field">
             <label>Dimensions</label>
-            <span class="detail-value">${escapeHtml(dims)}</span>
+            <span class="detail-value">${escapeHtml2(dims)}</span>
         </div>` : ""}
         <div class="detail-field">
             <label>URL</label>
             <div class="url-row">
-                <span class="detail-value mono">${escapeHtml(mediaUrl)}</span>
+                <span class="detail-value mono">${escapeHtml2(mediaUrl)}</span>
                 <button class="btn-copy" id="btn-copy" title="Copy URL">${ICON_COPY}</button>
             </div>
         </div>

@@ -7,7 +7,7 @@ export default async function serveStaticFolder(runner: Runner) {
     const files = await scanStaticFolder();
 
     for (const file of files) {
-        
+
         if (file.relativePath.endsWith(".html")) {
             let routePath = file.relativePath.replace(/\.html$/, "");
             if (routePath === "index") {

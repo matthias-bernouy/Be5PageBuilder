@@ -19,7 +19,7 @@ export type TPage = {
 }
 
 export type TTemplate = {
-    id?: string;
+    id: string;
     name: string;
     description: string;
     content: string;
@@ -28,7 +28,7 @@ export type TTemplate = {
 }
 
 export type TSnippet = {
-    id?: string;
+    id: string;
     identifier: string;
     name: string;
     description: string;
