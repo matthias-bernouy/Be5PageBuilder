@@ -1,40 +1,40 @@
 (() => {
   // ../WebComponents/dist/ui.js
   (() => {
-    var { defineProperty: lt, getOwnPropertyNames: Xe, getOwnPropertyDescriptor: Ze } = Object, Ue = Object.prototype.hasOwnProperty;
-    var ct = new WeakMap, Je = (t) => {
-      var e = ct.get(t), i;
+    var { defineProperty: Rt, getOwnPropertyNames: fo, getOwnPropertyDescriptor: vo } = Object, _o = Object.prototype.hasOwnProperty;
+    var fe = new WeakMap, xo = (t) => {
+      var e = fe.get(t), r;
       if (e)
         return e;
-      if (e = lt({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
-        Xe(t).map((r) => !Ue.call(e, r) && lt(e, r, { get: () => t[r], enumerable: !(i = Ze(t, r)) || i.enumerable }));
-      return ct.set(t, e), e;
+      if (e = Rt({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
+        fo(t).map((i) => !_o.call(e, i) && Rt(e, i, { get: () => t[i], enumerable: !(r = vo(t, i)) || r.enumerable }));
+      return fe.set(t, e), e;
     };
-    var Qe = (t, e) => {
-      for (var i in e)
-        lt(t, i, { get: e[i], enumerable: true, configurable: true, set: (r) => e[i] = () => r });
+    var yo = (t, e) => {
+      for (var r in e)
+        Rt(t, r, { get: e[r], enumerable: true, configurable: true, set: (i) => e[r] = () => i });
     };
-    var Hr = {};
-    Qe(Hr, { Tooltip: () => ot, ToastStack: () => st, Toast: () => at, Textarea: () => N, TagSuggest: () => V, Tag: () => F, Tabs: () => g, TableRow: () => G, TableHeaderCell: () => et, TableCell: () => tt, Table: () => it, TabPanel: () => rt, Switch: () => I, Stepper: () => W, Step: () => Q, Stack: () => $, Spinner: () => J, Skeleton: () => U, SegmentedSwitch: () => B, RadioGroup: () => m, Radio: () => P, Progress: () => Z, Pagination: () => X, P9rSizesSelect: () => j, P9rSelect: () => b, P9rRange: () => u, P9rInput: () => c, OpenModal: () => L, Modal: () => z, LeftMenuLayout: () => O, LateralMenuItem: () => Y, LateralMenu: () => K, LateralDialog: () => C, InputFile: () => R, IconButton: () => S, HorizontalActionGroup: () => D, FormSection: () => H, FormDialog: () => E, Divider: () => M, Component: () => s, Checkbox: () => T, Card: () => A, Button: () => q, BreadcrumbItem: () => k, Breadcrumb: () => w, Badge: () => y, Avatar: () => x, Alert: () => _, AccordionItem: () => v, Accordion: () => f });
+    var gl = {};
+    yo(gl, { showToast: () => ho, Tooltip: () => Pt, ToastStack: () => It, Toast: () => zt, Textarea: () => pt, TagSuggest: () => ut, Tag: () => st, Tabs: () => St, TableRow: () => Lt, TableHeaderCell: () => Tt, TableCell: () => Ct, Table: () => Mt, TabPanel: () => Ht, Switch: () => ot, Stepper: () => At, Step: () => Et, Stack: () => gt, Spinner: () => kt, Skeleton: () => wt, SegmentedSwitch: () => nt, RadioGroup: () => et, Radio: () => Q, Progress: () => yt, Pagination: () => xt, P9rSizesSelect: () => J, P9rSelect: () => G, P9rRange: () => Z, P9rInput: () => W, OpenModal: () => O, Modal: () => D, LeftMenuLayout: () => bt, LateralMenuItem: () => ft, LateralMenu: () => vt, LateralDialog: () => F, InputFile: () => X, IconButton: () => U, HorizontalActionGroup: () => ht, FormSection: () => $, FormDialog: () => V, Divider: () => j, Container: () => mt, Component: () => s, Checkbox: () => K, Card: () => B, Button: () => N, BreadcrumbItem: () => R, Breadcrumb: () => q, Badge: () => P, Avatar: () => I, Alert: () => z, AccordionItem: () => H, Accordion: () => S });
 
     class s extends HTMLElement {
       constructor(t) {
         super();
         let e = this.attachShadow({ mode: "open" });
         if (t) {
-          let i = document.createElement("style");
-          i.innerHTML = t.css, e.appendChild(i);
-          let r = document.createElement("template");
-          r.innerHTML = t.template, e.appendChild(r.content.cloneNode(true));
+          let r = document.createElement("style");
+          r.innerHTML = t.css, e.appendChild(r);
+          let i = document.createElement("template");
+          i.innerHTML = t.template, e.appendChild(i.content.cloneNode(true));
         }
       }
       connectedCallback() {}
     }
-    var ht = `<div class="accordion" part="accordion">
+    var ve = `<div class="accordion" part="accordion">
     <slot></slot>
 </div>
 `;
-    var pt = `:host {
+    var _e = `:host {
   display: block;
 
   --_border: var(--border-default, #e5e7eb);
@@ -62,7 +62,7 @@
   border-bottom: 1px solid var(--_border);
 }
 `;
-    var ut = `<div class="item" part="item">
+    var xe = `<div class="item" part="item">
     <button class="header" part="header" type="button" aria-expanded="false">
         <span class="title" part="title"><slot name="header"></slot></span>
         <span class="chevron" part="chevron" aria-hidden="true">
@@ -78,7 +78,7 @@
     </div>
 </div>
 `;
-    var bt = `:host {
+    var ye = `:host {
   display: block;
 
   --_text: var(--text-main, #1f2937);
@@ -170,13 +170,13 @@
 }
 `;
 
-    class v extends s {
+    class H extends s {
       _header;
       static get observedAttributes() {
         return ["open", "disabled"];
       }
       constructor() {
-        super({ css: bt, template: ut });
+        super({ css: ye, template: xe });
         this._header = this.shadowRoot?.querySelector(".header") ?? null;
       }
       connectedCallback() {
@@ -187,7 +187,7 @@
       disconnectedCallback() {
         this._header?.removeEventListener("click", this._toggle);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "open" || t === "disabled")
           this._syncAria();
       }
@@ -235,11 +235,11 @@
       }
     }
     if (!customElements.get("p9r-accordion-item"))
-      customElements.define("p9r-accordion-item", v);
+      customElements.define("p9r-accordion-item", H);
 
-    class f extends s {
+    class S extends s {
       constructor() {
-        super({ css: pt, template: ht });
+        super({ css: _e, template: ve });
       }
       connectedCallback() {
         this.addEventListener("accordion-item-toggle", this._handleItemToggle);
@@ -256,14 +256,14 @@
         if (!t.detail.open)
           return;
         let e = t.target;
-        for (let i of this._items())
-          if (i !== e)
-            i.removeAttribute("open");
+        for (let r of this._items())
+          if (r !== e)
+            r.removeAttribute("open");
       };
     }
     if (!customElements.get("p9r-accordion"))
-      customElements.define("p9r-accordion", f);
-    var mt = `<div class="alert" part="alert" role="alert">
+      customElements.define("p9r-accordion", S);
+    var we = `<div class="alert" part="alert" role="alert">
     <span class="icon" part="icon" aria-hidden="true">
         <slot name="icon"></slot>
     </span>
@@ -274,7 +274,7 @@
     <button class="close" part="close" aria-label="Dismiss" hidden>&times;</button>
 </div>
 `;
-    var gt = `:host {
+    var ke = `:host {
   display: block;
 
   --_bg: var(--info-muted, #eff6ff);
@@ -283,28 +283,6 @@
   --_border: var(--info-base, #3b82f6);
   --_radius: 10px;
   --_padding: 0.85rem 1rem;
-}
-
-:host([type="success"]) {
-  --_bg: var(--success-muted);
-  --_color: var(--success-contrasted);
-  --_accent: var(--success-base);
-  --_border: var(--success-base);
-}
-
-:host([type="warning"]) {
-  --_bg: var(--warning-muted);
-  --_color: var(--warning-contrasted);
-  --_accent: var(--warning-base);
-  --_border: var(--warning-base);
-}
-
-:host([type="error"]),
-:host([type="danger"]) {
-  --_bg: var(--danger-muted);
-  --_color: var(--danger-contrasted);
-  --_accent: var(--danger-base);
-  --_border: var(--danger-base);
 }
 
 .alert {
@@ -333,6 +311,61 @@
 
 .icon:has(slot[name="icon"]:not(:has(*))) {
   display: none;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.title:has(slot[name="title"]:not(:has(*))) {
+  display: none;
+}
+
+.message slot:empty {
+  display: none;
+}
+
+.close {
+  flex: 0 0 auto;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  opacity: 0.6;
+}
+
+.close:hover { opacity: 1; }
+`;
+    var Ee = `:host([type="success"]) {
+  --_bg: var(--success-muted);
+  --_color: var(--success-contrasted);
+  --_accent: var(--success-base);
+  --_border: var(--success-base);
+}
+
+:host([type="warning"]) {
+  --_bg: var(--warning-muted);
+  --_color: var(--warning-contrasted);
+  --_accent: var(--warning-base);
+  --_border: var(--warning-base);
+}
+
+:host([type="error"]),
+:host([type="danger"]) {
+  --_bg: var(--danger-muted);
+  --_color: var(--danger-contrasted);
+  --_accent: var(--danger-base);
+  --_border: var(--danger-base);
 }
 
 :host([icon]) .icon:has(slot[name="icon"]:not(:has(*))) {
@@ -374,39 +407,6 @@
   line-height: 1;
 }
 
-.body {
-  flex: 1;
-  min-width: 0;
-}
-
-.title {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 0.15rem;
-}
-
-.title:has(slot[name="title"]:not(:has(*))) {
-  display: none;
-}
-
-.message slot:empty {
-  display: none;
-}
-
-.close {
-  flex: 0 0 auto;
-  background: transparent;
-  border: 0;
-  color: inherit;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 4px;
-  opacity: 0.6;
-}
-
-.close:hover { opacity: 1; }
-
 :host([dismissible]) .close {
   display: inline-block;
 }
@@ -420,14 +420,15 @@
   to   { opacity: 0; transform: translateY(-6px); }
 }
 `;
+    var Mo = ke + Ee;
 
-    class _ extends s {
+    class z extends s {
       _close;
       static get observedAttributes() {
         return ["dismissible"];
       }
       constructor() {
-        super({ css: gt, template: mt });
+        super({ css: Mo, template: we });
         this._close = this.shadowRoot?.querySelector(".close") ?? null;
       }
       connectedCallback() {
@@ -436,7 +437,7 @@
       disconnectedCallback() {
         this._close?.removeEventListener("click", this._handleClose);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "dismissible")
           this._syncDismissible();
       }
@@ -455,14 +456,14 @@
       }
     }
     if (!customElements.get("p9r-alert"))
-      customElements.define("p9r-alert", _);
-    var vt = `<div class="avatar" part="avatar">
+      customElements.define("p9r-alert", z);
+    var Ae = `<div class="avatar" part="avatar">
     <img class="image" part="image" alt="" hidden />
     <span class="initials" part="initials" aria-hidden="true"></span>
     <span class="fallback" part="fallback"><slot></slot></span>
 </div>
 `;
-    var ft = `:host {
+    var Le = `:host {
   display: inline-block;
 
   --_size: 2.5rem;
@@ -538,14 +539,14 @@
 }
 `;
 
-    class x extends s {
+    class I extends s {
       _img;
       _initials;
       static get observedAttributes() {
         return ["src", "alt", "name", "initials"];
       }
       constructor() {
-        super({ css: ft, template: vt });
+        super({ css: Le, template: Ae });
         this._img = this.shadowRoot?.querySelector(".image") ?? null, this._initials = this.shadowRoot?.querySelector(".initials") ?? null;
       }
       connectedCallback() {
@@ -557,7 +558,7 @@
         if (this._img)
           this._img.removeEventListener("error", this._handleImageError);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "src" || t === "alt")
           this._syncImage();
         if (t === "name" || t === "initials")
@@ -585,7 +586,7 @@
           this._initials.textContent = "";
           return;
         }
-        this._initials.textContent = e.split(/\s+/).filter(Boolean).slice(0, 2).map((i) => i[0]).join("").toUpperCase();
+        this._initials.textContent = e.split(/\s+/).filter(Boolean).slice(0, 2).map((r) => r[0]).join("").toUpperCase();
       }
       _handleImageError = () => {
         if (this._img)
@@ -593,13 +594,13 @@
       };
     }
     if (!customElements.get("p9r-avatar"))
-      customElements.define("p9r-avatar", x);
-    var _t = `<span class="badge" part="badge">
+      customElements.define("p9r-avatar", I);
+    var Ce = `<span class="badge" part="badge">
     <span class="dot" part="dot" aria-hidden="true"></span>
     <span class="content" part="content"><slot></slot></span>
 </span>
 `;
-    var xt = `:host {
+    var Te = `:host {
   display: inline-flex;
 
   --_bg: var(--secondary-muted, #f1f5f9);
@@ -667,20 +668,20 @@
 }
 `;
 
-    class y extends s {
+    class P extends s {
       constructor() {
-        super({ css: xt, template: _t });
+        super({ css: Te, template: Ce });
       }
     }
     if (!customElements.get("p9r-badge"))
-      customElements.define("p9r-badge", y);
-    var yt = `<nav class="breadcrumb" part="breadcrumb" aria-label="Breadcrumb">
+      customElements.define("p9r-badge", P);
+    var Me = `<nav class="breadcrumb" part="breadcrumb" aria-label="Breadcrumb">
     <ol class="list" part="list">
         <slot></slot>
     </ol>
 </nav>
 `;
-    var kt = `:host {
+    var He = `:host {
   display: block;
 
   --_separator: "/";
@@ -712,11 +713,11 @@
   display: inline;
 }
 `;
-    var wt = `<li class="item" part="item">
+    var Se = `<li class="item" part="item">
     <a class="link" part="link"><slot></slot></a>
 </li>
 `;
-    var At = `:host {
+    var ze = `:host {
   display: inline-flex;
   align-items: center;
 
@@ -750,19 +751,19 @@
 }
 `;
 
-    class k extends s {
+    class R extends s {
       _link;
       static get observedAttributes() {
         return ["href", "current"];
       }
       constructor() {
-        super({ css: At, template: wt });
+        super({ css: ze, template: Se });
         this._link = this.shadowRoot?.querySelector(".link") ?? null;
       }
       connectedCallback() {
         this._syncHref(), this._syncCurrent();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "href")
           this._syncHref();
         if (t === "current")
@@ -787,19 +788,19 @@
       }
     }
     if (!customElements.get("p9r-breadcrumb-item"))
-      customElements.define("p9r-breadcrumb-item", k);
+      customElements.define("p9r-breadcrumb-item", R);
 
-    class w extends s {
+    class q extends s {
       static get observedAttributes() {
         return ["separator"];
       }
       constructor() {
-        super({ css: kt, template: yt });
+        super({ css: He, template: Me });
       }
       connectedCallback() {
         this._syncSeparator(), this._markCurrent();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "separator")
           this._syncSeparator();
       }
@@ -814,8 +815,8 @@
       }
     }
     if (!customElements.get("p9r-breadcrumb"))
-      customElements.define("p9r-breadcrumb", w);
-    var Et = `<article class="card" part="card">
+      customElements.define("p9r-breadcrumb", q);
+    var Ie = `<article class="card" part="card">
     <header class="header" part="header">
         <slot name="header"></slot>
     </header>
@@ -827,7 +828,7 @@
     </footer>
 </article>
 `;
-    var Ct = `:host {
+    var Pe = `:host {
   display: block;
 
   --_bg: var(--bg-surface, #ffffff);
@@ -904,14 +905,14 @@
 }
 `;
 
-    class A extends s {
+    class B extends s {
       constructor() {
-        super({ css: Ct, template: Et });
+        super({ css: Pe, template: Ie });
       }
     }
     if (!customElements.get("p9r-card"))
-      customElements.define("p9r-card", A);
-    var zt = `<dialog part="dialog" aria-modal="true">
+      customElements.define("p9r-card", B);
+    var Re = `<dialog part="dialog" aria-modal="true">
     <div class="modal-wrapper" part="wrapper">
         <form method="dialog" id="close-form"></form>
 
@@ -937,7 +938,7 @@
     </div>
 </dialog>
 `;
-    var Lt = `:host {
+    var qe = `:host {
     --_modal-width: 500px;
     --_modal-radius: 12px;
     --_modal-bg: var(--bg-surface);
@@ -970,6 +971,65 @@ dialog[open]::backdrop {
     opacity: 1;
 }
 
+.modal-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border-default);
+}
+
+.title-area {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    letter-spacing: -0.01em;
+}
+
+.body {
+    padding: 1.5rem;
+    color: var(--text-body);
+    font-size: 14px;
+    line-height: 1.5;
+    overflow-y: auto;
+}
+
+footer.actions {
+    padding: 1rem 1.5rem;
+    background: var(--bg-base);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    border-top: 1px solid var(--border-default);
+}
+`;
+    var Be = `.close-icon {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 8px;
+    border-radius: 6px;
+    aspect-ratio: 1/1;
+}
+
+.close-icon:hover {
+    background: var(--bg-base);
+    color: var(--text-main);
+}
+
+.close-icon:focus-visible {
+    outline: 2px solid var(--primary-base, currentColor);
+    outline-offset: 2px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
     dialog {
         transform: scale(0.95);
@@ -997,75 +1057,42 @@ dialog[open]::backdrop {
             opacity: 0;
         }
     }
-}
 
-.modal-wrapper {
-    display: flex;
-    flex-direction: column;
-}
-
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1.2rem 1.5rem;
-    border-bottom: 1px solid var(--border-default);
-}
-
-.title-area {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-main);
-    letter-spacing: -0.01em;
-}
-
-.close-icon {
-    background: transparent;
-    border: none;
-    font-size: 1.5rem;
-    color: var(--text-muted);
-    cursor: pointer;
-    line-height: 1;
-    padding: 8px;
-    border-radius: 6px;
-    aspect-ratio: 1/1;
-}
-
-.close-icon:hover {
-    background: var(--bg-base);
-    color: var(--text-main);
-}
-
-.close-icon:focus-visible {
-    outline: 2px solid var(--primary-base, currentColor);
-    outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: no-preference) {
     .close-icon {
         transition: background 0.2s, color 0.2s;
     }
 }
-
-.body {
-    padding: 1.5rem;
-    color: var(--text-body);
-    font-size: 14px;
-    line-height: 1.5;
-    overflow-y: auto;
-}
-
-footer.actions {
-    padding: 1rem 1.5rem;
-    background: var(--bg-base);
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-    border-top: 1px solid var(--border-default);
-}
 `;
+    var Ve = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    };
+    var Fe = (t) => {
+      t.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
+    }, De = (t) => {
+      t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
+    };
+    var Oe = (t, e) => {
+      let r = t.shadowRoot?.querySelector("dialog");
+      if (!r)
+        return;
+      if (e.target !== r)
+        return;
+      let i = r.getBoundingClientRect();
+      if (!(i.top <= e.clientY && e.clientY <= i.top + i.height && i.left <= e.clientX && e.clientX <= i.left + i.width))
+        t.close();
+    }, je = (t, e) => {
+      t.querySelectorAll("[name]").forEach((i) => {
+        let n = i.getAttribute("name"), o = i.value;
+        if (n && o !== undefined && o !== null && o !== "")
+          e.formData.append(n, String(o));
+      });
+    };
+    var No = qe + Be;
 
-    class E extends s {
+    class V extends s {
       _dialog;
       _form;
       _previouslyFocused = null;
@@ -1073,58 +1100,38 @@ footer.actions {
         return ["action", "method", "enctype"];
       }
       constructor() {
-        super({ css: Lt, template: zt });
+        super({ css: No, template: Re });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._form = this.shadowRoot?.querySelector("#form-validation") ?? null;
       }
       connectedCallback() {
         for (let t of ["action", "method", "enctype"])
-          this._upgradeProperty(t);
-        this._dialog?.addEventListener("click", this._handleBackdropClick), this._dialog?.addEventListener("close", this._handleClose), this._form?.addEventListener("formdata", this._handleFormData);
+          Ve(this, t);
+        this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("close", this._onClose), this._form?.addEventListener("formdata", this._onFormData);
       }
       disconnectedCallback() {
-        this._dialog?.removeEventListener("click", this._handleBackdropClick), this._dialog?.removeEventListener("close", this._handleClose), this._form?.removeEventListener("formdata", this._handleFormData);
+        this._dialog?.removeEventListener("click", this._onBackdrop), this._dialog?.removeEventListener("close", this._onClose), this._form?.removeEventListener("formdata", this._onFormData);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._form)
           return;
         if (t === "action")
-          this._form.action = i ?? "";
+          this._form.action = r ?? "";
         if (t === "method")
-          this._form.method = i ?? "get";
+          this._form.method = r ?? "get";
         if (t === "enctype")
-          this._form.enctype = i ?? "application/x-www-form-urlencoded";
+          this._form.enctype = r ?? "application/x-www-form-urlencoded";
       }
-      _handleBackdropClick = (t) => {
-        if (!this._dialog)
-          return;
-        if (t.target !== this._dialog)
-          return;
-        let e = this._dialog.getBoundingClientRect();
-        if (!(e.top <= t.clientY && t.clientY <= e.top + e.height && e.left <= t.clientX && t.clientX <= e.left + e.width))
-          this.close();
-      };
-      _handleClose = () => {
+      _onBackdrop = (t) => Oe(this, t);
+      _onFormData = (t) => je(this, t);
+      _onClose = () => {
         if (this._previouslyFocused instanceof HTMLElement)
           this._previouslyFocused.focus();
-        this._previouslyFocused = null, this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
+        this._previouslyFocused = null, De(this);
       };
-      _handleFormData = (t) => {
-        this.querySelectorAll("[name]").forEach((i) => {
-          let r = i.getAttribute("name"), a = i.value;
-          if (r && a !== undefined && a !== null && a !== "")
-            t.formData.append(r, String(a));
-        });
-      };
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
       showModal() {
         if (!this._dialog)
           return;
-        this._previouslyFocused = document.activeElement, this._dialog.showModal(), this.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
+        this._previouslyFocused = document.activeElement, this._dialog.showModal(), Fe(this);
       }
       close() {
         this._dialog?.close();
@@ -1133,33 +1140,24 @@ footer.actions {
         return this.getAttribute("action") ?? "";
       }
       set action(t) {
-        if (t)
-          this.setAttribute("action", t);
-        else
-          this.removeAttribute("action");
+        t ? this.setAttribute("action", t) : this.removeAttribute("action");
       }
       get method() {
         return this.getAttribute("method") ?? "get";
       }
       set method(t) {
-        if (t)
-          this.setAttribute("method", t);
-        else
-          this.removeAttribute("method");
+        t ? this.setAttribute("method", t) : this.removeAttribute("method");
       }
       get enctype() {
         return this.getAttribute("enctype") ?? "application/x-www-form-urlencoded";
       }
       set enctype(t) {
-        if (t)
-          this.setAttribute("enctype", t);
-        else
-          this.removeAttribute("enctype");
+        t ? this.setAttribute("enctype", t) : this.removeAttribute("enctype");
       }
     }
     if (!customElements.get("p9r-form-dialog"))
-      customElements.define("p9r-form-dialog", E);
-    var Mt = `<dialog id="drawer" part="dialog" aria-modal="true" role="dialog" aria-labelledby="title">
+      customElements.define("p9r-form-dialog", V);
+    var Ne = `<dialog id="drawer" part="dialog" aria-modal="true" role="dialog" aria-labelledby="title">
     <header part="header">
         <div id="title" part="title">
             <slot name="title">Dialog</slot>
@@ -1176,7 +1174,7 @@ footer.actions {
     </footer>
 </dialog>
 `;
-    var qt = `:host {
+    var Ke = `:host {
     --drawer-width: 400px;
     --drawer-bg: #ffffff;
     --transition-speed: 0.4s;
@@ -1224,53 +1222,11 @@ dialog[open]::backdrop {
     backdrop-filter: blur(4px);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    dialog {
-        transition:
-            transform var(--transition-speed) var(--transition-curve),
-            opacity var(--transition-speed) var(--transition-curve),
-            display var(--transition-speed) var(--transition-curve) allow-discrete,
-            overlay var(--transition-speed) var(--transition-curve) allow-discrete;
-    }
-
-    @starting-style {
-        dialog[open] {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-    }
-
-    dialog::backdrop {
-        transition:
-            background-color var(--transition-speed) var(--transition-curve),
-            backdrop-filter var(--transition-speed) var(--transition-curve),
-            display var(--transition-speed) var(--transition-curve) allow-discrete,
-            overlay var(--transition-speed) var(--transition-curve) allow-discrete;
-    }
-
-    @starting-style {
-        dialog[open]::backdrop {
-            background: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(0px);
-        }
-    }
-
-    header,
-    footer,
-    .content {
-        transition: transform var(--transition-speed) var(--transition-curve);
-    }
-
-    #close-btn {
-        transition: background-color 0.2s, color 0.2s;
-    }
-}
-
 dialog > * {
     pointer-events: auto;
 }
-
-header {
+`;
+    var $e = `header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1350,62 +1306,110 @@ footer slot[name="footer"]::slotted(button[primary]) {
 footer slot[name="footer"]::slotted(button:hover) {
     filter: brightness(0.9);
 }
+`;
+    var Ue = `@media (prefers-reduced-motion: no-preference) {
+    dialog {
+        transition:
+            transform var(--transition-speed) var(--transition-curve),
+            opacity var(--transition-speed) var(--transition-curve),
+            display var(--transition-speed) var(--transition-curve) allow-discrete,
+            overlay var(--transition-speed) var(--transition-curve) allow-discrete;
+    }
 
-@media (prefers-reduced-motion: no-preference) {
+    @starting-style {
+        dialog[open] {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    dialog::backdrop {
+        transition:
+            background-color var(--transition-speed) var(--transition-curve),
+            backdrop-filter var(--transition-speed) var(--transition-curve),
+            display var(--transition-speed) var(--transition-curve) allow-discrete,
+            overlay var(--transition-speed) var(--transition-curve) allow-discrete;
+    }
+
+    @starting-style {
+        dialog[open]::backdrop {
+            background: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(0px);
+        }
+    }
+
+    header,
+    footer,
+    .content {
+        transition: transform var(--transition-speed) var(--transition-curve);
+    }
+
+    #close-btn {
+        transition: background-color 0.2s, color 0.2s;
+    }
+
     footer slot[name="footer"]::slotted(button) {
         transition: all 0.2s;
     }
 }
 `;
+    var Ye = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    };
+    var Xe = (t) => {
+      t.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
+    }, We = (t) => {
+      t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
+    };
+    var Ze = (t, e) => {
+      let r = t.shadowRoot?.querySelector("dialog");
+      if (e.target === r)
+        t.close();
+    }, Ge = (t, e) => {
+      e.preventDefault(), t.close();
+    }, Je = (t, e) => {
+      e.preventDefault(), t.close();
+    }, Qe = (t) => {
+      if (t.hasAttribute("open"))
+        t.removeAttribute("open");
+      We(t);
+    };
+    var Xo = Ke + $e + Ue;
 
-    class C extends s {
+    class F extends s {
       _dialog;
       _closeBtn;
       static get observedAttributes() {
         return ["open"];
       }
       constructor() {
-        super({ css: qt, template: Mt });
+        super({ css: Xo, template: Ne });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._closeBtn = this.shadowRoot?.querySelector("#close-btn") ?? null;
       }
       connectedCallback() {
-        this._upgradeProperty("open"), this._dialog?.addEventListener("click", this._handleBackdropClick), this._dialog?.addEventListener("cancel", this._handleCancel), this._dialog?.addEventListener("close", this._handleClose), this._closeBtn?.addEventListener("click", this._handleCloseClick);
+        Ye(this, "open"), this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("cancel", this._onCancel), this._dialog?.addEventListener("close", this._onClose), this._closeBtn?.addEventListener("click", this._onCloseClick);
       }
       disconnectedCallback() {
-        this._dialog?.removeEventListener("click", this._handleBackdropClick), this._dialog?.removeEventListener("cancel", this._handleCancel), this._dialog?.removeEventListener("close", this._handleClose), this._closeBtn?.removeEventListener("click", this._handleCloseClick);
+        this._dialog?.removeEventListener("click", this._onBackdrop), this._dialog?.removeEventListener("cancel", this._onCancel), this._dialog?.removeEventListener("close", this._onClose), this._closeBtn?.removeEventListener("click", this._onCloseClick);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t) {
         if (!this._dialog)
           return;
         if (t === "open") {
-          let r = this.hasAttribute("open");
-          if (r && !this._dialog.open)
+          let e = this.hasAttribute("open");
+          if (e && !this._dialog.open)
             this._dialog.showModal();
-          else if (!r && this._dialog.open)
+          else if (!e && this._dialog.open)
             this._dialog.close();
         }
       }
-      _handleBackdropClick = (t) => {
-        if (t.target === this._dialog)
-          this.close();
-      };
-      _handleCloseClick = (t) => {
-        t.preventDefault(), this.close();
-      };
-      _handleCancel = (t) => {
-        t.preventDefault(), this.close();
-      };
-      _handleClose = () => {
-        if (this.hasAttribute("open"))
-          this.removeAttribute("open");
-        this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
-      };
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onBackdrop = (t) => Ze(this, t);
+      _onCloseClick = (t) => Ge(this, t);
+      _onCancel = (t) => Je(this, t);
+      _onClose = () => Qe(this);
       get open() {
         return this.hasAttribute("open");
       }
@@ -1422,7 +1426,7 @@ footer slot[name="footer"]::slotted(button:hover) {
           this._dialog.showModal();
         if (!this.hasAttribute("open"))
           this.setAttribute("open", "");
-        this.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
+        Xe(this);
       }
       showModal() {
         this.show();
@@ -1435,18 +1439,18 @@ footer slot[name="footer"]::slotted(button:hover) {
       }
     }
     if (!customElements.get("w13c-lateral-dialog"))
-      customElements.define("w13c-lateral-dialog", C);
-    var Tt = (t, e) => {
+      customElements.define("w13c-lateral-dialog", F);
+    var tr = (t, e) => {
       if (e.target === e.currentTarget)
         t.hide();
-    }, Ht = (t, e) => {
+    }, er = (t, e) => {
       e.preventDefault(), t.hide();
-    }, St = (t) => {
+    }, rr = (t) => {
       if (t.hasAttribute("open"))
         t.removeAttribute("open");
       t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
     };
-    var Rt = `<dialog part="dialog">
+    var ir = `<dialog part="dialog">
     <form method="dialog" id="m-close"></form>
     <div class="panel" part="panel">
         <header class="header" part="header">
@@ -1458,7 +1462,7 @@ footer slot[name="footer"]::slotted(button:hover) {
     </div>
 </dialog>
 `;
-    var jt = `:host {
+    var nr = `:host {
     --modal-width: var(--p9r-modal-width, 520px);
     --modal-radius: var(--p9r-modal-radius, 12px);
     --modal-bg: var(--p9r-modal-bg, var(--bg-surface, #ffffff));
@@ -1538,16 +1542,16 @@ dialog[open]::backdrop { opacity: 1; }
 .body { padding: var(--modal-pad); overflow: auto; }
 `;
 
-    class z extends s {
+    class D extends s {
       _dialog = null;
-      _onBackdrop = (t) => Tt(this, t);
-      _onCancel = (t) => Ht(this, t);
-      _onClose = () => St(this);
+      _onBackdrop = (t) => tr(this, t);
+      _onCancel = (t) => er(this, t);
+      _onClose = () => rr(this);
       static get observedAttributes() {
         return ["open", "aria-label"];
       }
       constructor() {
-        super({ css: jt, template: Rt });
+        super({ css: nr, template: ir });
       }
       connectedCallback() {
         this._dialog ??= this.shadowRoot?.querySelector("dialog") ?? null, this._upgradeProperty("open"), this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("cancel", this._onCancel), this._dialog?.addEventListener("close", this._onClose), this.addEventListener("form:success", this.hide), this._syncLabel(), this._syncOpen();
@@ -1555,8 +1559,8 @@ dialog[open]::backdrop { opacity: 1; }
       disconnectedCallback() {
         this._dialog?.removeEventListener("click", this._onBackdrop), this._dialog?.removeEventListener("cancel", this._onCancel), this._dialog?.removeEventListener("close", this._onClose), this.removeEventListener("form:success", this.hide);
       }
-      attributeChangedCallback(t, e, i) {
-        if (e === i || !this.isConnected)
+      attributeChangedCallback(t, e, r) {
+        if (e === r || !this.isConnected)
           return;
         if (t === "aria-label")
           this._syncLabel();
@@ -1610,18 +1614,18 @@ dialog[open]::backdrop { opacity: 1; }
       }
     }
     if (!customElements.get("p9r-modal"))
-      customElements.define("p9r-modal", z);
-    var Pt = `<slot></slot>
+      customElements.define("p9r-modal", D);
+    var or = `<slot></slot>
 `;
-    var Bt = `:host {
+    var sr = `:host {
     display: contents;
     cursor: pointer;
 }
 `;
 
-    class L extends s {
+    class O extends s {
       constructor() {
-        super({ css: Bt, template: Pt });
+        super({ css: sr, template: or });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -1642,13 +1646,13 @@ dialog[open]::backdrop { opacity: 1; }
         let t = this.getAttribute("modal-target");
         if (!t)
           return;
-        let e = this.getRootNode(), i = e.getElementById ? e.getElementById(t) : e.querySelector(`#${CSS.escape(t)}`);
-        if (!i)
+        let e = this.getRootNode(), r = e.getElementById ? e.getElementById(t) : e.querySelector(`#${CSS.escape(t)}`);
+        if (!r)
           return;
-        if (typeof i.show === "function")
-          i.show();
+        if (typeof r.show === "function")
+          r.show();
         else
-          i.setAttribute("open", "");
+          r.setAttribute("open", "");
       };
       get modalTarget() {
         return this.getAttribute("modal-target") ?? "";
@@ -1661,14 +1665,14 @@ dialog[open]::backdrop { opacity: 1; }
       }
     }
     if (!customElements.get("p9r-open-modal"))
-      customElements.define("p9r-open-modal", L);
-    var It = `<div class="divider" part="divider" role="separator">
+      customElements.define("p9r-open-modal", O);
+    var ar = `<div class="divider" part="divider" role="separator">
     <span class="line line-start" part="line"></span>
     <span class="label" part="label"><slot></slot></span>
     <span class="line line-end" part="line"></span>
 </div>
 `;
-    var Ft = `:host {
+    var lr = `:host {
   display: block;
 
   --_color: var(--border-default, #e5e7eb);
@@ -1753,17 +1757,17 @@ dialog[open]::backdrop { opacity: 1; }
 }
 `;
 
-    class M extends s {
+    class j extends s {
       static get observedAttributes() {
         return ["orientation"];
       }
       constructor() {
-        super({ css: Ft, template: It });
+        super({ css: lr, template: ar });
       }
       connectedCallback() {
         this._syncAria();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "orientation")
           this._syncAria();
       }
@@ -1773,8 +1777,8 @@ dialog[open]::backdrop { opacity: 1; }
       }
     }
     if (!customElements.get("p9r-divider"))
-      customElements.define("p9r-divider", M);
-    var Vt = `<button id="btn" class="button" part="button">
+      customElements.define("p9r-divider", j);
+    var dr = `<button id="btn" class="button" part="button">
     <slot name="icon-left"></slot>
     <span class="label">
         <slot>Button</slot>
@@ -1782,7 +1786,7 @@ dialog[open]::backdrop { opacity: 1; }
     <slot name="icon-right"></slot>
 </button>
 `;
-    var Nt = `:host {
+    var cr = `:host {
   display: inline-block;
 
   --_btn-padding-y: 0.6rem;
@@ -1803,7 +1807,44 @@ dialog[open]::backdrop { opacity: 1; }
   --_btn-font: inherit;
 }
 
-:host([color="primary"]) {
+.button {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  padding: var(--_btn-padding-y) var(--_btn-padding-x);
+
+  font-family: var(--_btn-font);
+  font-size: var(--_btn-font-size);
+  font-weight: 600;
+  line-height: var(--_btn-line-height);
+  letter-spacing: -0.015em;
+
+  border-radius: var(--_btn-radius);
+  border: 1.5px solid var(--_btn-border);
+  background-color: var(--_btn-bg);
+  color: var(--_btn-text);
+
+  white-space: nowrap;
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--_accent-base);
+  outline-offset: 2px;
+}
+
+.button:hover {
+  background-color: var(--_btn-hover-bg);
+  opacity: var(--_btn-hover-opacity, 1);
+}
+
+::slotted(svg) {
+  width: 1.2rem;
+}
+`;
+    var ur = `:host([color="primary"]) {
   --_accent-base: var(--primary-base);
   --_accent-muted: var(--primary-muted);
   --_accent-contrast: oklch(100% 0 0);
@@ -1847,34 +1888,6 @@ dialog[open]::backdrop { opacity: 1; }
   --_btn-hover-bg: var(--_accent-muted);
 }
 
-.button {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-
-  padding: var(--_btn-padding-y) var(--_btn-padding-x);
-
-  font-family: var(--_btn-font);
-  font-size: var(--_btn-font-size);
-  font-weight: 600;
-  line-height: var(--_btn-line-height);
-  letter-spacing: -0.015em;
-
-  border-radius: var(--_btn-radius);
-  border: 1.5px solid var(--_btn-border);
-  background-color: var(--_btn-bg);
-  color: var(--_btn-text);
-
-  white-space: nowrap;
-}
-
-.button:focus-visible {
-  outline: 2px solid var(--_accent-base);
-  outline-offset: 2px;
-}
-
 :host([fullwidth]), :host([fullwidth]) .button {
   width: 100%;
 }
@@ -1887,9 +1900,9 @@ dialog[open]::backdrop { opacity: 1; }
   justify-content: end;
 }
 
-.button:hover {
-  background-color: var(--_btn-hover-bg);
-  opacity: var(--_btn-hover-opacity, 1);
+:host([disabled]) {
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1906,23 +1919,15 @@ dialog[open]::backdrop { opacity: 1; }
     transform: translateY(0) scale(0.98);
   }
 }
-
-:host([disabled]) {
-  opacity: 0.4;
-  pointer-events: none;
-}
-
-::slotted(svg) {
-  width: 1.2rem;
-}
 `;
+    var ns = cr + ur;
 
-    class q extends s {
+    class N extends s {
       static formAssociated = true;
       _internals;
       _btn;
       constructor() {
-        super({ css: Nt, template: Vt });
+        super({ css: ns, template: dr });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       static get observedAttributes() {
@@ -1948,10 +1953,10 @@ dialog[open]::backdrop { opacity: 1; }
         let e = this._internals.form;
         if (!e)
           return;
-        let i = this.getAttribute("type");
-        if (i === "submit")
+        let r = this.getAttribute("type");
+        if (r === "submit")
           e.requestSubmit();
-        if (i === "reset")
+        if (r === "reset")
           e.reset();
       };
       _upgradeProperty(t) {
@@ -1960,11 +1965,11 @@ dialog[open]::backdrop { opacity: 1; }
           delete this[t], this[t] = e;
         }
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._btn)
           return;
         if (t === "type")
-          this._btn.type = i ?? "button";
+          this._btn.type = r ?? "button";
         if (t === "disabled")
           this._btn.disabled = this.hasAttribute("disabled");
       }
@@ -1979,8 +1984,8 @@ dialog[open]::backdrop { opacity: 1; }
       }
     }
     if (!customElements.get("p9r-button"))
-      customElements.define("p9r-button", q);
-    var Dt = `<label class="checkbox-container" part="container">
+      customElements.define("p9r-button", N);
+    var pr = `<label class="checkbox-container" part="container">
     <span class="input-wrapper">
         <input type="checkbox" id="native-input" part="input" />
         <span class="custom-box" part="box" aria-hidden="true">
@@ -1995,7 +2000,7 @@ dialog[open]::backdrop { opacity: 1; }
     </span>
 </label>
 `;
-    var Ot = `:host {
+    var hr = `:host {
   display: inline-block;
   --cb-size: 20px;
   --cb-border: var(--border-default, #d1d5db);
@@ -2067,7 +2072,17 @@ input {
   opacity: 0;
 }
 
-input:checked ~ .custom-box {
+.label-text {
+  font-size: 0.95rem;
+  color: var(--cb-text);
+}
+
+.label-text:has(slot:empty),
+.label-text slot:not([name]):empty {
+  display: none;
+}
+`;
+    var mr = `input:checked ~ .custom-box {
   background-color: var(--cb-active-bg);
   border-color: var(--cb-active-border);
 }
@@ -2104,16 +2119,6 @@ input:focus-visible ~ .custom-box {
   pointer-events: none;
 }
 
-.label-text {
-  font-size: 0.95rem;
-  color: var(--cb-text);
-}
-
-.label-text:has(slot:empty),
-.label-text slot:not([name]):empty {
-  display: none;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .custom-box {
     transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
@@ -2130,8 +2135,50 @@ input:focus-visible ~ .custom-box {
   }
 }
 `;
+    var br = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, f = (t, e, r) => {
+      let i = e?.checked ?? t.hasAttribute("checked");
+      r.setFormValue(i ? t.getAttribute("value") ?? "on" : null);
+    }, gr = (t, e) => {
+      if (!e)
+        return;
+      if (e.checked = t.hasAttribute("checked"), e.disabled = t.hasAttribute("disabled"), e.indeterminate = t.hasAttribute("indeterminate"), t.hasAttribute("name"))
+        e.name = t.getAttribute("name") ?? "";
+      if (t.hasAttribute("value"))
+        e.value = t.getAttribute("value") ?? "";
+    }, fr = (t, e, r, i, n) => {
+      if (!e)
+        return;
+      if (i === "checked")
+        e.checked = n !== null, f(t, e, r);
+      else if (i === "disabled")
+        e.disabled = n !== null;
+      else if (i === "indeterminate")
+        e.indeterminate = n !== null;
+      else if (i === "name")
+        e.name = n ?? "";
+      else if (i === "value")
+        e.value = n ?? "", f(t, e, r);
+    };
+    var vr = (t, e, r) => {
+      if (e?.checked ?? false)
+        t.setAttribute("checked", "");
+      else
+        t.removeAttribute("checked");
+      if (e && e.indeterminate === false && t.hasAttribute("indeterminate"))
+        t.removeAttribute("indeterminate");
+      f(t, e, r), t.dispatchEvent(new Event("change", { bubbles: true }));
+    }, _r = (t, e) => {
+      if (t.hasAttribute("disabled"))
+        e.preventDefault(), e.stopImmediatePropagation();
+    };
+    var ls = hr + mr;
 
-    class T extends s {
+    class K extends s {
       static formAssociated = true;
       _internals;
       _input;
@@ -2142,94 +2189,42 @@ input:focus-visible ~ .custom-box {
         return ["checked", "disabled", "name", "value", "indeterminate"];
       }
       constructor() {
-        super({ css: Ot, template: Dt });
+        super({ css: ls, template: pr });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultChecked = this.hasAttribute("checked"), this._defaultIndeterminate = this.hasAttribute("indeterminate"), this._defaultsCaptured = true;
-        for (let t of ["checked", "disabled", "name", "value", "indeterminate"])
-          this._upgradeProperty(t);
-        if (this._input) {
-          if (this._input.checked = this.hasAttribute("checked"), this._input.disabled = this.hasAttribute("disabled"), this._input.indeterminate = this.hasAttribute("indeterminate"), this.hasAttribute("name"))
-            this._input.name = this.getAttribute("name") ?? "";
-          if (this.hasAttribute("value"))
-            this._input.value = this.getAttribute("value") ?? "";
-          this._input.addEventListener("change", this._handleChange), this._input.addEventListener("click", this._handleClick);
-        }
-        this._syncFormValue();
+        ["checked", "disabled", "name", "value", "indeterminate"].forEach((t) => br(this, t)), gr(this, this._input), this._input?.addEventListener("change", this._onChange), this._input?.addEventListener("click", this._onClick), f(this, this._input, this._internals);
       }
       disconnectedCallback() {
-        if (this._input)
-          this._input.removeEventListener("change", this._handleChange), this._input.removeEventListener("click", this._handleClick);
+        this._input?.removeEventListener("change", this._onChange), this._input?.removeEventListener("click", this._onClick);
       }
       formResetCallback() {
         this.indeterminate = this._defaultIndeterminate, this.checked = this._defaultChecked;
       }
-      attributeChangedCallback(t, e, i) {
-        if (!this._input)
-          return;
-        if (t === "checked")
-          this._input.checked = i !== null, this._syncFormValue();
-        else if (t === "disabled")
-          this._input.disabled = i !== null;
-        else if (t === "indeterminate")
-          this._input.indeterminate = i !== null;
-        else if (t === "name")
-          this._input.name = i ?? "";
-        else if (t === "value")
-          this._input.value = i ?? "", this._syncFormValue();
+      attributeChangedCallback(t, e, r) {
+        fr(this, this._input, this._internals, t, r);
       }
-      _handleChange = () => {
-        if (this._input?.checked ?? false)
-          this.setAttribute("checked", "");
-        else
-          this.removeAttribute("checked");
-        if (this._input && this._input.indeterminate === false && this.hasAttribute("indeterminate"))
-          this.removeAttribute("indeterminate");
-        this._syncFormValue(), this.dispatchEvent(new Event("change", { bubbles: true }));
-      };
-      _handleClick = (t) => {
-        if (this.hasAttribute("disabled"))
-          t.preventDefault(), t.stopImmediatePropagation();
-      };
-      _syncFormValue() {
-        let t = this._input?.checked ?? this.hasAttribute("checked");
-        this._internals.setFormValue(t ? this.getAttribute("value") ?? "on" : null);
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onChange = () => vr(this, this._input, this._internals);
+      _onClick = (t) => _r(this, t);
       get checked() {
         return this.hasAttribute("checked");
       }
       set checked(t) {
-        if (t)
-          this.setAttribute("checked", "");
-        else
-          this.removeAttribute("checked");
+        t ? this.setAttribute("checked", "") : this.removeAttribute("checked");
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get indeterminate() {
         return this._input?.indeterminate ?? this.hasAttribute("indeterminate");
       }
       set indeterminate(t) {
-        if (t)
-          this.setAttribute("indeterminate", "");
-        else
-          this.removeAttribute("indeterminate");
-        if (this._input)
+        if (t ? this.setAttribute("indeterminate", "") : this.removeAttribute("indeterminate"), this._input)
           this._input.indeterminate = t;
       }
       get name() {
@@ -2252,102 +2247,126 @@ input:focus-visible ~ .custom-box {
       }
     }
     if (!customElements.get("w13c-checkbox"))
-      customElements.define("w13c-checkbox", T);
-    var Li = `
-    :host {
-        display: block;
-        margin-bottom: 8px;
-    }
-
-    .section-container {
-        border-radius: 10px;
-        background: var(--bg-surface, #fff);
-        border: 1px solid var(--border-default, #e5e7eb);
-    }
-
-    header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 12px 14px;
-        cursor: pointer;
-        user-select: none;
-        outline: none;
-    }
-
-    header:hover {
-        background: var(--bg-base, #f9fafb);
-    }
-
-    header:focus-visible {
-        box-shadow: inset 0 0 0 2px var(--primary-base, #6366f1);
-        border-radius: 10px;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-        header { transition: background 0.15s; }
-        .chevron { transition: transform 0.2s ease; }
-    }
-
-    .accent-bar {
-        width: 3px;
-        height: 14px;
-        background: var(--primary-base, #6366f1);
-        border-radius: 4px;
-        flex-shrink: 0;
-    }
-
-    .title-wrapper {
-        flex: 1;
-        color: var(--text-main, #111827);
-        font-size: 11px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-    }
-
-    .chevron {
-        width: 16px;
-        height: 16px;
-        color: var(--text-muted, #9ca3af);
-        flex-shrink: 0;
-    }
-
-    :host([collapsed]) .chevron {
-        transform: rotate(-90deg);
-    }
-
-    .content {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        border-top: 1px solid var(--border-default, #e5e7eb);
-        padding: 1rem;
-    }
-
-    :host([collapsed]) .content {
-        display: none;
-    }
-
-    .content ::slotted(*) {
-        width: 100%;
-    }
-`, Mi = `
-    <section class="section-container" part="container">
-        <header id="toggle" part="header" role="button" tabindex="0" aria-expanded="true">
-            <div class="accent-bar" part="accent"></div>
-            <div class="title-wrapper" part="title"></div>
-            <svg class="chevron" part="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="6 9 12 15 18 9"/>
-            </svg>
-        </header>
-        <main class="content" id="content" part="content">
-            <slot></slot>
-        </main>
-    </section>
+      customElements.define("w13c-checkbox", K);
+    var xr = `<section class="section-container" part="container">
+    <header id="toggle" part="header" role="button" tabindex="0" aria-expanded="true">
+        <div class="accent-bar" part="accent"></div>
+        <div class="title-wrapper" part="title"></div>
+        <svg class="chevron" part="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="6 9 12 15 18 9"/>
+        </svg>
+    </header>
+    <main class="content" id="content" part="content">
+        <slot></slot>
+    </main>
+</section>
 `;
+    var yr = `:host {
+    display: block;
+    margin-bottom: 8px;
+}
 
-    class H extends s {
+.section-container {
+    border-radius: 10px;
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-default, #e5e7eb);
+}
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+    outline: none;
+}
+
+header:hover {
+    background: var(--bg-base, #f9fafb);
+}
+
+header:focus-visible {
+    box-shadow: inset 0 0 0 2px var(--primary-base, #6366f1);
+    border-radius: 10px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    header { transition: background 0.15s; }
+    .chevron { transition: transform 0.2s ease; }
+}
+
+.accent-bar {
+    width: 3px;
+    height: 14px;
+    background: var(--primary-base, #6366f1);
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.title-wrapper {
+    flex: 1;
+    color: var(--text-main, #111827);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-muted, #9ca3af);
+    flex-shrink: 0;
+}
+
+:host([collapsed]) .chevron {
+    transform: rotate(-90deg);
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-top: 1px solid var(--border-default, #e5e7eb);
+    padding: 1rem;
+}
+
+:host([collapsed]) .content {
+    display: none;
+}
+
+.content ::slotted(*) {
+    width: 100%;
+}
+`;
+    var wr = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, qt = (t, e) => {
+      if (e)
+        e.textContent = t.getAttribute("data-title") ?? "";
+    }, Bt = (t, e, r) => {
+      if (!e)
+        return;
+      let i = t.hasAttribute("collapsed");
+      if (e.setAttribute("aria-expanded", String(!i)), r)
+        r.hidden = i;
+    };
+    var kr = (t, e) => {
+      t.dispatchEvent(new CustomEvent("toggle", { detail: { collapsed: e }, bubbles: true, composed: true }));
+    };
+    var Vt = (t) => {
+      t.collapsed = !t.collapsed, kr(t, t.collapsed);
+    }, Er = (t, e) => {
+      if (e.key !== "Enter" && e.key !== " ")
+        return;
+      e.preventDefault(), Vt(t);
+    };
+
+    class $ extends s {
       static get observedAttributes() {
         return ["collapsed", "data-title"];
       }
@@ -2355,68 +2374,39 @@ input:focus-visible ~ .custom-box {
       _title;
       _content;
       constructor() {
-        super({ css: Li, template: Mi });
+        super({ css: yr, template: xr });
         this._toggle = this.shadowRoot?.getElementById("toggle") ?? null, this._title = this.shadowRoot?.querySelector(".title-wrapper") ?? null, this._content = this.shadowRoot?.getElementById("content") ?? null;
       }
       connectedCallback() {
-        for (let t of ["collapsed"])
-          this._upgradeProperty(t);
-        if (this.hasAttribute("data-collapsed") && !this.hasAttribute("collapsed"))
+        if (wr(this, "collapsed"), this.hasAttribute("data-collapsed") && !this.hasAttribute("collapsed"))
           this.setAttribute("collapsed", "");
-        this._syncTitle(), this._syncAria(), this._toggle?.addEventListener("click", this._onToggleClick), this._toggle?.addEventListener("keydown", this._onToggleKey);
+        qt(this, this._title), Bt(this, this._toggle, this._content), this._toggle?.addEventListener("click", this._onClick), this._toggle?.addEventListener("keydown", this._onKey);
       }
       disconnectedCallback() {
-        this._toggle?.removeEventListener("click", this._onToggleClick), this._toggle?.removeEventListener("keydown", this._onToggleKey);
+        this._toggle?.removeEventListener("click", this._onClick), this._toggle?.removeEventListener("keydown", this._onKey);
       }
-      attributeChangedCallback(t, e, i) {
-        if (!this._toggle)
-          return;
+      attributeChangedCallback(t) {
         if (t === "collapsed")
-          this._syncAria();
+          Bt(this, this._toggle, this._content);
         if (t === "data-title")
-          this._syncTitle();
+          qt(this, this._title);
       }
       get collapsed() {
         return this.hasAttribute("collapsed");
       }
       set collapsed(t) {
-        if (t)
-          this.setAttribute("collapsed", "");
-        else
-          this.removeAttribute("collapsed");
+        t ? this.setAttribute("collapsed", "") : this.removeAttribute("collapsed");
       }
-      _onToggleClick = () => {
-        this.collapsed = !this.collapsed, this.dispatchEvent(new CustomEvent("toggle", { detail: { collapsed: this.collapsed }, bubbles: true, composed: true }));
-      };
-      _onToggleKey = (t) => {
-        if (t.key === "Enter" || t.key === " ")
-          t.preventDefault(), this._onToggleClick();
-      };
-      _syncTitle() {
-        if (!this._title)
-          return;
-        this._title.textContent = this.getAttribute("data-title") ?? "";
-      }
-      _syncAria() {
-        if (!this._toggle)
-          return;
-        if (this._toggle.setAttribute("aria-expanded", String(!this.collapsed)), this._content)
-          this._content.hidden = this.collapsed;
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onClick = () => Vt(this);
+      _onKey = (t) => Er(this, t);
     }
     if (!customElements.get("p9r-section"))
-      customElements.define("p9r-section", H);
-    var $t = `<button id="btn" class="icon-button" part="button">
+      customElements.define("p9r-section", $);
+    var Ar = `<button id="btn" class="icon-button" part="button">
     <slot></slot>
 </button>
 `;
-    var Yt = `:host {
+    var Lr = `:host {
   display: inline-block;
 
   --_size: 2.25rem;
@@ -2506,7 +2496,7 @@ input:focus-visible ~ .custom-box {
 }
 `;
 
-    class S extends s {
+    class U extends s {
       static formAssociated = true;
       _internals;
       _btn;
@@ -2514,7 +2504,7 @@ input:focus-visible ~ .custom-box {
         return ["type", "disabled", "aria-label"];
       }
       constructor() {
-        super({ css: Yt, template: $t });
+        super({ css: Lr, template: Ar });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       connectedCallback() {
@@ -2529,11 +2519,11 @@ input:focus-visible ~ .custom-box {
       disconnectedCallback() {
         this.removeEventListener("click", this._handleClick);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._btn)
           return;
         if (t === "type")
-          this._btn.type = i ?? "button";
+          this._btn.type = r ?? "button";
         if (t === "disabled")
           this._btn.disabled = this.hasAttribute("disabled");
         if (t === "aria-label")
@@ -2556,10 +2546,10 @@ input:focus-visible ~ .custom-box {
         let e = this._internals.form;
         if (!e)
           return;
-        let i = this.getAttribute("type");
-        if (i === "submit")
+        let r = this.getAttribute("type");
+        if (r === "submit")
           e.requestSubmit();
-        if (i === "reset")
+        if (r === "reset")
           e.reset();
       };
       _upgradeProperty(t) {
@@ -2579,8 +2569,8 @@ input:focus-visible ~ .custom-box {
       }
     }
     if (!customElements.get("p9r-icon-button"))
-      customElements.define("p9r-icon-button", S);
-    var Kt = `<div class="field-header" part="header">
+      customElements.define("p9r-icon-button", U);
+    var Cr = `<div class="field-header" part="header">
     <slot name="label"></slot>
 </div>
 
@@ -2603,7 +2593,7 @@ input:focus-visible ~ .custom-box {
 
 <div class="sr-live" role="status" aria-live="polite" aria-atomic="true"></div>
 `;
-    var Xt = `:host {
+    var Tr = `:host {
     display: block;
     width: 100%;
     margin: 1.25rem 0;
@@ -2701,8 +2691,63 @@ input[type="file"]:focus-visible + label {
     }
 }
 `;
+    var Mr = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, Hr = (t) => {
+      if (t < 1024)
+        return `${t} B`;
+      if (t < 1048576)
+        return `${(t / 1024).toFixed(1)} KB`;
+      return `${(t / 1048576).toFixed(1)} MB`;
+    }, Ft = (t, e) => {
+      if (t)
+        t.textContent = e;
+    };
+    var Dt = (t, e) => {
+      t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { files: e } }));
+    };
+    var Y = (t, e, r, i, n) => {
+      let o = e?.files;
+      if (!o || o.length === 0) {
+        if (r)
+          r.textContent = "No file selected";
+        n.setFormValue(null), Ft(i, "No file selected"), Dt(t, null);
+        return;
+      }
+      let a = o.length === 1 && o[0] ? `${o[0].name} (${Hr(o[0].size)})` : `${o.length} files selected`;
+      if (r)
+        r.textContent = a;
+      if (o.length === 1 && o[0])
+        n.setFormValue(o[0]);
+      else {
+        let l = new FormData, d = t.getAttribute("name") ?? "";
+        for (let c = 0;c < o.length; c++) {
+          let u = o.item(c);
+          if (u)
+            l.append(d, u);
+        }
+        n.setFormValue(l);
+      }
+      Ft(i, `Selected: ${a}`), Dt(t, o);
+    };
+    var Sr = (t, e) => {
+      if (e.preventDefault(), t.hasAttribute("disabled"))
+        return;
+      t.toggleAttribute("dragging", true);
+    }, zr = (t, e) => {
+      e.preventDefault(), t.toggleAttribute("dragging", false);
+    }, Ir = (t, e, r, i, n, o) => {
+      let a = o;
+      if (a.preventDefault(), t.removeAttribute("dragging"), t.hasAttribute("disabled"))
+        return;
+      if (a.dataTransfer?.files && e)
+        e.files = a.dataTransfer.files, Y(t, e, r, i, n);
+    };
 
-    class R extends s {
+    class X extends s {
       static formAssociated = true;
       _internals;
       _input;
@@ -2710,7 +2755,7 @@ input[type="file"]:focus-visible + label {
       _dropZone;
       _liveRegion;
       constructor() {
-        super({ css: Xt, template: Kt });
+        super({ css: Tr, template: Cr });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector('input[type="file"]') ?? null, this._preview = this.shadowRoot?.querySelector(".file-info") ?? null, this._dropZone = this.shadowRoot?.querySelector(".drop-zone") ?? null, this._liveRegion = this.shadowRoot?.querySelector(".sr-live") ?? null;
       }
       static get observedAttributes() {
@@ -2718,13 +2763,11 @@ input[type="file"]:focus-visible + label {
       }
       connectedCallback() {
         for (let t of ["accept", "multiple", "name", "disabled", "required"])
-          this._upgradeProperty(t);
-        if (this._input?.addEventListener("change", this._onInputChange), this._dropZone)
-          this._dropZone.addEventListener("dragover", this._onDragOver), this._dropZone.addEventListener("dragleave", this._onDragLeave), this._dropZone.addEventListener("drop", this._onDrop);
+          Mr(this, t);
+        this._input?.addEventListener("change", this._onChange), this._dropZone?.addEventListener("dragover", this._onDragOver), this._dropZone?.addEventListener("dragleave", this._onDragLeave), this._dropZone?.addEventListener("drop", this._onDrop);
       }
       disconnectedCallback() {
-        if (this._input?.removeEventListener("change", this._onInputChange), this._dropZone)
-          this._dropZone.removeEventListener("dragover", this._onDragOver), this._dropZone.removeEventListener("dragleave", this._onDragLeave), this._dropZone.removeEventListener("drop", this._onDrop);
+        this._input?.removeEventListener("change", this._onChange), this._dropZone?.removeEventListener("dragover", this._onDragOver), this._dropZone?.removeEventListener("dragleave", this._onDragLeave), this._dropZone?.removeEventListener("drop", this._onDrop);
       }
       formResetCallback() {
         if (this._input)
@@ -2733,24 +2776,24 @@ input[type="file"]:focus-visible + label {
           this._preview.textContent = "No file selected";
         this.removeAttribute("dragging");
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._input)
           return;
         switch (t) {
           case "accept":
-            if (i === null)
+            if (r === null)
               this._input.removeAttribute("accept");
             else
-              this._input.setAttribute("accept", i);
+              this._input.setAttribute("accept", r);
             break;
           case "multiple":
             this._input.multiple = this.hasAttribute("multiple");
             break;
           case "name":
-            if (i === null)
+            if (r === null)
               this._input.removeAttribute("name");
             else
-              this._input.setAttribute("name", i);
+              this._input.setAttribute("name", r);
             break;
           case "disabled":
             this._input.disabled = this.hasAttribute("disabled");
@@ -2760,106 +2803,39 @@ input[type="file"]:focus-visible + label {
             break;
         }
       }
-      _onDragOver = (t) => {
-        if (t.preventDefault(), this.hasAttribute("disabled"))
-          return;
-        this.toggleAttribute("dragging", true);
-      };
-      _onDragLeave = (t) => {
-        t.preventDefault(), this.toggleAttribute("dragging", false);
-      };
-      _onDrop = (t) => {
-        let e = t;
-        if (e.preventDefault(), this.removeAttribute("dragging"), this.hasAttribute("disabled"))
-          return;
-        if (e.dataTransfer?.files && this._input)
-          this._input.files = e.dataTransfer.files, this._updateValue();
-      };
-      _onInputChange = () => {
-        this._updateValue();
-      };
-      _updateValue() {
-        let t = this._input?.files;
-        if (!t || t.length === 0) {
-          if (this._preview)
-            this._preview.textContent = "No file selected";
-          this._internals.setFormValue(null), this._announce("No file selected"), this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { files: null } }));
-          return;
-        }
-        let e = t.length === 1 && t[0] ? `${t[0].name} (${this._formatSize(t[0].size)})` : `${t.length} files selected`;
-        if (this._preview)
-          this._preview.textContent = e;
-        if (t.length === 1 && t[0])
-          this._internals.setFormValue(t[0]);
-        else {
-          let i = new FormData, r = this.getAttribute("name") || "";
-          for (let a = 0;a < t.length; a++) {
-            let o = t.item(a);
-            if (o)
-              i.append(r, o);
-          }
-          this._internals.setFormValue(i);
-        }
-        this._announce(`Selected: ${e}`), this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { files: t } }));
-      }
-      _formatSize(t) {
-        if (t < 1024)
-          return `${t} B`;
-        if (t < 1048576)
-          return `${(t / 1024).toFixed(1)} KB`;
-        return `${(t / 1048576).toFixed(1)} MB`;
-      }
-      _announce(t) {
-        if (this._liveRegion)
-          this._liveRegion.textContent = t;
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onChange = () => Y(this, this._input, this._preview, this._liveRegion, this._internals);
+      _onDragOver = (t) => Sr(this, t);
+      _onDragLeave = (t) => zr(this, t);
+      _onDrop = (t) => Ir(this, this._input, this._preview, this._liveRegion, this._internals, t);
       get name() {
-        return this.getAttribute("name") || "";
+        return this.getAttribute("name") ?? "";
       }
       set name(t) {
         this.setAttribute("name", t);
       }
       get accept() {
-        return this.getAttribute("accept") || "";
+        return this.getAttribute("accept") ?? "";
       }
       set accept(t) {
-        if (t)
-          this.setAttribute("accept", t);
-        else
-          this.removeAttribute("accept");
+        t ? this.setAttribute("accept", t) : this.removeAttribute("accept");
       }
       get multiple() {
         return this.hasAttribute("multiple");
       }
       set multiple(t) {
-        if (t)
-          this.setAttribute("multiple", "");
-        else
-          this.removeAttribute("multiple");
+        t ? this.setAttribute("multiple", "") : this.removeAttribute("multiple");
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get required() {
         return this.hasAttribute("required");
       }
       set required(t) {
-        if (t)
-          this.setAttribute("required", "");
-        else
-          this.removeAttribute("required");
+        t ? this.setAttribute("required", "") : this.removeAttribute("required");
       }
       get files() {
         return this._input?.files ?? null;
@@ -2872,9 +2848,220 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("w13c-input-file"))
-      customElements.define("w13c-input-file", R);
+      customElements.define("w13c-input-file", X);
+    var Pr = `<div class="field" part="field">
+    <label class="label" part="label"></label>
+    <input class="input" part="input" type="text" />
+    <div class="meta" part="meta" hidden>
+        <small class="hint" part="hint"></small>
+        <small class="counter" part="counter" hidden data-over="false"><span class="count">0</span>/<span class="max">0</span></small>
+    </div>
+</div>
+`;
+    var Rr = `:host {
+    display: block;
+}
 
-    class c extends HTMLElement {
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94a3b8);
+}
+
+.label[hidden] {
+    display: none;
+}
+
+.input {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-main, #1e293b);
+    font-family: inherit;
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 8px;
+    background: var(--bg-surface, #fff);
+    outline: none;
+    box-sizing: border-box;
+}
+
+.input::placeholder {
+    color: var(--text-muted, #94a3b8);
+    font-weight: 400;
+}
+
+.meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta[hidden] {
+    display: none;
+}
+
+.hint {
+    font-size: 11px;
+    color: var(--text-muted, #94a3b8);
+    line-height: 1.4;
+    flex: 1;
+    min-width: 0;
+}
+
+.counter {
+    font-size: 11px;
+    color: var(--text-muted, #94a3b8);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+}
+
+.counter[hidden] {
+    display: none;
+}
+`;
+    var qr = `.input:hover:not(:disabled) {
+    border-color: var(--text-muted, #94a3b8);
+}
+
+.input:focus-visible {
+    border-color: var(--primary-base, #4361ee);
+    box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+}
+
+.input[aria-invalid="true"] {
+    border-color: var(--danger-base, #ef4444);
+}
+
+.input[aria-invalid="true"]:focus-visible {
+    box-shadow: 0 0 0 3px rgb(239 68 68 / 0.15);
+}
+
+.input:disabled {
+    background: var(--bg-base, #f1f5f9);
+    color: var(--text-muted, #94a3b8);
+    cursor: not-allowed;
+}
+
+.hint[data-level="error"] {
+    color: var(--danger-base, #ef4444);
+}
+
+.hint[data-level="success"] {
+    color: var(--success-base, #10b981);
+}
+
+.counter[data-over="true"] {
+    color: var(--danger-base, #ef4444);
+    font-weight: 600;
+}
+`;
+    var Br = `@media (prefers-reduced-motion: no-preference) {
+    .input { transition: border-color 0.15s, box-shadow 0.15s; }
+}
+`;
+    var Vr = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, Ot = (t) => {
+      let e = t.getAttribute("max-count");
+      if (e === null)
+        return null;
+      let r = parseInt(e, 10);
+      return Number.isFinite(r) && r > 0 ? r : null;
+    }, v = (t, e, r, i) => {
+      if (!e || !r || !i)
+        return;
+      let n = Ot(t);
+      if (n === null)
+        return;
+      let o = e.value.length;
+      i.textContent = String(o), r.dataset.over = String(o > n);
+    }, jt = (t, e, r) => {
+      if (!t || !e || !r)
+        return;
+      let i = (t.textContent ?? "").length > 0, n = !e.hidden;
+      r.hidden = !i && !n;
+    }, _s = 0, Fr = () => `p9r-input-label-${++_s}`;
+    var Nt = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("label") ?? "";
+      e.textContent = r, e.hidden = r === "";
+    }, xs = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("placeholder");
+      if (r === null)
+        e.removeAttribute("placeholder");
+      else
+        e.setAttribute("placeholder", r);
+    }, ys = (t, e) => {
+      if (!e)
+        return;
+      e.setAttribute("type", t.getAttribute("type") ?? "text");
+    }, ws = (t, e) => {
+      if (e)
+        e.disabled = t.hasAttribute("disabled");
+    }, ks = (t, e) => {
+      if (!e)
+        return;
+      let r = t.hasAttribute("required");
+      if (e.required = r, r)
+        e.setAttribute("aria-required", "true");
+      else
+        e.removeAttribute("aria-required");
+    }, Es = (t, e, r, i) => {
+      if (!e)
+        return;
+      e.textContent = t.getAttribute("hint") ?? "", jt(e, r, i);
+    }, As = (t, e) => {
+      if (!e)
+        return;
+      e.dataset.level = t.getAttribute("hint-level") ?? "info";
+    }, Ls = (t, e) => {
+      if (!e)
+        return;
+      if (t.hasAttribute("invalid"))
+        e.setAttribute("aria-invalid", "true");
+      else
+        e.removeAttribute("aria-invalid");
+    }, Kt = (t, e, r, i, n) => {
+      if (!e || !r)
+        return;
+      let o = Ot(t);
+      if (o === null)
+        e.hidden = true;
+      else
+        e.hidden = false, r.textContent = String(o);
+      jt(i, e, n);
+    }, $t = (t, e, r, i, n, o, a) => {
+      Nt(t, r), xs(t, e), ys(t, e), ws(t, e), ks(t, e), Es(t, i, o, n), As(t, i), Ls(t, e), Kt(t, o, a, i, n);
+    };
+    var Dr = (t, e, r, i, n) => {
+      if (!e)
+        return;
+      r.setFormValue(e.value), v(t, e, i, n);
+    }, Or = (t, e) => {
+      if (!t)
+        return;
+      e.setFormValue(t.value);
+    };
+    var Cs = Rr + qr + Br;
+
+    class W extends s {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "type", "hint", "hint-level", "max-count", "invalid", "disabled", "required"];
@@ -2890,35 +3077,23 @@ input[type="file"]:focus-visible + label {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super();
+        super({ css: Cs, template: Pr });
         this._internals = this.attachInternals();
-        let t = this.attachShadow({ mode: "open" });
-        t.innerHTML = `
-            <style>${c._css}</style>
-            <div class="field" part="field">
-                <label class="label" part="label"></label>
-                <input class="input" part="input" type="text" />
-                <div class="meta" part="meta" hidden>
-                    <small class="hint" part="hint"></small>
-                    <small class="counter" part="counter" hidden data-over="false"><span class="count">0</span>/<span class="max">0</span></small>
-                </div>
-            </div>
-        `, this._labelEl = t.querySelector(".label"), this._input = t.querySelector(".input"), this._hintEl = t.querySelector(".hint"), this._metaEl = t.querySelector(".meta"), this._counterEl = t.querySelector(".counter"), this._countEl = t.querySelector(".count"), this._maxEl = t.querySelector(".max");
-        let e = `p9r-input-label-${++c._uid}`;
+        let t = this.shadowRoot;
+        this._labelEl = t.querySelector(".label"), this._input = t.querySelector(".input"), this._hintEl = t.querySelector(".hint"), this._metaEl = t.querySelector(".meta"), this._counterEl = t.querySelector(".counter"), this._countEl = t.querySelector(".count"), this._maxEl = t.querySelector(".max");
+        let e = Fr();
         if (this._labelEl && this._input)
           this._labelEl.id = e, this._input.setAttribute("aria-labelledby", e);
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        for (let e of ["value", "disabled", "required"])
-          this._upgradeProperty(e);
-        this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("change", this._onChange), this._syncLabel(), this._syncPlaceholder(), this._syncType(), this._syncDisabled(), this._syncRequired(), this._syncHint(), this._syncHintLevel(), this._syncInvalid(), this._syncMaxCount();
+        ["value", "disabled", "required"].forEach((e) => Vr(this, e)), this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("change", this._onChange), $t(this, this._input, this._labelEl, this._hintEl, this._metaEl, this._counterEl, this._maxEl);
         let t = this.getAttribute("value");
         if (t !== null)
           this.value = t;
         else
-          this._updateCounter();
+          v(this, this._input, this._counterEl, this._countEl);
       }
       disconnectedCallback() {
         this._input?.removeEventListener("input", this._onInput), this._input?.removeEventListener("change", this._onChange);
@@ -2926,42 +3101,17 @@ input[type="file"]:focus-visible + label {
       formResetCallback() {
         this.value = this._defaultValue;
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._input)
           return;
-        switch (t) {
-          case "value":
-            if (i !== null)
-              this.value = i;
-            break;
-          case "label":
-            this._syncLabel();
-            break;
-          case "placeholder":
-            this._syncPlaceholder();
-            break;
-          case "type":
-            this._syncType();
-            break;
-          case "disabled":
-            this._syncDisabled();
-            break;
-          case "required":
-            this._syncRequired();
-            break;
-          case "hint":
-            this._syncHint();
-            break;
-          case "hint-level":
-            this._syncHintLevel();
-            break;
-          case "invalid":
-            this._syncInvalid();
-            break;
-          case "max-count":
-            this._syncMaxCount(), this._updateCounter();
-            break;
-        }
+        if (t === "value" && r !== null)
+          this.value = r;
+        else if (t === "label")
+          Nt(this, this._labelEl);
+        else if (t === "max-count")
+          Kt(this, this._counterEl, this._maxEl, this._hintEl, this._metaEl), v(this, this._input, this._counterEl, this._countEl);
+        else
+          $t(this, this._input, this._labelEl, this._hintEl, this._metaEl, this._counterEl, this._maxEl);
       }
       get value() {
         return this._input?.value ?? "";
@@ -2969,7 +3119,7 @@ input[type="file"]:focus-visible + label {
       set value(t) {
         if (!this._input)
           return;
-        this._input.value = t, this._internals.setFormValue(t), this._updateCounter();
+        this._input.value = t, this._internals.setFormValue(t), v(this, this._input, this._counterEl, this._countEl);
       }
       get name() {
         return this.getAttribute("name") ?? "";
@@ -2978,255 +3128,287 @@ input[type="file"]:focus-visible + label {
         return this._input?.disabled ?? false;
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get required() {
         return this.hasAttribute("required");
       }
       set required(t) {
-        if (t)
-          this.setAttribute("required", "");
-        else
-          this.removeAttribute("required");
+        t ? this.setAttribute("required", "") : this.removeAttribute("required");
       }
       focus() {
         this._input?.focus();
       }
-      setHint(t, e) {
-        if (!this._hintEl)
-          return;
-        this._hintEl.textContent = e, this._hintEl.dataset.level = t, this._refreshMetaVisibility();
-      }
-      setInvalid(t) {
-        if (t)
-          this.setAttribute("invalid", "");
-        else
-          this.removeAttribute("invalid");
-      }
-      _onInput = () => {
-        if (!this._input)
-          return;
-        this._internals.setFormValue(this._input.value), this._updateCounter();
-      };
-      _onChange = () => {
-        if (!this._input)
-          return;
-        this._internals.setFormValue(this._input.value);
-      };
-      _syncLabel() {
-        if (!this._labelEl)
-          return;
-        let t = this.getAttribute("label") ?? "";
-        this._labelEl.textContent = t, this._labelEl.hidden = t === "";
-      }
-      _syncPlaceholder() {
-        if (!this._input)
-          return;
-        let t = this.getAttribute("placeholder");
-        if (t === null)
-          this._input.removeAttribute("placeholder");
-        else
-          this._input.setAttribute("placeholder", t);
-      }
-      _syncType() {
-        if (!this._input)
-          return;
-        let t = this.getAttribute("type") ?? "text";
-        this._input.setAttribute("type", t);
-      }
-      _syncDisabled() {
-        if (!this._input)
-          return;
-        this._input.disabled = this.hasAttribute("disabled");
-      }
-      _syncRequired() {
-        if (!this._input)
-          return;
-        let t = this.hasAttribute("required");
-        if (this._input.required = t, t)
-          this._input.setAttribute("aria-required", "true");
-        else
-          this._input.removeAttribute("aria-required");
-      }
-      _syncHint() {
-        if (!this._hintEl)
-          return;
-        this._hintEl.textContent = this.getAttribute("hint") ?? "", this._refreshMetaVisibility();
-      }
-      _syncHintLevel() {
-        if (!this._hintEl)
-          return;
-        let t = this.getAttribute("hint-level") ?? "info";
-        this._hintEl.dataset.level = t;
-      }
-      _syncInvalid() {
-        if (!this._input)
-          return;
-        if (this.hasAttribute("invalid"))
-          this._input.setAttribute("aria-invalid", "true");
-        else
-          this._input.removeAttribute("aria-invalid");
-      }
-      _syncMaxCount() {
-        if (!this._counterEl || !this._maxEl)
-          return;
-        let t = this._parseMaxCount();
-        if (t === null)
-          this._counterEl.hidden = true;
-        else
-          this._counterEl.hidden = false, this._maxEl.textContent = String(t);
-        this._refreshMetaVisibility();
-      }
-      _parseMaxCount() {
-        let t = this.getAttribute("max-count");
-        if (t === null)
-          return null;
-        let e = parseInt(t, 10);
-        return Number.isFinite(e) && e > 0 ? e : null;
-      }
-      _updateCounter() {
-        if (!this._input || !this._counterEl || !this._countEl)
-          return;
-        let t = this._parseMaxCount();
-        if (t === null)
-          return;
-        let e = this._input.value.length;
-        this._countEl.textContent = String(e), this._counterEl.dataset.over = String(e > t);
-      }
-      _refreshMetaVisibility() {
-        if (!this._hintEl || !this._counterEl || !this._metaEl)
-          return;
-        let t = (this._hintEl.textContent ?? "").length > 0, e = !this._counterEl.hidden;
-        this._metaEl.hidden = !t && !e;
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      static _uid = 0;
-      static _css = `
-        :host {
-            display: block;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            position: relative;
-        }
-
-        .label {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted, #94a3b8);
-        }
-
-        .label[hidden] {
-            display: none;
-        }
-
-        .input {
-            width: 100%;
-            padding: 7px 10px;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-main, #1e293b);
-            font-family: inherit;
-            border: 1px solid var(--border-default, #e2e8f0);
-            border-radius: 8px;
-            background: var(--bg-surface, #fff);
-            outline: none;
-            box-sizing: border-box;
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-            .input { transition: border-color 0.15s, box-shadow 0.15s; }
-        }
-
-        .input::placeholder {
-            color: var(--text-muted, #94a3b8);
-            font-weight: 400;
-        }
-
-        .input:hover:not(:disabled) {
-            border-color: var(--text-muted, #94a3b8);
-        }
-
-        .input:focus-visible {
-            border-color: var(--primary-base, #4361ee);
-            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
-        }
-
-        .input[aria-invalid="true"] {
-            border-color: var(--danger-base, #ef4444);
-        }
-
-        .input[aria-invalid="true"]:focus-visible {
-            box-shadow: 0 0 0 3px rgb(239 68 68 / 0.15);
-        }
-
-        .input:disabled {
-            background: var(--bg-base, #f1f5f9);
-            color: var(--text-muted, #94a3b8);
-            cursor: not-allowed;
-        }
-
-        .meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .meta[hidden] {
-            display: none;
-        }
-
-        .hint {
-            font-size: 11px;
-            color: var(--text-muted, #94a3b8);
-            line-height: 1.4;
-            flex: 1;
-            min-width: 0;
-        }
-
-        .hint[data-level="error"] {
-            color: var(--danger-base, #ef4444);
-        }
-
-        .hint[data-level="success"] {
-            color: var(--success-base, #10b981);
-        }
-
-        .counter {
-            font-size: 11px;
-            color: var(--text-muted, #94a3b8);
-            font-variant-numeric: tabular-nums;
-            flex-shrink: 0;
-        }
-
-        .counter[hidden] {
-            display: none;
-        }
-
-        .counter[data-over="true"] {
-            color: var(--danger-base, #ef4444);
-            font-weight: 600;
-        }
-    `;
+      _onInput = () => Dr(this, this._input, this._internals, this._counterEl, this._countEl);
+      _onChange = () => Or(this._input, this._internals);
     }
     if (!customElements.get("p9r-input"))
-      customElements.define("p9r-input", c);
+      customElements.define("p9r-input", W);
+    var jr = `<div class="field" part="field">
+    <div class="header" part="header">
+        <span class="label" part="label"></span>
+        <div class="input-wrap" part="input-wrap">
+            <input class="number" part="number-input" type="number">
+            <span class="unit" part="unit" hidden></span>
+        </div>
+    </div>
+    <div class="track-container" part="track-container">
+        <div class="track" part="track">
+            <div class="fill" part="fill"></div>
+        </div>
+        <input class="slider" part="slider" type="range">
+    </div>
+    <div class="bounds" part="bounds">
+        <span class="min-bound"></span>
+        <span class="max-bound"></span>
+    </div>
+</div>
+`;
+    var Nr = `:host {
+    display: block;
+}
 
-    class u extends HTMLElement {
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94a3b8);
+}
+
+.label[hidden] {
+    display: none;
+}
+
+.input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 6px;
+    padding: 2px 6px;
+}
+
+.number {
+    width: 36px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-main, #1e293b);
+    text-align: right;
+    font-family: inherit;
+    -moz-appearance: textfield;
+}
+
+.number::-webkit-inner-spin-button,
+.number::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.unit {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted, #94a3b8);
+}
+
+.unit[hidden] {
+    display: none;
+}
+
+.bounds {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text-muted, #94a3b8);
+    margin-top: -2px;
+}
+`;
+    var Kr = `:host([disabled]) {
+    opacity: 0.55;
+    pointer-events: none;
+}
+
+.input-wrap:focus-within {
+    border-color: var(--primary-base, #4361ee);
+    box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+}
+
+.track-container {
+    position: relative;
+    height: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.track {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--border-default, #e2e8f0);
+    border-radius: 4px;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.fill {
+    height: 100%;
+    background: var(--primary-base, #4361ee);
+    border-radius: 4px;
+}
+
+.slider {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    margin: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 1;
+    outline: none;
+}
+
+.slider:focus-visible::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.25));
+}
+
+.slider:focus-visible::-moz-range-thumb {
+    box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.25));
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary-base, #4361ee);
+    border: 2px solid var(--bg-surface, #fff);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+    cursor: grab;
+}
+
+.slider::-webkit-slider-thumb:active {
+    transform: scale(1.2);
+    cursor: grabbing;
+}
+
+.slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--primary-base, #4361ee);
+    border: 2px solid var(--bg-surface, #fff);
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+    cursor: grab;
+}
+
+.slider::-moz-range-track {
+    background: transparent;
+    border: none;
+}
+`;
+    var $r = `@media (prefers-reduced-motion: no-preference) {
+    .input-wrap { transition: border-color 0.15s; }
+    .fill { transition: width 0.05s ease; }
+    .slider::-webkit-slider-thumb { transition: transform 0.1s; }
+}
+`;
+    var Ur = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, A = (t, e) => {
+      if (!t)
+        return e;
+      let r = Number(t.min), i = Number(t.max);
+      if (!Number.isFinite(e))
+        return r;
+      if (e < r)
+        return r;
+      if (e > i)
+        return i;
+      return e;
+    }, _ = (t, e) => {
+      if (!t || !e)
+        return;
+      let r = Number(t.min), i = Number(t.max), n = Number(t.value), o = i === r ? 0 : (n - r) / (i - r) * 100;
+      e.style.width = `${o}%`;
+    };
+    var Ut = (t, e, r, i, n) => {
+      if (!e || !r || !i || !n)
+        return;
+      let o = t.getAttribute("min") ?? "0", a = t.getAttribute("max") ?? "100", l = t.getAttribute("step") ?? "1";
+      e.min = o, e.max = a, e.step = l, r.min = o, r.max = a, r.step = l, i.textContent = o, n.textContent = a;
+    }, Yt = (t, e, r, i) => {
+      if (!e || !r || !i)
+        return;
+      let n = t.getAttribute("label") ?? t.getAttribute("name") ?? "";
+      if (e.textContent = n, e.hidden = n === "", n)
+        r.setAttribute("aria-label", n), i.setAttribute("aria-label", n);
+    }, Xt = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("unit") ?? "";
+      e.textContent = r, e.hidden = r === "";
+    }, Wt = (t, e, r) => {
+      if (!e || !r)
+        return;
+      let i = t.hasAttribute("disabled");
+      e.disabled = i, r.disabled = i;
+    }, L = (t, e, r, i, n) => {
+      if (!t || !e)
+        return;
+      let o = A(t, Number(n));
+      t.value = String(o), e.value = String(o), i.setFormValue(t.value), _(t, r);
+    };
+    var Yr = (t, e, r, i, n) => {
+      if (!e || !r)
+        return;
+      r.value = e.value, n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    }, Xr = (t, e, r) => {
+      if (!e)
+        return;
+      r.setFormValue(e.value), t.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+    }, Wr = (t, e, r, i, n) => {
+      if (!e || !r)
+        return;
+      if (r.value === "")
+        return;
+      let o = A(e, Number(r.value));
+      e.value = String(o), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
+    }, Zr = (t, e, r, i, n) => {
+      if (!e || !r)
+        return;
+      let o = A(e, Number(r.value));
+      e.value = String(o), r.value = String(o), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
+    }, Gr = (t, e) => {
+      if (!t || !e)
+        return;
+      e.value = t.value;
+    };
+    var zs = Nr + Kr + $r;
+
+    class Z extends s {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "min", "max", "step", "unit", "disabled"];
@@ -3242,76 +3424,43 @@ input[type="file"]:focus-visible + label {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super();
+        super({ css: zs, template: jr });
         this._internals = this.attachInternals();
-        let t = this.attachShadow({ mode: "open" });
-        t.innerHTML = `
-            <style>${u._css}</style>
-            <div class="field" part="field">
-                <div class="header" part="header">
-                    <span class="label" part="label"></span>
-                    <div class="input-wrap" part="input-wrap">
-                        <input class="number" part="number-input" type="number">
-                        <span class="unit" part="unit" hidden></span>
-                    </div>
-                </div>
-                <div class="track-container" part="track-container">
-                    <div class="track" part="track">
-                        <div class="fill" part="fill"></div>
-                    </div>
-                    <input class="slider" part="slider" type="range">
-                </div>
-                <div class="bounds" part="bounds">
-                    <span class="min-bound"></span>
-                    <span class="max-bound"></span>
-                </div>
-            </div>
-        `, this._slider = t.querySelector(".slider"), this._input = t.querySelector(".number"), this._fill = t.querySelector(".fill"), this._labelEl = t.querySelector(".label"), this._unitEl = t.querySelector(".unit"), this._minEl = t.querySelector(".min-bound"), this._maxEl = t.querySelector(".max-bound");
+        let t = this.shadowRoot;
+        this._slider = t.querySelector(".slider"), this._input = t.querySelector(".number"), this._fill = t.querySelector(".fill"), this._labelEl = t.querySelector(".label"), this._unitEl = t.querySelector(".unit"), this._minEl = t.querySelector(".min-bound"), this._maxEl = t.querySelector(".max-bound");
       }
       connectedCallback() {
-        for (let e of ["value", "disabled"])
-          this._upgradeProperty(e);
-        this._syncLabel(), this._syncBounds(), this._syncUnit(), this._syncDisabled();
+        ["value", "disabled"].forEach((e) => Ur(this, e)), Yt(this, this._labelEl, this._slider, this._input), Ut(this, this._slider, this._input, this._minEl, this._maxEl), Xt(this, this._unitEl), Wt(this, this._slider, this._input);
         let t = this.getAttribute("value") ?? this.getAttribute("min") ?? "0";
         if (!this._defaultsCaptured)
           this._defaultValue = t, this._defaultsCaptured = true;
-        this._syncValue(t), this._slider?.addEventListener("input", this._onSliderInput), this._slider?.addEventListener("change", this._onSliderChange), this._input?.addEventListener("input", this._onNumberInput), this._input?.addEventListener("change", this._onNumberChange), this._input?.addEventListener("blur", this._onNumberBlur);
+        L(this._slider, this._input, this._fill, this._internals, t), this._wire("addEventListener");
       }
       disconnectedCallback() {
-        this._slider?.removeEventListener("input", this._onSliderInput), this._slider?.removeEventListener("change", this._onSliderChange), this._input?.removeEventListener("input", this._onNumberInput), this._input?.removeEventListener("change", this._onNumberChange), this._input?.removeEventListener("blur", this._onNumberBlur);
+        this._wire("removeEventListener");
       }
       formResetCallback() {
-        this._syncValue(this._defaultValue);
+        L(this._slider, this._input, this._fill, this._internals, this._defaultValue);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._slider || !this._input)
           return;
-        switch (t) {
-          case "value":
-            if (i !== null)
-              this._syncValue(i);
-            break;
-          case "label":
-            this._syncLabel();
-            break;
-          case "min":
-          case "max":
-          case "step":
-            this._syncBounds(), this._syncFill();
-            break;
-          case "unit":
-            this._syncUnit();
-            break;
-          case "disabled":
-            this._syncDisabled();
-            break;
-        }
+        if (t === "value" && r !== null)
+          L(this._slider, this._input, this._fill, this._internals, r);
+        else if (t === "label")
+          Yt(this, this._labelEl, this._slider, this._input);
+        else if (t === "min" || t === "max" || t === "step")
+          Ut(this, this._slider, this._input, this._minEl, this._maxEl);
+        else if (t === "unit")
+          Xt(this, this._unitEl);
+        else if (t === "disabled")
+          Wt(this, this._slider, this._input);
       }
       get value() {
         return this._slider?.value ?? "";
       }
       set value(t) {
-        this._syncValue(String(t));
+        L(this._slider, this._input, this._fill, this._internals, String(t));
       }
       get name() {
         return this.getAttribute("name") ?? "";
@@ -3320,500 +3469,278 @@ input[type="file"]:focus-visible + label {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       focus() {
         this._slider?.focus();
       }
-      _onSliderInput = () => {
-        if (!this._slider || !this._input)
-          return;
-        this._input.value = this._slider.value, this._internals.setFormValue(this._slider.value), this._syncFill(), this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
-      };
-      _onSliderChange = () => {
-        if (!this._slider)
-          return;
-        this._internals.setFormValue(this._slider.value), this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-      };
-      _onNumberInput = () => {
-        if (!this._slider || !this._input)
-          return;
-        let t = this._input.value;
-        if (t === "")
-          return;
-        let e = this._clamp(Number(t));
-        this._slider.value = String(e), this._internals.setFormValue(this._slider.value), this._syncFill(), this.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
-      };
-      _onNumberChange = () => {
-        if (!this._slider || !this._input)
-          return;
-        let t = this._clamp(Number(this._input.value));
-        this._slider.value = String(t), this._input.value = String(t), this._internals.setFormValue(this._slider.value), this._syncFill(), this.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-      };
-      _onNumberBlur = () => {
-        if (!this._slider || !this._input)
-          return;
-        this._input.value = this._slider.value;
-      };
-      _clamp(t) {
-        if (!this._slider)
-          return t;
-        let e = Number(this._slider.min), i = Number(this._slider.max);
-        if (!Number.isFinite(t))
-          return e;
-        if (t < e)
-          return e;
-        if (t > i)
-          return i;
-        return t;
+      _wire(t) {
+        this._slider?.[t]("input", this._onSliderInput), this._slider?.[t]("change", this._onSliderChange), this._input?.[t]("input", this._onNumberInput), this._input?.[t]("change", this._onNumberChange), this._input?.[t]("blur", this._onNumberBlur);
       }
-      _syncValue(t) {
-        if (!this._slider || !this._input)
-          return;
-        let e = this._clamp(Number(t));
-        this._slider.value = String(e), this._input.value = String(e), this._internals.setFormValue(this._slider.value), this._syncFill();
-      }
-      _syncBounds() {
-        if (!this._slider || !this._input || !this._minEl || !this._maxEl)
-          return;
-        let t = this.getAttribute("min") ?? "0", e = this.getAttribute("max") ?? "100", i = this.getAttribute("step") ?? "1";
-        this._slider.min = t, this._slider.max = e, this._slider.step = i, this._input.min = t, this._input.max = e, this._input.step = i, this._minEl.textContent = t, this._maxEl.textContent = e;
-      }
-      _syncLabel() {
-        if (!this._labelEl || !this._slider || !this._input)
-          return;
-        let t = this.getAttribute("label") ?? this.getAttribute("name") ?? "";
-        if (this._labelEl.textContent = t, this._labelEl.hidden = t === "", t)
-          this._slider.setAttribute("aria-label", t), this._input.setAttribute("aria-label", t);
-      }
-      _syncUnit() {
-        if (!this._unitEl)
-          return;
-        let t = this.getAttribute("unit") ?? "";
-        this._unitEl.textContent = t, this._unitEl.hidden = t === "";
-      }
-      _syncDisabled() {
-        if (!this._slider || !this._input)
-          return;
-        let t = this.hasAttribute("disabled");
-        this._slider.disabled = t, this._input.disabled = t;
-      }
-      _syncFill() {
-        if (!this._slider || !this._fill)
-          return;
-        let t = Number(this._slider.min), e = Number(this._slider.max), i = Number(this._slider.value), r = e === t ? 0 : (i - t) / (e - t) * 100;
-        this._fill.style.width = `${r}%`;
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      static _css = `
-        :host {
-            display: block;
-        }
-
-        :host([disabled]) {
-            opacity: 0.55;
-            pointer-events: none;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .label {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted, #94a3b8);
-        }
-
-        .label[hidden] {
-            display: none;
-        }
-
-        .input-wrap {
-            display: flex;
-            align-items: center;
-            gap: 2px;
-            background: var(--bg-surface, #fff);
-            border: 1px solid var(--border-default, #e2e8f0);
-            border-radius: 6px;
-            padding: 2px 6px;
-        }
-
-        @media (prefers-reduced-motion: no-preference) {
-            .input-wrap { transition: border-color 0.15s; }
-            .fill { transition: width 0.05s ease; }
-            .slider::-webkit-slider-thumb { transition: transform 0.1s; }
-        }
-
-        .input-wrap:focus-within {
-            border-color: var(--primary-base, #4361ee);
-            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
-        }
-
-        .number {
-            width: 36px;
-            border: none;
-            outline: none;
-            background: transparent;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text-main, #1e293b);
-            text-align: right;
-            font-family: inherit;
-            -moz-appearance: textfield;
-        }
-
-        .number::-webkit-inner-spin-button,
-        .number::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .unit {
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--text-muted, #94a3b8);
-        }
-
-        .unit[hidden] {
-            display: none;
-        }
-
-        .track-container {
-            position: relative;
-            height: 20px;
-            display: flex;
-            align-items: center;
-        }
-
-        .track {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--border-default, #e2e8f0);
-            border-radius: 4px;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .fill {
-            height: 100%;
-            background: var(--primary-base, #4361ee);
-            border-radius: 4px;
-        }
-
-        .slider {
-            position: relative;
-            width: 100%;
-            height: 20px;
-            margin: 0;
-            -webkit-appearance: none;
-            appearance: none;
-            background: transparent;
-            cursor: pointer;
-            z-index: 1;
-            outline: none;
-        }
-
-        .slider:focus-visible::-webkit-slider-thumb {
-            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.25));
-        }
-
-        .slider:focus-visible::-moz-range-thumb {
-            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.25));
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--primary-base, #4361ee);
-            border: 2px solid var(--bg-surface, #fff);
-            box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
-            cursor: grab;
-        }
-
-        .slider::-webkit-slider-thumb:active {
-            transform: scale(1.2);
-            cursor: grabbing;
-        }
-
-        .slider::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--primary-base, #4361ee);
-            border: 2px solid var(--bg-surface, #fff);
-            box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
-            cursor: grab;
-        }
-
-        .slider::-moz-range-track {
-            background: transparent;
-            border: none;
-        }
-
-        .bounds {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9px;
-            font-weight: 500;
-            color: var(--text-muted, #94a3b8);
-            margin-top: -2px;
-        }
-    `;
+      _onSliderInput = () => Yr(this, this._slider, this._input, this._fill, this._internals);
+      _onSliderChange = () => Xr(this, this._slider, this._internals);
+      _onNumberInput = () => Wr(this, this._slider, this._input, this._fill, this._internals);
+      _onNumberChange = () => Zr(this, this._slider, this._input, this._fill, this._internals);
+      _onNumberBlur = () => Gr(this._slider, this._input);
     }
     if (!customElements.get("p9r-range"))
-      customElements.define("p9r-range", u);
+      customElements.define("p9r-range", Z);
+    var Jr = `<div class="field">
+    <span class="label"></span>
+    <button class="trigger" type="button" tabindex="0">
+        <span class="value"></span>
+        <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m6 9 6 6 6-6"/>
+        </svg>
+    </button>
+    <div class="panel">
+        <ul class="list"></ul>
+    </div>
+</div>
+<div hidden><slot></slot></div>
+`;
+    var Qr = `:host {
+    display: block;
+}
 
-    class b extends HTMLElement {
-      _trigger = null;
-      _display = null;
-      _list = null;
-      _panel = null;
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+.label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted, #94a3b8);
+}
+
+.trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    padding: 7px 10px;
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 8px;
+    background: var(--bg-surface, #fff);
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+}
+
+.value {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-main, #1e293b);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.chevron {
+    flex-shrink: 0;
+    color: var(--text-muted, #94a3b8);
+    transition: transform 0.2s ease;
+}
+
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.option {
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-main, #1e293b);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+`;
+    var ti = `.trigger:hover {
+    border-color: var(--text-muted, #94a3b8);
+}
+
+.trigger:focus-visible {
+    border-color: var(--primary-base, #4361ee);
+    box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
+}
+
+.trigger.open {
+    border-color: var(--primary-base, #4361ee);
+}
+
+.trigger.open .chevron {
+    transform: rotate(180deg);
+    color: var(--primary-base, #4361ee);
+}
+
+.panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: var(--bg-surface, #fff);
+    border: 1px solid var(--border-default, #e2e8f0);
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.08);
+    z-index: 50;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
+    overflow: hidden;
+}
+
+.panel.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.option:hover {
+    background: var(--bg-base, #f1f5f9);
+}
+
+.option.selected {
+    background: var(--primary-muted, rgb(67 97 238 / 0.1));
+    color: var(--primary-base, #4361ee);
+    font-weight: 600;
+}
+`;
+    var ei = (t, e) => {
+      t.forEach((r) => r.classList.toggle("selected", r.dataset.value === e));
+    }, ri = (t, e) => {
+      if (!t)
+        return;
+      t.textContent = e.getAttribute("label") ?? e.getAttribute("name") ?? "";
+    }, ii = (t) => {
+      document.querySelectorAll("p9r-select").forEach((e) => {
+        if (e !== t)
+          e._close?.();
+      });
+    };
+    var ni = (t, e, r) => {
+      let i = Array.from(t.querySelectorAll("option"));
+      if (e)
+        e.innerHTML = "";
+      let n = [], o = "", a = "";
+      if (i.forEach((l) => {
+        let d = document.createElement("li");
+        if (d.className = "option", d.textContent = l.textContent, d.dataset.value = l.value, d.addEventListener("click", () => r(l.value, l.textContent ?? "")), e?.appendChild(d), n.push(d), l.hasAttribute("selected") && !o)
+          o = l.value, a = l.textContent ?? "";
+      }), !o && i.length > 0)
+        o = i[0].value, a = i[0].textContent ?? "";
+      return { options: n, initialValue: o, initialLabel: a };
+    }, oi = (t, e, r, i) => {
+      if (e)
+        e.textContent = i;
+      ei(t, r);
+    };
+    var si = (t, e) => {
+      if (t._isOpen && !t.contains(e.target))
+        t._close();
+    }, ai = (t, e) => {
+      if (e.stopPropagation(), t._isOpen)
+        t._close();
+      else
+        t._open();
+    }, li = (t, e) => {
+      if (e.key === "Escape")
+        t._close();
+      if (e.key === "Enter" || e.key === " ")
+        if (e.preventDefault(), t._isOpen)
+          t._close();
+        else
+          t._open();
+    };
+    var qs = Qr + ti;
+
+    class G extends s {
+      static formAssociated = true;
+      _internals;
+      _trigger;
+      _display;
+      _list;
+      _panel;
       _options = [];
       _isOpen = false;
       _value = "";
-      _onWindowClick = (t) => {
-        if (this._isOpen && !this.contains(t.target))
-          this._close();
-      };
-      _onTriggerClick = (t) => {
-        t.stopPropagation(), this._isOpen ? this._close() : this._open();
-      };
-      _onTriggerKeyDown = (t) => {
-        if (t.key === "Escape")
-          this._close();
-        if (t.key === "Enter" || t.key === " ")
-          t.preventDefault(), this._isOpen ? this._close() : this._open();
-      };
-      _onSlotChange = () => this._syncFromSlot();
       constructor() {
-        super();
-        this._buildShadow();
+        super({ css: qs, template: Jr });
+        this._internals = this.attachInternals(), this._trigger = this.shadowRoot.querySelector(".trigger"), this._display = this.shadowRoot.querySelector(".value"), this._list = this.shadowRoot.querySelector(".list"), this._panel = this.shadowRoot.querySelector(".panel");
       }
       connectedCallback() {
-        this.shadowRoot.querySelector("slot").addEventListener("slotchange", this._onSlotChange), this._trigger.addEventListener("click", this._onTriggerClick), this._trigger.addEventListener("keydown", this._onTriggerKeyDown), window.addEventListener("click", this._onWindowClick), this._syncFromSlot();
+        ri(this.shadowRoot.querySelector(".label"), this), this.shadowRoot.querySelector("slot").addEventListener("slotchange", this._onSlot), this._trigger?.addEventListener("click", this._onClick), this._trigger?.addEventListener("keydown", this._onKey), window.addEventListener("click", this._onWindow), this._syncFromSlot();
       }
       disconnectedCallback() {
-        this.shadowRoot.querySelector("slot")?.removeEventListener("slotchange", this._onSlotChange), this._trigger?.removeEventListener("click", this._onTriggerClick), this._trigger?.removeEventListener("keydown", this._onTriggerKeyDown), window.removeEventListener("click", this._onWindowClick);
+        this.shadowRoot.querySelector("slot")?.removeEventListener("slotchange", this._onSlot), this._trigger?.removeEventListener("click", this._onClick), this._trigger?.removeEventListener("keydown", this._onKey), window.removeEventListener("click", this._onWindow);
       }
-      _buildShadow() {
-        let t = this.getAttribute("label") || this.getAttribute("name") || "", e = this.attachShadow({ mode: "open" });
-        e.innerHTML = `
-            <style>${b._css}</style>
-            <div class="field">
-                <span class="label">${t}</span>
-                <button class="trigger" type="button" tabindex="0">
-                    <span class="value"></span>
-                    <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                         stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m6 9 6 6 6-6"/>
-                    </svg>
-                </button>
-                <div class="panel">
-                    <ul class="list"></ul>
-                </div>
-            </div>
-            <div hidden><slot></slot></div>
-        `, this._trigger = e.querySelector(".trigger"), this._display = e.querySelector(".value"), this._list = e.querySelector(".list"), this._panel = e.querySelector(".panel");
-      }
-      _syncFromSlot() {
-        let t = Array.from(this.querySelectorAll("option"));
-        this._list.innerHTML = "", this._options = [];
-        let e = "", i = "";
-        if (t.forEach((r) => {
-          let a = document.createElement("li");
-          if (a.className = "option", a.textContent = r.textContent, a.dataset.value = r.value, a.addEventListener("click", () => this._select(r.value, r.textContent || "")), this._list.appendChild(a), this._options.push(a), r.hasAttribute("selected") && !e)
-            e = r.value, i = r.textContent || "";
-        }), e)
-          this._setValue(e, i);
-        else if (t.length > 0)
-          this._setValue(t[0].value, t[0].textContent || "");
-      }
+      _syncFromSlot = () => {
+        let { options: t, initialValue: e, initialLabel: r } = ni(this, this._list, (n, o) => this._select(n, o));
+        this._options = t;
+        let i = this.getAttribute("value");
+        if (i !== null) {
+          let n = t.find((o) => o.dataset.value === i);
+          if (n) {
+            this._setValue(i, n.textContent ?? "");
+            return;
+          }
+        }
+        if (e)
+          this._setValue(e, r);
+      };
       _select(t, e) {
         this._setValue(t, e), this._close(), this.dispatchEvent(new Event("change", { bubbles: true }));
       }
       _setValue(t, e) {
-        this._value = t, this._display.textContent = e, this._options.forEach((i) => {
-          i.classList.toggle("selected", i.dataset.value === t);
-        });
+        this._value = t, this._internals.setFormValue(t), oi(this._options, this._display, t, e);
       }
       _open() {
-        document.querySelectorAll("p9r-select").forEach((t) => {
-          if (t !== this)
-            t._close();
-        }), this._isOpen = true, this._panel.classList.add("open"), this._trigger.classList.add("open");
+        ii(this), this._isOpen = true, this._panel?.classList.add("open"), this._trigger?.classList.add("open");
       }
       _close() {
-        this._isOpen = false, this._panel.classList.remove("open"), this._trigger.classList.remove("open");
+        this._isOpen = false, this._panel?.classList.remove("open"), this._trigger?.classList.remove("open");
       }
       get value() {
         return this._value;
       }
       set value(t) {
-        let e = this._options.find((i) => i.dataset.value === t);
+        let e = this._options.find((r) => r.dataset.value === t);
         if (e)
-          this._setValue(t, e.textContent || "");
+          this._setValue(t, e.textContent ?? "");
       }
       get name() {
         return this.getAttribute("name");
       }
-      static _css = `
-        :host {
-            display: block;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            position: relative;
-        }
-
-        .label {
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted, #94a3b8);
-        }
-
-        .trigger {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            width: 100%;
-            padding: 7px 10px;
-            border: 1px solid var(--border-default, #e2e8f0);
-            border-radius: 8px;
-            background: var(--bg-surface, #fff);
-            cursor: pointer;
-            transition: border-color 0.15s, box-shadow 0.15s;
-            outline: none;
-        }
-
-        .trigger:hover {
-            border-color: var(--text-muted, #94a3b8);
-        }
-
-        .trigger:focus-visible {
-            border-color: var(--primary-base, #4361ee);
-            box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
-        }
-
-        .trigger.open {
-            border-color: var(--primary-base, #4361ee);
-        }
-
-        .value {
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-main, #1e293b);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .chevron {
-            flex-shrink: 0;
-            color: var(--text-muted, #94a3b8);
-            transition: transform 0.2s ease;
-        }
-
-        .trigger.open .chevron {
-            transform: rotate(180deg);
-            color: var(--primary-base, #4361ee);
-        }
-
-        /* ── Dropdown ── */
-
-        .panel {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            margin-top: 4px;
-            background: var(--bg-surface, #fff);
-            border: 1px solid var(--border-default, #e2e8f0);
-            border-radius: 8px;
-            box-shadow: 0 8px 20px rgb(0 0 0 / 0.08);
-            z-index: 50;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-4px);
-            transition: opacity 0.15s, visibility 0.15s, transform 0.15s;
-            overflow: hidden;
-        }
-
-        .panel.open {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .list {
-            list-style: none;
-            margin: 0;
-            padding: 4px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .option {
-            padding: 6px 10px;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--text-main, #1e293b);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.1s;
-        }
-
-        .option:hover {
-            background: var(--bg-base, #f1f5f9);
-        }
-
-        .option.selected {
-            background: var(--primary-muted, rgb(67 97 238 / 0.1));
-            color: var(--primary-base, #4361ee);
-            font-weight: 600;
-        }
-    `;
+      _onSlot = () => this._syncFromSlot();
+      _onClick = (t) => ai(this, t);
+      _onKey = (t) => li(this, t);
+      _onWindow = (t) => si(this, t);
     }
     if (!customElements.get("p9r-select"))
-      customElements.define("p9r-select", b);
+      customElements.define("p9r-select", G);
 
-    class j extends HTMLElement {
+    class J extends HTMLElement {
       connectedCallback() {
-        let t = this.getAttribute("label") || "Size", e = this.getAttribute("name") || "size", i = document.createElement("p9r-select");
-        i.setAttribute("label", t), i.setAttribute("name", e), [{ value: "none", label: "NONE" }, { value: "xs", label: "XS" }, { value: "sm", label: "S" }, { value: "md", label: "M", selected: true }, { value: "lg", label: "L" }, { value: "xl", label: "XL" }].forEach((a) => {
+        let t = this.getAttribute("label") || "Size", e = this.getAttribute("name") || "size", r = document.createElement("p9r-select");
+        r.setAttribute("label", t), r.setAttribute("name", e), [{ value: "none", label: "NONE" }, { value: "xs", label: "XS" }, { value: "sm", label: "S" }, { value: "md", label: "M", selected: true }, { value: "lg", label: "L" }, { value: "xl", label: "XL" }].forEach((n) => {
           let o = document.createElement("option");
-          if (o.value = a.value, o.textContent = a.label, a.selected)
+          if (o.value = n.value, o.textContent = n.label, n.selected)
             o.setAttribute("selected", "");
-          i.appendChild(o);
-        }), this.replaceWith(i);
+          r.appendChild(o);
+        }), this.replaceWith(r);
       }
       get name() {
         return this.getAttribute("name");
@@ -3823,8 +3750,8 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("p9r-sizes-select"))
-      customElements.define("p9r-sizes-select", j);
-    var Zt = `<label class="radio" part="container">
+      customElements.define("p9r-sizes-select", J);
+    var di = `<label class="radio" part="container">
     <input type="radio" id="native-input" part="input" />
     <span class="custom" part="circle" aria-hidden="true">
         <span class="dot" part="dot"></span>
@@ -3832,7 +3759,7 @@ input[type="file"]:focus-visible + label {
     <span class="label" part="label"><slot></slot></span>
 </label>
 `;
-    var Ut = `:host {
+    var ci = `:host {
   display: inline-block;
 
   --_size: 18px;
@@ -3912,13 +3839,13 @@ input:focus-visible ~ .custom {
 }
 `;
 
-    class P extends s {
+    class Q extends s {
       _input;
       static get observedAttributes() {
         return ["checked", "disabled", "value", "name"];
       }
       constructor() {
-        super({ css: Ut, template: Zt });
+        super({ css: ci, template: di });
         this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
@@ -3935,17 +3862,17 @@ input:focus-visible ~ .custom {
       disconnectedCallback() {
         this._input?.removeEventListener("change", this._onChange), this._input?.removeEventListener("click", this._onClick);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._input)
           return;
         if (t === "checked")
-          this._input.checked = i !== null, this.setAttribute("aria-checked", String(i !== null));
+          this._input.checked = r !== null, this.setAttribute("aria-checked", String(r !== null));
         else if (t === "disabled")
-          this._input.disabled = i !== null;
+          this._input.disabled = r !== null;
         else if (t === "value")
-          this._input.value = i ?? "";
+          this._input.value = r ?? "";
         else if (t === "name")
-          this._input.name = i ?? "";
+          this._input.name = r ?? "";
       }
       _onChange = () => {
         if (this._input?.checked ?? false)
@@ -3990,15 +3917,15 @@ input:focus-visible ~ .custom {
       }
     }
     if (!customElements.get("p9r-radio"))
-      customElements.define("p9r-radio", P);
-    var Jt = `<fieldset class="group" part="group">
+      customElements.define("p9r-radio", Q);
+    var ui = `<fieldset class="group" part="group">
     <legend class="label" part="label"></legend>
     <div class="options" part="options">
         <slot></slot>
     </div>
 </fieldset>
 `;
-    var Qt = `:host {
+    var pi = `:host {
   display: block;
 }
 
@@ -4040,8 +3967,87 @@ input:focus-visible ~ .custom {
   pointer-events: none;
 }
 `;
+    var hi = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, x = (t) => {
+      if (!t)
+        return [];
+      return t.assignedElements({ flatten: true }).filter((e) => e.tagName === "P9R-RADIO");
+    }, Os = 0, mi = () => `radiogroup-${Os++}`, bi = (t, e, r) => {
+      t.forEach((i) => {
+        let n = e !== null && i.getAttribute("value") === e;
+        if (n)
+          i.setAttribute("checked", "");
+        else
+          i.removeAttribute("checked");
+        i.setAttribute("tabindex", n ? "0" : "-1");
+      }), r.setFormValue(e ?? null);
+    }, Zt = (t, e) => {
+      if (t)
+        t.textContent = e ?? "";
+    }, tt = (t, e) => {
+      if (!e)
+        return;
+      t.forEach((r) => r.setAttribute("disabled", ""));
+    };
+    var Gt = (t, e) => {
+      t.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: e } }));
+    };
+    var Jt = (t, e, r) => {
+      let i = x(e), n = t.getAttribute("name") ?? mi(), o = t.getAttribute("value");
+      if (i.forEach((a) => {
+        a.setAttribute("name", n);
+        let l = o !== null && a.getAttribute("value") === o;
+        if (l)
+          a.setAttribute("checked", "");
+        else
+          a.removeAttribute("checked");
+        a.setAttribute("tabindex", l ? "0" : "-1");
+      }), o === null && i.length > 0)
+        i[0]?.setAttribute("tabindex", "0");
+      tt(i, t.hasAttribute("disabled")), r.setFormValue(o ?? null);
+    }, gi = (t, e) => {
+      let r = e.target;
+      if (r.tagName !== "P9R-RADIO")
+        return;
+      let i = r.getAttribute("value") ?? "";
+      if (i !== t.getAttribute("value"))
+        t.setAttribute("value", i), Gt(t, i);
+    }, fi = (t, e, r) => {
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(r.key))
+        return;
+      let n = x(e).filter((u) => !u.hasAttribute("disabled"));
+      if (n.length === 0)
+        return;
+      let o = n.findIndex((u) => u === document.activeElement), a = o === -1 ? 0 : o, l = a;
+      switch (r.key) {
+        case "ArrowLeft":
+        case "ArrowUp":
+          l = (a - 1 + n.length) % n.length;
+          break;
+        case "ArrowRight":
+        case "ArrowDown":
+          l = (a + 1) % n.length;
+          break;
+        case "Home":
+          l = 0;
+          break;
+        case "End":
+          l = n.length - 1;
+          break;
+      }
+      r.preventDefault();
+      let d = n[l];
+      if (!d)
+        return;
+      let c = d.getAttribute("value") ?? "";
+      t.setAttribute("value", c), d.focus(), Gt(t, c);
+    };
 
-    class m extends s {
+    class et extends s {
       static formAssociated = true;
       _internals;
       _label;
@@ -4052,18 +4058,18 @@ input:focus-visible ~ .custom {
         return ["value", "label", "name", "disabled"];
       }
       constructor() {
-        super({ css: Qt, template: Jt });
+        super({ css: pi, template: ui });
         this._internals = this.attachInternals(), this._label = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value"), this._defaultsCaptured = true;
         for (let t of ["value", "name", "disabled"])
-          this._upgradeProperty(t);
-        this.setAttribute("role", "radiogroup"), this._syncLabel(), this._slot?.addEventListener("slotchange", this._syncRadios), this.addEventListener("change", this._onRadioChange), this.addEventListener("keydown", this._onKeydown), this._syncRadios();
+          hi(this, t);
+        this.setAttribute("role", "radiogroup"), Zt(this._label, this.getAttribute("label")), this._slot?.addEventListener("slotchange", this._onSlotChange), this.addEventListener("change", this._onChange), this.addEventListener("keydown", this._onKey), Jt(this, this._slot, this._internals);
       }
       disconnectedCallback() {
-        this._slot?.removeEventListener("slotchange", this._syncRadios), this.removeEventListener("change", this._onRadioChange), this.removeEventListener("keydown", this._onKeydown);
+        this._slot?.removeEventListener("slotchange", this._onSlotChange), this.removeEventListener("change", this._onChange), this.removeEventListener("keydown", this._onKey);
       }
       formResetCallback() {
         if (this._defaultValue === null)
@@ -4071,13 +4077,13 @@ input:focus-visible ~ .custom {
         else
           this.setAttribute("value", this._defaultValue);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "value")
-          this._applyValue(i);
+          bi(x(this._slot), r, this._internals);
         else if (t === "label")
-          this._syncLabel();
+          Zt(this._label, r);
         else if (t === "disabled")
-          this._syncDisabled();
+          tt(x(this._slot), this.hasAttribute("disabled"));
       }
       get value() {
         return this.getAttribute("value") ?? "";
@@ -4089,110 +4095,21 @@ input:focus-visible ~ .custom {
         return this.getAttribute("name") ?? "";
       }
       set name(t) {
-        if (t)
-          this.setAttribute("name", t);
-        else
-          this.removeAttribute("name");
+        t ? this.setAttribute("name", t) : this.removeAttribute("name");
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
-      _radios() {
-        if (!this._slot)
-          return [];
-        return this._slot.assignedElements({ flatten: true }).filter((t) => t.tagName === "P9R-RADIO");
-      }
-      _syncRadios = () => {
-        let t = this._radios(), e = this.getAttribute("name") ?? `radiogroup-${m._uid++}`, i = this.getAttribute("value");
-        if (t.forEach((r) => {
-          r.setAttribute("name", e);
-          let a = i !== null && r.getAttribute("value") === i;
-          if (a)
-            r.setAttribute("checked", "");
-          else
-            r.removeAttribute("checked");
-          r.setAttribute("tabindex", a ? "0" : "-1");
-        }), i === null && t.length > 0)
-          t[0]?.setAttribute("tabindex", "0");
-        this._syncDisabled(), this._internals.setFormValue(i ?? null);
-      };
-      _onRadioChange = (t) => {
-        let e = t.target;
-        if (e.tagName !== "P9R-RADIO")
-          return;
-        let i = e.getAttribute("value") ?? "";
-        if (i !== this.getAttribute("value"))
-          this.setAttribute("value", i), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: i } }));
-      };
-      _onKeydown = (t) => {
-        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(t.key))
-          return;
-        let i = this._radios().filter((h) => !h.hasAttribute("disabled"));
-        if (i.length === 0)
-          return;
-        let r = i.findIndex((h) => h === document.activeElement), a = r === -1 ? 0 : r, o = a;
-        switch (t.key) {
-          case "ArrowLeft":
-          case "ArrowUp":
-            o = (a - 1 + i.length) % i.length;
-            break;
-          case "ArrowRight":
-          case "ArrowDown":
-            o = (a + 1) % i.length;
-            break;
-          case "Home":
-            o = 0;
-            break;
-          case "End":
-            o = i.length - 1;
-            break;
-        }
-        t.preventDefault();
-        let n = i[o];
-        if (!n)
-          return;
-        let d = n.getAttribute("value") ?? "";
-        this.setAttribute("value", d), n.focus(), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: d } }));
-      };
-      _applyValue(t) {
-        this._radios().forEach((i) => {
-          let r = t !== null && i.getAttribute("value") === t;
-          if (r)
-            i.setAttribute("checked", "");
-          else
-            i.removeAttribute("checked");
-          i.setAttribute("tabindex", r ? "0" : "-1");
-        }), this._internals.setFormValue(t ?? null);
-      }
-      _syncLabel() {
-        if (!this._label)
-          return;
-        this._label.textContent = this.getAttribute("label") ?? "";
-      }
-      _syncDisabled() {
-        let t = this.hasAttribute("disabled");
-        this._radios().forEach((e) => {
-          if (t)
-            e.setAttribute("disabled", "");
-        });
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      static _uid = 0;
+      _onSlotChange = () => Jt(this, this._slot, this._internals);
+      _onChange = (t) => gi(this, t);
+      _onKey = (t) => fi(this, this._slot, t);
     }
     if (!customElements.get("p9r-radio-group"))
-      customElements.define("p9r-radio-group", m);
-    var Wt = `<div class="switch-container" part="container">
+      customElements.define("p9r-radio-group", et);
+    var vi = `<div class="switch-container" part="container">
     <span class="label" id="group-label" part="label"></span>
 
     <div class="switch-wrapper" part="wrapper" role="radiogroup" aria-labelledby="group-label">
@@ -4208,7 +4125,7 @@ input:focus-visible ~ .custom {
     </span>
 </div>
 `;
-    var Gt = `:host {
+    var _i = `:host {
   --active-index: 0;
   --total-options: 1;
   display: block;
@@ -4297,15 +4214,82 @@ input:focus-visible ~ .custom {
   pointer-events: none;
 }
 `;
+    var xi = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, C = (t) => {
+      if (!t)
+        return [];
+      return t.assignedElements().filter((e) => e.tagName === "OPTION");
+    }, Qt = (t, e) => {
+      if (t)
+        t.textContent = e;
+    }, rt = (t, e, r) => {
+      let i = e.findIndex((n) => n.getAttribute("value") === r);
+      if (i === -1)
+        return;
+      t.style.setProperty("--active-index", i.toString()), e.forEach((n, o) => {
+        let a = o === i;
+        n.setAttribute("aria-checked", a.toString()), n.setAttribute("tabindex", a ? "0" : "-1");
+      });
+    }, it = (t, e) => {
+      t.forEach((r) => {
+        if (r.getAttribute("value") === e)
+          r.setAttribute("selected", "");
+        else
+          r.removeAttribute("selected");
+      });
+    };
+    var te = (t, e) => {
+      let r = C(e);
+      t.style.setProperty("--total-options", r.length.toString()), r.forEach((i, n) => {
+        if (i.setAttribute("role", "radio"), i.setAttribute("part", "segment"), !i.hasAttribute("tabindex"))
+          i.setAttribute("tabindex", n === 0 ? "0" : "-1");
+        i.onclick = () => {
+          if (t.disabled)
+            return;
+          t.value = i.getAttribute("value") ?? "", i.focus();
+        };
+      }), rt(t, r, t.value), it(r, t.value);
+    }, yi = (t, e, r) => {
+      if (t.disabled)
+        return;
+      if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(r.key))
+        return;
+      let n = C(e);
+      if (n.length === 0)
+        return;
+      let o = n.findIndex((c) => c.getAttribute("value") === t.value), a = o === -1 ? 0 : o, l = a;
+      switch (r.key) {
+        case "ArrowLeft":
+        case "ArrowUp":
+          l = (a - 1 + n.length) % n.length;
+          break;
+        case "ArrowRight":
+        case "ArrowDown":
+          l = (a + 1) % n.length;
+          break;
+        case "Home":
+          l = 0;
+          break;
+        case "End":
+          l = n.length - 1;
+          break;
+      }
+      r.preventDefault();
+      let d = n[l];
+      if (!d)
+        return;
+      t.value = d.getAttribute("value") ?? "", d.focus();
+    };
 
-    class B extends s {
+    class nt extends s {
       static formAssociated = true;
       _internals;
-      _slider;
-      _optionsContainer;
       _labelEl;
       _slot;
-      _optionCount = 0;
       _defaultValue = "";
       _defaultsCaptured = false;
       _silentValueChange = false;
@@ -4313,22 +4297,20 @@ input:focus-visible ~ .custom {
         return ["value", "disabled", "name", "label"];
       }
       constructor() {
-        super({ css: Gt, template: Wt });
-        this._internals = this.attachInternals(), this._slider = this.shadowRoot?.querySelector(".selection-slider") ?? null, this._optionsContainer = this.shadowRoot?.querySelector(".options-container") ?? null, this._labelEl = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
+        super({ css: _i, template: vi });
+        this._internals = this.attachInternals(), this._labelEl = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
         for (let t of ["value", "disabled", "name", "label"])
-          this._upgradeProperty(t);
+          xi(this, t);
         if (this._slot)
-          this._slot.addEventListener("slotchange", this._handleSlotChange), this._syncOptions();
-        this.addEventListener("keydown", this._handleKeydown), this._updateLabel();
+          this._slot.addEventListener("slotchange", this._onSlotChange), te(this, this._slot);
+        this.addEventListener("keydown", this._onKey), Qt(this._labelEl, this.getAttribute("label") ?? "");
       }
       disconnectedCallback() {
-        if (this._slot)
-          this._slot.removeEventListener("slotchange", this._handleSlotChange);
-        this.removeEventListener("keydown", this._handleKeydown);
+        this._slot?.removeEventListener("slotchange", this._onSlotChange), this.removeEventListener("keydown", this._onKey);
       }
       formResetCallback() {
         this._silentValueChange = true;
@@ -4338,131 +4320,49 @@ input:focus-visible ~ .custom {
           this._silentValueChange = false;
         }
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this.shadowRoot)
           return;
         if (t === "value")
-          this.value = i ?? "";
+          this.value = r ?? "";
         else if (t === "label")
-          this._updateLabel();
+          Qt(this._labelEl, r ?? "");
       }
       get value() {
-        return this.getAttribute("value") || "";
+        return this.getAttribute("value") ?? "";
       }
       set value(t) {
         if (this.getAttribute("value") !== t)
           this.setAttribute("value", t);
-        if (this._internals.setFormValue(t), this._updateSliderPosition(), this._updateSlottedSelections(t), !this._silentValueChange)
+        this._internals.setFormValue(t);
+        let e = C(this._slot);
+        if (rt(this, e, t), it(e, t), !this._silentValueChange)
           this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: t } }));
       }
       get name() {
-        return this.getAttribute("name") || "";
+        return this.getAttribute("name") ?? "";
       }
       set name(t) {
-        if (t)
-          this.setAttribute("name", t);
-        else
-          this.removeAttribute("name");
+        t ? this.setAttribute("name", t) : this.removeAttribute("name");
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get label() {
-        return this.getAttribute("label") || "";
+        return this.getAttribute("label") ?? "";
       }
       set label(t) {
-        if (t)
-          this.setAttribute("label", t);
-        else
-          this.removeAttribute("label");
+        t ? this.setAttribute("label", t) : this.removeAttribute("label");
       }
-      _upgradeProperty(t) {
-        if (this.hasOwnProperty(t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      _updateLabel() {
-        if (this._labelEl)
-          this._labelEl.textContent = this.getAttribute("label") || "";
-      }
-      _getOptions() {
-        if (!this._slot)
-          return [];
-        return this._slot.assignedElements().filter((t) => t.tagName === "OPTION");
-      }
-      _handleSlotChange = () => {
-        this._syncOptions();
-      };
-      _syncOptions() {
-        let t = this._getOptions();
-        this._optionCount = t.length, this.style.setProperty("--total-options", this._optionCount.toString()), t.forEach((e, i) => {
-          if (e.setAttribute("role", "radio"), e.setAttribute("part", "segment"), !e.hasAttribute("tabindex"))
-            e.setAttribute("tabindex", i === 0 ? "0" : "-1");
-          e.onclick = () => {
-            if (this.disabled)
-              return;
-            this.value = e.getAttribute("value") || "", e.focus();
-          };
-        }), this._updateSliderPosition(), this._updateSlottedSelections(this.value);
-      }
-      _handleKeydown = (t) => {
-        if (this.disabled)
-          return;
-        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(t.key))
-          return;
-        let i = this._getOptions();
-        if (i.length === 0)
-          return;
-        let r = i.findIndex((d) => d.getAttribute("value") === this.value), a = r === -1 ? 0 : r, o = a;
-        switch (t.key) {
-          case "ArrowLeft":
-          case "ArrowUp":
-            o = (a - 1 + i.length) % i.length;
-            break;
-          case "ArrowRight":
-          case "ArrowDown":
-            o = (a + 1) % i.length;
-            break;
-          case "Home":
-            o = 0;
-            break;
-          case "End":
-            o = i.length - 1;
-            break;
-        }
-        t.preventDefault();
-        let n = i[o];
-        if (!n)
-          return;
-        this.value = n.getAttribute("value") || "", n.focus();
-      };
-      _updateSliderPosition() {
-        let t = this._getOptions(), e = t.findIndex((i) => i.getAttribute("value") === this.value);
-        if (e !== -1)
-          this.style.setProperty("--active-index", e.toString()), t.forEach((i, r) => {
-            let a = r === e;
-            i.setAttribute("aria-checked", a.toString()), i.setAttribute("tabindex", a ? "0" : "-1");
-          });
-      }
-      _updateSlottedSelections(t) {
-        this._getOptions().forEach((i) => {
-          if (i.getAttribute("value") === t)
-            i.setAttribute("selected", "");
-          else
-            i.removeAttribute("selected");
-        });
-      }
+      _onSlotChange = () => te(this, this._slot);
+      _onKey = (t) => yi(this, this._slot, t);
     }
     if (!customElements.get("p9r-segmented-switch"))
-      customElements.define("p9r-segmented-switch", B);
-    var te = `<label class="switch" part="container">
+      customElements.define("p9r-segmented-switch", nt);
+    var wi = `<label class="switch" part="container">
     <input type="checkbox" id="native-input" part="input" />
     <span class="track" part="track">
         <span class="thumb" part="thumb"></span>
@@ -4470,7 +4370,7 @@ input:focus-visible ~ .custom {
     <span class="label" part="label"><slot></slot></span>
 </label>
 `;
-    var ee = `:host {
+    var ki = `:host {
   display: inline-block;
 
   --_track-w: 36px;
@@ -4569,8 +4469,27 @@ input:focus-visible ~ .track {
   }
 }
 `;
+    var Ei = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, y = (t, e, r) => {
+      let i = e?.checked ?? t.hasAttribute("checked");
+      r.setFormValue(i ? t.getAttribute("value") ?? "on" : null);
+    };
+    var Ai = (t, e, r) => {
+      if (e?.checked ?? false)
+        t.setAttribute("checked", "");
+      else
+        t.removeAttribute("checked");
+      y(t, e, r), t.dispatchEvent(new Event("change", { bubbles: true }));
+    }, Li = (t, e) => {
+      if (t.hasAttribute("disabled"))
+        e.preventDefault(), e.stopImmediatePropagation();
+    };
 
-    class I extends s {
+    class ot extends s {
       static formAssociated = true;
       _internals;
       _input;
@@ -4580,80 +4499,54 @@ input:focus-visible ~ .track {
         return ["checked", "disabled", "name", "value"];
       }
       constructor() {
-        super({ css: ee, template: te });
+        super({ css: ki, template: wi });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultChecked = this.hasAttribute("checked"), this._defaultsCaptured = true;
         for (let t of ["checked", "disabled", "name", "value"])
-          this._upgradeProperty(t);
+          Ei(this, t);
         if (this._input) {
           if (this._input.checked = this.hasAttribute("checked"), this._input.disabled = this.hasAttribute("disabled"), this.hasAttribute("name"))
             this._input.name = this.getAttribute("name") ?? "";
           if (this.hasAttribute("value"))
             this._input.value = this.getAttribute("value") ?? "";
-          this._input.addEventListener("change", this._handleChange), this._input.addEventListener("click", this._handleClick);
+          this._input.addEventListener("change", this._onChange), this._input.addEventListener("click", this._onClick);
         }
-        this.setAttribute("role", "switch"), this.setAttribute("aria-checked", String(this.hasAttribute("checked"))), this._syncFormValue();
+        this.setAttribute("role", "switch"), this.setAttribute("aria-checked", String(this.hasAttribute("checked"))), y(this, this._input, this._internals);
       }
       disconnectedCallback() {
-        if (this._input)
-          this._input.removeEventListener("change", this._handleChange), this._input.removeEventListener("click", this._handleClick);
+        this._input?.removeEventListener("change", this._onChange), this._input?.removeEventListener("click", this._onClick);
       }
       formResetCallback() {
         this.checked = this._defaultChecked;
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._input)
           return;
         if (t === "checked")
-          this._input.checked = i !== null, this.setAttribute("aria-checked", String(i !== null)), this._syncFormValue();
+          this._input.checked = r !== null, this.setAttribute("aria-checked", String(r !== null)), y(this, this._input, this._internals);
         else if (t === "disabled")
-          this._input.disabled = i !== null;
+          this._input.disabled = r !== null;
         else if (t === "name")
-          this._input.name = i ?? "";
+          this._input.name = r ?? "";
         else if (t === "value")
-          this._input.value = i ?? "", this._syncFormValue();
+          this._input.value = r ?? "", y(this, this._input, this._internals);
       }
-      _handleChange = () => {
-        if (this._input?.checked ?? false)
-          this.setAttribute("checked", "");
-        else
-          this.removeAttribute("checked");
-        this._syncFormValue(), this.dispatchEvent(new Event("change", { bubbles: true }));
-      };
-      _handleClick = (t) => {
-        if (this.hasAttribute("disabled"))
-          t.preventDefault(), t.stopImmediatePropagation();
-      };
-      _syncFormValue() {
-        let t = this._input?.checked ?? this.hasAttribute("checked");
-        this._internals.setFormValue(t ? this.getAttribute("value") ?? "on" : null);
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onChange = () => Ai(this, this._input, this._internals);
+      _onClick = (t) => Li(this, t);
       get checked() {
         return this.hasAttribute("checked");
       }
       set checked(t) {
-        if (t)
-          this.setAttribute("checked", "");
-        else
-          this.removeAttribute("checked");
+        t ? this.setAttribute("checked", "") : this.removeAttribute("checked");
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get name() {
         return this.getAttribute("name") ?? "";
@@ -4675,8 +4568,8 @@ input:focus-visible ~ .track {
       }
     }
     if (!customElements.get("p9r-switch"))
-      customElements.define("p9r-switch", I);
-    var ie = `<div class="container" part="container">
+      customElements.define("p9r-switch", ot);
+    var Ci = `<div class="container" part="container">
     <label for="main-input" part="label">
         <slot name="label">Tags</slot>
     </label>
@@ -4715,7 +4608,7 @@ input:focus-visible ~ .track {
     ></div>
 </div>
 `;
-    var re = `:host {
+    var Ti = `:host {
     display: block;
     font-family: system-ui, -apple-system, sans-serif;
 }
@@ -4772,18 +4665,18 @@ input {
     box-sizing: border-box;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    input {
-        transition: border-color 0.15s, box-shadow 0.15s;
-    }
-}
-
 input::placeholder {
     color: var(--text-muted, #94a3b8);
     font-weight: 400;
 }
 
-input:hover:not(:disabled) {
+@media (prefers-reduced-motion: no-preference) {
+    input {
+        transition: border-color 0.15s, box-shadow 0.15s;
+    }
+}
+`;
+    var Mi = `input:hover:not(:disabled) {
     border-color: var(--text-muted, #94a3b8);
 }
 
@@ -4823,9 +4716,8 @@ input:disabled {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-    .suggestion {
-        transition: background 0.1s;
-    }
+    .suggestion { transition: background 0.1s; }
+    p9r-tag { transition: filter 0.2s; }
 }
 
 .suggestion[data-active="true"],
@@ -4858,20 +4750,14 @@ p9r-tag {
     cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    p9r-tag {
-        transition: filter 0.2s;
-    }
-}
-
 p9r-tag:hover {
     filter: brightness(0.92);
 }
 `;
-    var ae = `<span class="label" part="label"><slot></slot></span>
+    var Hi = `<span class="label" part="label"><slot></slot></span>
 <button type="button" class="remove" part="remove" aria-label="Remove" hidden>&times;</button>
 `;
-    var se = `:host {
+    var Si = `:host {
     --_tag-font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 
     --_tag-bg: var(--info-muted, oklch(95% 0.02 230));
@@ -4895,42 +4781,6 @@ p9r-tag:hover {
     font-size: var(--_tag-fs);
     padding: var(--_tag-padding);
     border-radius: var(--_tag-radius);
-}
-
-:host([color="info"]) {
-    --_tag-bg: var(--info-muted, oklch(95% 0.02 230));
-    --_tag-color: var(--info-base, oklch(65% 0.12 230));
-    --_tag-border: var(--info-contrasted, oklch(25% 0.08 230));
-}
-
-:host([color="danger"]) {
-    --_tag-bg: var(--danger-muted, oklch(95% 0.02 20));
-    --_tag-color: var(--danger-base, oklch(65% 0.12 20));
-    --_tag-border: var(--danger-contrasted, oklch(25% 0.08 20));
-}
-
-:host([color="success"]) {
-    --_tag-bg: var(--success-muted, oklch(95% 0.02 120));
-    --_tag-color: var(--success-base, oklch(65% 0.12 120));
-    --_tag-border: var(--success-contrasted, oklch(25% 0.08 120));
-}
-
-:host([color="warning"]) {
-    --_tag-bg: var(--warning-muted, oklch(95% 0.02 50));
-    --_tag-color: var(--warning-base, oklch(65% 0.12 50));
-    --_tag-border: var(--warning-contrasted, oklch(25% 0.08 50));
-}
-
-:host([color="primary"]) {
-    --_tag-bg: var(--primary-muted, oklch(95% 0.02 265));
-    --_tag-color: var(--primary-base, oklch(65% 0.12 265));
-    --_tag-border: var(--primary-contrasted, oklch(25% 0.08 265));
-}
-
-:host([color="secondary"]) {
-    --_tag-bg: var(--secondary-muted, oklch(95% 0.02 265));
-    --_tag-color: var(--secondary-base, oklch(65% 0.12 265));
-    --_tag-border: var(--secondary-contrasted, oklch(25% 0.08 265));
 }
 
 :host([border]) {
@@ -4976,14 +4826,51 @@ p9r-tag:hover {
     }
 }
 `;
+    var zi = `:host([color="info"]) {
+    --_tag-bg: var(--info-muted, oklch(95% 0.02 230));
+    --_tag-color: var(--info-base, oklch(65% 0.12 230));
+    --_tag-border: var(--info-contrasted, oklch(25% 0.08 230));
+}
 
-    class F extends s {
+:host([color="danger"]) {
+    --_tag-bg: var(--danger-muted, oklch(95% 0.02 20));
+    --_tag-color: var(--danger-base, oklch(65% 0.12 20));
+    --_tag-border: var(--danger-contrasted, oklch(25% 0.08 20));
+}
+
+:host([color="success"]) {
+    --_tag-bg: var(--success-muted, oklch(95% 0.02 120));
+    --_tag-color: var(--success-base, oklch(65% 0.12 120));
+    --_tag-border: var(--success-contrasted, oklch(25% 0.08 120));
+}
+
+:host([color="warning"]) {
+    --_tag-bg: var(--warning-muted, oklch(95% 0.02 50));
+    --_tag-color: var(--warning-base, oklch(65% 0.12 50));
+    --_tag-border: var(--warning-contrasted, oklch(25% 0.08 50));
+}
+
+:host([color="primary"]) {
+    --_tag-bg: var(--primary-muted, oklch(95% 0.02 265));
+    --_tag-color: var(--primary-base, oklch(65% 0.12 265));
+    --_tag-border: var(--primary-contrasted, oklch(25% 0.08 265));
+}
+
+:host([color="secondary"]) {
+    --_tag-bg: var(--secondary-muted, oklch(95% 0.02 265));
+    --_tag-color: var(--secondary-base, oklch(65% 0.12 265));
+    --_tag-border: var(--secondary-contrasted, oklch(25% 0.08 265));
+}
+`;
+    var Js = Si + zi;
+
+    class st extends s {
       _removeBtn;
       static get observedAttributes() {
         return ["removable"];
       }
       constructor() {
-        super({ css: se, template: ae });
+        super({ css: Js, template: Hi });
         this._removeBtn = this.shadowRoot?.querySelector(".remove") ?? null;
       }
       connectedCallback() {
@@ -4994,7 +4881,7 @@ p9r-tag:hover {
       disconnectedCallback() {
         this._removeBtn?.removeEventListener("click", this._handleRemoveClick);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._removeBtn)
           return;
         if (t === "removable")
@@ -5027,10 +4914,175 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag"))
-      customElements.define("p9r-tag", F);
+      customElements.define("p9r-tag", st);
+    var Ii = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, at = (t, e) => {
+      if (!t)
+        return;
+      t.textContent = "", window.setTimeout(() => {
+        if (t)
+          t.textContent = e;
+      }, 10);
+    };
+    var ee = async (t) => {
+      let e = t.getAttribute("resource");
+      if (!e)
+        return null;
+      let r = t.getAttribute("api") || "../api/tags", i = new URL(r, window.location.href);
+      i.searchParams.set("resource", e);
+      try {
+        let n = await fetch(i);
+        if (!n.ok)
+          return null;
+        return await n.json();
+      } catch {
+        return null;
+      }
+    };
+    var Pi = (t, e, r, i) => {
+      if (!t)
+        return;
+      if (t.innerHTML = "", e !== "multiple")
+        return;
+      r.forEach((n, o) => {
+        let a = document.createElement("p9r-tag");
+        a.setAttribute("color", "primary"), a.setAttribute("part", "chip"), a.setAttribute("role", "listitem"), a.textContent = n, a.title = `Remove ${n}`, a.setAttribute("aria-label", `Remove ${n}`), a.addEventListener("click", () => i(o)), t.appendChild(a);
+      });
+    }, Ri = (t, e, r, i, n, o) => {
+      if (!t || !e)
+        return;
+      if (r.length === 0) {
+        re(t, e);
+        return;
+      }
+      if (t.innerHTML = "", r.forEach((a, l) => {
+        let d = document.createElement("div");
+        d.className = "suggestion", d.id = `${n}-opt-${l}`, d.setAttribute("role", "option"), d.setAttribute("part", "option");
+        let c = l === i;
+        d.dataset.active = String(c), d.setAttribute("aria-selected", String(c));
+        let u = document.createElement("span");
+        u.className = "name", u.textContent = a.value, d.appendChild(u);
+        let m = document.createElement("p9r-tag");
+        m.setAttribute("color", "secondary"), m.setAttribute("part", "count"), m.textContent = String(a.count), d.appendChild(m), d.addEventListener("mousedown", (p) => {
+          p.preventDefault(), o(a.value);
+        }), t.appendChild(d);
+      }), t.hidden = false, e.setAttribute("aria-expanded", "true"), i >= 0)
+        e.setAttribute("aria-activedescendant", `${n}-opt-${i}`);
+      else
+        e.removeAttribute("aria-activedescendant");
+    }, re = (t, e) => {
+      if (t)
+        t.hidden = true;
+      if (e)
+        e.setAttribute("aria-expanded", "false"), e.removeAttribute("aria-activedescendant");
+    };
+    var qi = (t, e, r) => {
+      let i = t.filter((n) => !e.includes(n.value));
+      if (r === "")
+        return i.slice(0, 8);
+      return i.filter((n) => n.value.toLowerCase().includes(r)).slice(0, 8);
+    }, Bi = (t, e) => {
+      if (t === "multiple")
+        return e.join(",");
+      return e[0] ?? "";
+    }, Vi = (t, e) => {
+      if (t === "multiple")
+        return e ? e.split(",").map((r) => r.trim()).filter((r) => r !== "") : [];
+      return e ? [e.trim()] : [];
+    };
+    var b = (t) => t, T = (t, e) => {
+      let r = b(t), i = t.getAttribute("mode") || "multiple", n = e.trim();
+      if (!n || !r._input)
+        return;
+      if (i === "multiple") {
+        if (!r._tags.includes(n))
+          r._tags.push(n), at(r._liveRegion, `${n} added`);
+        r._input.value = "";
+      } else
+        r._tags = [n], r._input.value = n, at(r._liveRegion, `${n} selected`);
+      r._activeIndex = -1, lt(t), ct(t);
+    }, Fi = (t, e) => {
+      let r = b(t), i = r._tags[e];
+      if (i === undefined)
+        return;
+      r._tags.splice(e, 1), at(r._liveRegion, `${i} removed`), lt(t), r._input?.focus();
+    }, Di = (t) => {
+      let e = b(t);
+      if (e._tags.length === 0)
+        return;
+      Fi(t, e._tags.length - 1);
+    }, lt = (t) => {
+      let e = b(t);
+      if (ie(t), e._internals.setFormValue(e.value), e._silent)
+        return;
+      t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: e.value, tags: [...e._tags] } }));
+    }, ie = (t) => {
+      let e = b(t);
+      Pi(e._display, t.getAttribute("mode") || "multiple", e._tags, (r) => Fi(t, r));
+    }, ne = (t, e) => {
+      let r = b(t), n = (t.getAttribute("mode") || "multiple") === "multiple" ? r._tags : [];
+      r._suggestions = qi(r._allSuggestions, n, e), r._activeIndex = -1, dt(t);
+    }, dt = (t) => {
+      let e = b(t);
+      Ri(e._suggestionsEl, e._input, e._suggestions, e._activeIndex, e._uid, (r) => T(t, r));
+    }, ct = (t) => {
+      let e = b(t);
+      re(e._suggestionsEl, e._input), e._activeIndex = -1;
+    };
+    var Oi = (t, e) => {
+      if (!e)
+        return;
+      ne(t, e.value.trim().toLowerCase());
+    }, ji = (t) => {
+      setTimeout(() => ct(t), 150);
+    }, Ni = (t, e) => {
+      if (!e)
+        return;
+      ne(t, e.value.trim().toLowerCase());
+    }, Ki = (t, e, r) => {
+      if (!e)
+        return;
+      let i = t.getAttribute("mode") || "multiple", n = t;
+      if (r.key === "ArrowDown") {
+        if (r.preventDefault(), n._suggestions.length === 0)
+          return;
+        n._activeIndex = Math.min(n._activeIndex + 1, n._suggestions.length - 1), dt(t);
+      } else if (r.key === "ArrowUp") {
+        if (r.preventDefault(), n._suggestions.length === 0)
+          return;
+        n._activeIndex = Math.max(n._activeIndex - 1, -1), dt(t);
+      } else if (r.key === "Enter") {
+        r.preventDefault();
+        let o = n._activeIndex >= 0 ? n._suggestions[n._activeIndex] : undefined;
+        if (o)
+          T(t, o.value);
+        else {
+          let a = e.value.trim();
+          if (a)
+            T(t, a);
+        }
+      } else if (r.key === "Escape")
+        r.preventDefault(), ct(t);
+      else if (r.key === "Backspace" && e.value === "" && i === "multiple")
+        Di(t);
+      else if (r.key === "," && i === "multiple") {
+        r.preventDefault();
+        let o = e.value.trim();
+        if (o)
+          T(t, o);
+      }
+    };
+    var Qs = Ti + Mi;
 
-    class V extends s {
+    class ut extends s {
       static formAssociated = true;
+      static get observedAttributes() {
+        return ["placeholder", "mode", "resource", "api", "disabled", "value"];
+      }
       _internals;
       _tags = [];
       _suggestions = [];
@@ -5039,34 +5091,30 @@ p9r-tag:hover {
       _display;
       _suggestionsEl;
       _liveRegion;
-      _loaded = false;
       _allSuggestions = [];
       _uid;
       _defaultValue = "";
       _defaultsCaptured = false;
       _silent = false;
       constructor() {
-        super({ css: re, template: ie });
-        if (this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("#main-input"), this._display = this.shadowRoot?.querySelector("#tags-display") ?? null, this._suggestionsEl = this.shadowRoot?.querySelector("#suggestions") ?? null, this._liveRegion = this.shadowRoot?.querySelector("#live-region") ?? null, this._uid = `ts-${Math.random().toString(36).slice(2, 9)}`, this._suggestionsEl)
+        super({ css: Qs, template: Ci });
+        this._internals = this.attachInternals();
+        let t = this.shadowRoot;
+        if (this._input = t.querySelector("#main-input"), this._display = t.querySelector("#tags-display"), this._suggestionsEl = t.querySelector("#suggestions"), this._liveRegion = t.querySelector("#live-region"), this._uid = `ts-${Math.random().toString(36).slice(2, 9)}`, this._suggestionsEl)
           this._suggestionsEl.id = `${this._uid}-listbox`;
         if (this._input)
           this._input.setAttribute("aria-controls", `${this._uid}-listbox`);
       }
-      static get observedAttributes() {
-        return ["placeholder", "mode", "resource", "api", "disabled", "value"];
-      }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        for (let t of ["placeholder", "mode", "resource", "api", "disabled", "value"])
-          this._upgradeProperty(t);
-        if (this._input)
-          this._input.addEventListener("input", this._onInput), this._input.addEventListener("keydown", this._onKeyDown), this._input.addEventListener("focus", this._onFocus), this._input.addEventListener("blur", this._onBlur);
-        this._loadSuggestions();
+        ["placeholder", "mode", "resource", "api", "disabled", "value"].forEach((t) => Ii(this, t)), this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("keydown", this._onKeyDown), this._input?.addEventListener("focus", this._onFocus), this._input?.addEventListener("blur", this._onBlur), ee(this).then((t) => {
+          if (t)
+            this._allSuggestions = t;
+        });
       }
       disconnectedCallback() {
-        if (this._input)
-          this._input.removeEventListener("input", this._onInput), this._input.removeEventListener("keydown", this._onKeyDown), this._input.removeEventListener("focus", this._onFocus), this._input.removeEventListener("blur", this._onBlur);
+        this._input?.removeEventListener("input", this._onInput), this._input?.removeEventListener("keydown", this._onKeyDown), this._input?.removeEventListener("focus", this._onFocus), this._input?.removeEventListener("blur", this._onBlur);
       }
       formResetCallback() {
         this._silent = true;
@@ -5076,184 +5124,35 @@ p9r-tag:hover {
           this._silent = false;
         }
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._input)
           return;
         if (t === "placeholder")
-          this._input.placeholder = i ?? "";
+          this._input.placeholder = r ?? "";
         else if (t === "disabled")
           this._input.disabled = this.hasAttribute("disabled");
         else if (t === "resource" || t === "api")
-          this._loaded = false, this._allSuggestions = [], this._loadSuggestions();
+          this._allSuggestions = [], ee(this).then((i) => {
+            if (i)
+              this._allSuggestions = i;
+          });
         else if (t === "mode")
-          this._renderTags();
+          ie(this);
         else if (t === "value")
-          this.value = i ?? "";
+          this.value = r ?? "";
       }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      async _loadSuggestions() {
-        let t = this.getAttribute("resource");
-        if (!t)
-          return;
-        let e = this.getAttribute("api") || "../api/tags", i = new URL(e, window.location.href);
-        i.searchParams.set("resource", t);
-        try {
-          let r = await fetch(i);
-          if (!r.ok)
-            return;
-          let a = await r.json();
-          this._allSuggestions = a, this._loaded = true;
-        } catch {}
-      }
-      _onFocus = () => {
-        if (!this._loaded || !this._input)
-          return;
-        let t = this._input.value.trim().toLowerCase();
-        this._refreshSuggestions(t);
-      };
-      _onBlur = () => {
-        setTimeout(() => this._hideSuggestions(), 150);
-      };
-      _onInput = () => {
-        if (!this._input)
-          return;
-        let t = this._input.value.trim().toLowerCase();
-        this._refreshSuggestions(t);
-      };
-      _onKeyDown = (t) => {
-        if (!this._input)
-          return;
-        let e = this.getAttribute("mode") || "multiple";
-        if (t.key === "ArrowDown") {
-          if (t.preventDefault(), this._suggestions.length === 0)
-            return;
-          this._activeIndex = Math.min(this._activeIndex + 1, this._suggestions.length - 1), this._renderSuggestions();
-        } else if (t.key === "ArrowUp") {
-          if (t.preventDefault(), this._suggestions.length === 0)
-            return;
-          this._activeIndex = Math.max(this._activeIndex - 1, -1), this._renderSuggestions();
-        } else if (t.key === "Enter") {
-          t.preventDefault();
-          let i = this._activeIndex >= 0 ? this._suggestions[this._activeIndex] : undefined;
-          if (i)
-            this._select(i.value);
-          else {
-            let r = this._input.value.trim();
-            if (r)
-              this._select(r);
-          }
-        } else if (t.key === "Escape")
-          t.preventDefault(), this._hideSuggestions();
-        else if (t.key === "Backspace" && this._input.value === "" && e === "multiple")
-          this._removeLastTag();
-        else if (t.key === "," && e === "multiple") {
-          t.preventDefault();
-          let i = this._input.value.trim();
-          if (i)
-            this._select(i);
-        }
-      };
-      _select(t) {
-        let e = this.getAttribute("mode") || "multiple", i = t.trim();
-        if (!i || !this._input)
-          return;
-        if (e === "multiple") {
-          if (!this._tags.includes(i))
-            this._tags.push(i), this._announce(`${i} added`);
-          this._input.value = "";
-        } else
-          this._tags = [i], this._input.value = i, this._announce(`${i} selected`);
-        this._activeIndex = -1, this._update(), this._hideSuggestions();
-      }
-      _removeTagAt(t) {
-        let e = this._tags[t];
-        if (e === undefined)
-          return;
-        this._tags.splice(t, 1), this._announce(`${e} removed`), this._update(), this._input?.focus();
-      }
-      _removeLastTag() {
-        if (this._tags.length === 0)
-          return;
-        this._removeTagAt(this._tags.length - 1);
-      }
-      _update() {
-        if (this._renderTags(), this._internals.setFormValue(this.value), this._silent)
-          return;
-        this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: this.value, tags: [...this._tags] } }));
-      }
-      _renderTags() {
-        if (!this._display)
-          return;
-        let t = this.getAttribute("mode") || "multiple";
-        if (this._display.innerHTML = "", t !== "multiple")
-          return;
-        this._tags.forEach((e, i) => {
-          let r = document.createElement("p9r-tag");
-          r.setAttribute("color", "primary"), r.setAttribute("part", "chip"), r.setAttribute("role", "listitem"), r.textContent = e, r.title = `Remove ${e}`, r.setAttribute("aria-label", `Remove ${e}`), r.addEventListener("click", () => this._removeTagAt(i)), this._display.appendChild(r);
-        });
-      }
-      _refreshSuggestions(t) {
-        let i = (this.getAttribute("mode") || "multiple") === "multiple" ? this._tags : [], r = this._allSuggestions.filter((a) => !i.includes(a.value));
-        if (t === "")
-          this._suggestions = r.slice(0, 8);
-        else
-          this._suggestions = r.filter((a) => a.value.toLowerCase().includes(t)).slice(0, 8);
-        this._activeIndex = -1, this._renderSuggestions();
-      }
-      _renderSuggestions() {
-        if (!this._suggestionsEl || !this._input)
-          return;
-        if (this._suggestions.length === 0) {
-          this._hideSuggestions();
-          return;
-        }
-        if (this._suggestionsEl.innerHTML = "", this._suggestions.forEach((t, e) => {
-          let i = document.createElement("div");
-          i.className = "suggestion", i.id = `${this._uid}-opt-${e}`, i.setAttribute("role", "option"), i.setAttribute("part", "option");
-          let r = e === this._activeIndex;
-          i.dataset.active = String(r), i.setAttribute("aria-selected", String(r));
-          let a = document.createElement("span");
-          a.className = "name", a.textContent = t.value, i.appendChild(a);
-          let o = document.createElement("p9r-tag");
-          o.setAttribute("color", "secondary"), o.setAttribute("part", "count"), o.textContent = String(t.count), i.appendChild(o), i.addEventListener("mousedown", (n) => {
-            n.preventDefault(), this._select(t.value);
-          }), this._suggestionsEl.appendChild(i);
-        }), this._suggestionsEl.hidden = false, this._input.setAttribute("aria-expanded", "true"), this._activeIndex >= 0)
-          this._input.setAttribute("aria-activedescendant", `${this._uid}-opt-${this._activeIndex}`);
-        else
-          this._input.removeAttribute("aria-activedescendant");
-      }
-      _hideSuggestions() {
-        if (this._suggestionsEl)
-          this._suggestionsEl.hidden = true;
-        if (this._activeIndex = -1, this._input)
-          this._input.setAttribute("aria-expanded", "false"), this._input.removeAttribute("aria-activedescendant");
-      }
-      _announce(t) {
-        if (!this._liveRegion)
-          return;
-        this._liveRegion.textContent = "", window.setTimeout(() => {
-          if (this._liveRegion)
-            this._liveRegion.textContent = t;
-        }, 10);
-      }
+      _onFocus = () => Oi(this, this._input);
+      _onBlur = () => ji(this);
+      _onInput = () => Ni(this, this._input);
+      _onKeyDown = (t) => Ki(this, this._input, t);
       get value() {
-        if ((this.getAttribute("mode") || "multiple") === "multiple")
-          return this._tags.join(",");
-        return this._tags[0] || "";
+        return Bi(this.getAttribute("mode") || "multiple", this._tags);
       }
       set value(t) {
-        if ((this.getAttribute("mode") || "multiple") === "multiple") {
-          if (this._tags = t ? t.split(",").map((i) => i.trim()).filter((i) => i !== "") : [], this._input)
-            this._input.value = "";
-        } else if (this._tags = t ? [t.trim()] : [], this._input)
-          this._input.value = this._tags[0] || "";
-        this._update();
+        let e = this.getAttribute("mode") || "multiple";
+        if (this._tags = Vi(e, t), this._input)
+          this._input.value = e === "multiple" ? "" : this._tags[0] ?? "";
+        lt(this);
       }
       get name() {
         return this.getAttribute("name") || "";
@@ -5262,54 +5161,39 @@ p9r-tag:hover {
         return this.getAttribute("placeholder") || "";
       }
       set placeholder(t) {
-        if (t)
-          this.setAttribute("placeholder", t);
-        else
-          this.removeAttribute("placeholder");
+        t ? this.setAttribute("placeholder", t) : this.removeAttribute("placeholder");
       }
       get mode() {
         return this.getAttribute("mode") || "multiple";
       }
       set mode(t) {
-        if (t)
-          this.setAttribute("mode", t);
-        else
-          this.removeAttribute("mode");
+        t ? this.setAttribute("mode", t) : this.removeAttribute("mode");
       }
       get resource() {
         return this.getAttribute("resource") || "";
       }
       set resource(t) {
-        if (t)
-          this.setAttribute("resource", t);
-        else
-          this.removeAttribute("resource");
+        t ? this.setAttribute("resource", t) : this.removeAttribute("resource");
       }
       get api() {
         return this.getAttribute("api") || "";
       }
       set api(t) {
-        if (t)
-          this.setAttribute("api", t);
-        else
-          this.removeAttribute("api");
+        t ? this.setAttribute("api", t) : this.removeAttribute("api");
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get tags() {
         return [...this._tags];
       }
     }
     if (!customElements.get("p9r-tag-suggest"))
-      customElements.define("p9r-tag-suggest", V);
-    var oe = `<div class="field" part="field">
+      customElements.define("p9r-tag-suggest", ut);
+    var $i = `<div class="field" part="field">
     <label class="label" part="label" for="ta"></label>
     <textarea id="ta" class="textarea" part="textarea"></textarea>
     <div class="meta" part="meta" hidden>
@@ -5318,7 +5202,7 @@ p9r-tag:hover {
     </div>
 </div>
 `;
-    var ne = `:host {
+    var Ui = `:host {
   display: block;
 }
 
@@ -5355,12 +5239,6 @@ p9r-tag:hover {
   line-height: 1.5;
 }
 
-:host([resize="none"]) .textarea       { resize: none; }
-:host([resize="horizontal"]) .textarea { resize: horizontal; }
-:host([resize="vertical"]) .textarea   { resize: vertical; }
-:host([resize="both"]) .textarea       { resize: both; }
-:host([autosize]) .textarea            { resize: none; overflow: hidden; }
-
 @media (prefers-reduced-motion: no-preference) {
   .textarea { transition: border-color 0.15s, box-shadow 0.15s; }
 }
@@ -5369,6 +5247,21 @@ p9r-tag:hover {
   color: var(--text-muted, #94a3b8);
   font-weight: 400;
 }
+
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.meta[hidden] { display: none; }
+`;
+    var Yi = `:host([resize="none"]) .textarea       { resize: none; }
+:host([resize="horizontal"]) .textarea { resize: horizontal; }
+:host([resize="vertical"]) .textarea   { resize: vertical; }
+:host([resize="both"]) .textarea       { resize: both; }
+:host([autosize]) .textarea            { resize: none; overflow: hidden; }
 
 .textarea:hover:not(:disabled) {
   border-color: var(--text-muted, #94a3b8);
@@ -5392,15 +5285,6 @@ p9r-tag:hover {
   color: var(--text-muted, #94a3b8);
   cursor: not-allowed;
 }
-
-.meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-}
-
-.meta[hidden] { display: none; }
 
 .hint {
   font-size: 11px;
@@ -5427,9 +5311,116 @@ p9r-tag:hover {
   font-weight: 600;
 }
 `;
+    var Xi = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, oe = (t) => {
+      let e = t.getAttribute("max-count");
+      if (e === null)
+        return null;
+      let r = parseInt(e, 10);
+      return Number.isFinite(r) && r > 0 ? r : null;
+    }, w = (t, e, r, i) => {
+      if (!e || !r || !i)
+        return;
+      let n = oe(t);
+      if (n === null)
+        return;
+      let o = e.value.length;
+      i.textContent = String(o), r.dataset.over = String(o > n);
+    }, se = (t, e, r) => {
+      if (!t || !e || !r)
+        return;
+      let i = (t.textContent ?? "").length > 0, n = !e.hidden;
+      r.hidden = !i && !n;
+    }, M = (t, e) => {
+      if (!e || !t.hasAttribute("autosize"))
+        return;
+      e.style.height = "auto", e.style.height = `${e.scrollHeight}px`;
+    };
+    var ia = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("label") ?? "";
+      e.textContent = r, e.hidden = r === "";
+    }, na = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("placeholder");
+      if (r === null)
+        e.removeAttribute("placeholder");
+      else
+        e.setAttribute("placeholder", r);
+    }, oa = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("rows");
+      if (r)
+        e.rows = Number(r) || 3;
+    }, sa = (t, e) => {
+      if (!e)
+        return;
+      let r = t.getAttribute("maxlength");
+      if (r === null)
+        e.removeAttribute("maxlength");
+      else
+        e.setAttribute("maxlength", r);
+    }, aa = (t, e) => {
+      if (e)
+        e.disabled = t.hasAttribute("disabled");
+    }, la = (t, e) => {
+      if (!e)
+        return;
+      let r = t.hasAttribute("required");
+      if (e.required = r, r)
+        e.setAttribute("aria-required", "true");
+      else
+        e.removeAttribute("aria-required");
+    }, da = (t, e, r, i) => {
+      if (!e)
+        return;
+      e.textContent = t.getAttribute("hint") ?? "", se(e, r, i);
+    }, ca = (t, e) => {
+      if (!e)
+        return;
+      e.dataset.level = t.getAttribute("hint-level") ?? "info";
+    }, ua = (t, e) => {
+      if (!e)
+        return;
+      if (t.hasAttribute("invalid"))
+        e.setAttribute("aria-invalid", "true");
+      else
+        e.removeAttribute("aria-invalid");
+    }, ae = (t, e, r, i, n) => {
+      if (!e || !r)
+        return;
+      let o = oe(t);
+      if (o === null)
+        e.hidden = true;
+      else
+        e.hidden = false, r.textContent = String(o);
+      se(i, e, n);
+    }, le = (t, e, r, i, n, o, a) => {
+      ia(t, r), na(t, e), oa(t, e), sa(t, e), aa(t, e), la(t, e), da(t, i, o, n), ca(t, i), ua(t, e), ae(t, o, a, i, n);
+    };
+    var Wi = (t, e, r, i, n) => {
+      if (!e)
+        return;
+      r.setFormValue(e.value), w(t, e, i, n), M(t, e);
+    }, Zi = (t, e) => {
+      if (!t)
+        return;
+      e.setFormValue(t.value);
+    };
+    var pa = Ui + Yi;
 
-    class N extends s {
+    class pt extends s {
       static formAssociated = true;
+      static get observedAttributes() {
+        return ["value", "label", "placeholder", "rows", "maxlength", "max-count", "hint", "hint-level", "invalid", "disabled", "required", "autosize"];
+      }
       _internals;
       _textarea;
       _label;
@@ -5440,24 +5431,21 @@ p9r-tag:hover {
       _max;
       _defaultValue = "";
       _defaultsCaptured = false;
-      static get observedAttributes() {
-        return ["value", "label", "placeholder", "rows", "maxlength", "max-count", "hint", "hint-level", "invalid", "disabled", "required", "autosize"];
-      }
       constructor() {
-        super({ css: ne, template: oe });
-        this._internals = this.attachInternals(), this._textarea = this.shadowRoot?.querySelector("textarea") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._hint = this.shadowRoot?.querySelector(".hint") ?? null, this._meta = this.shadowRoot?.querySelector(".meta") ?? null, this._counter = this.shadowRoot?.querySelector(".counter") ?? null, this._count = this.shadowRoot?.querySelector(".count") ?? null, this._max = this.shadowRoot?.querySelector(".max") ?? null;
+        super({ css: pa, template: $i });
+        this._internals = this.attachInternals();
+        let t = this.shadowRoot;
+        this._textarea = t.querySelector("textarea"), this._label = t.querySelector(".label"), this._hint = t.querySelector(".hint"), this._meta = t.querySelector(".meta"), this._counter = t.querySelector(".counter"), this._count = t.querySelector(".count"), this._max = t.querySelector(".max");
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        for (let e of ["value", "disabled", "required"])
-          this._upgradeProperty(e);
-        this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), this._syncLabel(), this._syncPlaceholder(), this._syncRows(), this._syncMaxLength(), this._syncDisabled(), this._syncRequired(), this._syncHint(), this._syncHintLevel(), this._syncInvalid(), this._syncMaxCount();
+        ["value", "disabled", "required"].forEach((e) => Xi(this, e)), this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), le(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
         let t = this.getAttribute("value");
         if (t !== null)
           this.value = t;
         else
-          this._updateCounter();
+          w(this, this._textarea, this._counter, this._count);
       }
       disconnectedCallback() {
         this._textarea?.removeEventListener("input", this._onInput), this._textarea?.removeEventListener("change", this._onChange);
@@ -5465,48 +5453,17 @@ p9r-tag:hover {
       formResetCallback() {
         this.value = this._defaultValue;
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._textarea)
           return;
-        switch (t) {
-          case "value":
-            if (i !== null)
-              this.value = i;
-            break;
-          case "label":
-            this._syncLabel();
-            break;
-          case "placeholder":
-            this._syncPlaceholder();
-            break;
-          case "rows":
-            this._syncRows();
-            break;
-          case "maxlength":
-            this._syncMaxLength();
-            break;
-          case "disabled":
-            this._syncDisabled();
-            break;
-          case "required":
-            this._syncRequired();
-            break;
-          case "hint":
-            this._syncHint();
-            break;
-          case "hint-level":
-            this._syncHintLevel();
-            break;
-          case "invalid":
-            this._syncInvalid();
-            break;
-          case "max-count":
-            this._syncMaxCount(), this._updateCounter();
-            break;
-          case "autosize":
-            this._autosize();
-            break;
-        }
+        if (t === "value" && r !== null)
+          this.value = r;
+        else if (t === "max-count")
+          ae(this, this._counter, this._max, this._hint, this._meta), w(this, this._textarea, this._counter, this._count);
+        else if (t === "autosize")
+          M(this, this._textarea);
+        else
+          le(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
       }
       get value() {
         return this._textarea?.value ?? "";
@@ -5514,7 +5471,7 @@ p9r-tag:hover {
       set value(t) {
         if (!this._textarea)
           return;
-        this._textarea.value = t, this._internals.setFormValue(t), this._updateCounter(), this._autosize();
+        this._textarea.value = t, this._internals.setFormValue(t), w(this, this._textarea, this._counter, this._count), M(this, this._textarea);
       }
       get name() {
         return this.getAttribute("name") ?? "";
@@ -5523,148 +5480,27 @@ p9r-tag:hover {
         return this._textarea?.disabled ?? false;
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
       get required() {
         return this.hasAttribute("required");
       }
       set required(t) {
-        if (t)
-          this.setAttribute("required", "");
-        else
-          this.removeAttribute("required");
+        t ? this.setAttribute("required", "") : this.removeAttribute("required");
       }
       focus() {
         this._textarea?.focus();
       }
-      _onInput = () => {
-        if (!this._textarea)
-          return;
-        this._internals.setFormValue(this._textarea.value), this._updateCounter(), this._autosize();
-      };
-      _onChange = () => {
-        if (!this._textarea)
-          return;
-        this._internals.setFormValue(this._textarea.value);
-      };
-      _syncLabel() {
-        if (!this._label)
-          return;
-        let t = this.getAttribute("label") ?? "";
-        this._label.textContent = t, this._label.hidden = t === "";
-      }
-      _syncPlaceholder() {
-        if (!this._textarea)
-          return;
-        let t = this.getAttribute("placeholder");
-        if (t === null)
-          this._textarea.removeAttribute("placeholder");
-        else
-          this._textarea.setAttribute("placeholder", t);
-      }
-      _syncRows() {
-        if (!this._textarea)
-          return;
-        let t = this.getAttribute("rows");
-        if (t)
-          this._textarea.rows = Number(t) || 3;
-      }
-      _syncMaxLength() {
-        if (!this._textarea)
-          return;
-        let t = this.getAttribute("maxlength");
-        if (t === null)
-          this._textarea.removeAttribute("maxlength");
-        else
-          this._textarea.setAttribute("maxlength", t);
-      }
-      _syncDisabled() {
-        if (!this._textarea)
-          return;
-        this._textarea.disabled = this.hasAttribute("disabled");
-      }
-      _syncRequired() {
-        if (!this._textarea)
-          return;
-        let t = this.hasAttribute("required");
-        if (this._textarea.required = t, t)
-          this._textarea.setAttribute("aria-required", "true");
-        else
-          this._textarea.removeAttribute("aria-required");
-      }
-      _syncHint() {
-        if (!this._hint)
-          return;
-        this._hint.textContent = this.getAttribute("hint") ?? "", this._refreshMetaVisibility();
-      }
-      _syncHintLevel() {
-        if (!this._hint)
-          return;
-        let t = this.getAttribute("hint-level") ?? "info";
-        this._hint.dataset.level = t;
-      }
-      _syncInvalid() {
-        if (!this._textarea)
-          return;
-        if (this.hasAttribute("invalid"))
-          this._textarea.setAttribute("aria-invalid", "true");
-        else
-          this._textarea.removeAttribute("aria-invalid");
-      }
-      _syncMaxCount() {
-        if (!this._counter || !this._max)
-          return;
-        let t = this._parseMaxCount();
-        if (t === null)
-          this._counter.hidden = true;
-        else
-          this._counter.hidden = false, this._max.textContent = String(t);
-        this._refreshMetaVisibility();
-      }
-      _parseMaxCount() {
-        let t = this.getAttribute("max-count");
-        if (t === null)
-          return null;
-        let e = parseInt(t, 10);
-        return Number.isFinite(e) && e > 0 ? e : null;
-      }
-      _updateCounter() {
-        if (!this._textarea || !this._counter || !this._count)
-          return;
-        let t = this._parseMaxCount();
-        if (t === null)
-          return;
-        let e = this._textarea.value.length;
-        this._count.textContent = String(e), this._counter.dataset.over = String(e > t);
-      }
-      _refreshMetaVisibility() {
-        if (!this._hint || !this._counter || !this._meta)
-          return;
-        let t = (this._hint.textContent ?? "").length > 0, e = !this._counter.hidden;
-        this._meta.hidden = !t && !e;
-      }
-      _autosize() {
-        if (!this._textarea || !this.hasAttribute("autosize"))
-          return;
-        this._textarea.style.height = "auto", this._textarea.style.height = `${this._textarea.scrollHeight}px`;
-      }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onInput = () => Wi(this, this._textarea, this._internals, this._counter, this._count);
+      _onChange = () => Zi(this._textarea, this._internals);
     }
     if (!customElements.get("p9r-textarea"))
-      customElements.define("p9r-textarea", N);
-    var le = `<div class="actions" role="toolbar" part="toolbar">
+      customElements.define("p9r-textarea", pt);
+    var Gi = `<div class="actions" role="toolbar" part="toolbar">
     <slot></slot>
 </div>
 `;
-    var de = `:host {
+    var Ji = `:host {
   display: inline-block;
 
   --_toolbar-bg: var(--bg-overlay, #ffffff);
@@ -5756,11 +5592,11 @@ p9r-tag:hover {
 }
 `;
 
-    class D extends s {
+    class ht extends s {
       static _event = "action-click";
       _toolbar;
       constructor() {
-        super({ css: de, template: le });
+        super({ css: Ji, template: Gi });
         this._toolbar = this.shadowRoot?.querySelector(".actions") ?? null;
       }
       static get observedAttributes() {
@@ -5779,25 +5615,25 @@ p9r-tag:hover {
       disconnectedCallback() {
         this.removeEventListener("click", this._handleClick);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._toolbar)
           return;
         if (t === "label")
-          if (i === null)
+          if (r === null)
             this._toolbar.removeAttribute("aria-label");
           else
-            this._toolbar.setAttribute("aria-label", i);
+            this._toolbar.setAttribute("aria-label", r);
       }
       _handleClick = (t) => {
-        let i = t.composedPath().find((a) => a instanceof Element && a.hasAttribute("data-action"));
-        if (!i)
+        let r = t.composedPath().find((n) => n instanceof Element && n.hasAttribute("data-action"));
+        if (!r)
           return;
         t.stopPropagation();
-        let r = i.getAttribute("data-action");
-        this._dispatchAction(r, i, t);
+        let i = r.getAttribute("data-action");
+        this._dispatchAction(i, r, t);
       };
-      _dispatchAction(t, e, i) {
-        this.dispatchEvent(new CustomEvent("action-click", { detail: { action: t, originalEvent: i, target: e }, bubbles: true, composed: true }));
+      _dispatchAction(t, e, r) {
+        this.dispatchEvent(new CustomEvent("action-click", { detail: { action: t, originalEvent: r, target: e }, bubbles: true, composed: true }));
       }
       _upgradeProperty(t) {
         if (this.hasOwnProperty(t)) {
@@ -5816,8 +5652,38 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-horizontal-action-group"))
-      customElements.define("p9r-horizontal-action-group", D);
-    var ce = `<div class="app-container" part="container">
+      customElements.define("p9r-horizontal-action-group", ht);
+    var Qi = `<slot></slot>
+`;
+    var tn = `:host {
+    --max-width: var(--p9r-container-md, 768px);
+    display: block;
+    width: 100%;
+    max-width: var(--max-width);
+    margin-inline-start: 0;
+    margin-inline-end: auto;
+}
+
+:host([size="xs"])   { --max-width: var(--p9r-container-xs, 480px); }
+:host([size="sm"])   { --max-width: var(--p9r-container-sm, 640px); }
+:host([size="md"])   { --max-width: var(--p9r-container-md, 768px); }
+:host([size="lg"])   { --max-width: var(--p9r-container-lg, 1024px); }
+:host([size="xl"])   { --max-width: var(--p9r-container-xl, 1280px); }
+:host([size="full"]) { --max-width: 100%; }
+
+:host([align="start"])  { margin-inline-start: 0;    margin-inline-end: auto; }
+:host([align="center"]) { margin-inline-start: auto; margin-inline-end: auto; }
+:host([align="end"])    { margin-inline-start: auto; margin-inline-end: 0;    }
+`;
+
+    class mt extends s {
+      constructor() {
+        super({ css: tn, template: Qi });
+      }
+    }
+    if (!customElements.get("p9r-container"))
+      customElements.define("p9r-container", mt);
+    var en = `<div class="app-container" part="container">
     <a class="skip-link" part="skip-link" href="#main-content">
         <slot name="skip-link">Skip to main content</slot>
     </a>
@@ -5833,7 +5699,7 @@ p9r-tag:hover {
     </main>
 </div>
 `;
-    var he = `:host {
+    var rn = `:host {
     display: block;
     height: 100vh;
     width: 100vw;
@@ -5919,11 +5785,11 @@ p9r-tag:hover {
 }
 `;
 
-    class O extends s {
+    class bt extends s {
       _sidebar;
       _content;
       constructor() {
-        super({ css: he, template: ce });
+        super({ css: rn, template: en });
         this._sidebar = this.shadowRoot?.querySelector(".app-sidebar") ?? null, this._content = this.shadowRoot?.querySelector(".app-content") ?? null;
       }
       static get observedAttributes() {
@@ -5941,13 +5807,13 @@ p9r-tag:hover {
           delete this[t], this[t] = e;
         }
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._sidebar)
           return;
-        if (e === i)
+        if (e === r)
           return;
         if (t === "collapsed")
-          this._syncAriaState(), this.dispatchEvent(new CustomEvent("w13c-left-menu-collapse", { bubbles: true, composed: true, detail: { collapsed: i !== null } }));
+          this._syncAriaState(), this.dispatchEvent(new CustomEvent("w13c-left-menu-collapse", { bubbles: true, composed: true, detail: { collapsed: r !== null } }));
       }
       _syncAriaState() {
         if (!this._sidebar)
@@ -5972,10 +5838,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("w13c-left-menu-layout"))
-      customElements.define("w13c-left-menu-layout", O);
-    var pe = `<slot></slot>
+      customElements.define("w13c-left-menu-layout", bt);
+    var nn = `<slot></slot>
 `;
-    var ue = `:host {
+    var on = `:host {
     --gap: var(--p9r-space-md, 16px);
     --divider-color: var(--p9r-stack-divider, var(--border-default, rgba(0,0,0,0.1)));
     display: flex;
@@ -6020,14 +5886,14 @@ p9r-tag:hover {
 }
 `;
 
-    class $ extends s {
+    class gt extends s {
       constructor() {
-        super({ css: ue, template: pe });
+        super({ css: on, template: nn });
       }
     }
     if (!customElements.get("p9r-stack"))
-      customElements.define("p9r-stack", $);
-    var be = `<a class="menu-item" part="item" tabindex="-1">
+      customElements.define("p9r-stack", gt);
+    var sn = `<a class="menu-item" part="item" tabindex="-1">
     <span class="icon-wrapper" part="icon">
         <slot name="icon"></slot>
     </span>
@@ -6037,7 +5903,7 @@ p9r-tag:hover {
     <span class="badge" part="badge" id="badge-element"></span>
 </a>
 `;
-    var me = `:host {
+    var an = `:host {
     display: block;
     width: 100%;
     outline: none;
@@ -6070,7 +5936,46 @@ p9r-tag:hover {
     }
 }
 
-.menu-item:hover {
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--icon-size);
+    height: var(--icon-size);
+    flex-shrink: 0;
+}
+
+::slotted(svg), .icon-wrapper svg {
+    width: 100% !important;
+    height: 100% !important;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+
+.label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.badge {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+`;
+    var ln = `.menu-item:hover {
     background-color: var(--item-bg-active);
     color: var(--item-color-active);
 }
@@ -6100,51 +6005,12 @@ p9r-tag:hover {
     stroke: var(--item-color-active);
 }
 
-.icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: var(--icon-size);
-    height: var(--icon-size);
-    flex-shrink: 0;
-}
-
-::slotted(svg), .icon-wrapper svg {
-    width: 100% !important;
-    height: 100% !important;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2;
-}
-
-.label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 :host([disabled]) .menu-item {
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.5;
     filter: grayscale(1);
     background: transparent !important;
-}
-
-.badge {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-    padding: 2px 8px;
-    font-size: 10px;
-    font-weight: 800;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: 20px;
-    white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .menu-item:not(.active) .badge {
@@ -6159,12 +6025,57 @@ p9r-tag:hover {
     box-shadow: 0 2px 4px color-mix(in oklab, var(--item-color-active), transparent 80%);
 }
 `;
+    var dn = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, de = (t, e) => {
+      if (!t)
+        return;
+      if (e)
+        t.setAttribute("href", e);
+      else
+        t.removeAttribute("href");
+    }, ce = (t, e) => {
+      if (!t)
+        return;
+      if (e)
+        t.textContent = e, t.style.display = "inline-flex";
+      else
+        t.textContent = "", t.style.display = "none";
+    }, ue = (t, e) => {
+      if (!e || !t.hasAttribute("href"))
+        return;
+      let r = t.getAttribute("href");
+      if (!r)
+        return;
+      try {
+        let i = new URL(r, window.location.href), o = new URL(window.location.href).pathname, a = i.pathname;
+        if (a === "/" ? o === "/" : o === a || o.startsWith(a + "/"))
+          t.setAttribute("active", ""), t.setAttribute("aria-current", "page"), e.classList.add("active");
+        else
+          t.removeAttribute("active"), t.removeAttribute("aria-current"), e.classList.remove("active");
+      } catch {
+        console.warn("Invalid href in LateralMenuItem:", r);
+      }
+    };
+    var cn = (t, e, r) => {
+      if (t.hasAttribute("disabled"))
+        return;
+      if (r.key !== "Enter" && r.key !== " ")
+        return;
+      if (r.target !== t)
+        return;
+      r.preventDefault(), e?.click();
+    };
+    var Ea = an + ln;
 
-    class Y extends s {
+    class ft extends s {
       _anchor;
       _badgeEl;
       constructor() {
-        super({ css: me, template: be });
+        super({ css: Ea, template: sn });
         this._anchor = this.shadowRoot?.querySelector("a") ?? null, this._badgeEl = this.shadowRoot?.getElementById("badge-element") ?? null;
       }
       static get observedAttributes() {
@@ -6172,109 +6083,52 @@ p9r-tag:hover {
       }
       connectedCallback() {
         for (let t of ["href", "badge", "disabled"])
-          this._upgradeProperty(t);
+          dn(this, t);
         if (!this.hasAttribute("role"))
           this.setAttribute("role", "listitem");
         if (!this.hasAttribute("tabindex"))
           this.setAttribute("tabindex", "0");
-        this._updateHref(this.getAttribute("href")), this._updateBadge(this.getAttribute("badge")), this._checkActiveState(), window.addEventListener("popstate", this._checkActiveState), this.addEventListener("keydown", this._handleKeydown);
+        de(this._anchor, this.getAttribute("href")), ce(this._badgeEl, this.getAttribute("badge")), ue(this, this._anchor), window.addEventListener("popstate", this._onPopstate), this.addEventListener("keydown", this._onKey);
       }
       disconnectedCallback() {
-        window.removeEventListener("popstate", this._checkActiveState), this.removeEventListener("keydown", this._handleKeydown);
+        window.removeEventListener("popstate", this._onPopstate), this.removeEventListener("keydown", this._onKey);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (!this._anchor)
           return;
         if (t === "href")
-          this._updateHref(i);
+          de(this._anchor, r);
         if (t === "badge")
-          this._updateBadge(i);
+          ce(this._badgeEl, r);
         if (t === "disabled") {
-          let r = this.hasAttribute("disabled");
-          if (this.setAttribute("aria-disabled", r ? "true" : "false"), r)
-            this.setAttribute("tabindex", "-1");
-          else
-            this.setAttribute("tabindex", "0");
+          let i = this.hasAttribute("disabled");
+          this.setAttribute("aria-disabled", i ? "true" : "false"), this.setAttribute("tabindex", i ? "-1" : "0");
         }
       }
       get href() {
         return this.getAttribute("href");
       }
       set href(t) {
-        if (t == null)
-          this.removeAttribute("href");
-        else
-          this.setAttribute("href", t);
+        t == null ? this.removeAttribute("href") : this.setAttribute("href", t);
       }
       get badge() {
         return this.getAttribute("badge");
       }
       set badge(t) {
-        if (t == null)
-          this.removeAttribute("badge");
-        else
-          this.setAttribute("badge", t);
+        t == null ? this.removeAttribute("badge") : this.setAttribute("badge", t);
       }
       get disabled() {
         return this.hasAttribute("disabled");
       }
       set disabled(t) {
-        if (t)
-          this.setAttribute("disabled", "");
-        else
-          this.removeAttribute("disabled");
+        t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      _updateHref(t) {
-        if (!this._anchor)
-          return;
-        if (t)
-          this._anchor.setAttribute("href", t);
-        else
-          this._anchor.removeAttribute("href");
-      }
-      _updateBadge(t) {
-        if (!this._badgeEl)
-          return;
-        if (t)
-          this._badgeEl.textContent = t, this._badgeEl.style.display = "inline-flex";
-        else
-          this._badgeEl.textContent = "", this._badgeEl.style.display = "none";
-      }
-      _checkActiveState = () => {
-        if (!this._anchor || !this.hasAttribute("href"))
-          return;
-        let t = this.getAttribute("href");
-        if (!t)
-          return;
-        try {
-          let e = new URL(t, window.location.href), r = new URL(window.location.href).pathname, a = e.pathname;
-          if (a === "/" ? r === "/" : r === a || r.startsWith(a + "/"))
-            this.setAttribute("active", ""), this.setAttribute("aria-current", "page"), this._anchor.classList.add("active");
-          else
-            this.removeAttribute("active"), this.removeAttribute("aria-current"), this._anchor.classList.remove("active");
-        } catch {
-          console.warn("Invalid href in LateralMenuItem:", t);
-        }
-      };
-      _handleKeydown = (t) => {
-        if (this.hasAttribute("disabled"))
-          return;
-        if (t.key !== "Enter" && t.key !== " ")
-          return;
-        if (t.target !== this)
-          return;
-        t.preventDefault(), this._anchor?.click();
-      };
+      _onPopstate = () => ue(this, this._anchor);
+      _onKey = (t) => cn(this, this._anchor, t);
     }
     if (!customElements.get("w13c-lateral-menu-item"))
-      customElements.define("w13c-lateral-menu-item", Y);
-    var ge = `<aside class="sidebar" part="sidebar">
+      customElements.define("w13c-lateral-menu-item", ft);
+    var un = `<aside class="sidebar" part="sidebar">
     <div class="sidebar-header" part="header">
         <slot name="header">
             <h3>Menu</h3>
@@ -6290,7 +6144,7 @@ p9r-tag:hover {
     </div>
 </aside>
 `;
-    var ve = `:host {
+    var pn = `:host {
     display: flex;
     flex-direction: column;
     width: 260px;
@@ -6369,28 +6223,61 @@ p9r-tag:hover {
     --item-bg-hover: var(--primary-muted);
 }
 `;
+    var hn = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, mn = (t) => {
+      if (!t)
+        return [];
+      return t.assignedElements({ flatten: true }).filter((e) => e instanceof HTMLElement && e.tagName.toLowerCase() === "w13c-lateral-menu-item" && !e.hasAttribute("disabled"));
+    };
+    var bn = (t, e) => {
+      let r = t.shadowRoot?.querySelector("slot:not([name])"), i = mn(r);
+      if (i.length === 0)
+        return;
+      let n = document.activeElement, o = i.findIndex((d) => d === n || d.contains(n)), a = -1;
+      switch (e.key) {
+        case "ArrowDown":
+          a = o < 0 ? 0 : (o + 1) % i.length;
+          break;
+        case "ArrowUp":
+          a = o < 0 ? i.length - 1 : (o - 1 + i.length) % i.length;
+          break;
+        case "Home":
+          a = 0;
+          break;
+        case "End":
+          a = i.length - 1;
+          break;
+        default:
+          return;
+      }
+      e.preventDefault();
+      let l = i[a];
+      if (l)
+        l.focus();
+    };
 
-    class K extends s {
+    class vt extends s {
       _sidebar;
-      _navSlot;
       constructor() {
-        super({ css: ve, template: ge });
-        this._sidebar = this.shadowRoot?.querySelector(".sidebar") ?? null, this._navSlot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
+        super({ css: pn, template: un });
+        this._sidebar = this.shadowRoot?.querySelector(".sidebar") ?? null;
       }
       static get observedAttributes() {
         return ["collapsed"];
       }
       connectedCallback() {
-        for (let t of ["collapsed"])
-          this._upgradeProperty(t);
-        if (!this.hasAttribute("aria-label"))
+        if (hn(this, "collapsed"), !this.hasAttribute("aria-label"))
           this.setAttribute("aria-label", "Main navigation");
-        this.addEventListener("keydown", this._handleKeydown);
+        this.addEventListener("keydown", this._onKey);
       }
       disconnectedCallback() {
-        this.removeEventListener("keydown", this._handleKeydown);
+        this.removeEventListener("keydown", this._onKey);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t) {
         if (!this._sidebar)
           return;
         if (t === "collapsed")
@@ -6408,47 +6295,11 @@ p9r-tag:hover {
         else
           this.removeAttribute("collapsed");
       }
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
-      _getItems() {
-        if (!this._navSlot)
-          return [];
-        return this._navSlot.assignedElements({ flatten: true }).filter((t) => t instanceof HTMLElement && t.tagName.toLowerCase() === "w13c-lateral-menu-item" && !t.hasAttribute("disabled"));
-      }
-      _handleKeydown = (t) => {
-        let e = this._getItems();
-        if (e.length === 0)
-          return;
-        let i = document.activeElement, r = e.findIndex((n) => n === i || n.contains(i)), a = -1;
-        switch (t.key) {
-          case "ArrowDown":
-            a = r < 0 ? 0 : (r + 1) % e.length;
-            break;
-          case "ArrowUp":
-            a = r < 0 ? e.length - 1 : (r - 1 + e.length) % e.length;
-            break;
-          case "Home":
-            a = 0;
-            break;
-          case "End":
-            a = e.length - 1;
-            break;
-          default:
-            return;
-        }
-        t.preventDefault();
-        let o = e[a];
-        if (o)
-          o.focus();
-      };
+      _onKey = (t) => bn(this, t);
     }
     if (!customElements.get("w13c-lateral-menu"))
-      customElements.define("w13c-lateral-menu", K);
-    var fe = `<nav class="pagination" part="pagination" aria-label="Pagination">
+      customElements.define("w13c-lateral-menu", vt);
+    var gn = `<nav class="pagination" part="pagination" aria-label="Pagination">
     <button class="prev" part="prev" type="button" aria-label="Previous page">
         <slot name="prev">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -6466,7 +6317,7 @@ p9r-tag:hover {
     </button>
 </nav>
 `;
-    var _e = `:host {
+    var fn = `:host {
   display: inline-block;
 
   --_size: 32px;
@@ -6561,8 +6412,66 @@ p9r-tag:hover {
   .page, .prev, .next { transition: background-color 0.15s, color 0.15s; }
 }
 `;
+    var g = (t, e, r) => {
+      let i = parseInt(t.getAttribute(e) ?? "", 10);
+      return Number.isFinite(i) && i > 0 ? i : r;
+    }, vn = (t, e, r, i) => {
+      let n = [], o = Math.max(1, t - r), a = Math.min(e, t + r), l = Array.from({ length: Math.min(i, e) }, (p, E) => E + 1), d = Array.from({ length: Math.min(i, e) }, (p, E) => e - E).reverse(), c = [];
+      for (let p = o;p <= a; p++)
+        c.push(p);
+      let u = Array.from(new Set([...l, ...c, ...d])).sort((p, E) => p - E), m = 0;
+      for (let p of u) {
+        if (m > 0 && p - m > 1)
+          n.push("…");
+        n.push(p), m = p;
+      }
+      return n;
+    };
+    var _n = (t, e, r, i) => {
+      if (!e)
+        return;
+      let n = g(t, "page", 1), o = g(t, "total", 1), a = g(t, "siblings", 1), l = g(t, "boundary", 1);
+      e.innerHTML = "";
+      for (let d of vn(n, o, a, l))
+        if (d === "…") {
+          let c = document.createElement("span");
+          c.className = "ellipsis", c.setAttribute("part", "ellipsis"), c.textContent = "…", e.appendChild(c);
+        } else {
+          let c = document.createElement("li"), u = document.createElement("button");
+          if (u.type = "button", u.className = "page", u.setAttribute("part", "page"), u.dataset.page = String(d), u.textContent = String(d), d === n)
+            u.setAttribute("aria-current", "page");
+          c.appendChild(u), e.appendChild(c);
+        }
+      if (r)
+        r.disabled = n <= 1;
+      if (i)
+        i.disabled = n >= o;
+    };
+    var _t = (t, e, r) => {
+      if (r === e)
+        return;
+      if (!t.dispatchEvent(new CustomEvent("page-change", { bubbles: true, cancelable: true, detail: { page: r } })))
+        return;
+      t.setAttribute("page", String(r));
+    };
+    var xn = (t, e) => {
+      if (e <= 1)
+        return;
+      _t(t, e, e - 1);
+    }, yn = (t, e, r) => {
+      if (e >= r)
+        return;
+      _t(t, e, e + 1);
+    }, wn = (t, e, r) => {
+      let i = r.target.closest(".page");
+      if (!i)
+        return;
+      let n = Number(i.dataset.page);
+      if (Number.isFinite(n))
+        _t(t, e, n);
+    };
 
-    class X extends s {
+    class xt extends s {
       _pages;
       _prev;
       _next;
@@ -6570,7 +6479,7 @@ p9r-tag:hover {
         return ["page", "total", "siblings", "boundary"];
       }
       constructor() {
-        super({ css: _e, template: fe });
+        super({ css: fn, template: gn });
         this._pages = this.shadowRoot?.querySelector(".pages") ?? null, this._prev = this.shadowRoot?.querySelector(".prev") ?? null, this._next = this.shadowRoot?.querySelector(".next") ?? null;
       }
       connectedCallback() {
@@ -6579,93 +6488,38 @@ p9r-tag:hover {
       disconnectedCallback() {
         this._prev?.removeEventListener("click", this._onPrev), this._next?.removeEventListener("click", this._onNext), this._pages?.removeEventListener("click", this._onPageClick);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback() {
         this._render();
       }
       get page() {
-        return this._intAttr("page", 1);
+        return g(this, "page", 1);
       }
       set page(t) {
         this.setAttribute("page", String(t));
       }
       get total() {
-        return this._intAttr("total", 1);
+        return g(this, "total", 1);
       }
       set total(t) {
         this.setAttribute("total", String(t));
       }
-      _intAttr(t, e) {
-        let i = parseInt(this.getAttribute(t) ?? "", 10);
-        return Number.isFinite(i) && i > 0 ? i : e;
-      }
       _render() {
-        if (!this._pages)
-          return;
-        let t = this.page, e = this.total, i = this._intAttr("siblings", 1), r = this._intAttr("boundary", 1);
-        this._pages.innerHTML = "";
-        for (let a of this._buildItems(t, e, i, r))
-          if (a === "…") {
-            let o = document.createElement("span");
-            o.className = "ellipsis", o.setAttribute("part", "ellipsis"), o.textContent = "…", this._pages.appendChild(o);
-          } else {
-            let o = document.createElement("li"), n = document.createElement("button");
-            if (n.type = "button", n.className = "page", n.setAttribute("part", "page"), n.dataset.page = String(a), n.textContent = String(a), a === t)
-              n.setAttribute("aria-current", "page");
-            o.appendChild(n), this._pages.appendChild(o);
-          }
-        if (this._prev)
-          this._prev.disabled = t <= 1;
-        if (this._next)
-          this._next.disabled = t >= e;
+        _n(this, this._pages, this._prev, this._next);
       }
-      _buildItems(t, e, i, r) {
-        let a = [], o = Math.max(1, t - i), n = Math.min(e, t + i), d = Array.from({ length: Math.min(r, e) }, (l, p) => p + 1), h = Array.from({ length: Math.min(r, e) }, (l, p) => e - p).reverse(), dt = [];
-        for (let l = o;l <= n; l++)
-          dt.push(l);
-        let Ke = Array.from(new Set([...d, ...dt, ...h])).sort((l, p) => l - p), nt = 0;
-        for (let l of Ke) {
-          if (nt > 0 && l - nt > 1)
-            a.push("…");
-          a.push(l), nt = l;
-        }
-        return a;
-      }
-      _onPrev = () => {
-        if (this.page <= 1)
-          return;
-        this._goto(this.page - 1);
-      };
-      _onNext = () => {
-        if (this.page >= this.total)
-          return;
-        this._goto(this.page + 1);
-      };
-      _onPageClick = (t) => {
-        let e = t.target.closest(".page");
-        if (!e)
-          return;
-        let i = Number(e.dataset.page);
-        if (Number.isFinite(i))
-          this._goto(i);
-      };
-      _goto(t) {
-        if (t === this.page)
-          return;
-        if (!this.dispatchEvent(new CustomEvent("page-change", { bubbles: true, cancelable: true, detail: { page: t } })))
-          return;
-        this.setAttribute("page", String(t));
-      }
+      _onPrev = () => xn(this, this.page);
+      _onNext = () => yn(this, this.page, this.total);
+      _onPageClick = (t) => wn(this, this.page, t);
     }
     if (!customElements.get("p9r-pagination"))
-      customElements.define("p9r-pagination", X);
-    var xe = `<div class="progress" part="progress" role="progressbar">
+      customElements.define("p9r-pagination", xt);
+    var kn = `<div class="progress" part="progress" role="progressbar">
     <div class="track" part="track">
         <div class="bar" part="bar"></div>
     </div>
     <span class="label" part="label"><slot></slot></span>
 </div>
 `;
-    var ye = `:host {
+    var En = `:host {
   display: block;
 
   --_height: 8px;
@@ -6746,7 +6600,7 @@ p9r-tag:hover {
 }
 `;
 
-    class Z extends s {
+    class yt extends s {
       _bar;
       _label;
       _root;
@@ -6754,7 +6608,7 @@ p9r-tag:hover {
         return ["value", "max", "indeterminate"];
       }
       constructor() {
-        super({ css: ye, template: xe });
+        super({ css: En, template: kn });
         this._bar = this.shadowRoot?.querySelector(".bar") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._root = this.shadowRoot?.querySelector(".progress") ?? null;
       }
       connectedCallback() {
@@ -6762,23 +6616,23 @@ p9r-tag:hover {
           this._upgradeProperty(t);
         this._sync();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         this._sync();
       }
       _sync() {
-        let t = this.hasAttribute("indeterminate"), e = this._parseNumber(this.getAttribute("max"), 100), i = this._parseNumber(this.getAttribute("value"), 0), r = Math.max(0, Math.min(i, e)), a = e > 0 ? r / e * 100 : 0;
+        let t = this.hasAttribute("indeterminate"), e = this._parseNumber(this.getAttribute("max"), 100), r = this._parseNumber(this.getAttribute("value"), 0), i = Math.max(0, Math.min(r, e)), n = e > 0 ? i / e * 100 : 0;
         if (t)
           this._root?.removeAttribute("aria-valuenow"), this._root?.setAttribute("aria-valuemin", "0"), this._root?.setAttribute("aria-valuemax", "100");
         else
-          this._root?.setAttribute("aria-valuenow", String(r)), this._root?.setAttribute("aria-valuemin", "0"), this._root?.setAttribute("aria-valuemax", String(e)), this.style.setProperty("--_value", `${a}%`);
+          this._root?.setAttribute("aria-valuenow", String(i)), this._root?.setAttribute("aria-valuemin", "0"), this._root?.setAttribute("aria-valuemax", String(e)), this.style.setProperty("--_value", `${n}%`);
         if (this._label)
-          this._label.dataset.valueText = `${Math.round(a)}%`;
+          this._label.dataset.valueText = `${Math.round(n)}%`;
       }
       _parseNumber(t, e) {
         if (t === null)
           return e;
-        let i = Number(t);
-        return Number.isFinite(i) ? i : e;
+        let r = Number(t);
+        return Number.isFinite(r) ? r : e;
       }
       _upgradeProperty(t) {
         if (Object.prototype.hasOwnProperty.call(this, t)) {
@@ -6809,10 +6663,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-progress"))
-      customElements.define("p9r-progress", Z);
-    var ke = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
+      customElements.define("p9r-progress", yt);
+    var An = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
 `;
-    var we = `:host {
+    var Ln = `:host {
   display: block;
 
   --_bg: var(--bg-base, #f1f5f9);
@@ -6861,17 +6715,17 @@ p9r-tag:hover {
 }
 `;
 
-    class U extends s {
+    class wt extends s {
       static get observedAttributes() {
         return ["width", "height"];
       }
       constructor() {
-        super({ css: we, template: ke });
+        super({ css: Ln, template: An });
       }
       connectedCallback() {
         this._syncSize();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "width" || t === "height")
           this._syncSize();
       }
@@ -6891,12 +6745,12 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-skeleton"))
-      customElements.define("p9r-skeleton", U);
-    var Ae = `<div class="spinner" part="spinner" role="status" aria-live="polite">
+      customElements.define("p9r-skeleton", wt);
+    var Cn = `<div class="spinner" part="spinner" role="status" aria-live="polite">
     <span class="visually-hidden"><slot>Loading…</slot></span>
 </div>
 `;
-    var Ee = `:host {
+    var Tn = `:host {
   display: inline-block;
 
   --_size: 1.25rem;
@@ -6948,18 +6802,18 @@ p9r-tag:hover {
 }
 `;
 
-    class J extends s {
+    class kt extends s {
       constructor() {
-        super({ css: Ee, template: Ae });
+        super({ css: Tn, template: Cn });
       }
     }
     if (!customElements.get("p9r-spinner"))
-      customElements.define("p9r-spinner", J);
-    var Ce = `<ol class="stepper" part="stepper">
+      customElements.define("p9r-spinner", kt);
+    var Mn = `<ol class="stepper" part="stepper">
     <slot></slot>
 </ol>
 `;
-    var ze = `:host {
+    var Hn = `:host {
   display: block;
 
   --_active: var(--primary-base, #4361ee);
@@ -6983,7 +6837,7 @@ p9r-tag:hover {
   gap: 0;
 }
 `;
-    var Le = `<li class="step" part="step">
+    var Sn = `<li class="step" part="step">
     <div class="indicator" part="indicator">
         <span class="bullet" part="bullet">
             <span class="number"></span>
@@ -7001,7 +6855,7 @@ p9r-tag:hover {
     </div>
 </li>
 `;
-    var Me = `:host {
+    var zn = `:host {
   display: flex;
   flex: 1;
 
@@ -7016,16 +6870,6 @@ p9r-tag:hover {
   --_label-color: var(--_muted);
 }
 
-:host([data-state="active"], [state="active"]) {
-  --_color: var(--_active);
-  --_label-color: var(--_text);
-}
-
-:host([data-state="completed"], [state="completed"]) {
-  --_color: var(--_completed);
-  --_label-color: var(--_text);
-}
-
 .step {
   display: flex;
   align-items: flex-start;
@@ -7034,22 +6878,11 @@ p9r-tag:hover {
   list-style: none;
 }
 
-:host([orientation="vertical"]) .step {
-  flex-direction: row;
-  align-items: flex-start;
-}
-
 .indicator {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex: 0 0 auto;
-}
-
-:host(:not([orientation="vertical"])) .indicator {
-  flex-direction: row;
-  align-items: center;
-  flex: 1;
 }
 
 .bullet {
@@ -7085,55 +6918,15 @@ p9r-tag:hover {
   display: none;
 }
 
-:host([data-state="active"], [state="active"]) .bullet {
-  background: var(--_color);
-  color: var(--_bg);
-}
-
-:host([data-state="completed"], [state="completed"]) .bullet {
-  background: var(--_color);
-  color: var(--_bg);
-  border-color: var(--_color);
-}
-
-:host([data-state="completed"], [state="completed"]) .number { display: none; }
-:host([data-state="completed"], [state="completed"]) .check  { display: flex; }
-
 .connector {
   background: var(--_color);
   flex: 1;
-}
-
-:host(:not([orientation="vertical"])) .connector {
-  height: 2px;
-  margin-inline: 0.4rem;
-  min-width: 1rem;
-}
-
-:host([orientation="vertical"]) .connector {
-  width: 2px;
-  margin-block: 0.4rem;
-  min-height: 1.5rem;
-  align-self: stretch;
-}
-
-:host([last]) .connector {
-  display: none;
 }
 
 .body {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
-}
-
-:host(:not([orientation="vertical"])) .step {
-  flex-direction: column;
-}
-
-:host(:not([orientation="vertical"])) .body {
-  text-align: center;
-  margin-top: 0.4rem;
 }
 
 .label {
@@ -7152,21 +6945,83 @@ p9r-tag:hover {
 .description slot:empty,
 .description:has(slot:not(:has(*))) { display: none; }
 `;
+    var In = `:host([data-state="active"], [state="active"]) {
+  --_color: var(--_active);
+  --_label-color: var(--_text);
+}
 
-    class Q extends s {
+:host([data-state="completed"], [state="completed"]) {
+  --_color: var(--_completed);
+  --_label-color: var(--_text);
+}
+
+:host([orientation="vertical"]) .step {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+:host(:not([orientation="vertical"])) .indicator {
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+}
+
+:host([data-state="active"], [state="active"]) .bullet {
+  background: var(--_color);
+  color: var(--_bg);
+}
+
+:host([data-state="completed"], [state="completed"]) .bullet {
+  background: var(--_color);
+  color: var(--_bg);
+  border-color: var(--_color);
+}
+
+:host([data-state="completed"], [state="completed"]) .number { display: none; }
+:host([data-state="completed"], [state="completed"]) .check  { display: flex; }
+
+:host(:not([orientation="vertical"])) .connector {
+  height: 2px;
+  margin-inline: 0.4rem;
+  min-width: 1rem;
+}
+
+:host([orientation="vertical"]) .connector {
+  width: 2px;
+  margin-block: 0.4rem;
+  min-height: 1.5rem;
+  align-self: stretch;
+}
+
+:host([last]) .connector {
+  display: none;
+}
+
+:host(:not([orientation="vertical"])) .step {
+  flex-direction: column;
+}
+
+:host(:not([orientation="vertical"])) .body {
+  text-align: center;
+  margin-top: 0.4rem;
+}
+`;
+    var Da = zn + In;
+
+    class Et extends s {
       _label;
       _number;
       static get observedAttributes() {
         return ["label", "data-index"];
       }
       constructor() {
-        super({ css: Me, template: Le });
+        super({ css: Da, template: Sn });
         this._label = this.shadowRoot?.querySelector(".label") ?? null, this._number = this.shadowRoot?.querySelector(".number") ?? null;
       }
       connectedCallback() {
         this._sync();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         this._sync();
       }
       _sync() {
@@ -7177,19 +7032,19 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-step"))
-      customElements.define("p9r-step", Q);
+      customElements.define("p9r-step", Et);
 
-    class W extends s {
+    class At extends s {
       static get observedAttributes() {
         return ["current", "orientation"];
       }
       constructor() {
-        super({ css: ze, template: Ce });
+        super({ css: Hn, template: Mn });
       }
       connectedCallback() {
         this._sync();
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         this._sync();
       }
       get current() {
@@ -7203,32 +7058,32 @@ p9r-tag:hover {
         return Array.from(this.querySelectorAll("p9r-step"));
       }
       _sync() {
-        let t = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal", e = this.current, i = this._steps();
-        i.forEach((r, a) => {
-          if (r.setAttribute("data-index", String(a + 1)), r.setAttribute("orientation", t), a === i.length - 1)
-            r.setAttribute("last", "");
+        let t = this.getAttribute("orientation") === "vertical" ? "vertical" : "horizontal", e = this.current, r = this._steps();
+        r.forEach((i, n) => {
+          if (i.setAttribute("data-index", String(n + 1)), i.setAttribute("orientation", t), n === r.length - 1)
+            i.setAttribute("last", "");
           else
-            r.removeAttribute("last");
-          if (r.hasAttribute("state"))
+            i.removeAttribute("last");
+          if (i.hasAttribute("state"))
             return;
-          if (a < e)
-            r.setAttribute("data-state", "completed");
-          else if (a === e)
-            r.setAttribute("data-state", "active");
+          if (n < e)
+            i.setAttribute("data-state", "completed");
+          else if (n === e)
+            i.setAttribute("data-state", "active");
           else
-            r.setAttribute("data-state", "pending");
+            i.setAttribute("data-state", "pending");
         });
       }
     }
     if (!customElements.get("p9r-stepper"))
-      customElements.define("p9r-stepper", W);
-    var qe = `<div class="table-container">
+      customElements.define("p9r-stepper", At);
+    var Pn = `<div class="table-container">
   <div class="p9r-table">
     <slot name="header"></slot>
     <slot></slot>
   </div>
 </div>`;
-    var Te = `:host {
+    var Rn = `:host {
   display: block;
   width: 100%;
 }
@@ -7261,9 +7116,9 @@ p9r-tag:hover {
 ::slotted(p9r-row:not(:first-child):hover) {
   background-color: var(--bg-base);
 }`;
-    var He = `<slot></slot>
+    var qn = `<slot></slot>
 `;
-    var Se = `:host {
+    var Bn = `:host {
   display: table-row;
 }
 
@@ -7282,70 +7137,70 @@ p9r-tag:hover {
   }
 }
 `;
+    var pe = (t) => {
+      let e = t.getAttribute("href");
+      if (!e)
+        return;
+      let r = t.getAttribute("target"), i = new CustomEvent("p9r-row-click", { detail: { href: e, target: r }, bubbles: true, composed: true, cancelable: true });
+      if (!t.dispatchEvent(i))
+        return;
+      if (r === "_blank")
+        window.open(e, "_blank", "noopener,noreferrer");
+      else
+        window.location.href = e;
+    };
+    var Vn = (t) => {
+      if (!t.hasAttribute("href"))
+        return;
+      pe(t);
+    }, Fn = (t, e) => {
+      if (!t.hasAttribute("href"))
+        return;
+      if (e.key === "Enter" || e.key === " ")
+        e.preventDefault(), pe(t);
+    };
+    var Dn = (t, e) => {
+      if (Object.prototype.hasOwnProperty.call(t, e)) {
+        let r = t[e];
+        delete t[e], t[e] = r;
+      }
+    }, he = (t) => {
+      if (t.hasAttribute("href")) {
+        if (!t.hasAttribute("tabindex"))
+          t.setAttribute("tabindex", "0");
+        if (!t.hasAttribute("role"))
+          t.setAttribute("role", "link");
+      } else {
+        if (t.getAttribute("role") === "link")
+          t.removeAttribute("role");
+        if (t.getAttribute("tabindex") === "0")
+          t.removeAttribute("tabindex");
+        if (!t.hasAttribute("role"))
+          t.setAttribute("role", "row");
+      }
+    };
 
-    class G extends s {
+    class Lt extends s {
       static get observedAttributes() {
         return ["href"];
       }
       constructor() {
-        super({ css: Se, template: He });
+        super({ css: Bn, template: qn });
       }
       connectedCallback() {
         for (let t of ["href", "target"])
-          this._upgradeProperty(t);
-        this.addEventListener("click", this._handleClick), this.addEventListener("keydown", this._handleKeydown), this._syncLinkA11y();
+          Dn(this, t);
+        this.addEventListener("click", this._onClick), this.addEventListener("keydown", this._onKey), he(this);
       }
       disconnectedCallback() {
-        this.removeEventListener("click", this._handleClick), this.removeEventListener("keydown", this._handleKeydown);
+        this.removeEventListener("click", this._onClick), this.removeEventListener("keydown", this._onKey);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t) {
         if (t === "href")
-          this._syncLinkA11y();
+          he(this);
       }
-      _syncLinkA11y() {
-        if (this.hasAttribute("href")) {
-          if (!this.hasAttribute("tabindex"))
-            this.setAttribute("tabindex", "0");
-          if (!this.hasAttribute("role"))
-            this.setAttribute("role", "link");
-        } else {
-          if (this.getAttribute("role") === "link")
-            this.removeAttribute("role");
-          if (this.getAttribute("tabindex") === "0")
-            this.removeAttribute("tabindex");
-          if (!this.hasAttribute("role"))
-            this.setAttribute("role", "row");
-        }
-      }
-      _navigate() {
-        let t = this.getAttribute("href");
-        if (!t)
-          return;
-        let e = this.getAttribute("target"), r = new CustomEvent("p9r-row-click", { detail: { href: t, target: e }, bubbles: true, composed: true, cancelable: true });
-        if (!this.dispatchEvent(r))
-          return;
-        if (e === "_blank")
-          window.open(t, "_blank", "noopener,noreferrer");
-        else
-          window.location.href = t;
-      }
-      _handleClick = (t) => {
-        if (!this.hasAttribute("href"))
-          return;
-        this._navigate();
-      };
-      _handleKeydown = (t) => {
-        if (!this.hasAttribute("href"))
-          return;
-        if (t.key === "Enter" || t.key === " ")
-          t.preventDefault(), this._navigate();
-      };
-      _upgradeProperty(t) {
-        if (Object.prototype.hasOwnProperty.call(this, t)) {
-          let e = this[t];
-          delete this[t], this[t] = e;
-        }
-      }
+      _onClick = () => Vn(this);
+      _onKey = (t) => Fn(this, t);
       get href() {
         return this.getAttribute("href");
       }
@@ -7366,10 +7221,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-row"))
-      customElements.define("p9r-row", G);
-    var Re = `<slot></slot>
+      customElements.define("p9r-row", Lt);
+    var On = `<slot></slot>
 `;
-    var je = `:host {
+    var jn = `:host {
   display: table-cell;
   padding: 12px 20px;
   vertical-align: middle;
@@ -7394,9 +7249,9 @@ p9r-tag:hover {
 }
 `;
 
-    class tt extends s {
+    class Ct extends s {
       constructor() {
-        super({ css: je, template: Re });
+        super({ css: jn, template: On });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -7404,140 +7259,259 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-cell"))
-      customElements.define("p9r-cell", tt);
+      customElements.define("p9r-cell", Ct);
+    var Nn = `<div class="header-wrapper" part="wrapper">
+  <button
+    type="button"
+    class="label-section"
+    id="sort-trigger"
+    part="sort-trigger"
+  >
+    <slot></slot>
+    <span class="sort-icon" id="sort-icon" part="sort-icon" aria-hidden="true">...</span>
+  </button>
 
-    class et extends HTMLElement {
+  <button
+    type="button"
+    class="filter-trigger"
+    id="filter-btn"
+    part="filter-trigger"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    hidden
+  >
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+    </svg>
+  </button>
+
+  <div class="filter-popover" id="filter-popover" part="filter-popover" role="dialog" hidden>
+    <input type="text" placeholder="Filter..." id="filter-input" part="filter-input" />
+  </div>
+</div>
+`;
+    var Kn = `:host {
+  display: table-cell;
+  padding: 12px 20px;
+  border-bottom: 2px solid var(--border-light);
+  position: relative;
+  vertical-align: middle;
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  cursor: default;
+}
+
+.sort-icon {
+  display: none;
+}
+
+.filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 4px;
+  border: 0;
+  background: transparent;
+  border-radius: 4px;
+  color: #ccc;
+}
+
+.filter-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  background: var(--bg-surface, white);
+  border: 1px solid var(--border-default, #ddd);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 6px;
+  min-width: 150px;
+}
+
+.filter-popover[hidden] {
+  display: none;
+}
+
+#filter-input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid var(--border-default, #ddd);
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+`;
+    var $n = `:host([sort]) .label-section {
+  cursor: pointer;
+}
+
+.label-section:focus-visible,
+.filter-trigger:focus-visible,
+#filter-input:focus-visible {
+  outline: 2px solid var(--primary-base);
+  outline-offset: 2px;
+}
+
+:host([sort]) .sort-icon {
+  display: inline;
+}
+
+:host([aria-sort="ascending"]) .sort-icon::before {
+  content: "\\2191";
+}
+
+:host([aria-sort="descending"]) .sort-icon::before {
+  content: "\\2193";
+}
+
+:host([aria-sort="ascending"]) .sort-icon,
+:host([aria-sort="descending"]) .sort-icon {
+  font-size: 0;
+}
+
+:host([aria-sort="ascending"]) .sort-icon::before,
+:host([aria-sort="descending"]) .sort-icon::before {
+  font-size: 14px;
+}
+
+:host([data-has-filter]) .filter-trigger {
+  color: var(--primary-base, #007bff);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .filter-trigger {
+    transition: background 0.2s;
+  }
+}
+
+.filter-trigger:hover {
+  background: var(--bg-base, #eee);
+}
+`;
+    var Za = (t) => {
+      let e = t.getAttribute("filter-name");
+      if (!e)
+        return "";
+      return new URL(window.location.href).searchParams.get(`f_${e}`) ?? "";
+    }, me = (t, e, r) => {
+      let i = t.getAttribute("filter-name");
+      if (!e)
+        return;
+      if (!i) {
+        e.setAttribute("hidden", ""), t.removeAttribute("data-has-filter");
+        return;
+      }
+      e.removeAttribute("hidden");
+      let n = Za(t);
+      if (r)
+        r.value = n;
+      if (n)
+        t.setAttribute("data-has-filter", "");
+      else
+        t.removeAttribute("data-has-filter");
+    };
+    var Un = (t) => {
+      let e = t.getAttribute("sort");
+      if (!e)
+        return;
+      let r = new URL(window.location.href), i = r.searchParams.get("sort"), n = r.searchParams.get("direction"), o = i === e && n === "asc" ? "desc" : "asc";
+      r.searchParams.set("sort", e), r.searchParams.set("direction", o), window.location.href = r.toString();
+    }, Yn = (t, e) => {
+      let r = t.getAttribute("filter-name");
+      if (!r)
+        return;
+      let i = new URL(window.location.href);
+      if (e)
+        i.searchParams.set(`f_${r}`, e);
+      else
+        i.searchParams.delete(`f_${r}`);
+      window.location.href = i.toString();
+    };
+    var Xn = (t, e) => {
+      if (e.composedPath().some((r) => r instanceof HTMLInputElement))
+        return;
+      Un(t);
+    }, Wn = (t, e, r, i) => {
+      if (t.stopPropagation(), !r || !e)
+        return;
+      if (r.hasAttribute("hidden"))
+        r.removeAttribute("hidden"), e.setAttribute("aria-expanded", "true"), i?.focus();
+      else
+        r.setAttribute("hidden", ""), e.setAttribute("aria-expanded", "false");
+    }, Zn = (t, e, r) => {
+      if (r.key !== "Enter" || !e)
+        return;
+      Yn(t, e.value);
+    }, Gn = (t, e) => {
+      e?.setAttribute("hidden", ""), t?.setAttribute("aria-expanded", "false");
+    };
+    var Ga = Kn + $n;
+
+    class Tt extends s {
+      _sortTrigger;
+      _filterBtn;
+      _filterPopover;
+      _filterInput;
       static get observedAttributes() {
-        return ["sort", "direction", "active", "filter-name", "filter-type"];
+        return ["sort", "filter-name"];
       }
       constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
+        super({ css: Ga, template: Nn });
+        this._sortTrigger = this.shadowRoot?.querySelector("#sort-trigger") ?? null, this._filterBtn = this.shadowRoot?.querySelector("#filter-btn") ?? null, this._filterPopover = this.shadowRoot?.querySelector("#filter-popover") ?? null, this._filterInput = this.shadowRoot?.querySelector("#filter-input") ?? null;
       }
       connectedCallback() {
-        this.addEventListener("click", this.handleSort), this.render();
+        me(this, this._filterBtn, this._filterInput), this._sortTrigger?.addEventListener("click", this._onSort), this._filterBtn?.addEventListener("click", this._onFilterToggle), this._filterPopover?.addEventListener("click", this._stopPropagation), this._filterInput?.addEventListener("keydown", this._onFilterKey), window.addEventListener("click", this._onWindowClick);
       }
-      handleSort = (t) => {
-        if (t.composedPath().some((n) => n instanceof HTMLInputElement))
-          return;
-        let e = this.getAttribute("sort");
-        if (!e)
-          return;
-        let i = new URL(window.location.href), r = i.searchParams.get("sort"), a = i.searchParams.get("direction"), o = r === e && a === "asc" ? "desc" : "asc";
-        i.searchParams.set("sort", e), i.searchParams.set("direction", o), window.location.href = i.toString();
-      };
-      render() {
-        let t = this.getAttribute("filter-name"), i = new URL(window.location.href).searchParams.get(`f_${t}`) || "", r = i.length > 0;
-        if (this.shadowRoot)
-          this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: table-cell;
-                    padding: 12px 20px;
-                    border-bottom: 2px solid var(--border-light);
-                    position: relative; /* For popover positioning */
-                }
-                .header-wrapper {
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-                .label-section {
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                }
-                .filter-trigger {
-                    cursor: pointer;
-                    padding: 4px;
-                    border-radius: 4px;
-                    transition: background 0.2s;
-                    color: ${r ? "var(--primary-base, #007bff)" : "#ccc"};
-                }
-                .filter-trigger:hover { background: #eee; }
-
-                /* Filter popover */
-                .filter-popover {
-                    display: none;
-                    position: absolute;
-                    top: 100%;
-                    left: 0;
-                    z-index: 10;
-                    background: white;
-                    border: 1px solid #ddd;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                    padding: 10px;
-                    border-radius: 6px;
-                    min-width: 150px;
-                }
-                .filter-popover.open { display: block; }
-                
-                input {
-                    width: 100%;
-                    padding: 6px;
-                    border: 1px solid #ddd;
-                    border-radius: 4px;
-                    font-size: 13px;
-                }
-            </style>
-            
-            <div class="header-wrapper">
-                <div class="label-section" id="sort-trigger">
-                    <slot></slot>
-                    <span class="sort-icon">...</span>
-                </div>
-
-                ${t ? `
-                    <div class="filter-trigger" id="filter-btn">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                        </svg>
-                    </div>
-                    <div class="filter-popover" id="filter-popover">
-                        <input type="text" placeholder="Filter..." value="${i}" id="filter-input">
-                    </div>
-                ` : ""}
-            </div>
-        `, this.setupEvents();
+      disconnectedCallback() {
+        this._sortTrigger?.removeEventListener("click", this._onSort), this._filterBtn?.removeEventListener("click", this._onFilterToggle), this._filterPopover?.removeEventListener("click", this._stopPropagation), this._filterInput?.removeEventListener("keydown", this._onFilterKey), window.removeEventListener("click", this._onWindowClick);
       }
-      setupEvents() {
-        let t = this.shadowRoot?.querySelector("#filter-btn"), e = this.shadowRoot?.querySelector("#filter-popover"), i = this.shadowRoot?.querySelector("#filter-input"), r = this.shadowRoot?.querySelector("#sort-trigger");
-        t?.addEventListener("click", (a) => {
-          if (a.stopPropagation(), e?.classList.toggle("open"), e?.classList.contains("open"))
-            i?.focus();
-        }), window.addEventListener("click", () => e?.classList.remove("open")), e?.addEventListener("click", (a) => a.stopPropagation()), r?.addEventListener("click", (a) => this.handleSort(a)), i?.addEventListener("keydown", (a) => {
-          if (a.key === "Enter")
-            this.applyFilter(i.value);
-        });
+      attributeChangedCallback() {
+        me(this, this._filterBtn, this._filterInput);
       }
-      applyFilter(t) {
-        let e = this.getAttribute("filter-name"), i = new URL(window.location.href);
-        if (t)
-          i.searchParams.set(`f_${e}`, t);
-        else
-          i.searchParams.delete(`f_${e}`);
-        window.location.href = i.toString();
-      }
+      _onSort = (t) => Xn(this, t);
+      _onFilterToggle = (t) => Wn(t, this._filterBtn, this._filterPopover, this._filterInput);
+      _onFilterKey = (t) => Zn(this, this._filterInput, t);
+      _onWindowClick = () => Gn(this._filterBtn, this._filterPopover);
+      _stopPropagation = (t) => t.stopPropagation();
     }
     if (!customElements.get("p9r-header-cell"))
-      customElements.define("p9r-header-cell", et);
+      customElements.define("p9r-header-cell", Tt);
 
-    class it extends s {
+    class Mt extends s {
       constructor() {
-        super({ css: Te, template: qe });
+        super({ css: Rn, template: Pn });
       }
     }
     if (!customElements.get("p9r-table"))
-      customElements.define("p9r-table", it);
-    var Pe = `<div class="tabs" part="tabs">
+      customElements.define("p9r-table", Mt);
+    var Jn = `<div class="tabs" part="tabs">
     <div class="tablist" part="tablist" role="tablist"></div>
     <div class="panels" part="panels">
         <slot></slot>
     </div>
 </div>
 `;
-    var Be = `:host {
+    var Qn = `:host {
   display: block;
 
   --_border: var(--border-default, #e5e7eb);
@@ -7560,26 +7534,6 @@ p9r-tag:hover {
   border-bottom: 1px solid var(--_border);
   overflow-x: auto;
   scrollbar-width: thin;
-}
-
-:host([variant="pills"]) .tablist {
-  border-bottom: 0;
-  gap: 0.4rem;
-  padding: 0.25rem;
-  background: var(--bg-base, #f1f5f9);
-  border-radius: 8px;
-  width: max-content;
-}
-
-:host([orientation="vertical"]) .tabs {
-  flex-direction: row;
-  gap: 1rem;
-}
-
-:host([orientation="vertical"]) .tablist {
-  flex-direction: column;
-  border-bottom: 0;
-  border-right: 1px solid var(--_border);
 }
 
 .tab {
@@ -7609,20 +7563,6 @@ p9r-tag:hover {
   background: var(--_active);
 }
 
-:host([variant="pills"]) .tab[aria-selected="true"]::after {
-  display: none;
-}
-
-:host([variant="pills"]) .tab {
-  border-radius: 6px;
-}
-
-:host([variant="pills"]) .tab[aria-selected="true"] {
-  background: var(--bg-surface, #fff);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-  color: var(--text-main);
-}
-
 .tab:hover:not([aria-selected="true"]) {
   color: var(--text-main, #1f2937);
 }
@@ -7643,20 +7583,54 @@ p9r-tag:hover {
   flex: 1;
 }
 
-:host([orientation="vertical"]) .panels {
-  padding-top: 0;
-  padding-left: 1rem;
-}
-
 @media (prefers-reduced-motion: no-preference) {
   .tab { transition: color 0.15s; }
 }
 `;
-    var Ie = `<div class="panel" part="panel">
+    var to = `:host([variant="pills"]) .tablist {
+  border-bottom: 0;
+  gap: 0.4rem;
+  padding: 0.25rem;
+  background: var(--bg-base, #f1f5f9);
+  border-radius: 8px;
+  width: max-content;
+}
+
+:host([orientation="vertical"]) .tabs {
+  flex-direction: row;
+  gap: 1rem;
+}
+
+:host([orientation="vertical"]) .tablist {
+  flex-direction: column;
+  border-bottom: 0;
+  border-right: 1px solid var(--_border);
+}
+
+:host([variant="pills"]) .tab[aria-selected="true"]::after {
+  display: none;
+}
+
+:host([variant="pills"]) .tab {
+  border-radius: 6px;
+}
+
+:host([variant="pills"]) .tab[aria-selected="true"] {
+  background: var(--bg-surface, #fff);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  color: var(--text-main);
+}
+
+:host([orientation="vertical"]) .panels {
+  padding-top: 0;
+  padding-left: 1rem;
+}
+`;
+    var eo = `<div class="panel" part="panel">
     <slot></slot>
 </div>
 `;
-    var Fe = `:host {
+    var ro = `:host {
   display: block;
 }
 
@@ -7667,33 +7641,103 @@ p9r-tag:hover {
 }
 `;
 
-    class rt extends s {
+    class Ht extends s {
       constructor() {
-        super({ css: Fe, template: Ie });
+        super({ css: ro, template: eo });
       }
     }
     if (!customElements.get("p9r-tab-panel"))
-      customElements.define("p9r-tab-panel", rt);
+      customElements.define("p9r-tab-panel", Ht);
+    var be = (t) => {
+      if (!t)
+        return [];
+      return t.assignedElements({ flatten: true }).filter((e) => e.tagName === "P9R-TAB-PANEL");
+    }, il = 0, io = () => `tabpanel-${il++}`;
+    var no = (t, e) => {
+      t.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { active: e } }));
+    };
+    var ge = (t, e, r) => {
+      if (!e)
+        return;
+      e.innerHTML = "";
+      let i = be(r), n = t.getAttribute("active");
+      if (!n && i.length > 0)
+        n = i[0]?.getAttribute("id") ?? null;
+      if (i.forEach((o, a) => {
+        let l = o.getAttribute("id") ?? io();
+        if (!o.id)
+          o.id = l;
+        let d = o.getAttribute("label") ?? `Tab ${a + 1}`, c = document.createElement("button");
+        if (c.type = "button", c.className = "tab", c.setAttribute("part", "tab"), c.setAttribute("role", "tab"), c.setAttribute("id", `tab-${l}`), c.setAttribute("aria-controls", l), c.dataset.target = l, c.textContent = d, o.hasAttribute("disabled"))
+          c.setAttribute("disabled", "");
+        e.appendChild(c), o.setAttribute("role", "tabpanel"), o.setAttribute("aria-labelledby", `tab-${l}`);
+      }), n)
+        k(t, e, r, n);
+    }, k = (t, e, r, i) => {
+      let n = be(r), o = Array.from(e?.querySelectorAll(".tab") ?? []), a = false;
+      if (n.forEach((l) => {
+        let d = l.id === i;
+        if (d)
+          a = true;
+        l.toggleAttribute("hidden", !d);
+      }), o.forEach((l) => {
+        let d = l.dataset.target === i;
+        l.setAttribute("aria-selected", String(d)), l.setAttribute("tabindex", d ? "0" : "-1");
+      }), a && t.getAttribute("active") !== i)
+        t.setAttribute("active", i), no(t, i);
+    };
+    var oo = (t, e, r, i) => {
+      let n = i.target.closest(".tab");
+      if (!n || n.hasAttribute("disabled"))
+        return;
+      let o = n.dataset.target;
+      if (o)
+        k(t, e, r, o);
+    }, so = (t, e, r, i) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(i.key))
+        return;
+      let n = Array.from(e?.querySelectorAll(".tab:not([disabled])") ?? []);
+      if (n.length === 0)
+        return;
+      let o = n.findIndex((u) => u === document.activeElement), a = o === -1 ? 0 : o, l = a;
+      if (i.key === "ArrowLeft")
+        l = (a - 1 + n.length) % n.length;
+      if (i.key === "ArrowRight")
+        l = (a + 1) % n.length;
+      if (i.key === "Home")
+        l = 0;
+      if (i.key === "End")
+        l = n.length - 1;
+      i.preventDefault();
+      let d = n[l];
+      if (!d)
+        return;
+      let c = d.dataset.target;
+      if (c)
+        k(t, e, r, c);
+      d.focus();
+    };
+    var nl = Qn + to;
 
-    class g extends s {
+    class St extends s {
       _tablist;
       _slot;
       static get observedAttributes() {
         return ["active"];
       }
       constructor() {
-        super({ css: Be, template: Pe });
+        super({ css: nl, template: Jn });
         this._tablist = this.shadowRoot?.querySelector(".tablist") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
-        this._slot?.addEventListener("slotchange", this._rebuild), this._tablist?.addEventListener("click", this._onTablistClick), this._tablist?.addEventListener("keydown", this._onKeydown), this._rebuild();
+        this._slot?.addEventListener("slotchange", this._onRebuild), this._tablist?.addEventListener("click", this._onClick), this._tablist?.addEventListener("keydown", this._onKey), ge(this, this._tablist, this._slot);
       }
       disconnectedCallback() {
-        this._slot?.removeEventListener("slotchange", this._rebuild), this._tablist?.removeEventListener("click", this._onTablistClick), this._tablist?.removeEventListener("keydown", this._onKeydown);
+        this._slot?.removeEventListener("slotchange", this._onRebuild), this._tablist?.removeEventListener("click", this._onClick), this._tablist?.removeEventListener("keydown", this._onKey);
       }
-      attributeChangedCallback(t, e, i) {
-        if (t === "active" && i !== null)
-          this._activate(i);
+      attributeChangedCallback(t, e, r) {
+        if (t === "active" && r !== null)
+          k(this, this._tablist, this._slot, r);
       }
       get active() {
         return this.getAttribute("active") ?? "";
@@ -7701,85 +7745,19 @@ p9r-tag:hover {
       set active(t) {
         this.setAttribute("active", t);
       }
-      _panels() {
-        if (!this._slot)
-          return [];
-        return this._slot.assignedElements({ flatten: true }).filter((t) => t.tagName === "P9R-TAB-PANEL");
-      }
-      _rebuild = () => {
-        if (!this._tablist)
-          return;
-        this._tablist.innerHTML = "";
-        let t = this._panels(), e = this.getAttribute("active");
-        if (!e && t.length > 0)
-          e = t[0]?.getAttribute("id") ?? null;
-        if (t.forEach((i, r) => {
-          let a = i.getAttribute("id") ?? `tabpanel-${g._uid++}`;
-          if (!i.id)
-            i.id = a;
-          let o = i.getAttribute("label") ?? `Tab ${r + 1}`, n = document.createElement("button");
-          if (n.type = "button", n.className = "tab", n.setAttribute("part", "tab"), n.setAttribute("role", "tab"), n.setAttribute("id", `tab-${a}`), n.setAttribute("aria-controls", a), n.dataset.target = a, n.textContent = o, i.hasAttribute("disabled"))
-            n.setAttribute("disabled", "");
-          this._tablist.appendChild(n), i.setAttribute("role", "tabpanel"), i.setAttribute("aria-labelledby", `tab-${a}`);
-        }), e)
-          this._activate(e);
-      };
-      _activate(t) {
-        let e = this._panels(), i = Array.from(this._tablist?.querySelectorAll(".tab") ?? []), r = false;
-        if (e.forEach((a) => {
-          let o = a.id === t;
-          if (o)
-            r = true;
-          a.toggleAttribute("hidden", !o);
-        }), i.forEach((a) => {
-          let o = a.dataset.target === t;
-          a.setAttribute("aria-selected", String(o)), a.setAttribute("tabindex", o ? "0" : "-1");
-        }), r && this.getAttribute("active") !== t)
-          this.setAttribute("active", t), this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { active: t } }));
-      }
-      _onTablistClick = (t) => {
-        let e = t.target.closest(".tab");
-        if (!e || e.hasAttribute("disabled"))
-          return;
-        let i = e.dataset.target;
-        if (i)
-          this._activate(i);
-      };
-      _onKeydown = (t) => {
-        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(t.key))
-          return;
-        let e = Array.from(this._tablist?.querySelectorAll(".tab:not([disabled])") ?? []);
-        if (e.length === 0)
-          return;
-        let i = e.findIndex((d) => d === document.activeElement), r = i === -1 ? 0 : i, a = r;
-        if (t.key === "ArrowLeft")
-          a = (r - 1 + e.length) % e.length;
-        if (t.key === "ArrowRight")
-          a = (r + 1) % e.length;
-        if (t.key === "Home")
-          a = 0;
-        if (t.key === "End")
-          a = e.length - 1;
-        t.preventDefault();
-        let o = e[a];
-        if (!o)
-          return;
-        let n = o.dataset.target;
-        if (n)
-          this._activate(n);
-        o.focus();
-      };
-      static _uid = 0;
+      _onRebuild = () => ge(this, this._tablist, this._slot);
+      _onClick = (t) => oo(this, this._tablist, this._slot, t);
+      _onKey = (t) => so(this, this._tablist, this._slot, t);
     }
     if (!customElements.get("p9r-tabs"))
-      customElements.define("p9r-tabs", g);
-    var Ve = `<div class="icon" part="icon"></div>
+      customElements.define("p9r-tabs", St);
+    var ao = `<div class="icon" part="icon"></div>
 <div class="content">
     <span class="message"><slot></slot></span>
 </div>
 <button class="close" aria-label="Dismiss">&times;</button>
 `;
-    var Ne = `:host {
+    var lo = `:host {
     --_bg: var(--bg-surface, #ffffff);
     --_color: var(--text-main, #1f2937);
     --_border: var(--border-default, #e5e7eb);
@@ -7804,26 +7782,6 @@ p9r-tag:hover {
     animation: toast-in 180ms ease-out;
 }
 
-:host([leaving]) {
-    animation: toast-out 160ms ease-in forwards;
-}
-
-:host([type="success"]) {
-    --_accent: var(--success-base, #10b981);
-}
-
-:host([type="error"]) {
-    --_accent: var(--danger-base, #ef4444);
-}
-
-:host([type="warning"]) {
-    --_accent: var(--warning-base, #f59e0b);
-}
-
-:host([type="info"]) {
-    --_accent: var(--info-base, #3b82f6);
-}
-
 .icon {
     flex: 0 0 20px;
     height: 20px;
@@ -7840,19 +7798,6 @@ p9r-tag:hover {
     inset: 0;
     display: block;
     background: no-repeat center / 12px 12px;
-}
-
-:host([type="success"]) .icon::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>');
-}
-
-:host([type="error"]) .icon::before,
-:host([type="warning"]) .icon::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>');
-}
-
-:host([type="info"]) .icon::before {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>');
 }
 
 .content {
@@ -7882,34 +7827,56 @@ p9r-tag:hover {
 .close:hover {
     opacity: 1;
 }
+`;
+    var co = `:host([leaving]) {
+    animation: toast-out 160ms ease-in forwards;
+}
+
+:host([type="success"]) {
+    --_accent: var(--success-base, #10b981);
+}
+
+:host([type="error"]) {
+    --_accent: var(--danger-base, #ef4444);
+}
+
+:host([type="warning"]) {
+    --_accent: var(--warning-base, #f59e0b);
+}
+
+:host([type="info"]) {
+    --_accent: var(--info-base, #3b82f6);
+}
+
+:host([type="success"]) .icon::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>');
+}
+
+:host([type="error"]) .icon::before,
+:host([type="warning"]) .icon::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>');
+}
+
+:host([type="info"]) .icon::before {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="8" x2="12" y2="8"/><line x1="12" y1="12" x2="12" y2="16"/></svg>');
+}
 
 @keyframes toast-in {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes toast-out {
-    from {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-20px); }
 }
 `;
+    var ll = lo + co;
 
-    class at extends s {
+    class zt extends s {
       _timer = null;
       constructor() {
-        super({ css: Ne, template: Ve });
+        super({ css: ll, template: ao });
       }
       connectedCallback() {
         this.shadowRoot?.querySelector(".close")?.addEventListener("click", () => this.dismiss());
@@ -7932,10 +7899,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-toast"))
-      customElements.define("p9r-toast", at);
-    var De = `<slot></slot>
+      customElements.define("p9r-toast", zt);
+    var uo = `<slot></slot>
 `;
-    var Oe = `:host {
+    var po = `:host {
     position: fixed;
     top: 24px;
     left: 24px;
@@ -7985,9 +7952,9 @@ p9r-tag:hover {
 }
 `;
 
-    class st extends s {
+    class It extends s {
       constructor() {
-        super({ css: Oe, template: De });
+        super({ css: po, template: uo });
       }
       connectedCallback() {
         if (!this.hasAttribute("popover"))
@@ -7997,15 +7964,26 @@ p9r-tag:hover {
         } catch {}
       }
       push(t, e = {}) {
-        let i = document.createElement("p9r-toast");
-        if (i.setAttribute("type", e.type ?? "info"), e.duration !== undefined)
-          i.setAttribute("duration", String(e.duration));
-        return i.textContent = t, this.appendChild(i), i;
+        let r = document.createElement("p9r-toast");
+        if (r.setAttribute("type", e.type ?? "info"), e.duration !== undefined)
+          r.setAttribute("duration", String(e.duration));
+        return r.textContent = t, this.appendChild(r), r;
       }
     }
     if (!customElements.get("p9r-toast-stack"))
-      customElements.define("p9r-toast-stack", st);
-    var $e = `<div class="trigger" part="trigger">
+      customElements.define("p9r-toast-stack", It);
+    var h = null;
+    function ul() {
+      if (h && h.isConnected)
+        return h;
+      if (h = document.querySelector("p9r-toast-stack"), h)
+        return h;
+      return h = document.createElement("p9r-toast-stack"), document.body.appendChild(h), h;
+    }
+    function ho(t, e = {}) {
+      return ul().push(t, e);
+    }
+    var mo = `<div class="trigger" part="trigger">
     <slot></slot>
 </div>
 <div class="tooltip" part="tooltip" role="tooltip" aria-hidden="true">
@@ -8013,7 +7991,7 @@ p9r-tag:hover {
     <span class="text"></span>
 </div>
 `;
-    var Ye = `:host {
+    var bo = `:host {
   display: inline-block;
   position: relative;
 
@@ -8059,14 +8037,26 @@ p9r-tag:hover {
 
 .text:empty { display: none; }
 
-/* default position: top */
 .tooltip {
   bottom: calc(100% + var(--_offset));
   left: 50%;
   transform: translateX(-50%);
 }
 
-:host([position="bottom"]) .tooltip {
+.tooltip::after {
+  content: "";
+  position: absolute;
+  border: var(--_arrow-size) solid transparent;
+}
+
+.tooltip::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: var(--_bg);
+}
+`;
+    var go = `:host([position="bottom"]) .tooltip {
   top: calc(100% + var(--_offset));
   bottom: auto;
   left: 50%;
@@ -8086,20 +8076,6 @@ p9r-tag:hover {
   bottom: auto;
   top: 50%;
   transform: translateY(-50%);
-}
-
-/* arrow */
-.tooltip::after {
-  content: "";
-  position: absolute;
-  border: var(--_arrow-size) solid transparent;
-}
-
-.tooltip::after {
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border-top-color: var(--_bg);
 }
 
 :host([position="bottom"]) .tooltip::after {
@@ -8128,8 +8104,9 @@ p9r-tag:hover {
   border-right-color: var(--_bg);
 }
 `;
+    var bl = bo + go;
 
-    class ot extends s {
+    class Pt extends s {
       _tooltip;
       _text;
       _showTimer = null;
@@ -8138,7 +8115,7 @@ p9r-tag:hover {
         return ["text"];
       }
       constructor() {
-        super({ css: Ye, template: $e });
+        super({ css: bl, template: mo });
         this._tooltip = this.shadowRoot?.querySelector(".tooltip") ?? null, this._text = this.shadowRoot?.querySelector(".text") ?? null;
       }
       connectedCallback() {
@@ -8150,7 +8127,7 @@ p9r-tag:hover {
         if (this._hideTimer)
           clearTimeout(this._hideTimer);
       }
-      attributeChangedCallback(t, e, i) {
+      attributeChangedCallback(t, e, r) {
         if (t === "text")
           this._syncText();
       }
@@ -8175,7 +8152,7 @@ p9r-tag:hover {
       };
     }
     if (!customElements.get("p9r-tooltip"))
-      customElements.define("p9r-tooltip", ot);
+      customElements.define("p9r-tooltip", Pt);
   })();
 
   // src/control/core/editorSystem/Component.ts
@@ -8975,6 +8952,68 @@ p9r-tag:hover {
     }
   }
   customElements.define("w13c-fixed-admin-layout", FixedAdminLayout);
+
+  // src/control/components/admin/EmptyState/template.html
+  var template_default2 = `<div class="cell">
+    <slot name="icon"></slot>
+    <slot name="title"></slot>
+    <slot name="hint"></slot>
+</div>
+`;
+
+  // src/control/components/admin/EmptyState/style.css
+  var style_default = `:host {
+    display: table-row;
+    position: relative;
+    height: 320px;
+}
+
+.cell {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+::slotted([slot="icon"]) {
+    width: 48px;
+    height: 48px;
+    opacity: 0.35;
+    color: var(--text-muted);
+}
+
+::slotted([slot="title"]) {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+::slotted([slot="hint"]) {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+`;
+
+  // src/control/components/admin/EmptyState/EmptyState.ts
+  class EmptyState extends Component {
+    constructor() {
+      super({
+        css: style_default,
+        template: template_default2
+      });
+    }
+  }
+  if (!customElements.get("cms-empty-state")) {
+    customElements.define("cms-empty-state", EmptyState);
+  }
 
   // src/control/components/admin/OpenDialog/OpenDialog.ts
   class OpenDialog extends HTMLElement {
@@ -10130,13 +10169,13 @@ p9r-tag:hover {
   }
 
   // src/control/components/editor/componentSync/sync/ImageSync/ImageSync.style.css
-  var ImageSync_style_default = `p9r-image-sync {
+  var ImageSync_style_default = `:host {
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-p9r-image-sync .image-sync-label {
+.image-sync-label {
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
@@ -10144,7 +10183,7 @@ p9r-image-sync .image-sync-label {
     color: var(--text-muted, #94a3b8);
 }
 
-p9r-image-sync .image-sync-card {
+.image-sync-card {
     position: relative;
     border: 1px dashed var(--border-default, #e2e8f0);
     border-radius: 10px;
@@ -10154,18 +10193,18 @@ p9r-image-sync .image-sync-card {
     background: var(--bg-base, #f8fafc);
 }
 
-p9r-image-sync .image-sync-card:hover {
+.image-sync-card:hover {
     border-color: var(--primary-base, #4361ee);
 }
 
-p9r-image-sync .image-sync-card.has-image {
+.image-sync-card.has-image {
     border-style: solid;
     padding: 1rem;
 }
 
 /* ── Preview image ── */
 
-p9r-image-sync .image-sync-card img {
+.image-sync-card img {
     display: block;
     width: 100%;
     aspect-ratio: 16 / 9;
@@ -10175,7 +10214,7 @@ p9r-image-sync .image-sync-card img {
 
 /* ── Empty state ── */
 
-p9r-image-sync .image-sync-empty {
+.image-sync-empty {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10185,12 +10224,12 @@ p9r-image-sync .image-sync-empty {
     aspect-ratio: 16 / 9;
 }
 
-p9r-image-sync .image-sync-empty svg {
+.image-sync-empty svg {
     color: var(--text-muted, #94a3b8);
     opacity: 0.5;
 }
 
-p9r-image-sync .image-sync-empty span {
+.image-sync-empty span {
     font-size: 11px;
     font-weight: 500;
     color: var(--text-muted, #94a3b8);
@@ -10198,7 +10237,7 @@ p9r-image-sync .image-sync-empty span {
 
 /* ── Overlay actions ── */
 
-p9r-image-sync .image-sync-overlay {
+.image-sync-overlay {
     position: absolute;
     inset: 0;
     display: flex;
@@ -10210,12 +10249,12 @@ p9r-image-sync .image-sync-overlay {
     opacity: 0;
 }
 
-p9r-image-sync .image-sync-card:hover .image-sync-overlay {
+.image-sync-card:hover .image-sync-overlay {
     opacity: 1;
     background: rgb(0 0 0 / 0.4);
 }
 
-p9r-image-sync .image-sync-overlay button {
+.image-sync-overlay button {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -10231,36 +10270,208 @@ p9r-image-sync .image-sync-overlay button {
     -webkit-backdrop-filter: blur(4px);
 }
 
-p9r-image-sync .image-sync-overlay button:active {
+.image-sync-overlay button:active {
     transform: scale(0.95);
 }
 
-p9r-image-sync .image-sync-overlay .btn-change {
+.image-sync-overlay .btn-change {
     background: rgb(255 255 255 / 0.9);
     color: var(--text-main, #1e293b);
 }
 
-p9r-image-sync .image-sync-overlay .btn-remove {
+.image-sync-overlay .btn-remove {
     background: rgb(255 255 255 / 0.15);
     color: #fff;
 }
 
-p9r-image-sync .image-sync-overlay .btn-remove:hover {
+.image-sync-overlay .btn-remove:hover {
     background: var(--danger-base, #ef4444);
 }
 `;
 
+  // src/control/components/editor/componentSync/sync/ImageSync/lock.ts
+  var LOCKED_ACTIONS = [
+    "DISABLE_DELETE",
+    "DISABLE_DUPLICATE",
+    "DISABLE_ADD_BEFORE",
+    "DISABLE_ADD_AFTER",
+    "DISABLE_CHANGE_COMPONENT",
+    "DISABLE_DRAGGING",
+    "DISABLE_SAVE_AS_TEMPLATE"
+  ];
+  function lockActions(target) {
+    if (!target)
+      return;
+    let changed = false;
+    for (const key of LOCKED_ACTIONS) {
+      const attr = p9r.attr.ACTION[key];
+      if (target.getAttribute(attr) !== "true") {
+        target.setAttribute(attr, "true");
+        changed = true;
+      }
+    }
+    if (!changed)
+      return;
+    const id = target.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
+    if (id) {
+      const editor = document.compIdentifierToEditor?.get(id);
+      editor?.viewEditor();
+    }
+  }
+
+  // src/control/components/editor/componentSync/sync/ImageSync/target.ts
+  function resolveTarget(host) {
+    const component = host._component;
+    if (!component)
+      return null;
+    const slot = host.slotName;
+    if (!slot)
+      return component.querySelector("img");
+    return component.querySelector(`img[slot="${slot}"]`);
+  }
+  function ensureTarget(host) {
+    let target = resolveTarget(host);
+    if (target)
+      return target;
+    target = document.createElement("img");
+    const slot = host.slotName;
+    if (slot)
+      target.setAttribute("slot", slot);
+    lockActions(target);
+    if (host.allowResize)
+      target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
+    host._component.appendChild(target);
+    return target;
+  }
+  function syncDefault(host) {
+    const defaultSrc = host.getAttribute("default");
+    if (!defaultSrc)
+      return;
+    if (resolveTarget(host))
+      return;
+    if (host.optionnal && !host.isCreating)
+      return;
+    const img = document.createElement("img");
+    const slot = host.slotName;
+    if (slot)
+      img.setAttribute("slot", slot);
+    img.setAttribute("src", defaultSrc);
+    lockActions(img);
+    if (host.allowResize)
+      img.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
+    host._component?.appendChild(img);
+  }
+
+  // src/control/components/editor/componentSync/sync/ImageSync/view.ts
+  function render(host) {
+    host._target = resolveTarget(host);
+    lockActions(host._target);
+    watchTarget(host);
+    const label = host.getAttribute("label") || "Image";
+    const currentValue = host._target?.getAttribute("src") || "";
+    const shadow = host.shadowRoot;
+    Array.from(shadow.children).forEach((c) => {
+      if (c.tagName !== "STYLE")
+        c.remove();
+    });
+    const labelEl = document.createElement("span");
+    labelEl.className = "image-sync-label";
+    labelEl.textContent = label;
+    const card = document.createElement("div");
+    card.className = "image-sync-card";
+    host._previewImg = document.createElement("img");
+    host._emptyState = document.createElement("div");
+    host._emptyState.className = "image-sync-empty";
+    host._emptyState.innerHTML = `${ICON_UPLOAD}<span>Click to choose an image</span>`;
+    host._overlay = document.createElement("div");
+    host._overlay.className = "image-sync-overlay";
+    const btnChange = document.createElement("button");
+    btnChange.className = "btn-change";
+    btnChange.textContent = "Change";
+    btnChange.addEventListener("click", (e) => {
+      e.stopPropagation();
+      host.openMediaCenter();
+    });
+    const btnRemove = document.createElement("button");
+    btnRemove.className = "btn-remove";
+    btnRemove.textContent = "Remove";
+    btnRemove.addEventListener("click", (e) => {
+      e.stopPropagation();
+      host.clearTarget();
+    });
+    host._overlay.appendChild(btnChange);
+    host._overlay.appendChild(btnRemove);
+    card.appendChild(host._previewImg);
+    card.appendChild(host._emptyState);
+    card.appendChild(host._overlay);
+    card.addEventListener("click", () => host.openMediaCenter());
+    shadow.appendChild(labelEl);
+    shadow.appendChild(card);
+    updatePreview(host, currentValue);
+  }
+  function updatePreview(host, src) {
+    if (!host._previewImg || !host._emptyState || !host._overlay)
+      return;
+    const card = host._previewImg.parentElement;
+    if (src) {
+      host._previewImg.src = src;
+      host._previewImg.style.display = "block";
+      host._emptyState.style.display = "none";
+      host._overlay.style.display = "flex";
+      card.classList.add("has-image");
+    } else {
+      host._previewImg.style.display = "none";
+      host._emptyState.style.display = "flex";
+      host._overlay.style.display = "none";
+      card.classList.remove("has-image");
+    }
+  }
+  function watchTarget(host) {
+    host._targetObserver?.disconnect();
+    host._targetObserver = null;
+    const target = host._target;
+    if (!target)
+      return;
+    host._targetObserver = new MutationObserver(() => {
+      updatePreview(host, target.getAttribute("src") || "");
+    });
+    host._targetObserver.observe(target, { attributes: true, attributeFilter: ["src"] });
+  }
+
+  // src/control/components/editor/componentSync/sync/ImageSync/mediaCenter.ts
+  function openMediaCenter2(host) {
+    const acceptRaw = host.getAttribute("accept") || "image";
+    const types = ["folder", ...acceptRaw.split(",").map((t) => t.trim())];
+    const mediaCenter = document.createElement("cms-media-center");
+    document.body.appendChild(mediaCenter);
+    requestAnimationFrame(() => {
+      const handler = (e) => {
+        mediaCenter.removeEventListener("select-item", handler);
+        const src = e.detail?.src;
+        if (src) {
+          host._target = ensureTarget(host);
+          lockActions(host._target);
+          watchTarget(host);
+          host._target.setAttribute("src", src);
+          updatePreview(host, src);
+        }
+        mediaCenter.remove();
+      };
+      mediaCenter.addEventListener("select-item", handler);
+      mediaCenter.show(types);
+    });
+  }
+  function clearTarget(host) {
+    if (host._target) {
+      host._target.remove();
+      host._target = null;
+    }
+    watchTarget(host);
+    updatePreview(host, "");
+  }
+
   // src/control/components/editor/componentSync/sync/ImageSync/ImageSync.ts
   class ImageSync extends HTMLElement {
-    static _LOCKED_ACTIONS = [
-      "DISABLE_DELETE",
-      "DISABLE_DUPLICATE",
-      "DISABLE_ADD_BEFORE",
-      "DISABLE_ADD_AFTER",
-      "DISABLE_CHANGE_COMPONENT",
-      "DISABLE_DRAGGING",
-      "DISABLE_SAVE_AS_TEMPLATE"
-    ];
     _component = null;
     _target = null;
     _previewImg = null;
@@ -10268,191 +10479,58 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     _overlay = null;
     _targetObserver = null;
     _prepared = false;
+    constructor() {
+      super();
+      this.attachShadow({ mode: "open" }).innerHTML = `<style>${ImageSync_style_default}</style>`;
+    }
     connectedCallback() {
       const componentIdentifier = this.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
       if (componentIdentifier && !this._component) {
         this._component = document.querySelector(`[${p9r.attr.EDITOR.IDENTIFIER}="${componentIdentifier}"]`);
       }
-      ImageSync._injectStyles();
       requestAnimationFrame(() => {
         if (!this._prepared)
-          this._syncDefault();
-        this._render();
+          syncDefault(this);
+        render(this);
       });
+    }
+    disconnectedCallback() {
+      this._targetObserver?.disconnect();
+      this._targetObserver = null;
     }
     prepare(component) {
       this._component = component;
-      this._syncDefault();
-      this._target = this._resolveTarget();
-      this._lockActions(this._target);
-      this._watchTarget(this._target);
+      syncDefault(this);
+      this._target = resolveTarget(this);
+      lockActions(this._target);
+      watchTarget(this);
       if (this._target && this.allowResize) {
         this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
       }
       this._prepared = true;
     }
-    static _stylesInjected = false;
-    static _injectStyles() {
-      if (ImageSync._stylesInjected)
+    init(opts) {
+      const target = resolveTarget(this);
+      if (opts?.added && opts.added !== target)
         return;
-      const style = document.createElement("style");
-      style.textContent = ImageSync_style_default;
-      document.head.appendChild(style);
-      ImageSync._stylesInjected = true;
+      if (opts?.removed && opts.removed !== this._target && opts.removed !== target)
+        return;
+      this._target = target;
+      lockActions(this._target);
+      watchTarget(this);
+      if (this._target && this.allowResize) {
+        this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
+      }
+      updatePreview(this, this._target?.getAttribute("src") || "");
     }
-    get _slotName() {
+    openMediaCenter() {
+      openMediaCenter2(this);
+    }
+    clearTarget() {
+      clearTarget(this);
+    }
+    get slotName() {
       return this.getAttribute("slotTarget") || "";
-    }
-    _syncDefault() {
-      const defaultSrc = this.getAttribute("default");
-      if (!defaultSrc)
-        return;
-      if (this._resolveTarget())
-        return;
-      if (this.optionnal && !this.isCreating)
-        return;
-      const img = document.createElement("img");
-      const slot = this._slotName;
-      if (slot)
-        img.setAttribute("slot", slot);
-      img.setAttribute("src", defaultSrc);
-      this._lockActions(img);
-      if (this.allowResize)
-        img.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
-      this._component?.appendChild(img);
-    }
-    _resolveTarget() {
-      if (!this._component)
-        return null;
-      const slot = this._slotName;
-      if (!slot)
-        return this._component.querySelector("img");
-      return this._component.querySelector(`img[slot="${slot}"]`);
-    }
-    _ensureTarget() {
-      let target = this._resolveTarget();
-      if (target)
-        return target;
-      target = document.createElement("img");
-      const slot = this._slotName;
-      if (slot)
-        target.setAttribute("slot", slot);
-      this._lockActions(target);
-      if (this.allowResize)
-        target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
-      this._component.appendChild(target);
-      return target;
-    }
-    _render() {
-      this._target = this._resolveTarget();
-      this._lockActions(this._target);
-      this._watchTarget(this._target);
-      const label = this.getAttribute("label") || "Image";
-      const currentValue = this._target?.getAttribute("src") || "";
-      this.innerHTML = "";
-      const labelEl = document.createElement("span");
-      labelEl.className = "image-sync-label";
-      labelEl.textContent = label;
-      const card = document.createElement("div");
-      card.className = "image-sync-card";
-      this._previewImg = document.createElement("img");
-      this._emptyState = document.createElement("div");
-      this._emptyState.className = "image-sync-empty";
-      this._emptyState.innerHTML = `${ICON_UPLOAD}<span>Click to choose an image</span>`;
-      this._overlay = document.createElement("div");
-      this._overlay.className = "image-sync-overlay";
-      const btnChange = document.createElement("button");
-      btnChange.className = "btn-change";
-      btnChange.textContent = "Change";
-      btnChange.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._openMediaCenter();
-      });
-      const btnRemove = document.createElement("button");
-      btnRemove.className = "btn-remove";
-      btnRemove.textContent = "Remove";
-      btnRemove.addEventListener("click", (e) => {
-        e.stopPropagation();
-        this._clear();
-      });
-      this._overlay.appendChild(btnChange);
-      this._overlay.appendChild(btnRemove);
-      card.appendChild(this._previewImg);
-      card.appendChild(this._emptyState);
-      card.appendChild(this._overlay);
-      card.addEventListener("click", () => this._openMediaCenter());
-      this.appendChild(labelEl);
-      this.appendChild(card);
-      this._updatePreview(currentValue);
-    }
-    _lockActions(target) {
-      if (!target)
-        return;
-      let changed = false;
-      for (const key of ImageSync._LOCKED_ACTIONS) {
-        const attr = p9r.attr.ACTION[key];
-        if (target.getAttribute(attr) !== "true") {
-          target.setAttribute(attr, "true");
-          changed = true;
-        }
-      }
-      if (!changed)
-        return;
-      const id = target.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
-      if (id) {
-        const editor = document.compIdentifierToEditor?.get(id);
-        editor?.viewEditor();
-      }
-    }
-    _watchTarget(target) {
-      this._targetObserver?.disconnect();
-      this._targetObserver = null;
-      if (!target)
-        return;
-      this._targetObserver = new MutationObserver(() => {
-        this._updatePreview(target.getAttribute("src") || "");
-      });
-      this._targetObserver.observe(target, { attributes: true, attributeFilter: ["src"] });
-    }
-    _updatePreview(src) {
-      if (!this._previewImg || !this._emptyState || !this._overlay)
-        return;
-      const card = this._previewImg.parentElement;
-      if (src) {
-        this._previewImg.src = src;
-        this._previewImg.style.display = "block";
-        this._emptyState.style.display = "none";
-        this._overlay.style.display = "flex";
-        card.classList.add("has-image");
-      } else {
-        this._previewImg.style.display = "none";
-        this._emptyState.style.display = "flex";
-        this._overlay.style.display = "none";
-        card.classList.remove("has-image");
-      }
-    }
-    _openMediaCenter() {
-      const mediaCenter = document.EditorManager.getMediaCenter();
-      const acceptRaw = this.getAttribute("accept") || "image";
-      const types = ["folder", ...acceptRaw.split(",").map((t) => t.trim())];
-      const handler = (e) => {
-        mediaCenter.removeEventListener("select-item", handler);
-        this._target = this._ensureTarget();
-        this._lockActions(this._target);
-        this._watchTarget(this._target);
-        this._target.setAttribute("src", e.detail.src);
-        this._updatePreview(e.detail.src);
-      };
-      mediaCenter.addEventListener("select-item", handler);
-      mediaCenter.show(types);
-    }
-    _clear() {
-      if (this._target) {
-        this._target.remove();
-        this._target = null;
-      }
-      this._watchTarget(null);
-      this._updatePreview("");
     }
     get isMultiSelect() {
       return this.hasAttribute("multi-select");
@@ -10465,25 +10543,6 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     }
     get isCreating() {
       return this._component?.getAttribute(p9r.attr.EDITOR.IS_CREATING) === "true";
-    }
-    init(opts) {
-      const target = this._resolveTarget();
-      if (opts?.added && opts.added !== target)
-        return;
-      if (opts?.removed && opts.removed !== this._target && opts.removed !== target)
-        return;
-      this._target = target;
-      this._lockActions(this._target);
-      this._watchTarget(this._target);
-      if (this._target && this.allowResize) {
-        this._target.setAttribute(p9r.attr.ACTION.ALLOW_RESIZE_IMAGE, "true");
-      }
-      const currentValue = this._target?.getAttribute("src") || "";
-      this._updatePreview(currentValue);
-    }
-    disconnectedCallback() {
-      this._targetObserver?.disconnect();
-      this._targetObserver = null;
     }
   }
   if (!customElements.get("p9r-image-sync")) {
@@ -10637,7 +10696,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
   }
 
   // src/control/components/editor/configurations/PageConfiguration/template.html
-  var template_default2 = `<w13c-lateral-dialog>
+  var template_default3 = `<w13c-lateral-dialog>
   <form action="">
 
     <p9r-section data-title="SEO">
@@ -10703,7 +10762,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 `;
 
   // src/control/components/editor/configurations/PageConfiguration/style.css
-  var style_default = `form {
+  var style_default2 = `form {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -10813,8 +10872,8 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     _pathBlurred = false;
     constructor() {
       super({
-        css: style_default,
-        template: template_default2
+        css: style_default2,
+        template: template_default3
       });
     }
     static get observedAttributes() {
@@ -11016,7 +11075,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
   customElements.define("cms-page-configuration", PageConfiguration);
 
   // src/control/components/editor/configurations/TemplateConfiguration/template.html
-  var template_default3 = `<w13c-lateral-dialog>
+  var template_default4 = `<w13c-lateral-dialog>
   <form action="">
 
     <p9r-section data-title="Information">
@@ -11053,7 +11112,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
 `;
 
   // src/control/components/editor/configurations/TemplateConfiguration/style.css
-  var style_default2 = `form {
+  var style_default3 = `form {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -11070,8 +11129,8 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
   class TemplateConfiguration extends Component {
     constructor() {
       super({
-        css: style_default2,
-        template: template_default3
+        css: style_default3,
+        template: template_default4
       });
     }
     connectedCallback() {
@@ -11086,14 +11145,17 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
         const content = document.EditorManager.getContent();
         const url = new URL(window.location.href);
         const id = url.searchParams.get("id");
+        if (!id) {
+          showToast("Missing template id. Create the template from the templates list first.", { type: "error", duration: 6000 });
+          return;
+        }
         const endpoint = new URL("../../api/template", window.location.href);
-        if (id)
-          endpoint.searchParams.set("id", id);
         try {
           const res = await fetch(endpoint, {
-            method: "POST",
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+              id,
               name: data.name,
               description: data.description,
               category: data.category,
@@ -11104,12 +11166,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
             showToast("Failed to save template: " + await res.text(), { type: "error", duration: 6000 });
             return;
           }
-          const result = await res.json();
-          if (!id && result.id) {
-            url.searchParams.set("id", result.id);
-            window.history.pushState({}, "", url);
-          }
-          showToast(id ? "Template updated" : "Template created", { type: "success" });
+          showToast("Template updated", { type: "success" });
         } catch (err) {
           showToast("Failed to save template: " + (err?.message || err), { type: "error", duration: 6000 });
         }
@@ -11328,7 +11385,7 @@ p9r-image-sync .image-sync-overlay .btn-remove:hover {
     customElements.define("p9r-horizontal-action-group", s);
 
   // src/control/components/editor/EditorSystem/BlocActions/view/style.css
-  var style_default3 = `:host {
+  var style_default4 = `:host {
     position: absolute;
     left: 0;
     top: 0;
@@ -11417,7 +11474,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/view/template.html
-  var template_default4 = `<button data-action="edit" title="Edit">
+  var template_default5 = `<button data-action="edit" title="Edit">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
 </button>
 
@@ -11475,7 +11532,7 @@ cms-bag-breadcrumb[data-inline="right"] {
     if (previousConfigKey === configKey)
       return null;
     host.setAttribute("data-variant", variant);
-    host.innerHTML = template_default4;
+    host.innerHTML = template_default5;
     const separator = host.querySelector('[data-group="delete"]');
     if (showSelectParent)
       host.insertBefore(buildSelectParentButton(), host.firstChild);
@@ -11504,12 +11561,12 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/template.html
-  var template_default5 = `<div class="pill" id="pill"></div>
+  var template_default6 = `<div class="pill" id="pill"></div>
 <div class="bridge"></div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/style.css
-  var style_default4 = `:host {
+  var style_default5 = `:host {
     display: block;
     width: max-content;
     max-width: 420px;
@@ -11623,7 +11680,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/Breadcrumb.ts
-  var Metadata = { css: style_default4, template: template_default5 };
+  var Metadata = { css: style_default5, template: template_default6 };
 
   class Breadcrumb extends Component {
     _pill;
@@ -11736,7 +11793,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/template.html
-  var template_default6 = `<button class="btn" type="button">
+  var template_default7 = `<button class="btn" type="button">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
         <line x1="12" y1="5" x2="12" y2="19"/>
         <line x1="5" y1="12" x2="19" y2="12"/>
@@ -11745,7 +11802,7 @@ cms-bag-breadcrumb[data-inline="right"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/style.css
-  var style_default5 = `:host {
+  var style_default6 = `:host {
     position: absolute;
     z-index: 10001;
     display: none;
@@ -11807,8 +11864,8 @@ cms-bag-breadcrumb[data-inline="right"] {
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/InsertButton.ts
   var Metadata2 = {
-    css: style_default5,
-    template: template_default6
+    css: style_default6,
+    template: template_default7
   };
 
   class InsertButton extends Component {
@@ -11971,14 +12028,14 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/template.html
-  var template_default7 = `<div class="menu" id="menu">
+  var template_default8 = `<div class="menu" id="menu">
     <div class="title">Pin state</div>
     <div class="items" id="items"></div>
 </div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/style.css
-  var style_default6 = `:host {
+  var style_default7 = `:host {
     position: absolute;
     z-index: 10001;
     display: block;
@@ -12062,8 +12119,8 @@ cms-bag-breadcrumb[data-inline="right"] {
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/PinMenu.ts
   var Metadata3 = {
-    css: style_default6,
-    template: template_default7
+    css: style_default7,
+    template: template_default8
   };
 
   class PinMenu extends Component {
@@ -12342,7 +12399,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/template.html
-  var template_default8 = `<dialog id="dialog">
+  var template_default9 = `<dialog id="dialog">
     <div class="container">
         <header class="header">
             <nav class="tabs" id="tabs">
@@ -12366,7 +12423,7 @@ cms-bag-breadcrumb[data-inline="right"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/style.css
-  var style_default7 = `:host {
+  var style_default8 = `:host {
     --bg-main: rgba(255, 255, 255, 0.95);
     --bg-card: #ffffff;
 
@@ -12592,7 +12649,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/template.html
-  var template_default9 = `<button type="button" class="card">
+  var template_default10 = `<button type="button" class="card">
     <span class="icon"><slot name="icon"></slot></span>
     <span class="text">
         <span class="title"><slot name="title"></slot></span>
@@ -12602,7 +12659,7 @@ form[method="dialog"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/style.css
-  var style_default8 = `:host {
+  var style_default9 = `:host {
     display: contents;
 }
 
@@ -12677,8 +12734,8 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/Card.ts
   var Metadata4 = {
-    css: style_default8,
-    template: template_default9
+    css: style_default9,
+    template: template_default10
   };
 
   class Card extends Component {
@@ -12724,14 +12781,14 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/template.html
-  var template_default10 = `<div class="empty-state">
+  var template_default11 = `<div class="empty-state">
     <slot name="icon"></slot>
     <p><slot name="message"></slot></p>
 </div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/style.css
-  var style_default9 = `:host {
+  var style_default10 = `:host {
     display: contents;
 }
 
@@ -12761,11 +12818,11 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/EmptyState.ts
   var Metadata5 = {
-    css: style_default9,
-    template: template_default10
+    css: style_default10,
+    template: template_default11
   };
 
-  class EmptyState extends Component {
+  class EmptyState2 extends Component {
     constructor() {
       super(Metadata5);
     }
@@ -12785,14 +12842,14 @@ form[method="dialog"] {
     }
   }
   if (!customElements.get("cms-bloc-library-empty-state")) {
-    customElements.define("cms-bloc-library-empty-state", EmptyState);
+    customElements.define("cms-bloc-library-empty-state", EmptyState2);
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderTemplates.ts
   function renderTemplates({ grid, templates, category, onPick }) {
     const filtered = templates.filter((t) => (t.category || "Default") === category);
     if (filtered.length === 0) {
-      grid.appendChild(EmptyState.create({
+      grid.appendChild(EmptyState2.create({
         icon: ICON_TEMPLATE_MUTED,
         message: "No templates in this category"
       }));
@@ -12813,7 +12870,7 @@ form[method="dialog"] {
   function renderSnippets({ grid, snippets, category, onPick }) {
     const filtered = snippets.filter((s2) => (s2.category || "Default") === category);
     if (filtered.length === 0) {
-      grid.appendChild(EmptyState.create({
+      grid.appendChild(EmptyState2.create({
         icon: ICON_SNIPPET_MUTED,
         message: "No snippets in this category"
       }));
@@ -12841,7 +12898,7 @@ form[method="dialog"] {
     const matchingSnippets = snippets.filter((s2) => s2.name.toLowerCase().includes(q) || (s2.description ?? "").toLowerCase().includes(q) || s2.identifier.toLowerCase().includes(q) || (s2.category ?? "").toLowerCase().includes(q));
     const total = matchingBlocs.length + matchingTemplates.length + matchingSnippets.length;
     if (total === 0) {
-      grid.appendChild(EmptyState.create({
+      grid.appendChild(EmptyState2.create({
         icon: ICON_COMPONENT,
         message: `No results for "${query}"`
       }));
@@ -12893,8 +12950,8 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
   var Metadata6 = {
-    css: style_default7,
-    template: template_default8
+    css: style_default8,
+    template: template_default9
   };
 
   class BlocLibrary extends Component {
@@ -13218,6 +13275,74 @@ form[method="dialog"] {
     return someEnabled || editor.customActions.length > 0 || editor.stateSyncs.length > 0 || editor.hasConfigPanel;
   }
 
+  // src/control/components/editor/EditorSystem/Highlight.ts
+  var ROOT_ID = "p9r-editor-highlight-root";
+  var root = null;
+  var active = new Set;
+  var onScrollOrResize = null;
+  function ensureRoot() {
+    if (root)
+      return root;
+    root = document.createElement("div");
+    root.id = ROOT_ID;
+    root.style.cssText = "position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9999;";
+    document.body.appendChild(root);
+    return root;
+  }
+  function attachGlobal() {
+    if (onScrollOrResize)
+      return;
+    onScrollOrResize = () => active.forEach((h) => h.update());
+    window.addEventListener("scroll", onScrollOrResize, { capture: true, passive: true });
+    window.addEventListener("resize", onScrollOrResize);
+  }
+  function detachGlobal() {
+    if (!onScrollOrResize)
+      return;
+    window.removeEventListener("scroll", onScrollOrResize, { capture: true });
+    window.removeEventListener("resize", onScrollOrResize);
+    onScrollOrResize = null;
+  }
+
+  class Highlight {
+    _target;
+    _box;
+    _ro;
+    constructor(target, options = {}) {
+      this._target = target;
+      const r = ensureRoot();
+      this._box = document.createElement("div");
+      const color = options.color ?? "#3b82f6";
+      const thickness = options.thickness ?? 2;
+      const radius = options.radius ?? 0;
+      this._box.style.cssText = `position:absolute;left:0;top:0;border:${thickness}px solid ${color};` + `border-radius:${radius}px;box-sizing:border-box;pointer-events:none;`;
+      r.appendChild(this._box);
+      this._ro = new ResizeObserver(() => this.update());
+      this._ro.observe(target);
+      active.add(this);
+      attachGlobal();
+      this.update();
+    }
+    update() {
+      const rect = this._target.getBoundingClientRect();
+      const s2 = this._box.style;
+      s2.transform = `translate(${rect.left}px, ${rect.top}px)`;
+      s2.width = `${rect.width}px`;
+      s2.height = `${rect.height}px`;
+      s2.display = rect.width === 0 && rect.height === 0 ? "none" : "block";
+    }
+    setColor(color) {
+      this._box.style.borderColor = color;
+    }
+    dispose() {
+      this._ro.disconnect();
+      this._box.remove();
+      active.delete(this);
+      if (active.size === 0)
+        detachGlobal();
+    }
+  }
+
   // src/control/components/editor/EditorSystem/BlocActions/domain/lifecycle/BagController.ts
   class BagController {
     host;
@@ -13233,10 +13358,11 @@ form[method="dialog"] {
     pin;
     events;
     ro;
+    highlight = null;
     constructor(host) {
       this.host = host;
       const s2 = document.createElement("style");
-      s2.textContent = style_default3;
+      s2.textContent = style_default4;
       host.shadowRoot.appendChild(s2);
       this.breadcrumb = new BreadcrumbController(host, (ed) => switchToEditor(this, ed));
       this.insertBtns = new InsertButtonsController((pos) => this.withCooldown(() => this.insertBtns.insertBlank(pos)));
@@ -13261,6 +13387,8 @@ form[method="dialog"] {
       this.editor = editor;
       this.target = editor.target;
       this.hoverEl = editor.getActionBarAnchor?.() ?? editor.target;
+      this.highlight?.dispose();
+      this.highlight = new Highlight(this.target, { color: "var(--primary-base, #3b82f6)" });
       this.events.rebindHover(prev);
       this.insertBtns.resolveTarget(editor);
     }
@@ -13269,6 +13397,8 @@ form[method="dialog"] {
     }
     close() {
       this.pin.close();
+      this.highlight?.dispose();
+      this.highlight = null;
       this.target?.classList.remove("p9r-active");
       document.querySelectorAll(".p9r-breadcrumb-hover").forEach((el) => el.classList.remove("p9r-breadcrumb-hover"));
       this.host.style.cssText = "visibility:hidden;opacity:0;pointer-events:none;";
@@ -13548,7 +13678,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/EditorRoot/template.html
-  var template_default11 = `<div>
+  var template_default12 = `<div>
     <slot name="style"></slot>
     <slot name="script"></slot>
     <div id="workingElement">
@@ -14140,11 +14270,11 @@ form[method="dialog"] {
     groups = new Set(["default"]);
     opaqueTags = new Set;
     constructor(slot) {
-      const root = slot.getRootNode();
-      if (!(root instanceof ShadowRoot)) {
+      const root2 = slot.getRootNode();
+      if (!(root2 instanceof ShadowRoot)) {
         throw new Error("ObserverManager: slot must live in a ShadowRoot");
       }
-      const host = root.host;
+      const host = root2.host;
       this.workingElement = host;
       this._registerEditors();
       const initialAssigned = slot.assignedElements({ flatten: true });
@@ -14179,8 +14309,6 @@ form[method="dialog"] {
           if (mutation.type === "childList") {
             mutation.addedNodes.forEach((node) => {
               if (!(node instanceof HTMLElement))
-                return;
-              if (node.hasAttribute("slot"))
                 return;
               if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR)) {
                 const newParentId = node.parentElement?.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
@@ -14271,10 +14399,10 @@ form[method="dialog"] {
           map.get(id)?.dispose();
       });
     }
-    _disposeSubtree(root) {
-      if (!root.querySelectorAll)
+    _disposeSubtree(root2) {
+      if (!root2.querySelectorAll)
         return;
-      const descendants = root.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
+      const descendants = root2.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
       descendants.forEach((node) => {
         const id = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
         if (id)
@@ -14307,10 +14435,10 @@ form[method="dialog"] {
       this.opaqueTags.add(element.tag);
       this.register_editor(element);
       const roots = this.workingElement.querySelectorAll(element.tag);
-      roots.forEach((root) => this._sealOpaqueSubtree(root));
+      roots.forEach((root2) => this._sealOpaqueSubtree(root2));
     }
-    _sealOpaqueSubtree(root) {
-      const descendants = root.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
+    _sealOpaqueSubtree(root2) {
+      const descendants = root2.querySelectorAll(`[${p9r.attr.EDITOR.IDENTIFIER}]`);
       descendants.forEach((node) => {
         const id = node.getAttribute(p9r.attr.EDITOR.IDENTIFIER);
         if (!id)
@@ -14335,7 +14463,6 @@ form[method="dialog"] {
       });
     }
     make_it_editor(node) {
-      console.log("make editor", node);
       if (node.getAttribute(p9r.attr.EDITOR.IS_EDITOR))
         return;
       if (node.parentElement?.closest(`[${p9r.attr.EDITOR.OPAQUE}]`))
@@ -14390,12 +14517,13 @@ form[method="dialog"] {
       super();
       this.attachShadow({ mode: "open" });
       const template = document.createElement("template");
-      template.innerHTML = template_default11;
+      template.innerHTML = template_default12;
       this.shadowRoot?.append(template.content.cloneNode(true));
     }
     connectedCallback() {
       requestAnimationFrame(() => {
         const workingElement = this.shadowRoot?.querySelector("#workingElement");
+        workingElement.style.visibility = "hidden";
         this._blocActions = this.shadowRoot?.querySelector("cms-bloc-actions");
         const slot = this.shadowRoot.querySelector("#workingElement slot");
         if (!slot)
@@ -14404,6 +14532,7 @@ form[method="dialog"] {
           this._observer = new ObserverManager(slot);
           this._dragmanager = new DragManager(workingElement);
           this._blocLibrary = this.shadowRoot?.querySelector("cms-bloc-library");
+          workingElement.style.visibility = "visible";
         });
       });
     }
@@ -14474,7 +14603,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/template.html
-  var template_default12 = `<div id="toolbar-container">
+  var template_default13 = `<div id="toolbar-container">
     <div id="drag-handle" title="Move">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path
@@ -14509,7 +14638,7 @@ form[method="dialog"] {
 </div>`;
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/style.css
-  var style_default10 = `:host {
+  var style_default11 = `:host {
   --toolbar-bg: #ffffff;
   --toolbar-border: #e5e7eb;
   --toolbar-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -14588,8 +14717,8 @@ button span {
     _startY = 0;
     constructor() {
       super({
-        css: style_default10,
-        template: template_default12
+        css: style_default11,
+        template: template_default13
       });
       this._onPointerMove = this._onPointerMove.bind(this);
       this._onPointerUp = this._onPointerUp.bind(this);
@@ -14641,7 +14770,7 @@ button span {
   }
 
   // src/control/components/editor/MediaCenter/template.html
-  var template_default13 = `<dialog>
+  var template_default14 = `<dialog>
     <div class="modal-container">
         <header class="modal-header">
             <h2>Media Center</h2>
@@ -14709,7 +14838,7 @@ button span {
 `;
 
   // src/control/components/editor/MediaCenter/style.css
-  var style_default11 = `:host {
+  var style_default12 = `:host {
     --mc-bg: #ffffff;
     --mc-border: #e2e8f0;
     --mc-text: #1e293b;
@@ -15098,7 +15227,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/template.html
-  var template_default14 = `<div class="card">
+  var template_default15 = `<div class="card">
     <div class="preview">
         <slot name="image">
             <span class="placeholder">
@@ -15120,7 +15249,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/style.css
-  var style_default12 = `:host {
+  var style_default13 = `:host {
     --card-bg: var(--bg-surface, #fff);
     --card-border: var(--border-default, #e2e8f0);
     --card-radius: 12px;
@@ -15245,8 +15374,8 @@ dialog::backdrop {
   class CardMedia extends Component {
     constructor() {
       super({
-        css: style_default12,
-        template: template_default14
+        css: style_default13,
+        template: template_default15
       });
     }
   }
@@ -15254,7 +15383,7 @@ dialog::backdrop {
     customElements.define("p9r-card-media", CardMedia);
   }
 
-  // src/control/components/media/GridMedia/api.ts
+  // src/control/components/media/GridMedia/api/client.ts
   function media() {
     const m = window._cms?.Media;
     if (!m) {
@@ -15279,7 +15408,9 @@ dialog::backdrop {
     }
     return local;
   }
-  async function fetchItems(_apiBase, folder, types) {
+
+  // src/control/components/media/GridMedia/api/read.ts
+  async function fetchItems(folder, types) {
     const res = await media().getItems({
       folderID: folder ?? undefined,
       accept: expandAccept(types),
@@ -15321,7 +15452,7 @@ dialog::backdrop {
       out.push("video", "audio", "pdf", "document", "text", "archive", "other");
     return out;
   }
-  async function resolveBreadcrumbTrail(_apiBase, id) {
+  async function resolveBreadcrumbTrail(id) {
     const trail = [];
     let currentId = id;
     while (currentId) {
@@ -15334,22 +15465,23 @@ dialog::backdrop {
     }
     return trail;
   }
-  async function renameItem(_apiBase, id, label) {
+  // src/control/components/media/GridMedia/api/write.ts
+  async function renameItem(id, label) {
     const res = await media().updateItem({ id, name: label });
     return res.ok;
   }
-  async function deleteItem(_apiBase, id) {
+  async function deleteItem(id) {
     const res = await media().deleteItem({ id, recursive: true });
     return res.ok;
   }
-  async function createFolder(_apiBase, label, parent) {
+  async function createFolder(label, parent) {
     const res = await media().createFolder({
       name: label,
       ...parent ? { parentFolderID: parent } : {}
     });
     return res.ok;
   }
-  async function uploadFiles(_apiBase, files, folder) {
+  async function uploadFiles(files, folder) {
     for (let i = 0;i < files.length; i++) {
       const file = files.item(i);
       if (!file)
@@ -15363,7 +15495,7 @@ dialog::backdrop {
       });
     }
   }
-  async function saveItemMetadata(_apiBase, id, data) {
+  async function saveItemMetadata(id, data) {
     const patch = {};
     if (typeof data["label"] === "string")
       patch.name = data["label"];
@@ -15374,7 +15506,6 @@ dialog::backdrop {
     const res = await media().updateItem({ id, ...patch });
     return res.ok;
   }
-
   // src/control/components/media/GridMedia/types.ts
   function formatSize(bytes) {
     if (bytes < 1024)
@@ -15402,7 +15533,7 @@ dialog::backdrop {
     }).toString();
   }
 
-  // src/control/components/media/GridMedia/render.ts
+  // src/control/components/media/GridMedia/view/render.ts
   function renderGrid(grid, items) {
     grid.innerHTML = "";
     for (const item of items) {
@@ -15478,8 +15609,8 @@ dialog::backdrop {
     _dragCounter = 0;
     constructor() {
       super({
-        css: style_default11,
-        template: template_default13
+        css: style_default12,
+        template: template_default14
       });
     }
     connectedCallback() {
@@ -15509,7 +15640,7 @@ dialog::backdrop {
       fileInput.addEventListener("change", async () => {
         if (!fileInput.files?.length)
           return;
-        await uploadFiles(this._apiBase, fileInput.files, this._folder);
+        await uploadFiles(fileInput.files, this._folder);
         fileInput.value = "";
         this._refresh();
       });
@@ -15564,7 +15695,7 @@ dialog::backdrop {
         this._dragCounter = 0;
         overlay.classList.remove("active");
         if (e.dataTransfer?.files.length) {
-          await uploadFiles(this._apiBase, e.dataTransfer.files, this._folder);
+          await uploadFiles(e.dataTransfer.files, this._folder);
           this._refresh();
         }
       });
@@ -15578,10 +15709,6 @@ dialog::backdrop {
       this._dialog?.showModal();
       this._refresh();
     }
-    get _apiBase() {
-      const raw = getMetaApiPath();
-      return raw.endsWith("/") ? raw.slice(0, -1) : raw;
-    }
     async _refresh() {
       this._items = await this._fetchItems();
       this._selectedItem = null;
@@ -15589,7 +15716,7 @@ dialog::backdrop {
       this._render();
     }
     async _fetchItems() {
-      return fetchItems(this._apiBase, this._folder, this._types);
+      return fetchItems(this._folder, this._types);
     }
     _render() {
       renderGrid(this._grid, this._items);
@@ -15646,7 +15773,7 @@ dialog::backdrop {
       const name = input.value.trim();
       if (!name)
         return;
-      await createFolder(this._apiBase, name, this._folder);
+      await createFolder(name, this._folder);
       backdrop.classList.remove("open");
       this._refresh();
     }
@@ -15654,7 +15781,7 @@ dialog::backdrop {
   customElements.define("cms-media-center", MediaCenter);
 
   // src/control/components/editor/RichTextBar/template.html
-  var template_default15 = `<div class="toolbar">
+  var template_default16 = `<div class="toolbar">
     <!-- Format -->
     <button data-command="bold" title="Bold">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -15815,7 +15942,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/editor/RichTextBar/style.css
-  var style_default13 = `:host {
+  var style_default14 = `:host {
     position: absolute;
     z-index: 9999999999;
     display: none;
@@ -16322,16 +16449,16 @@ button.active svg {
     _rootListenersAttached = false;
     constructor() {
       super({
-        css: style_default13,
-        template: template_default15
+        css: style_default14,
+        template: template_default16
       });
     }
     connectedCallback() {
-      const root = this.shadowRoot;
+      const root2 = this.shadowRoot;
       if (!this._rootListenersAttached) {
-        root.addEventListener("mousedown", this._onRootMousedown);
-        root.addEventListener("mouseup", this._onRootMouseup);
-        root.addEventListener("click", this._onRootClick);
+        root2.addEventListener("mousedown", this._onRootMousedown);
+        root2.addEventListener("mouseup", this._onRootMouseup);
+        root2.addEventListener("click", this._onRootClick);
         this._rootListenersAttached = true;
       }
       document.addEventListener("selectionchange", this._onSelectionChange);
@@ -16340,7 +16467,7 @@ button.active svg {
         this.pageLink = document.createElement("p9r-link");
         this.pageLink.setAttribute("label", "");
         this.pageLink.setAttribute("name", "href");
-        root.querySelector(".link-pages-wrap").appendChild(this.pageLink);
+        root2.querySelector(".link-pages-wrap").appendChild(this.pageLink);
       }
     }
     disconnectedCallback() {
@@ -16488,9 +16615,9 @@ button.active svg {
       this.shadowRoot.querySelector(".link-bar")?.classList.remove("open");
     }
     switchLinkType(type) {
-      const root = this.shadowRoot;
-      root.querySelectorAll(".link-type-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.linkType === type));
-      root.querySelectorAll(".link-field").forEach((f) => {
+      const root2 = this.shadowRoot;
+      root2.querySelectorAll(".link-type-btn").forEach((btn) => btn.classList.toggle("active", btn.dataset.linkType === type));
+      root2.querySelectorAll(".link-field").forEach((f) => {
         f.style.display = f.dataset.linkField === type ? "" : "none";
       });
     }
@@ -16571,7 +16698,7 @@ button.active svg {
       super();
       if (shadow) {
         const ele = this.attachShadow({ mode: "open" });
-        ele.innerHTML = `${css}${html}`;
+        ele.innerHTML = `<style>${css ?? ""}</style>${html ?? ""}`;
       }
     }
     static get observedAttributes() {
@@ -16580,7 +16707,7 @@ button.active svg {
   }
 
   // src/control/components/editor/configurations/Configuration/template.html
-  var template_default16 = `<w13c-lateral-dialog>
+  var template_default17 = `<w13c-lateral-dialog>
 
     <h3 slot="title"><slot name="title"></slot></h3>
 
@@ -16594,6 +16721,12 @@ button.active svg {
     </form>
 
 </w13c-lateral-dialog>`;
+
+  // src/control/components/editor/configurations/Configuration/style.css
+  var style_default15 = `form{
+    display: flex;
+    flex-direction: column;
+}`;
 
   // src/control/core/dom/getFormData.ts
   function getFormData(formEle, slotTarget) {
@@ -16623,7 +16756,7 @@ button.active svg {
       return ["url", "method"];
     }
     constructor() {
-      super(template_default16, template_default16, true);
+      super(template_default17, style_default15, true);
     }
     _handleSubmit = (e) => {
       e.preventDefault();
@@ -16672,11 +16805,11 @@ button.active svg {
   }
 
   // src/control/components/editor/snippet/Snippet/template.html
-  var template_default17 = `<div class="snippet-root"></div>
+  var template_default18 = `<div class="snippet-root"></div>
 `;
 
   // src/control/components/editor/snippet/Snippet/style.css
-  var style_default14 = `:host {
+  var style_default16 = `:host {
     display: block;
     position: relative;
     min-height: 40px;
@@ -16755,8 +16888,8 @@ button.active svg {
 
   // src/control/components/editor/snippet/Snippet/Snippet.ts
   var SnippetMetadata = {
-    css: style_default14,
-    template: template_default17
+    css: style_default16,
+    template: template_default18
   };
 
   class Snippet extends Component {
@@ -16815,7 +16948,7 @@ button.active svg {
   }
 
   // src/control/components/editor/configurations/SnippetConfiguration/template.html
-  var template_default18 = `<w13c-lateral-dialog>
+  var template_default19 = `<w13c-lateral-dialog>
   <form action="">
 
     <p9r-section data-title="Identity">
@@ -16865,7 +16998,7 @@ button.active svg {
 `;
 
   // src/control/components/editor/configurations/SnippetConfiguration/style.css
-  var style_default15 = `form {
+  var style_default17 = `form {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -16911,8 +17044,8 @@ button.active svg {
     _identifierValid = true;
     constructor() {
       super({
-        css: style_default15,
-        template: template_default18
+        css: style_default17,
+        template: template_default19
       });
     }
     connectedCallback() {
@@ -17116,7 +17249,7 @@ button.active svg {
   customElements.define("w13c-snippet-information", SnippetConfiguration);
 
   // src/control/components/media/CropSystem/template.html
-  var template_default19 = `<div class="backdrop" id="backdrop">
+  var template_default20 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3>Crop image</h3>
@@ -17155,7 +17288,7 @@ button.active svg {
 `;
 
   // src/control/components/media/CropSystem/style.css
-  var style_default16 = `:host {
+  var style_default18 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -17357,8 +17490,8 @@ button.active svg {
   class CropSystem extends Component {
     constructor() {
       super({
-        css: style_default16,
-        template: template_default19
+        css: style_default18,
+        template: template_default20
       });
     }
     connectedCallback() {
@@ -17395,7 +17528,7 @@ button.active svg {
   customElements.define("p9r-crop-system", CropSystem);
 
   // src/control/components/media/DetailMedia/template.html
-  var template_default20 = `<div class="backdrop" id="backdrop">
+  var template_default21 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3 id="title">File details</h3>
@@ -17437,7 +17570,7 @@ button.active svg {
 `;
 
   // src/control/components/media/DetailMedia/style.css
-  var style_default17 = `:host {
+  var style_default19 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -17650,8 +17783,8 @@ button.active svg {
   class DetailMedia extends Component {
     constructor() {
       super({
-        css: style_default17,
-        template: template_default20
+        css: style_default19,
+        template: template_default21
       });
     }
     connectedCallback() {
@@ -17682,8 +17815,8 @@ button.active svg {
     customElements.define("p9r-detail-media", DetailMedia);
   }
 
-  // src/control/components/media/GridMedia/template.html
-  var template_default21 = `<div class="toolbar">
+  // src/control/components/media/GridMedia/view/template.html
+  var template_default22 = `<div class="toolbar">
     <div class="breadcrumb" id="breadcrumb">
         <span class="bc-current">Root</span>
     </div>
@@ -17744,8 +17877,8 @@ button.active svg {
 <p9r-crop-system id="crop"></p9r-crop-system>
 `;
 
-  // src/control/components/media/GridMedia/style.css
-  var style_default18 = `:host {
+  // src/control/components/media/GridMedia/view/style.css
+  var style_default20 = `:host {
     --grid-gap: 16px;
     --grid-min-col: 180px;
     --empty-color: var(--text-muted, #94a3b8);
@@ -18145,7 +18278,7 @@ button.active svg {
 }
 `;
 
-  // src/control/components/media/GridMedia/context-menu.ts
+  // src/control/components/media/GridMedia/features/context-menu.ts
   function setupContextMenu(s2, callbacks) {
     const menu = s2.getElementById("ctx-menu");
     let activeItem = null;
@@ -18171,7 +18304,7 @@ button.active svg {
     };
   }
 
-  // src/control/components/media/GridMedia/rename.ts
+  // src/control/components/media/GridMedia/features/rename.ts
   function setupRename(s2, callbacks) {
     const backdrop = s2.getElementById("rename-backdrop");
     const input = s2.getElementById("rename-input");
@@ -18215,7 +18348,7 @@ button.active svg {
     };
   }
 
-  // src/control/components/media/GridMedia/new-folder.ts
+  // src/control/components/media/GridMedia/features/new-folder.ts
   function setupNewFolder(host, s2, callbacks) {
     const backdrop = s2.getElementById("nf-backdrop");
     const input = s2.getElementById("nf-input");
@@ -18254,7 +18387,7 @@ button.active svg {
     });
   }
 
-  // src/control/components/media/GridMedia/drag-drop.ts
+  // src/control/components/media/GridMedia/features/drag-drop.ts
   function setupDragDrop(s2, callbacks) {
     const fileInput = s2.getElementById("file-input");
     const dropOverlay = s2.getElementById("drop-overlay");
@@ -18305,47 +18438,9 @@ button.active svg {
     };
   }
 
-  // src/control/components/media/GridMedia/detail.ts
+  // src/control/components/media/GridMedia/features/detail/builders.ts
   var ICON_COPY = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
   var ICON_CHECK = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
-  function setupDetail(detail, callbacks) {
-    detail.addEventListener("close", () => callbacks.onClose());
-    return {
-      open(item) {
-        detail.innerHTML = "";
-        const preview = buildPreview(item);
-        if (preview)
-          detail.appendChild(preview);
-        const fields = buildFields(item);
-        detail.appendChild(fields);
-        const actions = buildActions();
-        detail.appendChild(actions);
-        actions.querySelector("#btn-save").addEventListener("click", () => {
-          const data = readFields(detail);
-          callbacks.onSave(item.id, data);
-        });
-        actions.querySelector("#btn-delete").addEventListener("click", () => {
-          callbacks.onDelete(item.id);
-        });
-        fields.addEventListener("keydown", (e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-            const data = readFields(detail);
-            callbacks.onSave(item.id, data);
-          }
-        });
-        detail.open(item.label);
-      }
-    };
-  }
-  function readFields(detail) {
-    const labelInput = detail.querySelector("#detail-label");
-    const altInput = detail.querySelector("#detail-alt");
-    const data = { label: labelInput.value };
-    if (altInput)
-      data.alt = altInput.value;
-    return data;
-  }
   function buildPreview(item) {
     const isImage = item.type === "image" || item.mimetype === "image/svg+xml";
     if (!isImage)
@@ -18419,6 +18514,129 @@ button.active svg {
     return el;
   }
 
+  // src/control/components/media/GridMedia/features/detail/setup.ts
+  function setupDetail(detail, callbacks) {
+    detail.addEventListener("close", () => callbacks.onClose());
+    return {
+      open(item) {
+        detail.innerHTML = "";
+        const preview = buildPreview(item);
+        if (preview)
+          detail.appendChild(preview);
+        const fields = buildFields(item);
+        detail.appendChild(fields);
+        const actions = buildActions();
+        detail.appendChild(actions);
+        actions.querySelector("#btn-save").addEventListener("click", () => {
+          callbacks.onSave(item.id, readFields(detail));
+        });
+        actions.querySelector("#btn-delete").addEventListener("click", () => {
+          callbacks.onDelete(item.id);
+        });
+        fields.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            callbacks.onSave(item.id, readFields(detail));
+          }
+        });
+        detail.open(item.label);
+      }
+    };
+  }
+  function readFields(detail) {
+    const labelInput = detail.querySelector("#detail-label");
+    const altInput = detail.querySelector("#detail-alt");
+    const data = { label: labelInput.value };
+    if (altInput)
+      data.alt = altInput.value;
+    return data;
+  }
+
+  // src/control/components/media/GridMedia/features/setup.ts
+  function setupFeatures(host, s2) {
+    const refresh2 = () => host._refresh();
+    const ctxMenu = setupContextMenu(s2, {
+      onRename: (item) => rename.open(item),
+      onDelete: (id) => host._confirmDelete(id)
+    });
+    const rename = setupRename(s2, {
+      onApply: async (id, name) => {
+        await renameItem(id, name);
+        refresh2();
+      }
+    });
+    setupNewFolder(host, s2, {
+      onCreate: async (name) => {
+        await createFolder(name, host._folder);
+        refresh2();
+      }
+    });
+    const dragDrop = setupDragDrop(s2, {
+      onFiles: async (files) => {
+        await uploadFiles(files, host._folder);
+        refresh2();
+      }
+    });
+    const detail = setupDetail(host.detail, {
+      onSave: async (id, data) => {
+        if (await saveItemMetadata(id, data))
+          host.detail.close();
+      },
+      onDelete: async (id) => {
+        if (!confirm("Delete this file?"))
+          return;
+        if (await deleteItem(id)) {
+          host.detail.close();
+          refresh2();
+        }
+      },
+      onClose: refresh2
+    });
+    return { ctxMenu, dragDrop, detail };
+  }
+
+  // src/control/components/media/GridMedia/events/grid.ts
+  function wireGrid(host, s2, ctxMenu, detail) {
+    const grid = s2.getElementById("grid");
+    grid.addEventListener("click", (e) => {
+      const card = e.target.closest("p9r-card-media");
+      if (!card)
+        return;
+      const id = card.dataset.id;
+      if (card.dataset.type === "folder") {
+        const folder = host._items.find((i) => i.id === id);
+        host._navigateTo(id, folder?.label);
+      } else {
+        const item = host._items.find((i) => i.id === id);
+        if (item)
+          detail.open(item);
+      }
+    });
+    grid.addEventListener("contextmenu", (e) => {
+      const card = e.target.closest("p9r-card-media");
+      if (!card)
+        return;
+      const item = host._items.find((i) => i.id === card.dataset.id);
+      if (!item)
+        return;
+      e.preventDefault();
+      ctxMenu.show(e, item);
+    });
+  }
+
+  // src/control/components/media/GridMedia/events/breadcrumb.ts
+  function wireBreadcrumb(host, s2) {
+    s2.getElementById("breadcrumb").addEventListener("click", (e) => {
+      const target = e.target;
+      if (!target.classList.contains("bc-item"))
+        return;
+      const folder = target.dataset.folder || null;
+      const index = parseInt(target.dataset.index || "-1");
+      host._breadcrumb = host._breadcrumb.slice(0, index + 1);
+      host._navigateTo(folder);
+    });
+  }
+
   // src/control/components/media/GridMedia/GridMedia.ts
   class GridMedia extends Component {
     _folder = null;
@@ -18426,12 +18644,9 @@ button.active svg {
     _items = [];
     constructor() {
       super({
-        css: style_default18,
-        template: template_default21
+        css: style_default20,
+        template: template_default22
       });
-    }
-    get apiBase() {
-      return this.getAttribute("api-base") || "../api";
     }
     get detail() {
       return this.shadowRoot.getElementById("detail");
@@ -18442,80 +18657,12 @@ button.active svg {
     connectedCallback() {
       const s2 = this.shadowRoot;
       this._folder = new URL(window.location.href).searchParams.get("folder");
-      const ctxMenu = setupContextMenu(s2, {
-        onRename: (item) => rename.open(item),
-        onDelete: (id) => this._confirmDelete(id)
-      });
-      const rename = setupRename(s2, {
-        onApply: async (id, name) => {
-          await renameItem(this.apiBase, id, name);
-          this._refresh();
-        }
-      });
-      setupNewFolder(this, s2, {
-        onCreate: async (name) => {
-          await createFolder(this.apiBase, name, this._folder);
-          this._refresh();
-        }
-      });
-      const dragDrop = setupDragDrop(s2, {
-        onFiles: async (files) => {
-          await uploadFiles(this.apiBase, files, this._folder);
-          this._refresh();
-        }
-      });
-      const detail = setupDetail(this.detail, {
-        onSave: async (id, data) => {
-          if (await saveItemMetadata(this.apiBase, id, data)) {
-            this.detail.close();
-          }
-        },
-        onDelete: async (id) => {
-          if (!confirm("Delete this file?"))
-            return;
-          if (await deleteItem(this.apiBase, id)) {
-            this.detail.close();
-            this._refresh();
-          }
-        },
-        onClose: () => this._refresh()
-      });
-      s2.getElementById("grid").addEventListener("click", (e) => {
-        const card = e.target.closest("p9r-card-media");
-        if (!card)
-          return;
-        const id = card.dataset.id;
-        if (card.dataset.type === "folder") {
-          const folder = this._items.find((i) => i.id === id);
-          this._navigateTo(id, folder?.label);
-        } else {
-          const item = this._items.find((i) => i.id === id);
-          if (item)
-            detail.open(item);
-        }
-      });
-      s2.getElementById("grid").addEventListener("contextmenu", (e) => {
-        const card = e.target.closest("p9r-card-media");
-        if (!card)
-          return;
-        const item = this._items.find((i) => i.id === card.dataset.id);
-        if (!item)
-          return;
-        e.preventDefault();
-        ctxMenu.show(e, item);
-      });
-      s2.getElementById("breadcrumb").addEventListener("click", (e) => {
-        const target = e.target;
-        if (!target.classList.contains("bc-item"))
-          return;
-        const folder = target.dataset.folder || null;
-        const index = parseInt(target.dataset.index || "-1");
-        this._breadcrumb = this._breadcrumb.slice(0, index + 1);
-        this._navigateTo(folder);
-      });
-      this.upload = () => dragDrop.trigger();
+      const f = setupFeatures(this, s2);
+      wireGrid(this, s2, f.ctxMenu, f.detail);
+      wireBreadcrumb(this, s2);
+      this.upload = () => f.dragDrop.trigger();
       if (this._folder) {
-        resolveBreadcrumbTrail(this.apiBase, this._folder).then((trail) => {
+        resolveBreadcrumbTrail(this._folder).then((trail) => {
           this._breadcrumb = trail;
           this._render();
         });
@@ -18523,8 +18670,11 @@ button.active svg {
       this._refresh();
     }
     upload() {}
+    refresh() {
+      this._refresh();
+    }
     async _refresh() {
-      this._items = await fetchItems(this.apiBase, this._folder);
+      this._items = await fetchItems(this._folder);
       this._render();
     }
     _render() {
@@ -18548,23 +18698,12 @@ button.active svg {
     async _confirmDelete(id) {
       if (!confirm("Delete this item?"))
         return;
-      if (await deleteItem(this.apiBase, id))
+      if (await deleteItem(id))
         this._refresh();
     }
   }
   if (!customElements.get("p9r-grid-media")) {
     customElements.define("p9r-grid-media", GridMedia);
-  }
-
-  // src/control/components/form/Form/events/onKeyboardEvent.ts
-  function onKeyboardEvent(e, nativeForm) {
-    if (e.key !== "Enter")
-      return;
-    const target = e.target;
-    if (target.tagName === "TEXTAREA")
-      return;
-    e.preventDefault();
-    nativeForm.requestSubmit();
   }
 
   // src/control/core/dom/BubblesEvent.ts
@@ -18577,13 +18716,130 @@ button.active svg {
     }
   }
 
+  // src/control/components/media/MediaAdmin/MediaAdmin.html
+  var MediaAdmin_default = `<w13c-fixed-admin-layout>
+    <span slot="title">Media</span>
+    <p9r-open-modal slot="action" modal-target="cms-media-new-folder">
+        <p9r-button>+ New folder</p9r-button>
+    </p9r-open-modal>
+    <p9r-button slot="action" color="primary" data-action="upload">Upload files</p9r-button>
+    <p9r-grid-media></p9r-grid-media>
+    <input type="file" multiple data-role="file-input" hidden>
+</w13c-fixed-admin-layout>
+
+<p9r-modal id="cms-media-new-folder" aria-label="Create folder">
+    <span slot="title">New folder</span>
+    <p9r-stack gap="m">
+        <p9r-input data-role="folder-name" label="Name" placeholder="My folder"></p9r-input>
+        <p9r-button color="primary" fullWidth data-action="create-folder">Create</p9r-button>
+    </p9r-stack>
+</p9r-modal>
+`;
+
+  // src/control/components/media/MediaAdmin/MediaAdmin.ts
+  class MediaAdmin extends HTMLElement {
+    _grid = null;
+    _fileInput = null;
+    _wired = false;
+    connectedCallback() {
+      if (!this.firstElementChild)
+        this._render();
+      if (!this._wired) {
+        this._wire();
+        this._wired = true;
+      }
+    }
+    _render() {
+      this.innerHTML = MediaAdmin_default;
+    }
+    _wire() {
+      this._grid = this.querySelector("p9r-grid-media");
+      this._fileInput = this.querySelector('[data-role="file-input"]');
+      this.querySelector('[data-action="upload"]')?.addEventListener("click", () => this._fileInput?.click());
+      this._fileInput?.addEventListener("change", () => this._handleUpload());
+      this.querySelector('[data-action="create-folder"]')?.addEventListener("click", () => this._handleCreateFolder());
+      this.querySelector('[data-role="folder-name"]')?.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          this._handleCreateFolder();
+        }
+      });
+    }
+    async _handleUpload() {
+      const files = this._fileInput?.files;
+      if (!files || files.length === 0)
+        return;
+      const folder = this._currentFolder();
+      for (const f of Array.from(files)) {
+        await this._media().uploadFile({
+          data: f,
+          name: f.name,
+          mimeType: f.type || "application/octet-stream",
+          size: f.size,
+          ...folder ? { folderID: folder } : {}
+        });
+      }
+      if (this._fileInput)
+        this._fileInput.value = "";
+      this._grid?.refresh();
+    }
+    async _handleCreateFolder() {
+      const button = this.querySelector('[data-action="create-folder"]');
+      const input = this.querySelector('[data-role="folder-name"]');
+      const name = input?.value?.trim();
+      if (!name)
+        return;
+      const folder = this._currentFolder();
+      const res = await this._media().createFolder({
+        name,
+        ...folder ? { parentFolderID: folder } : {}
+      });
+      if (!res.ok)
+        return;
+      if (input)
+        input.value = "";
+      button?.dispatchEvent(new BubblesEvent("form:success"));
+      this._grid?.refresh();
+    }
+    _currentFolder() {
+      return new URL(window.location.href).searchParams.get("folder");
+    }
+    _media() {
+      const m = window._cms?.Media;
+      if (!m)
+        throw new Error("window._cms.Media missing — admin must load /<basePath>/_cms/media.js first");
+      return m;
+    }
+  }
+  if (!customElements.get("cms-media-admin"))
+    customElements.define("cms-media-admin", MediaAdmin);
+
+  // src/control/components/form/Form/events/onKeyboardEvent.ts
+  function onKeyboardEvent(e, nativeForm) {
+    if (e.key !== "Enter")
+      return;
+    const target = e.target;
+    if (target.tagName === "TEXTAREA")
+      return;
+    e.preventDefault();
+    nativeForm.requestSubmit();
+  }
+
+  // src/control/core/dom/buildRequestUrl.ts
+  function buildRequestUrl(target) {
+    const u = new URL(target, window.location.href);
+    for (const [k, v] of new URLSearchParams(window.location.search))
+      u.searchParams.append(k, v);
+    return u;
+  }
+
   // src/control/components/form/Form/events/onSubmit.ts
   function onSubmit(e, me) {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    fetch(me.target, {
+    fetch(buildRequestUrl(me.target), {
       method: me.method || "POST",
       headers: {
         "Content-Type": "application/json"
@@ -18616,6 +18872,11 @@ button.active svg {
         if (this._nativeForm)
           return;
         this._nativeForm = document.createElement("form");
+        const id = this.getAttribute("id");
+        if (id) {
+          this._nativeForm.id = id;
+          this.removeAttribute("id");
+        }
         while (this.firstChild) {
           this._nativeForm.appendChild(this.firstChild);
         }
@@ -18764,9 +19025,7 @@ button.active svg {
   // src/control/components/data/fetch/fetcher.ts
   async function runFetch(url, signal) {
     try {
-      const u = new URL(url, window.location.href);
-      for (const [k, v] of new URLSearchParams(window.location.search))
-        u.searchParams.append(k, v);
+      const u = buildRequestUrl(url);
       const res = await fetch(u, { headers: { Accept: "application/json" }, signal });
       if (!res.ok)
         return { kind: "error", error: new Error(`HTTP ${res.status}`) };
@@ -18855,16 +19114,16 @@ button.active svg {
     }
     return out;
   }
-  function renderFragment(root, context) {
+  function renderFragment(root2, context) {
     const templates = [];
-    collectDirectTemplates(root, templates);
+    collectDirectTemplates(root2, templates);
     for (const tpl of templates) {
       tpl.parentNode?.replaceChild(processTemplate(tpl, context), tpl);
     }
-    interpolateNode(root, context);
+    interpolateNode(root2, context);
   }
-  function collectDirectTemplates(root, out) {
-    for (const child of Array.from(root.childNodes)) {
+  function collectDirectTemplates(root2, out) {
+    for (const child of Array.from(root2.childNodes)) {
       if (child.nodeType !== Node.ELEMENT_NODE)
         continue;
       const el = child;

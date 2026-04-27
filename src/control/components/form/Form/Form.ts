@@ -21,11 +21,17 @@ export default class CmsForm extends CustomHTMLElement {
             if (this._nativeForm) return;
 
             this._nativeForm = document.createElement('form');
-            
+
+            const id = this.getAttribute("id");
+            if (id) {
+                this._nativeForm.id = id;
+                this.removeAttribute("id");
+            }
+
             while (this.firstChild) {
                 this._nativeForm.appendChild(this.firstChild);
             }
-            
+
             this.appendChild(this._nativeForm);
             this._nativeForm.addEventListener("submit", this._handleInternalSubmit);
             this.addEventListener("keydown", (e) => onKeyboardEvent(e, this._nativeForm!));
