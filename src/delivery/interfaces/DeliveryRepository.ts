@@ -1,4 +1,4 @@
-import type { TPage, TSnippet, TSystem } from "src/socle/contracts/Repository/TModels";
+import type { TPage, TSnippet, TSystem } from "src/socle/interfaces/models";
 
 /**
  * Read-only data contract consumed by the Delivery layer. Mirrors the subset

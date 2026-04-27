@@ -1,4 +1,4 @@
-import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "./TModels";
+import type { TBloc, TPage, TSnippet, TSystem, TTemplate } from "./models";
 
 export type BlocListItemResponse = {
     id: string, 

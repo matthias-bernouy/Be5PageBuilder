@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import postTemplate from "src/control/api/template/template.post";
-import type { TTemplate } from "src/socle/contracts/Repository/TModels";
+import type { TTemplate } from "src/socle/interfaces/models";
 
 function makeSystem() {
     const createCalls: Omit<TTemplate, "id">[] = [];

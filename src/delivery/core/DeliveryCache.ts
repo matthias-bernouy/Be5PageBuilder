@@ -1,4 +1,4 @@
-import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { Cache, CacheEntry } from "src/socle/interfaces/Cache";
 
 /**
  * In-memory cache scoped to the Delivery process. Stores pre-compressed
@@ -36,10 +36,6 @@ export class DeliveryCache implements Cache {
         for (const key of this.store.keys()) {
             if (predicate(key)) this.store.delete(key);
         }
-    }
-
-    clear(): void {
-        this.store.clear();
     }
 
 }

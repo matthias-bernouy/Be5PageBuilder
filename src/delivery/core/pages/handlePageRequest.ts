@@ -1,5 +1,5 @@
 import type DeliveryCms from "src/delivery/DeliveryCms";
-import type { TPage } from "src/socle/contracts/Repository/TModels";
+import type { TPage } from "src/socle/interfaces/models";
 import { cachedResponseAsync } from "src/socle/server/compression";
 import { renderPage } from "src/delivery/core/html/renderPage";
 import { renderRef } from "src/delivery/core/pages/renderRef";

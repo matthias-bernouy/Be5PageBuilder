@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import { compress, cachedResponse, cachedResponseAsync } from "src/socle/server/compression";
-import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { Cache, CacheEntry } from "src/socle/interfaces/Cache";
 
 class MemCache implements Cache {
     store = new Map<string, CacheEntry>();
@@ -12,7 +12,6 @@ class MemCache implements Cache {
     deleteMatching(p: (k: string) => boolean) {
         for (const k of this.store.keys()) if (p(k)) this.store.delete(k);
     }
-    clear() { this.store.clear(); }
 }
 
 function reqWithAccept(encoding: string | null) {

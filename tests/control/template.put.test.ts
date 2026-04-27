@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import putTemplate from "src/control/api/template/template.put";
-import type { TTemplate } from "src/socle/contracts/Repository/TModels";
+import type { TTemplate } from "src/socle/interfaces/models";
 
 function makeSystem(opts: { updatedTemplate?: TTemplate | null } = {}) {
     const updateCalls: { id: string; data: Partial<TTemplate> }[] = [];

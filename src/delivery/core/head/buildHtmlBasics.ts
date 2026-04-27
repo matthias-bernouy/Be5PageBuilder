@@ -1,4 +1,4 @@
-import type { TSystem } from "src/socle/contracts/Repository/TModels";
+import type { TSystem } from "src/socle/interfaces/models";
 
 /**
  * HTML basics every page needs: `<html lang>` when a language is configured,

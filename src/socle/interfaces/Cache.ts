@@ -22,5 +22,4 @@ export interface Cache {
      * rendered page when the theme changes).
      */
     deleteMatching(predicate: (key: string) => boolean): void;
-    clear(): void;
 }

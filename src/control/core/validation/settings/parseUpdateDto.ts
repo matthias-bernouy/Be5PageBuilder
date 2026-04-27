@@ -1,5 +1,5 @@
 import InvalidParam from "src/control/errors/Http/InvalidParam";
-import type { TPageRef, TSystem } from "src/socle/contracts/Repository/TModels";
+import type { TPageRef, TSystem } from "src/socle/interfaces/models";
 
 export type SettingsUpdateDto = Partial<TSystem>;
 

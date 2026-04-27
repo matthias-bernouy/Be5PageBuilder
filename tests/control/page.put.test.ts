@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import putPage from "src/control/api/page/page.put";
-import type { TPage } from "src/socle/contracts/Repository/TModels";
+import type { TPage } from "src/socle/interfaces/models";
 
 function makeSystem(opts: { existing?: TPage | null } = {}) {
     const updateCalls: TPage[] = [];

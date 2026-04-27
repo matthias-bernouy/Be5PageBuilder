@@ -1,6 +1,6 @@
 import { BunRunner, CompositeAuthentication, InMemoryApiTokenRepository, TokenAuthentication, TokenProvider } from "@bernouy/socle";
 import { ControlCms } from "src/control/ControlCms";
-import { InMemoryCmsRepository } from "src/socle/providers/memory/CmsRepositoryInMemory";
+import { InMemoryCmsRepository } from "src/socle/default-implementation/CmsRepository/memory";
 import { InMemoryAuthentication } from "./InMemoryAuthentication";
 import { InMemoryMedia } from "./InMemoryMedia";
 import { InMemoryMediaServer } from "./InMemoryMediaServer";

@@ -1,7 +1,7 @@
 import { describe, test, expect } from "bun:test";
 import deleteSnippet from "src/control/api/snippet/snippet.delete";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
-import type { TPage, TSnippet } from "src/socle/contracts/Repository/TModels";
+import type { TPage, TSnippet } from "src/socle/interfaces/models";
 
 function makeSystem(opts: {
     snippet?: TSnippet | null;

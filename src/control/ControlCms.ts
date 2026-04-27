@@ -1,7 +1,7 @@
 import type { Authentication, Media, Runner } from "@bernouy/socle";
-import type { CmsRepository } from "../socle/contracts/Repository/CmsRepository";
-import type { Cache } from "../socle/contracts/Cache/Cache";
-import { InMemoryCache } from "../socle/providers/memory/Cache/InMemoryCache";
+import type { CmsRepository } from "../socle/interfaces/CmsRepository";
+import type { Cache } from "../socle/interfaces/Cache";
+import { InMemoryCache } from "../socle/default-implementation/Cache/memory";
 import type { CMS_ROLES } from "types/roles";
 import serveStaticFolder from "./core/registerEndpoints/serveStaticFolder/serveStaticFolder";
 import { serveApi } from "./core/registerEndpoints/serveApiFolder";

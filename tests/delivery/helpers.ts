@@ -1,7 +1,7 @@
 import type { Runner, MediaUrlBuilder } from "@bernouy/socle";
-import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { Cache, CacheEntry } from "src/socle/interfaces/Cache";
 import type { DeliveryRepository } from "src/delivery/interfaces/DeliveryRepository";
-import type { TPage, TSnippet, TSystem, TPageRef } from "src/socle/contracts/Repository/TModels";
+import type { TPage, TSnippet, TSystem, TPageRef } from "src/socle/interfaces/models";
 import type DeliveryCms from "src/delivery/DeliveryCms";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
 
@@ -36,7 +36,6 @@ export function testCache(): Cache {
         deleteMatching: (p) => {
             for (const k of store.keys()) if (p(k)) store.delete(k);
         },
-        clear: () => { store.clear(); },
     };
 }
 

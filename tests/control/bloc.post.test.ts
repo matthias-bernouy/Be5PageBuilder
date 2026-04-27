@@ -1,6 +1,6 @@
 import { describe, test, expect, mock } from "bun:test";
 import { P9R_CACHE } from "src/socle/constants/p9r-constants";
-import type { TBloc } from "src/socle/contracts/Repository/TModels";
+import type { TBloc } from "src/socle/interfaces/models";
 
 // Stub prepare_bloc so tests never touch the filesystem or run Bun.build.
 // Must be registered before importBloc is imported.
@@ -50,7 +50,6 @@ function makeSystem(opts: {
             get: (k: string) => cache.get(k) ?? null,
             set: (k: string, v: unknown) => { cache.set(k, v); },
             delete: (k: string) => { deleteSpy.push(k); cache.delete(k); },
-            clear: () => { cache.clear(); },
         },
     };
     return { cms, createBlocCalls, deleteSpy };

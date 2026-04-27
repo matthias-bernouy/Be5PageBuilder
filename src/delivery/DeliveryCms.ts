@@ -1,5 +1,5 @@
 import { type Runner, type MediaUrlBuilder, BunRunner } from "@bernouy/socle";
-import type { Cache } from "src/socle/contracts/Cache/Cache";
+import type { Cache } from "src/socle/interfaces/Cache";
 import { DeliveryCache } from "src/delivery/core/DeliveryCache";
 import { PageEnhancer } from "src/delivery/core/enhance/PageEnhancer";
 import { PlaywrightSession } from "src/delivery/core/enhance/PlaywrightSession";

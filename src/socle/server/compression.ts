@@ -1,6 +1,6 @@
 import { CryptoHasher, gzipSync } from "bun";
 import { brotliCompressSync } from "node:zlib";
-import type { Cache, CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { Cache, CacheEntry } from "src/socle/interfaces/Cache";
 
 /**
  * Static security headers applied to every compressed response.

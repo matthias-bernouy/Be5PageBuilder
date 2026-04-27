@@ -1,4 +1,4 @@
-import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
+import type { TPage, TSystem } from "src/socle/interfaces/models";
 
 /**
  * Force any favicon URL that targets the media endpoint to request the 64px

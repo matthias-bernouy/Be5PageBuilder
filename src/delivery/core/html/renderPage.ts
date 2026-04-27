@@ -1,7 +1,7 @@
 import { parseHTML } from "linkedom";
 import type DeliveryCms from "src/delivery/DeliveryCms";
-import type { TPage } from "src/socle/contracts/Repository/TModels";
-import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { TPage } from "src/socle/interfaces/models";
+import type { CacheEntry } from "src/socle/interfaces/Cache";
 import { compress } from "src/socle/server/compression";
 import { expandSnippets } from "src/delivery/core/html/expandSnippets";
 import { findUsedBlocTags } from "src/delivery/core/blocs/findUsedBlocs";

@@ -1,6 +1,6 @@
 import { describe, test, expect } from "bun:test";
 import snippetExists from "src/control/api/snippet/exists.get";
-import type { TSnippet } from "src/socle/contracts/Repository/TModels";
+import type { TSnippet } from "src/socle/interfaces/models";
 
 function makeSystem(identifiers: string[]) {
     const cms: any = {

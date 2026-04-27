@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import type { CacheEntry } from "src/socle/contracts/Cache/Cache";
+import type { CacheEntry } from "src/socle/interfaces/Cache";
 import { compress } from "src/socle/server/compression";
 
 /**

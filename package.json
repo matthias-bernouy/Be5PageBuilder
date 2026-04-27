@@ -57,6 +57,7 @@
         "@bernouy/socle": "^0.1.0",
         "@bernouy/webcomponents": "link:@bernouy/webcomponents",
         "linkedom": "^0.18.12",
+        "mongodb": "^6.13.0",
         "playwright": "^1.59.1"
     },
     "engines": {

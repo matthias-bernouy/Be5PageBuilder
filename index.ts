@@ -20,8 +20,9 @@ export type { DeliveryRepository } from "./src/delivery/interfaces/DeliveryRepos
 export type { DeliveryCmsConfig } from "./src/delivery/DeliveryCms";
 
 // ── Default providers ──────────────────────────────────────────────────
-export { InMemoryCmsRepository } from "./src/socle/providers/memory/CmsRepositoryInMemory";
-export { InMemoryCache } from "./src/socle/providers/memory/Cache/InMemoryCache";
+export { InMemoryCmsRepository } from "./src/socle/default-implementation/CmsRepository/memory";
+export { MongoCmsRepository } from "./src/socle/default-implementation/CmsRepository/mongodb";
+export { InMemoryCache } from "./src/socle/default-implementation/Cache/memory";
 
 // Browser-safe bloc authoring symbols are deliberately split into two
 // sub-entries:
@@ -37,8 +38,8 @@ export { InMemoryCache } from "./src/socle/providers/memory/Cache/InMemoryCache"
 // every browser bundle.
 
 // ── Contracts (for consumers who want to swap in a custom backend) ─────
-export type { CmsRepository } from "./src/socle/contracts/Repository/CmsRepository";
-export type { Cache } from "./src/socle/contracts/Cache/Cache";
+export type { CmsRepository } from "./src/socle/interfaces/CmsRepository";
+export type { Cache } from "./src/socle/interfaces/Cache";
 export type { CMS_ROLES } from "./types/roles";
 export type {
     TPage,
@@ -46,7 +47,7 @@ export type {
     TTemplate,
     TSnippet,
     TSystem,
-} from "./src/socle/contracts/Repository/TModels";
+} from "./src/socle/interfaces/models";
 
 // ── Seeding CLI (importable for programmatic use) ──────────────────────
 export { default as importBlocs } from "./src/cli/CLI_importBloc";
