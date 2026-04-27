@@ -1,34 +1,14 @@
-import type { ControlCms } from "src/control/ControlCms";
-import type { TTemplate } from "src/socle/contracts/Repository/TModels";
+import type { ControlCms } from 'src/control/ControlCms';
+import { readJsonBody } from 'src/control/core/http/readJsonBody';
+import { parseTemplateCreateDto } from 'src/control/core/validation/template/parseCreateDto';
+import { createTemplate } from 'src/control/core/template/createTemplate';
 
 export default async function postTemplate(req: Request, cms: ControlCms) {
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id");
-    const body = await req.json() as Partial<TTemplate>;
-
-    if (id) {
-        const updated = await cms.repository.updateTemplate(id, body);
-        if (!updated) return new Response("Not found", { status: 404 });
-        return new Response(JSON.stringify(updated), {
-            headers: { "Content-Type": "application/json" }
-        });
-    }
-
-    if (!body.name || !body.content) {
-        return new Response("Missing required fields: name, content", { status: 400 });
-    }
-
-    const template: TTemplate = {
-        name: body.name,
-        description: body.description || "",
-        content: body.content,
-        category: body.category || "",
-        createdAt: new Date()
-    };
-
-    const created = await cms.repository.createTemplate(template);
+    const body = await readJsonBody(req);
+    const dto  = parseTemplateCreateDto(body);
+    const created = await createTemplate(cms, dto);
     return new Response(JSON.stringify(created), {
         status: 201,
-        headers: { "Content-Type": "application/json" }
+        headers: { 'Content-Type': 'application/json' },
     });
 }

@@ -1,8 +1,8 @@
 <w13c-fixed-admin-layout>
     <span slot="title">Templates</span>
-    <a slot="action" href="{{BASE_PATH}}/admin/templates/editor">
+    <p9r-open-modal modal-target="create-template-modal" slot="action">
         <p9r-button color="primary">+ New template</p9r-button>
-    </a>
+    </p9r-open-modal>
 
     <p9r-table>
         <p9r-row slot="header">
@@ -12,9 +12,9 @@
             <p9r-cell></p9r-cell>
         </p9r-row>
 
-        <cms-fetch url="{{BASE_PATH}}/api/template/templates">
-            <template>
-                <p9r-row href="{{ editorPath }}">
+        <cms-fetch url="{{BASE_PATH}}/api/template/list" reload-on="new:template">
+            <template for=".">
+                <p9r-row href="{{BASE_PATH}}/editor/template?id={{id}}">
                     <p9r-cell>{{ name }}</p9r-cell>
                     <p9r-cell>{{ category }}</p9r-cell>
                     <p9r-cell>{{ createdLabel }}</p9r-cell>
@@ -35,3 +35,16 @@
         </cms-fetch>
     </p9r-table>
 </w13c-fixed-admin-layout>
+
+<p9r-modal id="create-template-modal" aria-label="Create a new template">
+    <span slot="title">Template creation</span>
+    <cms-form target="{{BASE_PATH}}/api/template" emit="new:template">
+        <p9r-stack gap="m">
+            <p9r-input name="name" label="Name" placeholder="My hero section"></p9r-input>
+            <p9r-tag-suggest name="category" mode="single" resource="templates" api="{{BASE_PATH}}/api/tags" placeholder="hero, layout, cta…">
+                <span slot="label">Category</span>
+            </p9r-tag-suggest>
+            <p9r-button color="primary" fullWidth type="submit">Create new template</p9r-button>
+        </p9r-stack>
+    </cms-form>
+</p9r-modal>

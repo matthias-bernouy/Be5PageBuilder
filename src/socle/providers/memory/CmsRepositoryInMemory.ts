@@ -68,12 +68,15 @@ export class InMemoryCmsRepository implements CmsRepository {
     }
 
     async getLinks(){
-        const array = Array.from(this._pages.values());
-        array.map((v) => {
-            v.path,
-            v.title
-        })
-        return array;
+        return Array.from(this._pages.values()).map(v => ({ path: v.path, title: v.title }));
+    }
+
+    async getTemplateCategories(): Promise<string[]> {
+        const set = new Set<string>();
+        for (const t of this._templates.values()) {
+            if (t.category) set.add(t.category);
+        }
+        return Array.from(set).sort();
     }
 
     async insertPage(path: string, title: string): Promise<void> {
@@ -88,6 +91,17 @@ export class InMemoryCmsRepository implements CmsRepository {
         }
         this._pagesById.set(page.id, page);
         this._pages.set(page.path, page);
+    }
+
+    async getTemplatesMetadata(): Promise<{ id: string; name: string; category: string; createdAt: string; }[]> {
+        return this._templates.values().map((val) => {
+            return {
+                id: val.id,
+                name: val.name,
+                category: val.category,
+                createdAt: val.createdAt.toDateString()
+            }
+        }).toArray()
     }
 
     async updatePage(page: TPage){
@@ -168,7 +182,7 @@ export class InMemoryCmsRepository implements CmsRepository {
 
     // ── Templates ──
 
-    async createTemplate(template: TTemplate): Promise<TTemplate> {
+    async createTemplate(template: Omit<TTemplate, 'id'>): Promise<TTemplate> {
         const id = this._nextId();
         const stored = { ...template, id };
         this._templates.set(id, stored);

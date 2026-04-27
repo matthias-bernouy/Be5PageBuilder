@@ -34,6 +34,7 @@ export interface CmsRepository {
     getPageById(id: string): Promise<TPage | null>;
     updatePage(page: Partial<TPage>): Promise<void>;
     getLinks(): Promise<PageLink[]>
+    getTemplatesMetadata(): Promise<{id: string, name: string, category: string, createdAt: string}[]>
 
 
     // SYSTEM
@@ -41,9 +42,11 @@ export interface CmsRepository {
     updateSystem(system: Partial<TSystem>): Promise<TSystem>;
 
     // TEMPLATE
-    createTemplate(template: TTemplate): Promise<TTemplate>;
+    createTemplate(template: Omit<TTemplate, 'id'>): Promise<TTemplate>;
     getTemplateById(id: string): Promise<TTemplate | null>;
     getAllTemplates(): Promise<TTemplate[]>;
+    /** Distinct, sorted, non-empty `category` values across every template. */
+    getTemplateCategories(): Promise<string[]>;
     updateTemplate(id: string, data: Partial<TTemplate>): Promise<TTemplate | null>;
     deleteTemplate(id: string): Promise<void>;
 

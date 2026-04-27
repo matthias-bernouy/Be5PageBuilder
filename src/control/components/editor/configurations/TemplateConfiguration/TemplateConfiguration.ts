@@ -30,14 +30,19 @@ export class TemplateConfiguration extends Component {
             const url = new URL(window.location.href);
             const id = url.searchParams.get("id");
 
+            if (!id) {
+                showToast("Missing template id. Create the template from the templates list first.", { type: "error", duration: 6000 });
+                return;
+            }
+
             const endpoint = new URL("../../api/template", window.location.href);
-            if (id) endpoint.searchParams.set("id", id);
 
             try {
                 const res = await fetch(endpoint, {
-                    method: "POST",
+                    method: "PUT",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
+                        id,
                         name: data.name,
                         description: data.description,
                         category: data.category,
@@ -48,12 +53,7 @@ export class TemplateConfiguration extends Component {
                     showToast("Failed to save template: " + await res.text(), { type: "error", duration: 6000 });
                     return;
                 }
-                const result = await res.json();
-                if (!id && result.id) {
-                    url.searchParams.set("id", result.id);
-                    window.history.pushState({}, "", url);
-                }
-                showToast(id ? "Template updated" : "Template created", { type: "success" });
+                showToast("Template updated", { type: "success" });
             } catch (err: any) {
                 showToast("Failed to save template: " + (err?.message || err), { type: "error", duration: 6000 });
             }

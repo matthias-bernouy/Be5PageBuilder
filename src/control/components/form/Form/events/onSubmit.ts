@@ -1,9 +1,10 @@
 import BubblesEvent from "src/control/core/dom/BubblesEvent";
+import { buildRequestUrl } from "src/control/core/dom/buildRequestUrl";
 import type CmsForm from "../Form";
 
 
 export default function onSubmit(e: SubmitEvent, me: CmsForm){
-    
+
     e.preventDefault();
 
     const form = e.target as HTMLFormElement;
@@ -11,7 +12,7 @@ export default function onSubmit(e: SubmitEvent, me: CmsForm){
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
 
-    fetch(me.target, {
+    fetch(buildRequestUrl(me.target), {
         method: me.method || "POST",
         headers: {
             'Content-Type': 'application/json'

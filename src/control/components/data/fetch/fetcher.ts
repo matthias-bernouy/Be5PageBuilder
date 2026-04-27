@@ -1,18 +1,18 @@
+import { buildRequestUrl } from 'src/control/core/dom/buildRequestUrl';
+
 export type FetchOutcome =
     | { kind: 'success'; data: unknown }
     | { kind: 'error'; error: unknown }
     | { kind: 'aborted' };
 
 /**
- * Resolves `url` relative to the current location, forwards every query
- * param of `window.location.search` to the request, and returns a
- * discriminated outcome — never throws. Aborted requests surface as
- * `{ kind: 'aborted' }` so the caller can drop them.
+ * Returns a discriminated outcome — never throws. Aborted requests surface
+ * as `{ kind: 'aborted' }` so the caller can drop them. URL resolution and
+ * query-forwarding are delegated to `buildRequestUrl`.
  */
 export async function runFetch(url: string, signal: AbortSignal): Promise<FetchOutcome> {
     try {
-        const u = new URL(url, window.location.href);
-        for (const [k, v] of new URLSearchParams(window.location.search)) u.searchParams.append(k, v);
+        const u = buildRequestUrl(url);
         const res = await fetch(u, { headers: { Accept: 'application/json' }, signal });
         if (!res.ok) return { kind: 'error', error: new Error(`HTTP ${res.status}`) };
         const data = await res.json() as unknown;

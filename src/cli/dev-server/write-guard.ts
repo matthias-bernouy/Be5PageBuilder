@@ -9,6 +9,7 @@ type BlockRule = { method: string; pattern: RegExp; label: string };
  */
 const BLOCKED: BlockRule[] = [
     { method: "POST",   pattern: /\/api\/template$/,  label: "template write" },
+    { method: "PUT",    pattern: /\/api\/template$/,  label: "template update" },
     { method: "DELETE", pattern: /\/api\/template$/,  label: "template delete" },
     { method: "POST",   pattern: /\/api\/snippet$/,   label: "snippet write" },
     { method: "DELETE", pattern: /\/api\/snippet$/,   label: "snippet delete" },
