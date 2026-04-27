@@ -4,6 +4,7 @@ import { DeliveryCache } from "src/delivery/core/DeliveryCache";
 import { PageEnhancer } from "src/delivery/core/enhance/PageEnhancer";
 import { PlaywrightSession } from "src/delivery/core/enhance/PlaywrightSession";
 import type { DeliveryRepository } from "./interfaces/DeliveryRepository";
+import type { HeadInjector } from "./interfaces/HeadInjector";
 
 export type DeliveryCmsConfig = {
     runner?:     Runner;
@@ -18,6 +19,19 @@ export type DeliveryCmsConfig = {
      * `PlaywrightSession` keeps a single browser process for every tenant.
      */
     playwrightSession?: PlaywrightSession;
+    /**
+     * Extension hook called by `renderPage` for each rendered document.
+     * Each injector receives the linkedom document/head and the page's
+     * bloc tag list, and may append elements to `<head>`. Injectors run in
+     * registration order, right after `buildHtmlBasics` — i.e. they land
+     * at the very top of <head>, before any preload, meta, stylesheet or
+     * deferred script.
+     *
+     * Use cases: analytics tags, observability agents, A/B test snippets,
+     * any third-party `<head>` content owned by the consumer rather than
+     * by Delivery itself.
+     */
+    headInjectors?: readonly HeadInjector[];
 }
 
 /**
@@ -59,12 +73,14 @@ export default class DeliveryCms {
     private _playwrightSession:  PlaywrightSession;
     private _ownsSession:        boolean;
     private _enhancer:           PageEnhancer;
+    private _headInjectors:      readonly HeadInjector[];
 
     constructor(config: DeliveryCmsConfig){
-        this._runner     = config.runner || new BunRunner();
-        this._media      = config.media;
-        this._repository = config.repository;
-        this._cache      = config.cache || new DeliveryCache();
+        this._runner             = config.runner || new BunRunner();
+        this._media              = config.media;
+        this._repository         = config.repository;
+        this._cache              = config.cache || new DeliveryCache();
+        this._headInjectors      = config.headInjectors ?? [];
 
         if (config.playwrightSession) {
             this._playwrightSession = config.playwrightSession;
@@ -94,6 +110,10 @@ export default class DeliveryCms {
 
     get enhancer(){
         return this._enhancer;
+    }
+
+    get headInjectors(){
+        return this._headInjectors;
     }
 
     /**

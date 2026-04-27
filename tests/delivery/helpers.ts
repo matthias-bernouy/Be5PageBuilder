@@ -175,6 +175,7 @@ export function makeDelivery(opts: {
         repository:    opts.repository ?? testRepository(),
         cache,
         enhancer:      opts.enhancer   ?? { enhance: async () => {} },
+        headInjectors: [],
         basePath,
         cmsPathPrefix: basePath + "/.cms",
     };

@@ -39,8 +39,14 @@ export async function renderPage(page: TPage, delivery: DeliveryCms): Promise<Ca
     const usedTags = findUsedBlocTags(expandedContent, blocList);
     const assets   = await resolveAssets(delivery, usedTags);
 
-    // <head> assembly, in exact document order
+    // <head> assembly, in exact document order. Consumer-supplied head
+    // injectors run right after the document basics so they land before any
+    // preload/meta/stylesheet/deferred-script that the rest of the pipeline
+    // adds — that ordering matters for parser-blocking scripts (e.g. an
+    // observability agent that must monkeypatch `customElements.define`
+    // before any deferred bloc IIFE registers its tag).
     buildHtmlBasics    (document, head, settings);
+    for (const inject of delivery.headInjectors) inject({ document, head, usedTags });
     buildPreconnect    (document, head);
     buildAssetPreloads (document, head, assets);
     buildFoucShell     (document, head, usedTags);

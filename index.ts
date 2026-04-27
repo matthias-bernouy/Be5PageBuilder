@@ -18,6 +18,10 @@ export { PlaywrightSession } from "./src/delivery/core/enhance/PlaywrightSession
 export { registerDeliveryEndpoints } from "./src/delivery/registerDeliveryEndpoints";
 export type { DeliveryRepository } from "./src/delivery/interfaces/DeliveryRepository";
 export type { DeliveryCmsConfig } from "./src/delivery/DeliveryCms";
+export type { HeadInjector, HeadInjectorContext } from "./src/delivery/interfaces/HeadInjector";
+
+// ── Diagnostic (opt-in Web Vitals agent, depends on Delivery's HeadInjector) ──
+export { registerDiagnostic } from "./src/diagnostic/registerDiagnostic";
 
 // ── Default providers ──────────────────────────────────────────────────
 export { InMemoryCmsRepository } from "./src/socle/default-implementation/CmsRepository/memory";
