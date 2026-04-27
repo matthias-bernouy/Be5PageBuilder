@@ -10859,11 +10859,6 @@ p9r-tag:hover {
       return true;
     return /^(?:\/[a-zA-Z0-9-]+)+$/.test(path);
   }
-  function isValidSnippetIdentifier(id) {
-    if (!id || typeof id !== "string")
-      return false;
-    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id);
-  }
 
   // src/control/components/editor/configurations/PageConfiguration/PageConfiguration.ts
   class PageConfiguration extends Component {
@@ -12398,709 +12393,6 @@ cms-bag-breadcrumb[data-inline="right"] {
       target.after(clone);
   }
 
-  // src/control/components/editor/EditorSystem/BlocLibrary/template.html
-  var template_default9 = `<dialog id="dialog">
-    <div class="container">
-        <header class="header">
-            <nav class="tabs" id="tabs">
-                <button class="tab active" data-section="blocs">Blocs</button>
-                <button class="tab" data-section="templates">Templates</button>
-                <button class="tab" data-section="snippets">Snippets</button>
-            </nav>
-            <div class="search-wrap">
-                <input id="search" class="search-input" type="search" placeholder="Search blocs, templates, snippets…" autocomplete="off" />
-            </div>
-            <form method="dialog">
-                <button class="default-close">&times;</button>
-            </form>
-        </header>
-        <div class="content">
-            <nav class="groups-sidebar" id="sidebar"></nav>
-            <main class="blocs-grid" id="grid"></main>
-        </div>
-    </div>
-</dialog>
-`;
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/style.css
-  var style_default8 = `:host {
-    --bg-main: rgba(255, 255, 255, 0.95);
-    --bg-card: #ffffff;
-
-    --text-primary: #1a1a1a;
-    --text-secondary: #666;
-
-    --accent: #007aff;
-    --border: rgba(0, 0, 0, 0.06);
-    --shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-
-    --sidebar-width: 200px;
-
-    display: block;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-#dialog {
-    padding: 0;
-    border: none;
-    background: transparent;
-    overflow: visible;
-    animation: dialogFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes dialogFadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-#dialog::backdrop {
-    background: rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(12px) saturate(180%);
-    -webkit-backdrop-filter: blur(12px) saturate(180%);
-}
-
-.container {
-    width: 90vw;
-    max-width: 1000px;
-    height: 70vh;
-    background: var(--bg-main);
-    border-radius: 20px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: var(--shadow);
-    border: 1px solid var(--border);
-}
-
-.header {
-    padding: 0 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    border-bottom: 1px solid var(--border);
-    height: 54px;
-    flex-shrink: 0;
-}
-
-.search-wrap {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.search-input {
-    all: unset;
-    width: 100%;
-    max-width: 360px;
-    box-sizing: border-box;
-    padding: 7px 12px;
-    font-size: 13px;
-    color: var(--text-primary);
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid transparent;
-    border-radius: 8px;
-    transition: all 0.15s;
-}
-
-.search-input:focus {
-    background: #fff;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
-}
-
-.search-input::placeholder {
-    color: var(--text-secondary);
-}
-
-.tabs {
-    display: flex;
-    gap: 4px;
-}
-
-.tab {
-    all: unset;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    border-radius: 8px;
-    transition: all 0.15s;
-}
-
-.tab:hover:not(.active) {
-    background: rgba(0, 0, 0, 0.04);
-    color: var(--text-primary);
-}
-
-.tab.active {
-    background: var(--accent);
-    color: #fff;
-    font-weight: 600;
-}
-
-form[method="dialog"] {
-    display: flex;
-    align-items: center;
-}
-
-.default-close {
-    all: unset;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    cursor: pointer;
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-secondary);
-    font-size: 1.4rem;
-    transition: all 0.2s;
-}
-
-.default-close:hover {
-    background: rgba(255, 59, 48, 0.1);
-    color: #ff3b30;
-    transform: rotate(90deg);
-}
-
-.content {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-}
-
-.groups-sidebar {
-    width: var(--sidebar-width);
-    padding: 16px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow-y: auto;
-    flex-shrink: 0;
-}
-
-.sidebar-item {
-    all: unset;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--text-secondary);
-    transition: all 0.15s;
-}
-
-.sidebar-item:hover:not(.active) {
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-primary);
-}
-
-.sidebar-item.active {
-    background: rgba(0, 122, 255, 0.08);
-    color: var(--accent);
-    font-weight: 600;
-}
-
-.blocs-grid {
-    flex: 1;
-    padding: 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 12px;
-    overflow-y: auto;
-    align-content: start;
-}
-
-.section-header {
-    grid-column: 1 / -1;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    padding: 6px 4px 2px;
-    margin-top: 4px;
-}
-
-.section-header:first-child {
-    margin-top: 0;
-}
-`;
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/api.ts
-  async function fetchJson(path, fallback) {
-    try {
-      const res = await fetch(resolveApiUrl(path));
-      if (!res.ok)
-        return fallback;
-      return await res.json();
-    } catch (e) {
-      console.log(e);
-      return fallback;
-    }
-  }
-  var fetchTemplates = () => fetchJson("template/list", []);
-  var fetchSnippets = () => fetchJson("snippet/list", []);
-  async function fetchBlocMeta() {
-    const list = await fetchJson("bloc/list", []);
-    return new Map(list.map((b) => [b.id, { description: b.description }]));
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/template.html
-  var template_default10 = `<button type="button" class="card">
-    <span class="icon"><slot name="icon"></slot></span>
-    <span class="text">
-        <span class="title"><slot name="title"></slot></span>
-        <span class="description"><slot name="description"></slot></span>
-    </span>
-</button>
-`;
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/style.css
-  var style_default9 = `:host {
-    display: contents;
-}
-
-.card {
-    all: unset;
-    background: var(--bg-card, #ffffff);
-    border: 1px solid #eee;
-    border-radius: 12px;
-    padding: 12px 14px;
-    min-height: 72px;
-    display: grid;
-    grid-template-columns: 32px 1fr;
-    align-items: center;
-    gap: 12px;
-    cursor: pointer;
-    transition: 0.15s;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-.icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--accent, #007aff);
-}
-
-::slotted(svg) {
-    width: 28px;
-    height: 28px;
-}
-
-.card:hover {
-    border-color: var(--accent, #007aff);
-    background: #f8fbff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-}
-
-.text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-}
-
-.title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-primary, #1a1a1a);
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.description {
-    font-size: 11px;
-    font-weight: 400;
-    color: var(--text-secondary, #666);
-    line-height: 1.35;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-.description:not(:has(::slotted(*))) {
-    display: none;
-}
-`;
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/Card.ts
-  var Metadata4 = {
-    css: style_default9,
-    template: template_default10
-  };
-
-  class Card extends Component {
-    constructor() {
-      super(Metadata4);
-    }
-    static create(opts) {
-      const card = document.createElement("cms-bloc-library-card");
-      const iconFragment = document.createRange().createContextualFragment(opts.icon);
-      const iconRoot = iconFragment.firstElementChild;
-      if (iconRoot) {
-        iconRoot.setAttribute("slot", "icon");
-        card.appendChild(iconRoot);
-      }
-      const titleSpan = document.createElement("span");
-      titleSpan.slot = "title";
-      titleSpan.textContent = opts.title;
-      card.appendChild(titleSpan);
-      if (opts.description) {
-        const descSpan = document.createElement("span");
-        descSpan.slot = "description";
-        descSpan.textContent = opts.description;
-        card.appendChild(descSpan);
-      }
-      return card;
-    }
-  }
-  if (!customElements.get("cms-bloc-library-card")) {
-    customElements.define("cms-bloc-library-card", Card);
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderBlocs.ts
-  function renderBlocs({ grid, items, blocMeta, onPick }) {
-    for (const item of items) {
-      const card = Card.create({
-        icon: ICON_COMPONENT,
-        title: item.label,
-        description: blocMeta.get(item.tag)?.description
-      });
-      card.addEventListener("click", () => onPick({ type: "bloc", id: item.tag }));
-      grid.appendChild(card);
-    }
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/template.html
-  var template_default11 = `<div class="empty-state">
-    <slot name="icon"></slot>
-    <p><slot name="message"></slot></p>
-</div>
-`;
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/style.css
-  var style_default10 = `:host {
-    display: contents;
-}
-
-.empty-state {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 48px 24px;
-    color: var(--text-secondary, #666);
-    text-align: center;
-}
-
-::slotted(svg) {
-    width: 40px;
-    height: 40px;
-    opacity: 0.3;
-}
-
-.empty-state p {
-    margin: 0;
-    font-size: 13px;
-}
-`;
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/EmptyState.ts
-  var Metadata5 = {
-    css: style_default10,
-    template: template_default11
-  };
-
-  class EmptyState2 extends Component {
-    constructor() {
-      super(Metadata5);
-    }
-    static create(opts) {
-      const el = document.createElement("cms-bloc-library-empty-state");
-      const iconFragment = document.createRange().createContextualFragment(opts.icon);
-      const iconRoot = iconFragment.firstElementChild;
-      if (iconRoot) {
-        iconRoot.setAttribute("slot", "icon");
-        el.appendChild(iconRoot);
-      }
-      const messageSpan = document.createElement("span");
-      messageSpan.slot = "message";
-      messageSpan.textContent = opts.message;
-      el.appendChild(messageSpan);
-      return el;
-    }
-  }
-  if (!customElements.get("cms-bloc-library-empty-state")) {
-    customElements.define("cms-bloc-library-empty-state", EmptyState2);
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderTemplates.ts
-  function renderTemplates({ grid, templates, category, onPick }) {
-    const filtered = templates.filter((t) => (t.category || "Default") === category);
-    if (filtered.length === 0) {
-      grid.appendChild(EmptyState2.create({
-        icon: ICON_TEMPLATE_MUTED,
-        message: "No templates in this category"
-      }));
-      return;
-    }
-    for (const tpl of filtered) {
-      const card = Card.create({
-        icon: ICON_TEMPLATE,
-        title: tpl.name,
-        description: tpl.description
-      });
-      card.addEventListener("click", () => onPick({ type: "template", html: tpl.content }));
-      grid.appendChild(card);
-    }
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderSnippets.ts
-  function renderSnippets({ grid, snippets, category, onPick }) {
-    const filtered = snippets.filter((s2) => (s2.category || "Default") === category);
-    if (filtered.length === 0) {
-      grid.appendChild(EmptyState2.create({
-        icon: ICON_SNIPPET_MUTED,
-        message: "No snippets in this category"
-      }));
-      return;
-    }
-    for (const snippet of filtered) {
-      const card = Card.create({
-        icon: ICON_SNIPPET,
-        title: snippet.name,
-        description: snippet.description
-      });
-      card.addEventListener("click", () => onPick({ type: "snippet", identifier: snippet.identifier }));
-      grid.appendChild(card);
-    }
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderSearch.ts
-  function renderSearch({ grid, query, blocs, blocMeta, templates, snippets, onPick }) {
-    const q = query.trim().toLowerCase();
-    const matchingBlocs = blocs.filter((b) => {
-      const desc = blocMeta.get(b.tag)?.description ?? "";
-      return b.label.toLowerCase().includes(q) || b.tag.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
-    });
-    const matchingTemplates = templates.filter((t) => t.name.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q) || (t.category ?? "").toLowerCase().includes(q));
-    const matchingSnippets = snippets.filter((s2) => s2.name.toLowerCase().includes(q) || (s2.description ?? "").toLowerCase().includes(q) || s2.identifier.toLowerCase().includes(q) || (s2.category ?? "").toLowerCase().includes(q));
-    const total = matchingBlocs.length + matchingTemplates.length + matchingSnippets.length;
-    if (total === 0) {
-      grid.appendChild(EmptyState2.create({
-        icon: ICON_COMPONENT,
-        message: `No results for "${query}"`
-      }));
-      return;
-    }
-    if (matchingBlocs.length > 0) {
-      appendSectionHeader(grid, "Blocs");
-      for (const item of matchingBlocs) {
-        const card = Card.create({
-          icon: ICON_COMPONENT,
-          title: item.label,
-          description: blocMeta.get(item.tag)?.description
-        });
-        card.addEventListener("click", () => onPick({ type: "bloc", id: item.tag }));
-        grid.appendChild(card);
-      }
-    }
-    if (matchingTemplates.length > 0) {
-      appendSectionHeader(grid, "Templates");
-      for (const tpl of matchingTemplates) {
-        const card = Card.create({
-          icon: ICON_TEMPLATE,
-          title: tpl.name,
-          description: tpl.description
-        });
-        card.addEventListener("click", () => onPick({ type: "template", html: tpl.content }));
-        grid.appendChild(card);
-      }
-    }
-    if (matchingSnippets.length > 0) {
-      appendSectionHeader(grid, "Snippets");
-      for (const snippet of matchingSnippets) {
-        const card = Card.create({
-          icon: ICON_SNIPPET,
-          title: snippet.name,
-          description: snippet.description
-        });
-        card.addEventListener("click", () => onPick({ type: "snippet", identifier: snippet.identifier }));
-        grid.appendChild(card);
-      }
-    }
-  }
-  function appendSectionHeader(grid, label) {
-    const header = document.createElement("div");
-    header.className = "section-header";
-    header.textContent = label;
-    grid.appendChild(header);
-  }
-
-  // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
-  var Metadata6 = {
-    css: style_default8,
-    template: template_default9
-  };
-
-  class BlocLibrary extends Component {
-    _dialog;
-    _section = "blocs";
-    _activeGroup = null;
-    _query = "";
-    _templates = [];
-    _snippets = [];
-    _blocMeta = new Map;
-    _dataLoaded = false;
-    constructor() {
-      super(Metadata6);
-    }
-    connectedCallback() {
-      const s2 = this.shadowRoot;
-      this._dialog = s2.querySelector("#dialog");
-      this._dialog.addEventListener("click", (e) => {
-        if (e.target === this._dialog)
-          this.close();
-      });
-      s2.getElementById("tabs").addEventListener("click", (e) => this._onTabClick(e));
-      s2.getElementById("sidebar").addEventListener("click", (e) => this._onSidebarClick(e));
-      s2.getElementById("search").addEventListener("input", (e) => this._onSearchInput(e));
-    }
-    open() {
-      this._dialog.showModal();
-      this._refresh();
-    }
-    close() {
-      this._dialog.close();
-    }
-    async _refresh() {
-      if (!this._dataLoaded) {
-        const [templates, snippets, blocMeta] = await Promise.all([
-          fetchTemplates(),
-          fetchSnippets(),
-          fetchBlocMeta()
-        ]);
-        this._templates = templates;
-        this._snippets = snippets;
-        this._blocMeta = blocMeta;
-        this._dataLoaded = true;
-      }
-      if (!this._activeGroup && this._section === "blocs") {
-        const groups = Array.from(getClosestEditorSystem(this).observer.getGroups());
-        if (groups.length > 0)
-          this._activeGroup = groups[0];
-      }
-      this._render();
-      this.shadowRoot.getElementById("search").focus();
-    }
-    _onTabClick(e) {
-      const tab = e.target.closest(".tab");
-      if (!tab || !tab.dataset.section)
-        return;
-      this._section = tab.dataset.section;
-      this._activeGroup = null;
-      this._render();
-    }
-    _onSidebarClick(e) {
-      const item = e.target.closest(".sidebar-item");
-      if (!item)
-        return;
-      this._activeGroup = item.dataset.group ?? null;
-      this._render();
-    }
-    _onSearchInput(e) {
-      this._query = e.target.value;
-      this._render();
-    }
-    _render() {
-      const searching = this._query.trim().length > 0;
-      this._renderTabs(searching);
-      this._renderSidebar(searching);
-      this._renderGrid(searching);
-    }
-    _renderTabs(searching) {
-      this.shadowRoot.querySelectorAll(".tab").forEach((tab) => {
-        tab.classList.toggle("active", !searching && tab.dataset.section === this._section);
-      });
-    }
-    _renderSidebar(searching) {
-      const sidebar = this.shadowRoot.getElementById("sidebar");
-      sidebar.innerHTML = "";
-      sidebar.style.display = searching ? "none" : "";
-      if (searching)
-        return;
-      const groups = this._getGroups();
-      if (this._activeGroup === null && groups.length > 0) {
-        this._activeGroup = groups[0];
-      }
-      for (const group of groups) {
-        const btn = document.createElement("button");
-        btn.className = `sidebar-item ${group === this._activeGroup ? "active" : ""}`;
-        btn.dataset.group = group;
-        btn.textContent = group;
-        sidebar.appendChild(btn);
-      }
-    }
-    _renderGrid(searching) {
-      const editorSystem = getClosestEditorSystem(this);
-      const grid = this.shadowRoot.getElementById("grid");
-      grid.innerHTML = "";
-      const onPick = (detail) => this._emitInsert(detail);
-      if (searching) {
-        renderSearch({
-          grid,
-          query: this._query,
-          blocs: Array.from(editorSystem.observer.getItems()),
-          blocMeta: this._blocMeta,
-          templates: this._templates,
-          snippets: this._snippets,
-          onPick
-        });
-        return;
-      }
-      if (this._section === "blocs") {
-        if (!this._activeGroup)
-          return;
-        renderBlocs({
-          grid,
-          items: Array.from(editorSystem.observer.getItemsByGroup(this._activeGroup)),
-          blocMeta: this._blocMeta,
-          onPick
-        });
-      } else if (this._section === "templates") {
-        renderTemplates({ grid, templates: this._templates, category: this._activeGroup, onPick });
-      } else {
-        renderSnippets({ grid, snippets: this._snippets, category: this._activeGroup, onPick });
-      }
-    }
-    _getGroups() {
-      const editorSystem = getClosestEditorSystem(this);
-      if (this._section === "blocs")
-        return Array.from(editorSystem.observer.getGroups());
-      if (this._section === "templates")
-        return Array.from(new Set(this._templates.map((t) => t.category || "Default")));
-      return Array.from(new Set(this._snippets.map((s2) => s2.category || "Default")));
-    }
-    _emitInsert(detail) {
-      this.dispatchEvent(new CustomEvent("insert", { detail, bubbles: true, composed: true }));
-      this.close();
-    }
-  }
-  if (!customElements.get("cms-bloc-library")) {
-    customElements.define("cms-bloc-library", BlocLibrary);
-  }
-
   // src/control/components/editor/EditorSystem/BlocActions/domain/openChangeComponentPicker.ts
   function inherit(source, dest) {
     const parentId = source.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
@@ -13111,7 +12403,8 @@ form[method="dialog"] {
       dest.setAttribute("slot", slot);
   }
   function openChangeComponentPicker(target, onDone) {
-    const library = BlocLibrary.open();
+    const library = getClosestEditorSystem(target).blocLibrary;
+    library.open();
     library.addEventListener("insert", (e) => {
       const detail = e.detail;
       if (detail.type === "template") {
@@ -13133,7 +12426,7 @@ form[method="dialog"] {
         target.replaceWith(newEl);
       }
       onDone();
-    });
+    }, { once: true });
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/events/buildEventManager.ts
@@ -13449,6 +12742,727 @@ form[method="dialog"] {
   }
   if (!customElements.get("cms-bloc-actions"))
     customElements.define("cms-bloc-actions", BlocActions);
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/template.html
+  var template_default9 = `<dialog id="dialog">
+    <div class="container">
+        <header class="header">
+            <nav class="tabs" id="tabs">
+                <button class="tab active" data-section="blocs">Blocs</button>
+                <button class="tab" data-section="templates">Templates</button>
+                <button class="tab" data-section="snippets">Snippets</button>
+            </nav>
+            <div class="search-wrap">
+                <input id="search" class="search-input" type="search" placeholder="Search blocs, templates, snippets…" autocomplete="off" />
+            </div>
+            <form method="dialog">
+                <button class="default-close">&times;</button>
+            </form>
+        </header>
+        <div class="content">
+            <nav class="groups-sidebar" id="sidebar"></nav>
+            <main class="blocs-grid" id="grid"></main>
+        </div>
+    </div>
+</dialog>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/style.css
+  var style_default8 = `:host {
+    --bg-main: rgba(255, 255, 255, 0.95);
+    --bg-card: #ffffff;
+
+    --text-primary: #1a1a1a;
+    --text-secondary: #666;
+
+    --accent: #007aff;
+    --border: rgba(0, 0, 0, 0.06);
+    --shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+
+    --sidebar-width: 200px;
+
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#dialog {
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: visible;
+    animation: dialogFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dialogFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+#dialog::backdrop {
+    background: rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+}
+
+.container {
+    width: 90vw;
+    max-width: 1000px;
+    height: 70vh;
+    background: var(--bg-main);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+}
+
+.header {
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid var(--border);
+    height: 54px;
+    flex-shrink: 0;
+}
+
+.search-wrap {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input {
+    all: unset;
+    width: 100%;
+    max-width: 360px;
+    box-sizing: border-box;
+    padding: 7px 12px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    transition: all 0.15s;
+}
+
+.search-input:focus {
+    background: #fff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+.search-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.tab {
+    all: unset;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.15s;
+}
+
+.tab:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.04);
+    color: var(--text-primary);
+}
+
+.tab.active {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+}
+
+form[method="dialog"] {
+    display: flex;
+    align-items: center;
+}
+
+.default-close {
+    all: unset;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-secondary);
+    font-size: 1.4rem;
+    transition: all 0.2s;
+}
+
+.default-close:hover {
+    background: rgba(255, 59, 48, 0.1);
+    color: #ff3b30;
+    transform: rotate(90deg);
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.groups-sidebar {
+    width: var(--sidebar-width);
+    padding: 16px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.sidebar-item {
+    all: unset;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: all 0.15s;
+}
+
+.sidebar-item:hover:not(.active) {
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--text-primary);
+}
+
+.sidebar-item.active {
+    background: rgba(0, 122, 255, 0.08);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.blocs-grid {
+    flex: 1;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    overflow-y: auto;
+    align-content: start;
+}
+
+.section-header {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    padding: 6px 4px 2px;
+    margin-top: 4px;
+}
+
+.section-header:first-child {
+    margin-top: 0;
+}
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/api.ts
+  async function fetchJson(path, fallback) {
+    try {
+      const res = await fetch(resolveApiUrl(path));
+      if (!res.ok)
+        return fallback;
+      return await res.json();
+    } catch (e) {
+      console.log(e);
+      return fallback;
+    }
+  }
+  var fetchTemplates = () => fetchJson("template/list", []);
+  var fetchSnippets = () => fetchJson("snippet/list", []);
+  var fetchTemplateContent = async (id) => {
+    try {
+      const res = await fetch(resolveApiUrl(`template?id=${encodeURIComponent(id)}`));
+      if (!res.ok)
+        return "";
+      const tpl = await res.json();
+      return tpl.content ?? "";
+    } catch (e) {
+      console.log(e);
+      return "";
+    }
+  };
+  async function fetchBlocMeta() {
+    const list = await fetchJson("bloc/list", []);
+    return new Map(list.map((b) => [b.id, { description: b.description }]));
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/template.html
+  var template_default10 = `<button type="button" class="card">
+    <span class="icon"><slot name="icon"></slot></span>
+    <span class="text">
+        <span class="title"><slot name="title"></slot></span>
+        <span class="description"><slot name="description"></slot></span>
+    </span>
+</button>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/style.css
+  var style_default9 = `:host {
+    display: contents;
+}
+
+.card {
+    all: unset;
+    background: var(--bg-card, #ffffff);
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 12px 14px;
+    min-height: 72px;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: 0.15s;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent, #007aff);
+}
+
+::slotted(svg) {
+    width: 28px;
+    height: 28px;
+}
+
+.card:hover {
+    border-color: var(--accent, #007aff);
+    background: #f8fbff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary, #1a1a1a);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.description {
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-secondary, #666);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.description:not(:has(::slotted(*))) {
+    display: none;
+}
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/Card.ts
+  var Metadata4 = {
+    css: style_default9,
+    template: template_default10
+  };
+
+  class Card extends Component {
+    constructor() {
+      super(Metadata4);
+    }
+    static create(opts) {
+      const card = document.createElement("cms-bloc-library-card");
+      const iconFragment = document.createRange().createContextualFragment(opts.icon);
+      const iconRoot = iconFragment.firstElementChild;
+      if (iconRoot) {
+        iconRoot.setAttribute("slot", "icon");
+        card.appendChild(iconRoot);
+      }
+      const titleSpan = document.createElement("span");
+      titleSpan.slot = "title";
+      titleSpan.textContent = opts.title;
+      card.appendChild(titleSpan);
+      if (opts.description) {
+        const descSpan = document.createElement("span");
+        descSpan.slot = "description";
+        descSpan.textContent = opts.description;
+        card.appendChild(descSpan);
+      }
+      return card;
+    }
+  }
+  if (!customElements.get("cms-bloc-library-card")) {
+    customElements.define("cms-bloc-library-card", Card);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderBlocs.ts
+  function renderBlocs({ grid, items, blocMeta, onPick }) {
+    for (const item of items) {
+      const card = Card.create({
+        icon: ICON_COMPONENT,
+        title: item.label,
+        description: blocMeta.get(item.tag)?.description
+      });
+      card.addEventListener("click", () => onPick({ type: "bloc", id: item.tag }));
+      grid.appendChild(card);
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/template.html
+  var template_default11 = `<div class="empty-state">
+    <slot name="icon"></slot>
+    <p><slot name="message"></slot></p>
+</div>
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/style.css
+  var style_default10 = `:host {
+    display: contents;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 48px 24px;
+    color: var(--text-secondary, #666);
+    text-align: center;
+}
+
+::slotted(svg) {
+    width: 40px;
+    height: 40px;
+    opacity: 0.3;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 13px;
+}
+`;
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/EmptyState.ts
+  var Metadata5 = {
+    css: style_default10,
+    template: template_default11
+  };
+
+  class EmptyState2 extends Component {
+    constructor() {
+      super(Metadata5);
+    }
+    static create(opts) {
+      const el = document.createElement("cms-bloc-library-empty-state");
+      const iconFragment = document.createRange().createContextualFragment(opts.icon);
+      const iconRoot = iconFragment.firstElementChild;
+      if (iconRoot) {
+        iconRoot.setAttribute("slot", "icon");
+        el.appendChild(iconRoot);
+      }
+      const messageSpan = document.createElement("span");
+      messageSpan.slot = "message";
+      messageSpan.textContent = opts.message;
+      el.appendChild(messageSpan);
+      return el;
+    }
+  }
+  if (!customElements.get("cms-bloc-library-empty-state")) {
+    customElements.define("cms-bloc-library-empty-state", EmptyState2);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderTemplates.ts
+  function renderTemplates({ grid, templates, category, onPick }) {
+    const filtered = templates.filter((t) => (t.category || "Default") === category);
+    if (filtered.length === 0) {
+      grid.appendChild(EmptyState2.create({
+        icon: ICON_TEMPLATE_MUTED,
+        message: "No templates in this category"
+      }));
+      return;
+    }
+    for (const tpl of filtered) {
+      const card = Card.create({
+        icon: ICON_TEMPLATE,
+        title: tpl.name,
+        description: tpl.description
+      });
+      card.addEventListener("click", async () => {
+        const html = await fetchTemplateContent(tpl.id);
+        onPick({ type: "template", html });
+      });
+      grid.appendChild(card);
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderSnippets.ts
+  function renderSnippets({ grid, snippets, category, onPick }) {
+    const filtered = snippets.filter((s2) => (s2.category || "Default") === category);
+    if (filtered.length === 0) {
+      grid.appendChild(EmptyState2.create({
+        icon: ICON_SNIPPET_MUTED,
+        message: "No snippets in this category"
+      }));
+      return;
+    }
+    for (const snippet of filtered) {
+      const card = Card.create({
+        icon: ICON_SNIPPET,
+        title: snippet.name,
+        description: snippet.description
+      });
+      card.addEventListener("click", () => onPick({ type: "snippet", identifier: snippet.identifier }));
+      grid.appendChild(card);
+    }
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/sections/renderSearch.ts
+  function renderSearch({ grid, query, blocs, blocMeta, templates, snippets, onPick }) {
+    const q = query.trim().toLowerCase();
+    const matchingBlocs = blocs.filter((b) => {
+      const desc = blocMeta.get(b.tag)?.description ?? "";
+      return b.label.toLowerCase().includes(q) || b.tag.toLowerCase().includes(q) || desc.toLowerCase().includes(q);
+    });
+    const matchingTemplates = templates.filter((t) => t.name.toLowerCase().includes(q) || (t.description ?? "").toLowerCase().includes(q) || (t.category ?? "").toLowerCase().includes(q));
+    const matchingSnippets = snippets.filter((s2) => s2.name.toLowerCase().includes(q) || (s2.description ?? "").toLowerCase().includes(q) || s2.identifier.toLowerCase().includes(q) || (s2.category ?? "").toLowerCase().includes(q));
+    const total = matchingBlocs.length + matchingTemplates.length + matchingSnippets.length;
+    if (total === 0) {
+      grid.appendChild(EmptyState2.create({
+        icon: ICON_COMPONENT,
+        message: `No results for "${query}"`
+      }));
+      return;
+    }
+    if (matchingBlocs.length > 0) {
+      appendSectionHeader(grid, "Blocs");
+      for (const item of matchingBlocs) {
+        const card = Card.create({
+          icon: ICON_COMPONENT,
+          title: item.label,
+          description: blocMeta.get(item.tag)?.description
+        });
+        card.addEventListener("click", () => onPick({ type: "bloc", id: item.tag }));
+        grid.appendChild(card);
+      }
+    }
+    if (matchingTemplates.length > 0) {
+      appendSectionHeader(grid, "Templates");
+      for (const tpl of matchingTemplates) {
+        const card = Card.create({
+          icon: ICON_TEMPLATE,
+          title: tpl.name,
+          description: tpl.description
+        });
+        card.addEventListener("click", async () => {
+          const html = await fetchTemplateContent(tpl.id);
+          onPick({ type: "template", html });
+        });
+        grid.appendChild(card);
+      }
+    }
+    if (matchingSnippets.length > 0) {
+      appendSectionHeader(grid, "Snippets");
+      for (const snippet of matchingSnippets) {
+        const card = Card.create({
+          icon: ICON_SNIPPET,
+          title: snippet.name,
+          description: snippet.description
+        });
+        card.addEventListener("click", () => onPick({ type: "snippet", identifier: snippet.identifier }));
+        grid.appendChild(card);
+      }
+    }
+  }
+  function appendSectionHeader(grid, label) {
+    const header = document.createElement("div");
+    header.className = "section-header";
+    header.textContent = label;
+    grid.appendChild(header);
+  }
+
+  // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
+  var Metadata6 = {
+    css: style_default8,
+    template: template_default9
+  };
+
+  class BlocLibrary extends Component {
+    _dialog;
+    _section = "blocs";
+    _activeGroup = null;
+    _query = "";
+    _templates = [];
+    _snippets = [];
+    _blocMeta = new Map;
+    _dataLoaded = false;
+    constructor() {
+      super(Metadata6);
+    }
+    connectedCallback() {
+      const s2 = this.shadowRoot;
+      this._dialog = s2.querySelector("#dialog");
+      this._dialog.addEventListener("click", (e) => {
+        if (e.target === this._dialog)
+          this.close();
+      });
+      s2.getElementById("tabs").addEventListener("click", (e) => this._onTabClick(e));
+      s2.getElementById("sidebar").addEventListener("click", (e) => this._onSidebarClick(e));
+      s2.getElementById("search").addEventListener("input", (e) => this._onSearchInput(e));
+    }
+    open() {
+      this._dialog.showModal();
+      this._refresh();
+    }
+    close() {
+      this._dialog.close();
+    }
+    async _refresh() {
+      if (!this._dataLoaded) {
+        const [templates, snippets, blocMeta] = await Promise.all([
+          fetchTemplates(),
+          fetchSnippets(),
+          fetchBlocMeta()
+        ]);
+        this._templates = templates;
+        this._snippets = snippets;
+        this._blocMeta = blocMeta;
+        this._dataLoaded = true;
+      }
+      if (!this._activeGroup && this._section === "blocs") {
+        const groups = Array.from(getClosestEditorSystem(this).observer.getGroups());
+        if (groups.length > 0)
+          this._activeGroup = groups[0];
+      }
+      this._render();
+      this.shadowRoot.getElementById("search").focus();
+    }
+    _onTabClick(e) {
+      const tab = e.target.closest(".tab");
+      if (!tab || !tab.dataset.section)
+        return;
+      this._section = tab.dataset.section;
+      this._activeGroup = null;
+      this._render();
+    }
+    _onSidebarClick(e) {
+      const item = e.target.closest(".sidebar-item");
+      if (!item)
+        return;
+      this._activeGroup = item.dataset.group ?? null;
+      this._render();
+    }
+    _onSearchInput(e) {
+      this._query = e.target.value;
+      this._render();
+    }
+    _render() {
+      const searching = this._query.trim().length > 0;
+      this._renderTabs(searching);
+      this._renderSidebar(searching);
+      this._renderGrid(searching);
+    }
+    _renderTabs(searching) {
+      this.shadowRoot.querySelectorAll(".tab").forEach((tab) => {
+        tab.classList.toggle("active", !searching && tab.dataset.section === this._section);
+      });
+    }
+    _renderSidebar(searching) {
+      const sidebar = this.shadowRoot.getElementById("sidebar");
+      sidebar.innerHTML = "";
+      sidebar.style.display = searching ? "none" : "";
+      if (searching)
+        return;
+      const groups = this._getGroups();
+      if (this._activeGroup === null && groups.length > 0) {
+        this._activeGroup = groups[0];
+      }
+      for (const group of groups) {
+        const btn = document.createElement("button");
+        btn.className = `sidebar-item ${group === this._activeGroup ? "active" : ""}`;
+        btn.dataset.group = group;
+        btn.textContent = group;
+        sidebar.appendChild(btn);
+      }
+    }
+    _renderGrid(searching) {
+      const editorSystem = getClosestEditorSystem(this);
+      const grid = this.shadowRoot.getElementById("grid");
+      grid.innerHTML = "";
+      const onPick = (detail) => this._emitInsert(detail);
+      if (searching) {
+        renderSearch({
+          grid,
+          query: this._query,
+          blocs: Array.from(editorSystem.observer.getItems()),
+          blocMeta: this._blocMeta,
+          templates: this._templates,
+          snippets: this._snippets,
+          onPick
+        });
+        return;
+      }
+      if (this._section === "blocs") {
+        if (!this._activeGroup)
+          return;
+        renderBlocs({
+          grid,
+          items: Array.from(editorSystem.observer.getItemsByGroup(this._activeGroup)),
+          blocMeta: this._blocMeta,
+          onPick
+        });
+      } else if (this._section === "templates") {
+        renderTemplates({ grid, templates: this._templates, category: this._activeGroup, onPick });
+      } else {
+        renderSnippets({ grid, snippets: this._snippets, category: this._activeGroup, onPick });
+      }
+    }
+    _getGroups() {
+      const editorSystem = getClosestEditorSystem(this);
+      if (this._section === "blocs")
+        return Array.from(editorSystem.observer.getGroups());
+      if (this._section === "templates")
+        return Array.from(new Set(this._templates.map((t) => t.category || "Default")));
+      return Array.from(new Set(this._snippets.map((s2) => s2.category || "Default")));
+    }
+    _emitInsert(detail) {
+      this.dispatchEvent(new CustomEvent("insert", { detail, bubbles: true, composed: true }));
+      this.close();
+    }
+  }
+  if (!customElements.get("cms-bloc-library")) {
+    customElements.define("cms-bloc-library", BlocLibrary);
+  }
 
   // src/control/components/editor/EditorSystem/DragManager.ts
   var DRAG_PILL_WIDTH = 180;
@@ -17040,8 +17054,6 @@ button.active svg {
 
   // src/control/components/editor/configurations/SnippetConfiguration/SnippetConfiguration.ts
   class SnippetConfiguration extends Component {
-    _identifierCheckToken = 0;
-    _identifierValid = true;
     constructor() {
       super({
         css: style_default17,
@@ -17053,56 +17065,37 @@ button.active svg {
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = this._collectFormData();
-        const isCreate = !this.getAttribute("default-id");
-        if (isCreate && !this._identifierValid) {
-          showToast("Fix the identifier before saving.", { type: "error" });
-          return;
-        }
-        if (isCreate && !data.identifier) {
-          showToast("An identifier is required.", { type: "error" });
+        const id = new URL(window.location.href).searchParams.get("id") || this.getAttribute("default-id");
+        if (!id) {
+          showToast("Missing snippet id. Create the snippet from the snippets list first.", { type: "error", duration: 6000 });
           return;
         }
         const content = document.EditorManager.getContent();
-        const url = new URL(window.location.href);
-        const id = url.searchParams.get("id") || this.getAttribute("default-id");
         const endpoint = new URL("../../api/snippet", window.location.href);
-        if (id)
-          endpoint.searchParams.set("id", id);
-        const payload = {
-          name: data.name,
-          description: data.description,
-          category: data.category,
-          content
-        };
-        if (!id)
-          payload.identifier = data.identifier;
         try {
           const res = await fetch(endpoint, {
-            method: "POST",
+            method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+              id,
+              name: data.name,
+              description: data.description,
+              category: data.category,
+              content
+            })
           });
           if (!res.ok) {
             showToast("Failed to save snippet: " + await res.text(), { type: "error", duration: 6000 });
             return;
           }
-          const result = await res.json();
-          if (!id && result.id) {
-            url.searchParams.set("identifier", result.identifier);
-            url.searchParams.delete("id");
-            window.history.pushState({}, "", url);
-            this.setAttribute("default-id", result.id);
-            this._lockIdentifier();
-          }
-          showToast(id ? "Snippet updated" : "Snippet created", { type: "success" });
+          showToast("Snippet updated", { type: "success" });
         } catch (err) {
           showToast("Failed to save snippet: " + (err?.message || err), { type: "error", duration: 6000 });
         }
       });
       Array.from(this.attributes).filter((attr) => attr.name.startsWith("default-")).forEach((attr) => this._setDefaultValue(attr.name));
-      this._wireIdentifierValidation();
+      this._lockIdentifier();
       if (this.hasAttribute("default-identifier")) {
-        this._lockIdentifier();
         this._loadUsages(this.getAttribute("default-identifier"));
       }
     }
@@ -17140,87 +17133,8 @@ button.active svg {
     }
     _lockIdentifier() {
       const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      input.disabled = true;
-      this._setIdentifierHint("info", "Immutable after creation.");
-      this._setIdentifierValid(true);
-    }
-    _wireIdentifierValidation() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      if (this.hasAttribute("default-identifier"))
-        return;
-      input.addEventListener("input", () => this._validateIdentifierFormatSync());
-      input.addEventListener("blur", () => this._validateIdentifierRemote());
-      this._validateIdentifierFormatSync();
-    }
-    _setIdentifierHint(level, text) {
-      this._getInputElement("identifier")?.setHint(level, text);
-    }
-    _setIdentifierValid(valid) {
-      this._identifierValid = valid;
-      this._getInputElement("identifier")?.setInvalid(!valid);
-      const btn = this.shadowRoot?.getElementById("save-btn");
-      if (btn) {
-        if (valid)
-          btn.removeAttribute("aria-disabled");
-        else
-          btn.setAttribute("aria-disabled", "true");
-      }
-    }
-    _validateIdentifierFormatSync() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      const id = input.value.trim();
-      if (id === "") {
-        this._setIdentifierHint("error", "Identifier is required.");
-        this._setIdentifierValid(false);
-        return;
-      }
-      if (!isValidSnippetIdentifier(id)) {
-        this._setIdentifierHint("error", "Lowercase letters, digits and dashes only (e.g. hero-v1).");
-        this._setIdentifierValid(false);
-        return;
-      }
-      this._setIdentifierHint("info", "Lowercase letters, numbers and dashes. Immutable after creation.");
-      this._setIdentifierValid(true);
-    }
-    async _validateIdentifierRemote() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      const id = input.value.trim();
-      if (id === "" || !isValidSnippetIdentifier(id))
-        return;
-      const token = ++this._identifierCheckToken;
-      try {
-        const url = new URL("../../api/snippet-exists", window.location.href);
-        url.searchParams.set("identifier", id);
-        const res = await fetch(url);
-        if (token !== this._identifierCheckToken)
-          return;
-        if (!res.ok) {
-          this._setIdentifierHint("error", "Could not validate the identifier (server error).");
-          this._setIdentifierValid(false);
-          return;
-        }
-        const body = await res.json();
-        if (body.exists) {
-          this._setIdentifierHint("error", `"${id}" is already used by another snippet.`);
-          this._setIdentifierValid(false);
-        } else {
-          this._setIdentifierHint("success", "Identifier is available.");
-          this._setIdentifierValid(true);
-        }
-      } catch {
-        if (token !== this._identifierCheckToken)
-          return;
-        this._setIdentifierHint("error", "Could not reach the server to validate the identifier.");
-        this._setIdentifierValid(false);
-      }
+      if (input)
+        input.disabled = true;
     }
     async _loadUsages(identifier) {
       try {
@@ -19243,4 +19157,25 @@ button.active svg {
     }
   }
   customElements.define("cms-fetch", FetchComponent);
+})();
+(() => {
+    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
+    const Klass = (0, eval)("(" + __src + ")");
+    const revive = (_k, v) => {
+        if (v && typeof v === "object" && v.__cms_type) {
+            if (v.__cms_type === "Date")       return new Date(v.v);
+            if (v.__cms_type === "Map")        return new Map(v.v);
+            if (v.__cms_type === "Set")        return new Set(v.v);
+            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
+        }
+        return v;
+    };
+    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
+    const instance = Object.create(Klass.prototype);
+    Object.assign(instance, state);
+    window._cms = window._cms || {};
+    window._cms.Media = instance;
+    if ("HttpMedia" && !(instance instanceof Klass)) {
+        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
+    }
 })();

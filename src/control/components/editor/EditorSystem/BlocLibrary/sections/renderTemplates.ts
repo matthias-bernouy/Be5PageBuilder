@@ -1,6 +1,7 @@
 import { Card } from '../components/Card/Card';
 import { EmptyState } from '../components/EmptyState/EmptyState';
 import { ICON_TEMPLATE, ICON_TEMPLATE_MUTED } from '../../../../icons';
+import { fetchTemplateContent } from '../api';
 import type { OnPick, TemplateItem } from '../types';
 
 export type RenderTemplatesOptions = {
@@ -27,7 +28,10 @@ export function renderTemplates({ grid, templates, category, onPick }: RenderTem
             title: tpl.name,
             description: tpl.description,
         });
-        card.addEventListener('click', () => onPick({ type: 'template', html: tpl.content }));
+        card.addEventListener('click', async () => {
+            const html = await fetchTemplateContent(tpl.id);
+            onPick({ type: 'template', html });
+        });
         grid.appendChild(card);
     }
 }

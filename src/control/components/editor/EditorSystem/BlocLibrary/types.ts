@@ -4,7 +4,6 @@ export type TemplateItem = {
     id: string;
     name: string;
     description?: string;
-    content: string;
     category: string;
 };
 

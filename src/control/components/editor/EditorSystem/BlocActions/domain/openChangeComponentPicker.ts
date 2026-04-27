@@ -1,4 +1,4 @@
-import { BlocLibrary } from '../../BlocLibrary/BlocLibrary';
+import getClosestEditorSystem from 'src/control/core/dom/editor/getClosestEditorSystem';
 
 function inherit(source: HTMLElement, dest: HTMLElement) {
     const parentId = source.getAttribute(p9r.attr.EDITOR.PARENT_IDENTIFIER);
@@ -12,7 +12,8 @@ function inherit(source: HTMLElement, dest: HTMLElement) {
  * (template fragment, snippet element, or a raw bloc by tag).
  */
 export function openChangeComponentPicker(target: HTMLElement, onDone: () => void) {
-    const library = BlocLibrary.open();
+    const library = getClosestEditorSystem(target).blocLibrary;
+    library.open();
     library.addEventListener('insert', ((e: CustomEvent) => {
         const detail = e.detail;
         if (detail.type === 'template') {
@@ -34,5 +35,5 @@ export function openChangeComponentPicker(target: HTMLElement, onDone: () => voi
             target.replaceWith(newEl);
         }
         onDone();
-    }) as EventListener);
+    }) as EventListener, { once: true });
 }
