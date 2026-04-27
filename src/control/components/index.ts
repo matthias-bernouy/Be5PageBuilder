@@ -15,8 +15,6 @@ import "./editor/componentSync/sync/AttrSync"
 import "./editor/componentSync/sync/CompSync"
 import "./editor/componentSync/sync/ImageSync/ImageSync"
 import "./editor/componentSync/sync/StateSync"
-import "./editor/configurations/PageConfiguration/PageConfiguration"
-import "./editor/configurations/TemplateConfiguration/TemplateConfiguration"
 import "./editor/EditorSystem/BlocActions/BlocActions"
 import "./editor/EditorSystem/BlocLibrary/BlocLibrary"
 import "./editor/EditorSystem/DragManager"
@@ -31,7 +29,6 @@ import "./editor/configurations/Configuration/EditorConfiguration"
 
 // Snippets
 import "./editor/snippet/Snippet/Snippet"
-import "./editor/configurations/SnippetConfiguration/SnippetConfiguration"
 
 // Medias
 import "./media/CardMedia/CardMedia"

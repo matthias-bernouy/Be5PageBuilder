@@ -1,21 +1,17 @@
 /**
  * @bernouy/cms — public entry point.
  *
- * Consumers import from `@bernouy/cms` and get the `Cms` class
- * plus the default MongoDB-backed providers. Host apps wire their own
- * `Be5_Runner` + `Authentication` (from `@bernouy/socle`) and pass them in.
- *
- * See `App.ts` at the root of this repo for a reference wiring.
+ * Consumers import from `@bernouy/cms` and get the `Cms` class plus the
+ * in-memory cache provider. Host apps wire their own `Be5_Runner` +
+ * `Authentication` (from `@bernouy/socle`) and a `CmsRepository` of their
+ * choice (the bundled `CmsRepositoryInMemory` is the canonical one until a
+ * persistent provider is re-added).
  */
 
 // ── Core ────────────────────────────────────────────────────────────────
 export { ControlCms as Cms } from "./src/control/ControlCms";
 
 // ── Delivery (public-facing rendering, deployable alone) ───────────────
-// Consumers wire DeliveryCms on its own runner/port alongside Cms. The
-// repository contract is a strict subset of CmsRepository, so a Mongo-
-// backed `DefaultCmsRepository` satisfies `DeliveryRepository` by
-// structural typing — no adapter needed.
 export { default as DeliveryCms } from "./src/delivery/DeliveryCms";
 export { DeliveryCache } from "./src/delivery/core/DeliveryCache";
 export { PlaywrightSession } from "./src/delivery/core/enhance/PlaywrightSession";
@@ -23,8 +19,8 @@ export { registerDeliveryEndpoints } from "./src/delivery/registerDeliveryEndpoi
 export type { DeliveryRepository } from "./src/delivery/interfaces/DeliveryRepository";
 export type { DeliveryCmsConfig } from "./src/delivery/DeliveryCms";
 
-// ── Default providers (MongoDB + in-memory cache) ──────────────────────
-export { DefaultCmsRepository } from "./src/socle/providers/mongo/Repository/DefaultCmsRepository";
+// ── Default providers ──────────────────────────────────────────────────
+export { InMemoryCmsRepository } from "./src/socle/providers/memory/CmsRepositoryInMemory";
 export { InMemoryCache } from "./src/socle/providers/memory/Cache/InMemoryCache";
 
 // Browser-safe bloc authoring symbols are deliberately split into two

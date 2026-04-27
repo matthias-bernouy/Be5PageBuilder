@@ -1,3 +1,6 @@
+import type { BlocActions } from "./BlocActions/BlocActions";
+import type { RichTextBar } from "../RichTextBar/RichTextBar";
+
 const DRAG_PILL_WIDTH = 180;
 const DRAG_PILL_HEIGHT = 32;
 
@@ -52,8 +55,9 @@ export class DragManager {
         e.dataTransfer?.setData("text/plain", "");
         this._setGhostImage(e);
         this.draggedElement.classList.add("dragging");
-        document.EditorManager?.getBlocActionGroup()?.close();
-        (document.querySelector("w13c-editor-toolbar") as any)?.hide?.();
+        const root = this._container.getRootNode() as ShadowRoot | Document;
+        (root.querySelector("cms-bloc-actions") as BlocActions | null)?.close();
+        (root.querySelector("cms-richtextbar") as RichTextBar | null)?.hide();
 
         // Hide from flow on the next tick — `display:none` applied
         // synchronously inside dragstart aborts the native drag operation

@@ -17,6 +17,7 @@ import type {
     MediaDeleteItemOptions,
     MediaFormatImageOptions,
     ImageFormat,
+    FileType,
 } from "@bernouy/socle";
 
 // ─────────────────────────────────────────────────────────────
@@ -335,7 +336,7 @@ export class InMemoryMedia implements Media {
         });
     }
 
-    private _mimeToFileType(mimeType: string): Exclude<import("./Media").FileType, "image"> {
+    private _mimeToFileType(mimeType: string): Exclude<FileType, "image"> {
         if (mimeType.startsWith("video/"))       return "video";
         if (mimeType.startsWith("audio/"))       return "audio";
         if (mimeType === "application/pdf")      return "pdf";

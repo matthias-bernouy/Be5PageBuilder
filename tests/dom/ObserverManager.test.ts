@@ -43,7 +43,7 @@ function makeObserver(initialHTML = "") {
     const workingElement = document.createElement("div");
     workingElement.innerHTML = initialHTML;
     document.body.appendChild(workingElement);
-    const observer = new ObserverManager(workingElement);
+    const observer = new ObserverManager(workingElement as unknown as HTMLSlotElement);
     // Register a fake bloc tag the tests will exercise.
     observer.register_editor({
         tag: "fake-bloc",
@@ -62,7 +62,7 @@ describe("ObserverManager", () => {
         const workingElement = document.createElement("div");
         workingElement.innerHTML = `<fake-bloc></fake-bloc><fake-bloc></fake-bloc>`;
         document.body.appendChild(workingElement);
-        const observer = new ObserverManager(workingElement);
+        const observer = new ObserverManager(workingElement as unknown as HTMLSlotElement);
         observer.register_editor({ tag: "fake-bloc", label: "fake-bloc", cl: FakeEditor as any });
         expect(FakeEditor.instances).toHaveLength(2);
     });
@@ -127,7 +127,7 @@ describe("ObserverManager", () => {
         workingElement.innerHTML = `<opaque-bloc><fake-bloc></fake-bloc></opaque-bloc>`;
         document.body.appendChild(workingElement);
 
-        const observer = new ObserverManager(workingElement);
+        const observer = new ObserverManager(workingElement as unknown as HTMLSlotElement);
         observer.register_editor({ tag: "fake-bloc", label: "fake-bloc", cl: FakeEditor as any });
         // The inner fake-bloc was editorized before the opaque registration.
         expect(FakeEditor.instances).toHaveLength(1);
