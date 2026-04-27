@@ -2,12 +2,17 @@ import { describe, test, expect } from "bun:test";
 import { compress, sendCompressed } from "src/socle/server/compression";
 import { send_html } from "src/control/core/server/send_html";
 
-function runner() {
-    const handlers = new Map<string, (req: Request) => Promise<Response>>();
-    return {
-        handlers,
-        get: (p: string, fn: any) => { handlers.set("GET " + p, fn); },
-    } as any;
+/**
+ * COOP is emitted as `Cross-Origin-Opener-Policy` in production but as
+ * `Cross-Origin-Opener-Policy-Report-Only` when MODE=DEV (see comment in
+ * `compression.ts`: COOP enforcing is ignored by browsers over plain HTTP on
+ * non-localhost origins). Tests run with `.env` loaded, so MODE=DEV applies —
+ * accept either variant to assert the contract: a COOP-equivalent header is
+ * set to "same-origin".
+ */
+function getCoop(headers: Headers): string | null {
+    return headers.get("Cross-Origin-Opener-Policy")
+        ?? headers.get("Cross-Origin-Opener-Policy-Report-Only");
 }
 
 describe("security headers on every compressed response", () => {
@@ -28,7 +33,7 @@ describe("security headers on every compressed response", () => {
             expect(res.headers.get("X-Frame-Options")).toBe("DENY");
             expect(res.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
             expect(res.headers.get("Permissions-Policy")).toContain("camera=()");
-            expect(res.headers.get("Cross-Origin-Opener-Policy")).toBe("same-origin");
+            expect(getCoop(res.headers)).toBe("same-origin");
             expect(res.headers.get("Cross-Origin-Resource-Policy")).toBe("same-origin");
         });
     }
@@ -75,7 +80,7 @@ describe("security headers on admin HTML responses (send_html)", () => {
         expect(res.headers.get("X-Frame-Options")).toBe("DENY");
         expect(res.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
         expect(res.headers.get("Permissions-Policy")).toContain("camera=()");
-        expect(res.headers.get("Cross-Origin-Opener-Policy")).toBe("same-origin");
+        expect(getCoop(res.headers)).toBe("same-origin");
         expect(res.headers.get("Cross-Origin-Resource-Policy")).toBe("same-origin");
     });
 

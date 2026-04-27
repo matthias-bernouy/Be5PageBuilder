@@ -2,117 +2,56 @@ import { describe, test, expect } from "bun:test";
 import postTemplate from "src/control/api/template/template.post";
 import type { TTemplate } from "src/socle/contracts/Repository/TModels";
 
-type CreateCall = { template: TTemplate };
-type UpdateCall = { id: string; data: Partial<TTemplate> };
-
-function makeSystem(opts: {
-    existingTemplate?: TTemplate | null;
-} = {}) {
-    const createCalls: CreateCall[] = [];
-    const updateCalls: UpdateCall[] = [];
+function makeSystem() {
+    const createCalls: Omit<TTemplate, "id">[] = [];
     const cms: any = {
         repository: {
-            createTemplate: async (template: TTemplate) => {
-                createCalls.push({ template });
-                return { ...template, id: "generated-id" };
-            },
-            updateTemplate: async (id: string, data: Partial<TTemplate>) => {
-                updateCalls.push({ id, data });
-                if (opts.existingTemplate === null) return null;
-                return { ...(opts.existingTemplate ?? {} as TTemplate), ...data, id };
-            },
+            createTemplate: async (t: Omit<TTemplate, "id">) => { createCalls.push(t); },
         },
     };
-    return { cms, createCalls, updateCalls };
+    return { cms, createCalls };
 }
 
-function makeRequest(query: Record<string, string>, body: Partial<TTemplate>) {
-    const url = new URL("http://localhost/cms/api/template");
-    for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
-    return new Request(url.toString(), {
+function makeRequest(body: Record<string, unknown>) {
+    return new Request("http://localhost/cms/api/template", {
         method: "POST",
         body: JSON.stringify(body),
         headers: { "content-type": "application/json" },
     });
 }
 
-describe("template.post", () => {
-    test("400 when creating without name", async () => {
-        const { cms, createCalls } = makeSystem();
-        const res = await postTemplate(makeRequest({}, { content: "c" }), cms);
-        expect(res.status).toBe(400);
-        expect(createCalls).toHaveLength(0);
-    });
-
-    test("400 when creating without content", async () => {
+describe("POST /api/template (create)", () => {
+    test("throws when name is missing", async () => {
         const { cms } = makeSystem();
-        const res = await postTemplate(makeRequest({}, { name: "n" }), cms);
-        expect(res.status).toBe(400);
+        await expect(postTemplate(makeRequest({}), cms))
+            .rejects.toThrow(/Missing param name/);
     });
 
-    test("201 on successful create with default description / category", async () => {
+    test("happy path: persists with category, default content, empty description", async () => {
         const { cms, createCalls } = makeSystem();
         const res = await postTemplate(
-            makeRequest({}, { name: "Card", content: "<div/>" }),
+            makeRequest({ name: "Hero", category: "landing" }),
             cms
         );
-        expect(res.status).toBe(201);
-        const body = await res.json();
-        expect(body.id).toBe("generated-id");
-        expect(createCalls[0]?.template.name).toBe("Card");
-        expect(createCalls[0]?.template.description).toBe("");
-        expect(createCalls[0]?.template.category).toBe("");
-        expect(createCalls[0]?.template.createdAt).toBeInstanceOf(Date);
+        expect(res.ok).toBe(true);
+        expect(createCalls).toHaveLength(1);
+        const t = createCalls[0]!;
+        expect(t.name).toBe("Hero");
+        expect(t.category).toBe("landing");
+        expect(t.description).toBe("");
+        expect(t.content.length).toBeGreaterThan(0);
+        expect(t.createdAt).toBeInstanceOf(Date);
     });
 
-    test("update path: calls updateTemplate when ?id is set", async () => {
-        const { cms, updateCalls, createCalls } = makeSystem({
-            existingTemplate: {
-                id: "tpl-1",
-                name: "old",
-                description: "",
-                content: "",
-                category: "",
-                createdAt: new Date(),
-            },
-        });
-        const res = await postTemplate(
-            makeRequest({ id: "tpl-1" }, { name: "new" }),
-            cms
-        );
-        expect(res.status).toBe(200);
-        expect(updateCalls).toHaveLength(1);
-        expect(updateCalls[0]?.id).toBe("tpl-1");
-        expect(updateCalls[0]?.data.name).toBe("new");
-        expect(createCalls).toHaveLength(0);
+    test("name is trimmed before persistence", async () => {
+        const { cms, createCalls } = makeSystem();
+        await postTemplate(makeRequest({ name: "  Hero  " }), cms);
+        expect(createCalls[0]?.name).toBe("Hero");
     });
 
-    test("update path: 404 when template does not exist", async () => {
-        const { cms } = makeSystem({ existingTemplate: null });
-        const res = await postTemplate(
-            makeRequest({ id: "missing" }, { name: "new" }),
-            cms
-        );
-        expect(res.status).toBe(404);
-    });
-
-    test("update path: does NOT run create-time validation", async () => {
-        // Update must be allowed even when the partial body omits name/content.
-        const { cms, updateCalls } = makeSystem({
-            existingTemplate: {
-                id: "tpl-1",
-                name: "old",
-                description: "",
-                content: "",
-                category: "",
-                createdAt: new Date(),
-            },
-        });
-        const res = await postTemplate(
-            makeRequest({ id: "tpl-1" }, { description: "just a touch" }),
-            cms
-        );
-        expect(res.status).toBe(200);
-        expect(updateCalls[0]?.data.description).toBe("just a touch");
+    test("category is sanitized to a string when not provided", async () => {
+        const { cms, createCalls } = makeSystem();
+        await postTemplate(makeRequest({ name: "Hero" }), cms);
+        expect(typeof createCalls[0]?.category).toBe("string");
     });
 });

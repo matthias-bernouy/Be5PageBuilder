@@ -1,119 +1,61 @@
 import { describe, test, expect } from "bun:test";
-import updatePage from "src/control/api/page/page.post";
-import { InMemoryCache } from "src/socle/providers/memory/Cache/InMemoryCache";
-import { P9R_CACHE } from "src/socle/constants/p9r-constants";
-import type { TPage, TSystem } from "src/socle/contracts/Repository/TModels";
-
-type CreatePageCall = { page: TPage; oldPath?: string };
+import postPage from "src/control/api/page/page.post";
 
 function makeSystem() {
-    const createPageCalls: CreatePageCall[] = [];
-    const cache = new InMemoryCache();
-    const deleteSpy: string[] = [];
-    const originalDelete = cache.delete.bind(cache);
-    cache.delete = (key: string) => {
-        deleteSpy.push(key);
-        originalDelete(key);
-    };
-
+    const insertCalls: { path: string; title: string }[] = [];
     const cms: any = {
-        cache,
         repository: {
-            createPage: async (page: TPage, oldPath?: string) => {
-                createPageCalls.push({ page, oldPath });
-                return page;
+            insertPage: async (path: string, title: string) => {
+                insertCalls.push({ path, title });
             },
-            getSystem: async (): Promise<TSystem> => ({
-                initializationStep: 0,
-                site: {
-                    name: "Test",
-                    favicon: "",
-                    visible: true,
-                    host: "",
-                    language: "",
-                    theme: "",
-                    notFound: null,
-                    serverError: null,
-                },
-                editor: { layoutCategory: "" },
-            }),
         },
     };
-
-    return { cms, createPageCalls, deleteSpy };
+    return { cms, insertCalls };
 }
 
-function makeRequest(query: Record<string, string>, body: Partial<TPage>) {
-    const url = new URL("http://localhost/cms/api/page");
-    for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
-    return new Request(url.toString(), {
+function makeRequest(body: Record<string, unknown>) {
+    return new Request("http://localhost/cms/api/page", {
         method: "POST",
         body: JSON.stringify(body),
         headers: { "content-type": "application/json" },
     });
 }
 
-const fullBody = (over: Partial<TPage> = {}): Partial<TPage> => ({
-    content: "<p>hi</p>",
-    description: "d",
-    path: "/about",
-    visible: true,
-    title: "About",
-    tags: [],
-    ...over,
-});
-
-describe("page.post", () => {
-    test("400 when query ?path is missing", async () => {
+describe("POST /api/page (create)", () => {
+    test("throws when title is missing", async () => {
         const { cms } = makeSystem();
-        const res = await updatePage(makeRequest({}, fullBody()), cms);
-        expect(res.status).toBe(400);
+        await expect(postPage(makeRequest({ path: "/about" }), cms))
+            .rejects.toThrow(/Missing param title/);
     });
 
-    test("400 when body is missing required keys", async () => {
+    test("throws when path is missing", async () => {
         const { cms } = makeSystem();
-        const req = makeRequest({ path: "/about" }, { path: "/about" });
-        const res = await updatePage(req, cms);
-        expect(res.status).toBe(400);
+        await expect(postPage(makeRequest({ title: "About" }), cms))
+            .rejects.toThrow(/Missing param path/);
     });
 
-    test("400 when new path has invalid format", async () => {
+    test("throws when path format is invalid", async () => {
         const { cms } = makeSystem();
-        const req = makeRequest({ path: "/about" }, fullBody({ path: "about" }));
-        const res = await updatePage(req, cms);
-        expect(res.status).toBe(400);
-        expect(await res.text()).toContain("Invalid path format");
+        await expect(postPage(makeRequest({ title: "About", path: "about" }), cms))
+            .rejects.toThrow(/Invalid param path/);
     });
 
-    test("happy path: creates page and returns 200", async () => {
-        const { cms, createPageCalls } = makeSystem();
-        const req = makeRequest({ path: "/about" }, fullBody());
-        const res = await updatePage(req, cms);
-        expect(res.status).toBe(200);
-        expect(createPageCalls).toHaveLength(1);
-        expect(createPageCalls[0]?.page.path).toBe("/about");
+    test("throws when title is empty after trim", async () => {
+        const { cms } = makeSystem();
+        await expect(postPage(makeRequest({ title: "   ", path: "/about" }), cms))
+            .rejects.toThrow();
     });
 
-    test("rename: passes oldPath from query params to createPage", async () => {
-        const { cms, createPageCalls } = makeSystem();
-        const req = makeRequest(
-            { path: "/old-path" },
-            fullBody({ path: "/new-path" }),
-        );
-        const res = await updatePage(req, cms);
-        expect(res.status).toBe(200);
-        expect(createPageCalls[0]?.oldPath).toBe("/old-path");
-        expect(createPageCalls[0]?.page.path).toBe("/new-path");
+    test("happy path: calls insertPage and returns ok", async () => {
+        const { cms, insertCalls } = makeSystem();
+        const res = await postPage(makeRequest({ title: "About", path: "/about" }), cms);
+        expect(res.ok).toBe(true);
+        expect(insertCalls).toEqual([{ path: "/about", title: "About" }]);
     });
 
-    test("rename: invalidates cache for both the old and the new path", async () => {
-        const { cms, deleteSpy } = makeSystem();
-        const req = makeRequest(
-            { path: "/old" },
-            fullBody({ path: "/new" }),
-        );
-        await updatePage(req, cms);
-        expect(deleteSpy).toContain(P9R_CACHE.page("/old"));
-        expect(deleteSpy).toContain(P9R_CACHE.page("/new"));
+    test("title is trimmed before persistence", async () => {
+        const { cms, insertCalls } = makeSystem();
+        await postPage(makeRequest({ title: "  About  ", path: "/about" }), cms);
+        expect(insertCalls[0]?.title).toBe("About");
     });
 });

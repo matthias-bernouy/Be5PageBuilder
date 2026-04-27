@@ -1,97 +1,48 @@
 import { describe, test, expect } from "bun:test";
 import postSnippet from "src/control/api/snippet/snippet.post";
-import { P9R_CACHE } from "src/socle/constants/p9r-constants";
-import type { TSnippet, TPage } from "src/socle/contracts/Repository/TModels";
+import type { TSnippet } from "src/socle/contracts/Repository/TModels";
 
-function makeSystem(opts: {
-    existingByIdentifier?: Record<string, TSnippet | null>;
-    existingSnippetById?: TSnippet | null;
-    pagesUsingSnippet?: Record<string, TPage[]>;
-} = {}) {
+function makeSystem(opts: { existingByIdentifier?: Record<string, TSnippet> } = {}) {
     const createCalls: TSnippet[] = [];
-    const updateCalls: { id: string; data: Partial<TSnippet> }[] = [];
-    const deleteSpy: string[] = [];
     const cms: any = {
         repository: {
-            getSnippetByIdentifier: async (id: string) => {
-                return opts.existingByIdentifier?.[id] ?? null;
-            },
-            createSnippet: async (s: TSnippet) => {
-                createCalls.push(s);
-                return { ...s, id: "snip-id" };
-            },
-            updateSnippet: async (id: string, data: Partial<TSnippet>) => {
-                updateCalls.push({ id, data });
-                if (opts.existingSnippetById === null) return null;
-                return {
-                    identifier: "kept-identifier",
-                    name: "n",
-                    description: "",
-                    content: "",
-                    category: "",
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    ...opts.existingSnippetById,
-                    ...data,
-                    id,
-                };
-            },
-            findPagesUsingSnippet: async (identifier: string) => {
-                return opts.pagesUsingSnippet?.[identifier] ?? [];
-            },
-        },
-        cache: {
-            get: () => null,
-            set: () => {},
-            delete: (k: string) => { deleteSpy.push(k); },
-            clear: () => {},
+            getSnippetByIdentifier: async (id: string) => opts.existingByIdentifier?.[id] ?? null,
+            createSnippet: async (s: TSnippet) => { createCalls.push(s); },
         },
     };
-    return { cms, createCalls, updateCalls, deleteSpy };
+    return { cms, createCalls };
 }
 
-function makeRequest(query: Record<string, string>, body: Partial<TSnippet>) {
-    const url = new URL("http://localhost/cms/api/snippet");
-    for (const [k, v] of Object.entries(query)) url.searchParams.set(k, v);
-    return new Request(url.toString(), {
+function makeRequest(body: Record<string, unknown>) {
+    return new Request("http://localhost/cms/api/snippet", {
         method: "POST",
         body: JSON.stringify(body),
         headers: { "content-type": "application/json" },
     });
 }
 
-describe("snippet.post — create", () => {
-    test("400 when identifier missing", async () => {
+const existingHero: TSnippet = {
+    id: "snippet-hero",
+    identifier: "hero",
+    name: "Hero",
+    description: "",
+    content: "",
+    category: "",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+};
+
+describe("POST /api/snippet (create)", () => {
+    test("throws when identifier is missing", async () => {
         const { cms } = makeSystem();
-        const res = await postSnippet(
-            makeRequest({}, { name: "n", content: "c" }),
-            cms
-        );
-        expect(res.status).toBe(400);
+        await expect(postSnippet(makeRequest({ name: "Hero" }), cms))
+            .rejects.toThrow(/Missing param identifier/);
     });
 
-    test("400 when name missing", async () => {
+    test("throws when name is missing", async () => {
         const { cms } = makeSystem();
-        const res = await postSnippet(
-            makeRequest({}, { identifier: "hero", content: "c" }),
-            cms
-        );
-        expect(res.status).toBe(400);
-    });
-
-    test("400 when content is undefined (but empty string is allowed)", async () => {
-        const { cms } = makeSystem();
-        const missing = await postSnippet(
-            makeRequest({}, { identifier: "hero", name: "n" }),
-            cms
-        );
-        expect(missing.status).toBe(400);
-
-        const empty = await postSnippet(
-            makeRequest({}, { identifier: "hero", name: "n", content: "" }),
-            cms
-        );
-        expect(empty.status).toBe(201);
+        await expect(postSnippet(makeRequest({ identifier: "hero" }), cms))
+            .rejects.toThrow(/Missing param name/);
     });
 
     test.each([
@@ -101,86 +52,50 @@ describe("snippet.post — create", () => {
         ["-leading"],
         ["trailing-"],
         ["double--dash"],
-        [""],
-    ])("400 on invalid kebab identifier %p", async (identifier) => {
+    ])("throws on invalid kebab identifier %p", async (identifier) => {
         const { cms } = makeSystem();
-        const res = await postSnippet(
-            makeRequest({}, { identifier, name: "n", content: "c" }),
-            cms
-        );
-        expect(res.status).toBe(400);
+        await expect(postSnippet(makeRequest({ identifier, name: "n" }), cms))
+            .rejects.toThrow();
     });
 
     test.each([["hero"], ["hero-section"], ["a1-b2-c3"], ["x"]])(
-        "201 on valid kebab identifier %p",
+        "succeeds on valid kebab identifier %p",
         async (identifier) => {
-            const { cms } = makeSystem();
-            const res = await postSnippet(
-                makeRequest({}, { identifier, name: "n", content: "c" }),
-                cms
-            );
-            expect(res.status).toBe(201);
+            const { cms, createCalls } = makeSystem();
+            const res = await postSnippet(makeRequest({ identifier, name: "n" }), cms);
+            expect(res.ok).toBe(true);
+            expect(createCalls[0]?.identifier).toBe(identifier);
         }
     );
 
-    test("409 when identifier already exists", async () => {
-        const { cms, createCalls } = makeSystem({
-            existingByIdentifier: {
-                hero: {
-                    id: "snippet-hero",
-                    identifier: "hero",
-                    name: "Hero",
-                    description: "",
-                    content: "",
-                    category: "",
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-            },
-        });
-        const res = await postSnippet(
-            makeRequest({}, { identifier: "hero", name: "n", content: "c" }),
-            cms
-        );
-        expect(res.status).toBe(409);
+    test("throws when identifier already exists", async () => {
+        const { cms, createCalls } = makeSystem({ existingByIdentifier: { hero: existingHero } });
+        await expect(postSnippet(makeRequest({ identifier: "hero", name: "n" }), cms))
+            .rejects.toThrow(/already used/);
         expect(createCalls).toHaveLength(0);
     });
-});
 
-describe("snippet.post — update", () => {
-    test("404 when target does not exist", async () => {
-        const { cms } = makeSystem({ existingSnippetById: null });
-        const res = await postSnippet(
-            makeRequest({ id: "missing" }, { name: "new" }),
-            cms
-        );
-        expect(res.status).toBe(404);
-    });
-
-    test("invalidates cache for every page using the snippet", async () => {
-        const { cms, deleteSpy } = makeSystem({
-            pagesUsingSnippet: {
-                "kept-identifier": [
-                    { id: "page-a", path: "/a", content: "", title: "", description: "", visible: true, tags: [] },
-                    { id: "page-b", path: "/b", content: "", title: "", description: "", visible: true, tags: [] },
-                ],
-            },
-        });
-        const res = await postSnippet(
-            makeRequest({ id: "snip-1" }, { content: "fresh" }),
-            cms
-        );
-        expect(res.status).toBe(200);
-        expect(deleteSpy).toContain(P9R_CACHE.page("/a"));
-        expect(deleteSpy).toContain(P9R_CACHE.page("/b"));
-    });
-
-    test("no cache deletes when no page references the snippet", async () => {
-        const { cms, deleteSpy } = makeSystem();
+    test("happy path: persists with default content, empty description, paired timestamps", async () => {
+        const { cms, createCalls } = makeSystem();
         await postSnippet(
-            makeRequest({ id: "snip-1" }, { content: "fresh" }),
+            makeRequest({ identifier: "hero", name: "Hero", category: "layout" }),
             cms
         );
-        expect(deleteSpy).toHaveLength(0);
+        expect(createCalls).toHaveLength(1);
+        const s = createCalls[0]!;
+        expect(s.identifier).toBe("hero");
+        expect(s.name).toBe("Hero");
+        expect(s.category).toBe("layout");
+        expect(s.description).toBe("");
+        expect(s.content.length).toBeGreaterThan(0);
+        expect(s.createdAt).toBeInstanceOf(Date);
+        expect(s.updatedAt).toBeInstanceOf(Date);
+        expect(s.createdAt).toBe(s.updatedAt);
+    });
+
+    test("name is trimmed before persistence", async () => {
+        const { cms, createCalls } = makeSystem();
+        await postSnippet(makeRequest({ identifier: "hero", name: "  Hero  " }), cms);
+        expect(createCalls[0]?.name).toBe("Hero");
     });
 });
