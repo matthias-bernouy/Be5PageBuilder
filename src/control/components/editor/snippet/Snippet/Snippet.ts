@@ -2,7 +2,7 @@ import { Component, type ComponentMetadata } from 'src/control/core/editorSystem
 import { ICON_SNIPPET } from 'src/control/components/icons';
 import template from './template.html' with { type: 'text' };
 import css from './style.css' with { type: 'text' };
-import { getMetaApiPath } from 'src/control/core/dom/meta/getMetaApiPath';
+import resolveApiUrl from 'src/control/core/dom/meta/resolveApiUrl';
 
 const SnippetMetadata: ComponentMetadata = {
     css: css,
@@ -56,7 +56,7 @@ export class Snippet extends Component {
 
     private async _fetch(identifier: string) {
         try {
-            const url = new URL('snippets', getMetaApiPath());
+            const url = resolveApiUrl('snippet');
             url.searchParams.set('identifier', identifier);
 
             const res = await fetch(url);
