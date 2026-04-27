@@ -12,6 +12,7 @@ const BLOCKED: BlockRule[] = [
     { method: "PUT",    pattern: /\/api\/template$/,  label: "template update" },
     { method: "DELETE", pattern: /\/api\/template$/,  label: "template delete" },
     { method: "POST",   pattern: /\/api\/snippet$/,   label: "snippet write" },
+    { method: "PUT",    pattern: /\/api\/snippet$/,   label: "snippet update" },
     { method: "DELETE", pattern: /\/api\/snippet$/,   label: "snippet delete" },
     { method: "POST",   pattern: /\/api\/system$/,    label: "system write" },
     { method: "POST",   pattern: /\/api\/bloc$/,      label: "bloc upload" },

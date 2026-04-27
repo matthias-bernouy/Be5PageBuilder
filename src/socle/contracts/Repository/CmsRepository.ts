@@ -51,10 +51,11 @@ export interface CmsRepository {
     deleteTemplate(id: string): Promise<void>;
 
     // SNIPPET
-    createSnippet(snippet: TSnippet): Promise<TSnippet>;
+    createSnippet(snippet: Omit<TSnippet, 'id'>): Promise<TSnippet>;
     getSnippetById(id: string): Promise<TSnippet | null>;
     getSnippetByIdentifier(identifier: string): Promise<TSnippet | null>;
     getAllSnippets(): Promise<TSnippet[]>;
+    getSnippetsMetadata(): Promise<{id: string, identifier: string, name: string, category: string, updatedAt: string}[]>;
     updateSnippet(id: string, data: Partial<TSnippet>): Promise<TSnippet | null>;
     deleteSnippet(id: string): Promise<void>;
     findPagesUsingSnippet(identifier: string): Promise<TPage[]>;

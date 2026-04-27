@@ -212,7 +212,7 @@ export class InMemoryCmsRepository implements CmsRepository {
 
     // ── Snippets ──
 
-    async createSnippet(snippet: TSnippet): Promise<TSnippet> {
+    async createSnippet(snippet: Omit<TSnippet, 'id'>): Promise<TSnippet> {
         // Enforce unique identifier (mirrors the MongoDB unique index).
         for (const s of this._snippets.values()) {
             if (s.identifier === snippet.identifier) {
@@ -238,6 +238,18 @@ export class InMemoryCmsRepository implements CmsRepository {
 
     async getAllSnippets(): Promise<TSnippet[]> {
         return Array.from(this._snippets.values()).map(s => ({ ...s }));
+    }
+
+    async getSnippetsMetadata(): Promise<{ id: string; identifier: string; name: string; category: string; updatedAt: string; }[]> {
+        return this._snippets.values().map((val) => {
+            return {
+                id: val.id,
+                identifier: val.identifier,
+                name: val.name,
+                category: val.category,
+                updatedAt: val.updatedAt.toDateString()
+            }
+        }).toArray()
     }
 
     async updateSnippet(id: string, data: Partial<TSnippet>): Promise<TSnippet | null> {

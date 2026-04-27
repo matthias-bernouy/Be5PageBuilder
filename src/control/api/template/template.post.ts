@@ -6,9 +6,6 @@ import { createTemplate } from 'src/control/core/template/createTemplate';
 export default async function postTemplate(req: Request, cms: ControlCms) {
     const body = await readJsonBody(req);
     const dto  = parseTemplateCreateDto(body);
-    const created = await createTemplate(cms, dto);
-    return new Response(JSON.stringify(created), {
-        status: 201,
-        headers: { 'Content-Type': 'application/json' },
-    });
+    await createTemplate(cms, dto);
+    return new Response();
 }
