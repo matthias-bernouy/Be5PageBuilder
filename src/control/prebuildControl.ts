@@ -12,12 +12,17 @@ export default async function prebuildControl(){
         rmSync(controlComponentTargetFile)
     }
 
-    Bun.build({
+    const result = await Bun.build({
         "entrypoints": [ controlComponentOrigin ],
         "outdir": controlComponentTargetDir,
         "naming": controlComponentTargetNaming,
         "format": "iife",
         "target": "browser"
     })
+
+    if ( !result.success ) {
+        for ( const log of result.logs ) console.error(log);
+        throw new Error("prebuildControl: Bun.build failed");
+    }
 
 }

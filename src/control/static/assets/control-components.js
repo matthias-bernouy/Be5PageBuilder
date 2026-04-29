@@ -1,21 +1,21 @@
 (() => {
   // ../WebComponents/dist/ui.js
   (() => {
-    var { defineProperty: Rt, getOwnPropertyNames: ha, getOwnPropertyDescriptor: ba } = Object, ma = Object.prototype.hasOwnProperty;
-    var fe = new WeakMap, ga = (t) => {
-      var e = fe.get(t), r;
+    var { defineProperty: Nt, getOwnPropertyNames: za, getOwnPropertyDescriptor: Sa } = Object, Ia = Object.prototype.hasOwnProperty;
+    var Te = new WeakMap, Pa = (t) => {
+      var e = Te.get(t), r;
       if (e)
         return e;
-      if (e = Rt({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
-        ha(t).map((i) => !ma.call(e, i) && Rt(e, i, { get: () => t[i], enumerable: !(r = ba(t, i)) || r.enumerable }));
-      return fe.set(t, e), e;
+      if (e = Nt({}, "__esModule", { value: true }), t && typeof t === "object" || typeof t === "function")
+        za(t).map((i) => !Ia.call(e, i) && Nt(e, i, { get: () => t[i], enumerable: !(r = Sa(t, i)) || r.enumerable }));
+      return Te.set(t, e), e;
     };
-    var fa = (t, e) => {
+    var Ra = (t, e) => {
       for (var r in e)
-        Rt(t, r, { get: e[r], enumerable: true, configurable: true, set: (i) => e[r] = () => i });
+        Nt(t, r, { get: e[r], enumerable: true, configurable: true, set: (i) => e[r] = () => i });
     };
-    var hl = {};
-    fa(hl, { showToast: () => da, Tooltip: () => Pt, ToastStack: () => It, Toast: () => St, Textarea: () => ut, TagSuggest: () => pt, Tag: () => ot, Tabs: () => zt, TableRow: () => Lt, TableHeaderCell: () => Tt, TableCell: () => Ct, Table: () => Mt, TabPanel: () => Ht, Switch: () => at, Stepper: () => At, Step: () => Et, Stack: () => gt, Spinner: () => kt, Skeleton: () => wt, SegmentedSwitch: () => nt, RadioGroup: () => et, Radio: () => Q, Progress: () => yt, Pagination: () => xt, P9rSizesSelect: () => J, P9rSelect: () => G, P9rRange: () => W, P9rInput: () => Z, OpenModal: () => N, Modal: () => j, LeftMenuLayout: () => mt, LateralMenuItem: () => ft, LateralMenu: () => vt, LateralDialog: () => F, InputFile: () => X, IconButton: () => U, HorizontalActionGroup: () => ht, FormSection: () => $, FormDialog: () => D, Divider: () => V, Container: () => bt, Component: () => o, Checkbox: () => K, Card: () => B, Button: () => O, BreadcrumbItem: () => R, Breadcrumb: () => q, Badge: () => P, Avatar: () => I, Alert: () => S, AccordionItem: () => H, Accordion: () => z });
+    var Sl = {};
+    Ra(Sl, { showToast: () => xa, Tooltip: () => Rt, ToastStack: () => Pt, Toast: () => It, Textarea: () => ht, TagSuggest: () => pt, Tag: () => st, Tabs: () => St, TableRow: () => Ct, TableHeaderCell: () => Mt, TableCell: () => Tt, Table: () => Ht, TabPanel: () => zt, Switch: () => ot, Stepper: () => Lt, Step: () => At, Stack: () => ft, Spinner: () => Et, Skeleton: () => kt, SegmentedSwitch: () => at, RadioGroup: () => rt, Radio: () => tt, Progress: () => wt, Pagination: () => yt, P9rSizesSelect: () => Q, P9rSelect: () => J, P9rRange: () => G, P9rInput: () => W, OpenModal: () => N, Modal: () => O, LeftMenuLayout: () => gt, LateralMenuItem: () => vt, LateralMenu: () => _t, LateralDialog: () => F, InputFile: () => Z, IconButton: () => Y, HorizontalActionGroup: () => bt, FormSection: () => U, FormDialog: () => D, Form: () => jt, FetchComponent: () => Ot, Divider: () => V, Container: () => mt, Component: () => o, Checkbox: () => $, Card: () => j, Button: () => K, BreadcrumbItem: () => q, Breadcrumb: () => B, Badge: () => R, Avatar: () => P, Alert: () => I, AccordionItem: () => z, Accordion: () => S });
 
     class o extends HTMLElement {
       constructor(t) {
@@ -30,11 +30,11 @@
       }
       connectedCallback() {}
     }
-    var ve = `<div class="accordion" part="accordion">
+    var Me = `<div class="accordion" part="accordion">
     <slot></slot>
 </div>
 `;
-    var _e = `:host {
+    var He = `:host {
   display: block;
 
   --_border: var(--border-default, #e5e7eb);
@@ -62,7 +62,7 @@
   border-bottom: 1px solid var(--_border);
 }
 `;
-    var xe = `<div class="item" part="item">
+    var ze = `<div class="item" part="item">
     <button class="header" part="header" type="button" aria-expanded="false">
         <span class="title" part="title"><slot name="header"></slot></span>
         <span class="chevron" part="chevron" aria-hidden="true">
@@ -78,7 +78,7 @@
     </div>
 </div>
 `;
-    var ye = `:host {
+    var Se = `:host {
   display: block;
 
   --_text: var(--text-main, #1f2937);
@@ -170,13 +170,13 @@
 }
 `;
 
-    class H extends o {
+    class z extends o {
       _header;
       static get observedAttributes() {
         return ["open", "disabled"];
       }
       constructor() {
-        super({ css: ye, template: xe });
+        super({ css: Se, template: ze });
         this._header = this.shadowRoot?.querySelector(".header") ?? null;
       }
       connectedCallback() {
@@ -235,11 +235,11 @@
       }
     }
     if (!customElements.get("p9r-accordion-item"))
-      customElements.define("p9r-accordion-item", H);
+      customElements.define("p9r-accordion-item", z);
 
-    class z extends o {
+    class S extends o {
       constructor() {
-        super({ css: _e, template: ve });
+        super({ css: He, template: Me });
       }
       connectedCallback() {
         this.addEventListener("accordion-item-toggle", this._handleItemToggle);
@@ -262,8 +262,8 @@
       };
     }
     if (!customElements.get("p9r-accordion"))
-      customElements.define("p9r-accordion", z);
-    var we = `<div class="alert" part="alert" role="alert">
+      customElements.define("p9r-accordion", S);
+    var Ie = `<div class="alert" part="alert" role="alert">
     <span class="icon" part="icon" aria-hidden="true">
         <slot name="icon"></slot>
     </span>
@@ -274,7 +274,7 @@
     <button class="close" part="close" aria-label="Dismiss" hidden>&times;</button>
 </div>
 `;
-    var ke = `:host {
+    var Pe = `:host {
   display: block;
 
   --_bg: var(--info-muted, #eff6ff);
@@ -346,7 +346,7 @@
 
 .close:hover { opacity: 1; }
 `;
-    var Ee = `:host([type="success"]) {
+    var Re = `:host([type="success"]) {
   --_bg: var(--success-muted);
   --_color: var(--success-contrasted);
   --_accent: var(--success-base);
@@ -420,15 +420,15 @@
   to   { opacity: 0; transform: translateY(-6px); }
 }
 `;
-    var Aa = ke + Ee;
+    var Va = Pe + Re;
 
-    class S extends o {
+    class I extends o {
       _close;
       static get observedAttributes() {
         return ["dismissible"];
       }
       constructor() {
-        super({ css: Aa, template: we });
+        super({ css: Va, template: Ie });
         this._close = this.shadowRoot?.querySelector(".close") ?? null;
       }
       connectedCallback() {
@@ -456,14 +456,14 @@
       }
     }
     if (!customElements.get("p9r-alert"))
-      customElements.define("p9r-alert", S);
-    var Ae = `<div class="avatar" part="avatar">
+      customElements.define("p9r-alert", I);
+    var qe = `<div class="avatar" part="avatar">
     <img class="image" part="image" alt="" hidden />
     <span class="initials" part="initials" aria-hidden="true"></span>
     <span class="fallback" part="fallback"><slot></slot></span>
 </div>
 `;
-    var Le = `:host {
+    var Be = `:host {
   display: inline-block;
 
   --_size: 2.5rem;
@@ -539,14 +539,14 @@
 }
 `;
 
-    class I extends o {
+    class P extends o {
       _img;
       _initials;
       static get observedAttributes() {
         return ["src", "alt", "name", "initials"];
       }
       constructor() {
-        super({ css: Le, template: Ae });
+        super({ css: Be, template: qe });
         this._img = this.shadowRoot?.querySelector(".image") ?? null, this._initials = this.shadowRoot?.querySelector(".initials") ?? null;
       }
       connectedCallback() {
@@ -594,13 +594,13 @@
       };
     }
     if (!customElements.get("p9r-avatar"))
-      customElements.define("p9r-avatar", I);
-    var Ce = `<span class="badge" part="badge">
+      customElements.define("p9r-avatar", P);
+    var je = `<span class="badge" part="badge">
     <span class="dot" part="dot" aria-hidden="true"></span>
     <span class="content" part="content"><slot></slot></span>
 </span>
 `;
-    var Te = `:host {
+    var De = `:host {
   display: inline-flex;
 
   --_bg: var(--secondary-muted, #f1f5f9);
@@ -668,20 +668,20 @@
 }
 `;
 
-    class P extends o {
+    class R extends o {
       constructor() {
-        super({ css: Te, template: Ce });
+        super({ css: De, template: je });
       }
     }
     if (!customElements.get("p9r-badge"))
-      customElements.define("p9r-badge", P);
-    var Me = `<nav class="breadcrumb" part="breadcrumb" aria-label="Breadcrumb">
+      customElements.define("p9r-badge", R);
+    var Fe = `<nav class="breadcrumb" part="breadcrumb" aria-label="Breadcrumb">
     <ol class="list" part="list">
         <slot></slot>
     </ol>
 </nav>
 `;
-    var He = `:host {
+    var Oe = `:host {
   display: block;
 
   --_separator: "/";
@@ -713,11 +713,11 @@
   display: inline;
 }
 `;
-    var ze = `<li class="item" part="item">
+    var Ne = `<li class="item" part="item">
     <a class="link" part="link"><slot></slot></a>
 </li>
 `;
-    var Se = `:host {
+    var Ve = `:host {
   display: inline-flex;
   align-items: center;
 
@@ -751,13 +751,13 @@
 }
 `;
 
-    class R extends o {
+    class q extends o {
       _link;
       static get observedAttributes() {
         return ["href", "current"];
       }
       constructor() {
-        super({ css: Se, template: ze });
+        super({ css: Ve, template: Ne });
         this._link = this.shadowRoot?.querySelector(".link") ?? null;
       }
       connectedCallback() {
@@ -788,14 +788,14 @@
       }
     }
     if (!customElements.get("p9r-breadcrumb-item"))
-      customElements.define("p9r-breadcrumb-item", R);
+      customElements.define("p9r-breadcrumb-item", q);
 
-    class q extends o {
+    class B extends o {
       static get observedAttributes() {
         return ["separator"];
       }
       constructor() {
-        super({ css: He, template: Me });
+        super({ css: Oe, template: Fe });
       }
       connectedCallback() {
         this._syncSeparator(), this._markCurrent();
@@ -815,8 +815,8 @@
       }
     }
     if (!customElements.get("p9r-breadcrumb"))
-      customElements.define("p9r-breadcrumb", q);
-    var Ie = `<article class="card" part="card">
+      customElements.define("p9r-breadcrumb", B);
+    var Ke = `<article class="card" part="card">
     <header class="header" part="header">
         <slot name="header"></slot>
     </header>
@@ -828,7 +828,7 @@
     </footer>
 </article>
 `;
-    var Pe = `:host {
+    var $e = `:host {
   display: block;
 
   --_bg: var(--bg-surface, #ffffff);
@@ -905,14 +905,14 @@
 }
 `;
 
-    class B extends o {
+    class j extends o {
       constructor() {
-        super({ css: Pe, template: Ie });
+        super({ css: $e, template: Ke });
       }
     }
     if (!customElements.get("p9r-card"))
-      customElements.define("p9r-card", B);
-    var Re = `<dialog part="dialog" aria-modal="true">
+      customElements.define("p9r-card", j);
+    var Ue = `<dialog part="dialog" aria-modal="true">
     <div class="modal-wrapper" part="wrapper">
         <form method="dialog" id="close-form"></form>
 
@@ -938,7 +938,7 @@
     </div>
 </dialog>
 `;
-    var qe = `:host {
+    var Ye = `:host {
     --_modal-width: 500px;
     --_modal-radius: 12px;
     --_modal-bg: var(--bg-surface);
@@ -1008,7 +1008,7 @@ footer.actions {
     border-top: 1px solid var(--border-default);
 }
 `;
-    var Be = `.close-icon {
+    var Xe = `.close-icon {
     background: transparent;
     border: none;
     font-size: 1.5rem;
@@ -1063,18 +1063,18 @@ footer.actions {
     }
 }
 `;
-    var De = (t, e) => {
+    var Ze = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
     };
-    var Fe = (t) => {
+    var We = (t) => {
       t.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
-    }, je = (t) => {
+    }, Ge = (t) => {
       t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
     };
-    var Ne = (t, e) => {
+    var Je = (t, e) => {
       let r = t.shadowRoot?.querySelector("dialog");
       if (!r)
         return;
@@ -1083,14 +1083,14 @@ footer.actions {
       let i = r.getBoundingClientRect();
       if (!(i.top <= e.clientY && e.clientY <= i.top + i.height && i.left <= e.clientX && e.clientX <= i.left + i.width))
         t.close();
-    }, Ve = (t, e) => {
+    }, Qe = (t, e) => {
       t.querySelectorAll("[name]").forEach((i) => {
         let n = i.getAttribute("name"), a = i.value;
         if (n && a !== undefined && a !== null && a !== "")
           e.formData.append(n, String(a));
       });
     };
-    var Fa = qe + Be;
+    var io = Ye + Xe;
 
     class D extends o {
       _dialog;
@@ -1100,12 +1100,12 @@ footer.actions {
         return ["action", "method", "enctype"];
       }
       constructor() {
-        super({ css: Fa, template: Re });
+        super({ css: io, template: Ue });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._form = this.shadowRoot?.querySelector("#form-validation") ?? null;
       }
       connectedCallback() {
         for (let t of ["action", "method", "enctype"])
-          De(this, t);
+          Ze(this, t);
         this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("close", this._onClose), this._form?.addEventListener("formdata", this._onFormData);
       }
       disconnectedCallback() {
@@ -1121,17 +1121,17 @@ footer.actions {
         if (t === "enctype")
           this._form.enctype = r ?? "application/x-www-form-urlencoded";
       }
-      _onBackdrop = (t) => Ne(this, t);
-      _onFormData = (t) => Ve(this, t);
+      _onBackdrop = (t) => Je(this, t);
+      _onFormData = (t) => Qe(this, t);
       _onClose = () => {
         if (this._previouslyFocused instanceof HTMLElement)
           this._previouslyFocused.focus();
-        this._previouslyFocused = null, je(this);
+        this._previouslyFocused = null, Ge(this);
       };
       showModal() {
         if (!this._dialog)
           return;
-        this._previouslyFocused = document.activeElement, this._dialog.showModal(), Fe(this);
+        this._previouslyFocused = document.activeElement, this._dialog.showModal(), We(this);
       }
       close() {
         this._dialog?.close();
@@ -1157,7 +1157,7 @@ footer.actions {
     }
     if (!customElements.get("p9r-form-dialog"))
       customElements.define("p9r-form-dialog", D);
-    var Oe = `<dialog id="drawer" part="dialog" aria-modal="true" role="dialog" aria-labelledby="title">
+    var tr = `<dialog id="drawer" part="dialog" aria-modal="true" role="dialog" aria-labelledby="title">
     <header part="header">
         <div id="title" part="title">
             <slot name="title">Dialog</slot>
@@ -1174,7 +1174,7 @@ footer.actions {
     </footer>
 </dialog>
 `;
-    var Ke = `:host {
+    var er = `:host {
     --drawer-width: 400px;
     --drawer-bg: #ffffff;
     --transition-speed: 0.4s;
@@ -1226,7 +1226,7 @@ dialog > * {
     pointer-events: auto;
 }
 `;
-    var $e = `header {
+    var rr = `header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1307,7 +1307,7 @@ footer slot[name="footer"]::slotted(button:hover) {
     filter: brightness(0.9);
 }
 `;
-    var Ue = `@media (prefers-reduced-motion: no-preference) {
+    var ir = `@media (prefers-reduced-motion: no-preference) {
     dialog {
         transition:
             transform var(--transition-speed) var(--transition-curve),
@@ -1353,31 +1353,31 @@ footer slot[name="footer"]::slotted(button:hover) {
     }
 }
 `;
-    var Ye = (t, e) => {
+    var nr = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
     };
-    var Xe = (t) => {
+    var ar = (t) => {
       t.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
-    }, Ze = (t) => {
+    }, or = (t) => {
       t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
     };
-    var We = (t, e) => {
+    var sr = (t, e) => {
       let r = t.shadowRoot?.querySelector("dialog");
       if (e.target === r)
         t.close();
-    }, Ge = (t, e) => {
+    }, lr = (t, e) => {
       e.preventDefault(), t.close();
-    }, Je = (t, e) => {
+    }, dr = (t, e) => {
       e.preventDefault(), t.close();
-    }, Qe = (t) => {
+    }, cr = (t) => {
       if (t.hasAttribute("open"))
         t.removeAttribute("open");
-      Ze(t);
+      or(t);
     };
-    var Ka = Ke + $e + Ue;
+    var lo = er + rr + ir;
 
     class F extends o {
       _dialog;
@@ -1386,11 +1386,11 @@ footer slot[name="footer"]::slotted(button:hover) {
         return ["open"];
       }
       constructor() {
-        super({ css: Ka, template: Oe });
+        super({ css: lo, template: tr });
         this._dialog = this.shadowRoot?.querySelector("dialog") ?? null, this._closeBtn = this.shadowRoot?.querySelector("#close-btn") ?? null;
       }
       connectedCallback() {
-        Ye(this, "open"), this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("cancel", this._onCancel), this._dialog?.addEventListener("close", this._onClose), this._closeBtn?.addEventListener("click", this._onCloseClick);
+        nr(this, "open"), this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("cancel", this._onCancel), this._dialog?.addEventListener("close", this._onClose), this._closeBtn?.addEventListener("click", this._onCloseClick);
       }
       disconnectedCallback() {
         this._dialog?.removeEventListener("click", this._onBackdrop), this._dialog?.removeEventListener("cancel", this._onCancel), this._dialog?.removeEventListener("close", this._onClose), this._closeBtn?.removeEventListener("click", this._onCloseClick);
@@ -1406,10 +1406,10 @@ footer slot[name="footer"]::slotted(button:hover) {
             this._dialog.close();
         }
       }
-      _onBackdrop = (t) => We(this, t);
-      _onCloseClick = (t) => Ge(this, t);
-      _onCancel = (t) => Je(this, t);
-      _onClose = () => Qe(this);
+      _onBackdrop = (t) => sr(this, t);
+      _onCloseClick = (t) => lr(this, t);
+      _onCancel = (t) => dr(this, t);
+      _onClose = () => cr(this);
       get open() {
         return this.hasAttribute("open");
       }
@@ -1426,7 +1426,7 @@ footer slot[name="footer"]::slotted(button:hover) {
           this._dialog.showModal();
         if (!this.hasAttribute("open"))
           this.setAttribute("open", "");
-        Xe(this);
+        ar(this);
       }
       showModal() {
         this.show();
@@ -1440,17 +1440,17 @@ footer slot[name="footer"]::slotted(button:hover) {
     }
     if (!customElements.get("w13c-lateral-dialog"))
       customElements.define("w13c-lateral-dialog", F);
-    var tr = (t, e) => {
+    var ur = (t, e) => {
       if (e.target === e.currentTarget)
         t.hide();
-    }, er = (t, e) => {
+    }, pr = (t, e) => {
       e.preventDefault(), t.hide();
-    }, rr = (t) => {
+    }, hr = (t) => {
       if (t.hasAttribute("open"))
         t.removeAttribute("open");
       t.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
     };
-    var ir = `<dialog part="dialog">
+    var br = `<dialog part="dialog">
     <form method="dialog" id="m-close"></form>
     <div class="panel" part="panel">
         <header class="header" part="header">
@@ -1462,7 +1462,7 @@ footer slot[name="footer"]::slotted(button:hover) {
     </div>
 </dialog>
 `;
-    var nr = `:host {
+    var mr = `:host {
     --modal-width: var(--p9r-modal-width, 520px);
     --modal-radius: var(--p9r-modal-radius, 12px);
     --modal-bg: var(--p9r-modal-bg, var(--bg-surface, #ffffff));
@@ -1542,16 +1542,16 @@ dialog[open]::backdrop { opacity: 1; }
 .body { padding: var(--modal-pad); overflow: auto; }
 `;
 
-    class j extends o {
+    class O extends o {
       _dialog = null;
-      _onBackdrop = (t) => tr(this, t);
-      _onCancel = (t) => er(this, t);
-      _onClose = () => rr(this);
+      _onBackdrop = (t) => ur(this, t);
+      _onCancel = (t) => pr(this, t);
+      _onClose = () => hr(this);
       static get observedAttributes() {
         return ["open", "aria-label"];
       }
       constructor() {
-        super({ css: nr, template: ir });
+        super({ css: mr, template: br });
       }
       connectedCallback() {
         this._dialog ??= this.shadowRoot?.querySelector("dialog") ?? null, this._upgradeProperty("open"), this._dialog?.addEventListener("click", this._onBackdrop), this._dialog?.addEventListener("cancel", this._onCancel), this._dialog?.addEventListener("close", this._onClose), this.addEventListener("form:success", this.hide), this._syncLabel(), this._syncOpen();
@@ -1614,10 +1614,10 @@ dialog[open]::backdrop { opacity: 1; }
       }
     }
     if (!customElements.get("p9r-modal"))
-      customElements.define("p9r-modal", j);
-    var ar = `<slot></slot>
+      customElements.define("p9r-modal", O);
+    var gr = `<slot></slot>
 `;
-    var or = `:host {
+    var fr = `:host {
     display: contents;
     cursor: pointer;
 }
@@ -1625,7 +1625,7 @@ dialog[open]::backdrop { opacity: 1; }
 
     class N extends o {
       constructor() {
-        super({ css: or, template: ar });
+        super({ css: fr, template: gr });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -1666,13 +1666,13 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-open-modal"))
       customElements.define("p9r-open-modal", N);
-    var sr = `<div class="divider" part="divider" role="separator">
+    var vr = `<div class="divider" part="divider" role="separator">
     <span class="line line-start" part="line"></span>
     <span class="label" part="label"><slot></slot></span>
     <span class="line line-end" part="line"></span>
 </div>
 `;
-    var lr = `:host {
+    var _r = `:host {
   display: block;
 
   --_color: var(--border-default, #e5e7eb);
@@ -1762,7 +1762,7 @@ dialog[open]::backdrop { opacity: 1; }
         return ["orientation"];
       }
       constructor() {
-        super({ css: lr, template: sr });
+        super({ css: _r, template: vr });
       }
       connectedCallback() {
         this._syncAria();
@@ -1778,7 +1778,7 @@ dialog[open]::backdrop { opacity: 1; }
     }
     if (!customElements.get("p9r-divider"))
       customElements.define("p9r-divider", V);
-    var dr = `<button id="btn" class="button" part="button">
+    var xr = `<button id="btn" class="button" part="button">
     <slot name="icon-left"></slot>
     <span class="label">
         <slot>Button</slot>
@@ -1786,7 +1786,7 @@ dialog[open]::backdrop { opacity: 1; }
     <slot name="icon-right"></slot>
 </button>
 `;
-    var cr = `:host {
+    var yr = `:host {
   display: inline-block;
 
   --_btn-padding-y: 0.6rem;
@@ -1844,7 +1844,7 @@ dialog[open]::backdrop { opacity: 1; }
   width: 1.2rem;
 }
 `;
-    var pr = `:host([color="primary"]) {
+    var wr = `:host([color="primary"]) {
   --_accent-base: var(--primary-base);
   --_accent-muted: var(--primary-muted);
   --_accent-contrast: oklch(100% 0 0);
@@ -1920,14 +1920,14 @@ dialog[open]::backdrop { opacity: 1; }
   }
 }
 `;
-    var to = cr + pr;
+    var _o = yr + wr;
 
-    class O extends o {
+    class K extends o {
       static formAssociated = true;
       _internals;
       _btn;
       constructor() {
-        super({ css: to, template: dr });
+        super({ css: _o, template: xr });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       static get observedAttributes() {
@@ -1984,8 +1984,8 @@ dialog[open]::backdrop { opacity: 1; }
       }
     }
     if (!customElements.get("p9r-button"))
-      customElements.define("p9r-button", O);
-    var ur = `<label class="checkbox-container" part="container">
+      customElements.define("p9r-button", K);
+    var kr = `<label class="checkbox-container" part="container">
     <span class="input-wrapper">
         <input type="checkbox" id="native-input" part="input" />
         <span class="custom-box" part="box" aria-hidden="true">
@@ -2000,7 +2000,7 @@ dialog[open]::backdrop { opacity: 1; }
     </span>
 </label>
 `;
-    var hr = `:host {
+    var Er = `:host {
   display: inline-block;
   --cb-size: 20px;
   --cb-border: var(--border-default, #d1d5db);
@@ -2082,7 +2082,7 @@ input {
   display: none;
 }
 `;
-    var br = `input:checked ~ .custom-box {
+    var Ar = `input:checked ~ .custom-box {
   background-color: var(--cb-active-bg);
   border-color: var(--cb-active-border);
 }
@@ -2135,7 +2135,7 @@ input:focus-visible ~ .custom-box {
   }
 }
 `;
-    var mr = (t, e) => {
+    var Lr = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -2143,14 +2143,14 @@ input:focus-visible ~ .custom-box {
     }, f = (t, e, r) => {
       let i = e?.checked ?? t.hasAttribute("checked");
       r.setFormValue(i ? t.getAttribute("value") ?? "on" : null);
-    }, gr = (t, e) => {
+    }, Cr = (t, e) => {
       if (!e)
         return;
       if (e.checked = t.hasAttribute("checked"), e.disabled = t.hasAttribute("disabled"), e.indeterminate = t.hasAttribute("indeterminate"), t.hasAttribute("name"))
         e.name = t.getAttribute("name") ?? "";
       if (t.hasAttribute("value"))
         e.value = t.getAttribute("value") ?? "";
-    }, fr = (t, e, r, i, n) => {
+    }, Tr = (t, e, r, i, n) => {
       if (!e)
         return;
       if (i === "checked")
@@ -2164,7 +2164,7 @@ input:focus-visible ~ .custom-box {
       else if (i === "value")
         e.value = n ?? "", f(t, e, r);
     };
-    var vr = (t, e, r) => {
+    var Mr = (t, e, r) => {
       if (e?.checked ?? false)
         t.setAttribute("checked", "");
       else
@@ -2172,13 +2172,13 @@ input:focus-visible ~ .custom-box {
       if (e && e.indeterminate === false && t.hasAttribute("indeterminate"))
         t.removeAttribute("indeterminate");
       f(t, e, r), t.dispatchEvent(new Event("change", { bubbles: true }));
-    }, _r = (t, e) => {
+    }, Hr = (t, e) => {
       if (t.hasAttribute("disabled"))
         e.preventDefault(), e.stopImmediatePropagation();
     };
-    var no = hr + br;
+    var ko = Er + Ar;
 
-    class K extends o {
+    class $ extends o {
       static formAssociated = true;
       _internals;
       _input;
@@ -2189,13 +2189,13 @@ input:focus-visible ~ .custom-box {
         return ["checked", "disabled", "name", "value", "indeterminate"];
       }
       constructor() {
-        super({ css: no, template: ur });
+        super({ css: ko, template: kr });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultChecked = this.hasAttribute("checked"), this._defaultIndeterminate = this.hasAttribute("indeterminate"), this._defaultsCaptured = true;
-        ["checked", "disabled", "name", "value", "indeterminate"].forEach((t) => mr(this, t)), gr(this, this._input), this._input?.addEventListener("change", this._onChange), this._input?.addEventListener("click", this._onClick), f(this, this._input, this._internals);
+        ["checked", "disabled", "name", "value", "indeterminate"].forEach((t) => Lr(this, t)), Cr(this, this._input), this._input?.addEventListener("change", this._onChange), this._input?.addEventListener("click", this._onClick), f(this, this._input, this._internals);
       }
       disconnectedCallback() {
         this._input?.removeEventListener("change", this._onChange), this._input?.removeEventListener("click", this._onClick);
@@ -2204,10 +2204,10 @@ input:focus-visible ~ .custom-box {
         this.indeterminate = this._defaultIndeterminate, this.checked = this._defaultChecked;
       }
       attributeChangedCallback(t, e, r) {
-        fr(this, this._input, this._internals, t, r);
+        Tr(this, this._input, this._internals, t, r);
       }
-      _onChange = () => vr(this, this._input, this._internals);
-      _onClick = (t) => _r(this, t);
+      _onChange = () => Mr(this, this._input, this._internals);
+      _onClick = (t) => Hr(this, t);
       get checked() {
         return this.hasAttribute("checked");
       }
@@ -2247,8 +2247,8 @@ input:focus-visible ~ .custom-box {
       }
     }
     if (!customElements.get("w13c-checkbox"))
-      customElements.define("w13c-checkbox", K);
-    var xr = `<section class="section-container" part="container">
+      customElements.define("w13c-checkbox", $);
+    var zr = `<section class="section-container" part="container">
     <header id="toggle" part="header" role="button" tabindex="0" aria-expanded="true">
         <div class="accent-bar" part="accent"></div>
         <div class="title-wrapper" part="title"></div>
@@ -2261,7 +2261,7 @@ input:focus-visible ~ .custom-box {
     </main>
 </section>
 `;
-    var yr = `:host {
+    var Sr = `:host {
     display: block;
     margin-bottom: 8px;
 }
@@ -2340,33 +2340,33 @@ header:focus-visible {
     width: 100%;
 }
 `;
-    var wr = (t, e) => {
+    var Ir = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, qt = (t, e) => {
+    }, Vt = (t, e) => {
       if (e)
         e.textContent = t.getAttribute("data-title") ?? "";
-    }, Bt = (t, e, r) => {
+    }, Kt = (t, e, r) => {
       if (!e)
         return;
       let i = t.hasAttribute("collapsed");
       if (e.setAttribute("aria-expanded", String(!i)), r)
         r.hidden = i;
     };
-    var kr = (t, e) => {
+    var Pr = (t, e) => {
       t.dispatchEvent(new CustomEvent("toggle", { detail: { collapsed: e }, bubbles: true, composed: true }));
     };
-    var Dt = (t) => {
-      t.collapsed = !t.collapsed, kr(t, t.collapsed);
-    }, Er = (t, e) => {
+    var $t = (t) => {
+      t.collapsed = !t.collapsed, Pr(t, t.collapsed);
+    }, Rr = (t, e) => {
       if (e.key !== "Enter" && e.key !== " ")
         return;
-      e.preventDefault(), Dt(t);
+      e.preventDefault(), $t(t);
     };
 
-    class $ extends o {
+    class U extends o {
       static get observedAttributes() {
         return ["collapsed", "data-title"];
       }
@@ -2374,22 +2374,22 @@ header:focus-visible {
       _title;
       _content;
       constructor() {
-        super({ css: yr, template: xr });
+        super({ css: Sr, template: zr });
         this._toggle = this.shadowRoot?.getElementById("toggle") ?? null, this._title = this.shadowRoot?.querySelector(".title-wrapper") ?? null, this._content = this.shadowRoot?.getElementById("content") ?? null;
       }
       connectedCallback() {
-        if (wr(this, "collapsed"), this.hasAttribute("data-collapsed") && !this.hasAttribute("collapsed"))
+        if (Ir(this, "collapsed"), this.hasAttribute("data-collapsed") && !this.hasAttribute("collapsed"))
           this.setAttribute("collapsed", "");
-        qt(this, this._title), Bt(this, this._toggle, this._content), this._toggle?.addEventListener("click", this._onClick), this._toggle?.addEventListener("keydown", this._onKey);
+        Vt(this, this._title), Kt(this, this._toggle, this._content), this._toggle?.addEventListener("click", this._onClick), this._toggle?.addEventListener("keydown", this._onKey);
       }
       disconnectedCallback() {
         this._toggle?.removeEventListener("click", this._onClick), this._toggle?.removeEventListener("keydown", this._onKey);
       }
       attributeChangedCallback(t) {
         if (t === "collapsed")
-          Bt(this, this._toggle, this._content);
+          Kt(this, this._toggle, this._content);
         if (t === "data-title")
-          qt(this, this._title);
+          Vt(this, this._title);
       }
       get collapsed() {
         return this.hasAttribute("collapsed");
@@ -2397,16 +2397,16 @@ header:focus-visible {
       set collapsed(t) {
         t ? this.setAttribute("collapsed", "") : this.removeAttribute("collapsed");
       }
-      _onClick = () => Dt(this);
-      _onKey = (t) => Er(this, t);
+      _onClick = () => $t(this);
+      _onKey = (t) => Rr(this, t);
     }
     if (!customElements.get("p9r-section"))
-      customElements.define("p9r-section", $);
-    var Ar = `<button id="btn" class="icon-button" part="button">
+      customElements.define("p9r-section", U);
+    var qr = `<button id="btn" class="icon-button" part="button">
     <slot></slot>
 </button>
 `;
-    var Lr = `:host {
+    var Br = `:host {
   display: inline-block;
 
   --_size: 2.25rem;
@@ -2496,7 +2496,7 @@ header:focus-visible {
 }
 `;
 
-    class U extends o {
+    class Y extends o {
       static formAssociated = true;
       _internals;
       _btn;
@@ -2504,7 +2504,7 @@ header:focus-visible {
         return ["type", "disabled", "aria-label"];
       }
       constructor() {
-        super({ css: Lr, template: Ar });
+        super({ css: Br, template: qr });
         this._internals = this.attachInternals(), this._btn = this.shadowRoot?.querySelector("button") ?? null;
       }
       connectedCallback() {
@@ -2569,8 +2569,8 @@ header:focus-visible {
       }
     }
     if (!customElements.get("p9r-icon-button"))
-      customElements.define("p9r-icon-button", U);
-    var Cr = `<div class="field-header" part="header">
+      customElements.define("p9r-icon-button", Y);
+    var jr = `<div class="field-header" part="header">
     <slot name="label"></slot>
 </div>
 
@@ -2593,7 +2593,7 @@ header:focus-visible {
 
 <div class="sr-live" role="status" aria-live="polite" aria-atomic="true"></div>
 `;
-    var Tr = `:host {
+    var Dr = `:host {
     display: block;
     width: 100%;
     margin: 1.25rem 0;
@@ -2691,33 +2691,33 @@ input[type="file"]:focus-visible + label {
     }
 }
 `;
-    var Mr = (t, e) => {
+    var Fr = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, Hr = (t) => {
+    }, Or = (t) => {
       if (t < 1024)
         return `${t} B`;
       if (t < 1048576)
         return `${(t / 1024).toFixed(1)} KB`;
       return `${(t / 1048576).toFixed(1)} MB`;
-    }, Ft = (t, e) => {
+    }, Ut = (t, e) => {
       if (t)
         t.textContent = e;
     };
-    var jt = (t, e) => {
+    var Yt = (t, e) => {
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { files: e } }));
     };
-    var Y = (t, e, r, i, n) => {
+    var X = (t, e, r, i, n) => {
       let a = e?.files;
       if (!a || a.length === 0) {
         if (r)
           r.textContent = "No file selected";
-        n.setFormValue(null), Ft(i, "No file selected"), jt(t, null);
+        n.setFormValue(null), Ut(i, "No file selected"), Yt(t, null);
         return;
       }
-      let s = a.length === 1 && a[0] ? `${a[0].name} (${Hr(a[0].size)})` : `${a.length} files selected`;
+      let s = a.length === 1 && a[0] ? `${a[0].name} (${Or(a[0].size)})` : `${a.length} files selected`;
       if (r)
         r.textContent = s;
       if (a.length === 1 && a[0])
@@ -2725,29 +2725,29 @@ input[type="file"]:focus-visible + label {
       else {
         let l = new FormData, d = t.getAttribute("name") ?? "";
         for (let c = 0;c < a.length; c++) {
-          let p = a.item(c);
-          if (p)
-            l.append(d, p);
+          let u = a.item(c);
+          if (u)
+            l.append(d, u);
         }
         n.setFormValue(l);
       }
-      Ft(i, `Selected: ${s}`), jt(t, a);
+      Ut(i, `Selected: ${s}`), Yt(t, a);
     };
-    var zr = (t, e) => {
+    var Nr = (t, e) => {
       if (e.preventDefault(), t.hasAttribute("disabled"))
         return;
       t.toggleAttribute("dragging", true);
-    }, Sr = (t, e) => {
+    }, Vr = (t, e) => {
       e.preventDefault(), t.toggleAttribute("dragging", false);
-    }, Ir = (t, e, r, i, n, a) => {
+    }, Kr = (t, e, r, i, n, a) => {
       let s = a;
       if (s.preventDefault(), t.removeAttribute("dragging"), t.hasAttribute("disabled"))
         return;
       if (s.dataTransfer?.files && e)
-        e.files = s.dataTransfer.files, Y(t, e, r, i, n);
+        e.files = s.dataTransfer.files, X(t, e, r, i, n);
     };
 
-    class X extends o {
+    class Z extends o {
       static formAssociated = true;
       _internals;
       _input;
@@ -2755,7 +2755,7 @@ input[type="file"]:focus-visible + label {
       _dropZone;
       _liveRegion;
       constructor() {
-        super({ css: Tr, template: Cr });
+        super({ css: Dr, template: jr });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector('input[type="file"]') ?? null, this._preview = this.shadowRoot?.querySelector(".file-info") ?? null, this._dropZone = this.shadowRoot?.querySelector(".drop-zone") ?? null, this._liveRegion = this.shadowRoot?.querySelector(".sr-live") ?? null;
       }
       static get observedAttributes() {
@@ -2763,7 +2763,7 @@ input[type="file"]:focus-visible + label {
       }
       connectedCallback() {
         for (let t of ["accept", "multiple", "name", "disabled", "required"])
-          Mr(this, t);
+          Fr(this, t);
         this._input?.addEventListener("change", this._onChange), this._dropZone?.addEventListener("dragover", this._onDragOver), this._dropZone?.addEventListener("dragleave", this._onDragLeave), this._dropZone?.addEventListener("drop", this._onDrop);
       }
       disconnectedCallback() {
@@ -2803,10 +2803,10 @@ input[type="file"]:focus-visible + label {
             break;
         }
       }
-      _onChange = () => Y(this, this._input, this._preview, this._liveRegion, this._internals);
-      _onDragOver = (t) => zr(this, t);
-      _onDragLeave = (t) => Sr(this, t);
-      _onDrop = (t) => Ir(this, this._input, this._preview, this._liveRegion, this._internals, t);
+      _onChange = () => X(this, this._input, this._preview, this._liveRegion, this._internals);
+      _onDragOver = (t) => Nr(this, t);
+      _onDragLeave = (t) => Vr(this, t);
+      _onDrop = (t) => Kr(this, this._input, this._preview, this._liveRegion, this._internals, t);
       get name() {
         return this.getAttribute("name") ?? "";
       }
@@ -2848,8 +2848,8 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("w13c-input-file"))
-      customElements.define("w13c-input-file", X);
-    var Pr = `<div class="field" part="field">
+      customElements.define("w13c-input-file", Z);
+    var $r = `<div class="field" part="field">
     <label class="label" part="label"></label>
     <input class="input" part="input" type="text" />
     <div class="meta" part="meta" hidden>
@@ -2858,7 +2858,7 @@ input[type="file"]:focus-visible + label {
     </div>
 </div>
 `;
-    var Rr = `:host {
+    var Ur = `:host {
     display: block;
 }
 
@@ -2930,7 +2930,7 @@ input[type="file"]:focus-visible + label {
     display: none;
 }
 `;
-    var qr = `.input:hover:not(:disabled) {
+    var Yr = `.input:hover:not(:disabled) {
     border-color: var(--text-muted, #94a3b8);
 }
 
@@ -2966,16 +2966,16 @@ input[type="file"]:focus-visible + label {
     font-weight: 600;
 }
 `;
-    var Br = `@media (prefers-reduced-motion: no-preference) {
+    var Xr = `@media (prefers-reduced-motion: no-preference) {
     .input { transition: border-color 0.15s, box-shadow 0.15s; }
 }
 `;
-    var Dr = (t, e) => {
+    var Zr = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, Nt = (t) => {
+    }, Xt = (t) => {
       let e = t.getAttribute("max-count");
       if (e === null)
         return null;
@@ -2984,23 +2984,23 @@ input[type="file"]:focus-visible + label {
     }, v = (t, e, r, i) => {
       if (!e || !r || !i)
         return;
-      let n = Nt(t);
+      let n = Xt(t);
       if (n === null)
         return;
       let a = e.value.length;
       i.textContent = String(a), r.dataset.over = String(a > n);
-    }, Vt = (t, e, r) => {
+    }, Zt = (t, e, r) => {
       if (!t || !e || !r)
         return;
       let i = (t.textContent ?? "").length > 0, n = !e.hidden;
       r.hidden = !i && !n;
-    }, go = 0, Fr = () => `p9r-input-label-${++go}`;
-    var Ot = (t, e) => {
+    }, Po = 0, Wr = () => `p9r-input-label-${++Po}`;
+    var Wt = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("label") ?? "";
       e.textContent = r, e.hidden = r === "";
-    }, fo = (t, e) => {
+    }, Ro = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("placeholder");
@@ -3008,14 +3008,14 @@ input[type="file"]:focus-visible + label {
         e.removeAttribute("placeholder");
       else
         e.setAttribute("placeholder", r);
-    }, vo = (t, e) => {
+    }, qo = (t, e) => {
       if (!e)
         return;
       e.setAttribute("type", t.getAttribute("type") ?? "text");
-    }, _o = (t, e) => {
+    }, Bo = (t, e) => {
       if (e)
         e.disabled = t.hasAttribute("disabled");
-    }, xo = (t, e) => {
+    }, jo = (t, e) => {
       if (!e)
         return;
       let r = t.hasAttribute("required");
@@ -3023,45 +3023,45 @@ input[type="file"]:focus-visible + label {
         e.setAttribute("aria-required", "true");
       else
         e.removeAttribute("aria-required");
-    }, yo = (t, e, r, i) => {
+    }, Do = (t, e, r, i) => {
       if (!e)
         return;
-      e.textContent = t.getAttribute("hint") ?? "", Vt(e, r, i);
-    }, wo = (t, e) => {
+      e.textContent = t.getAttribute("hint") ?? "", Zt(e, r, i);
+    }, Fo = (t, e) => {
       if (!e)
         return;
       e.dataset.level = t.getAttribute("hint-level") ?? "info";
-    }, ko = (t, e) => {
+    }, Oo = (t, e) => {
       if (!e)
         return;
       if (t.hasAttribute("invalid"))
         e.setAttribute("aria-invalid", "true");
       else
         e.removeAttribute("aria-invalid");
-    }, Kt = (t, e, r, i, n) => {
+    }, Gt = (t, e, r, i, n) => {
       if (!e || !r)
         return;
-      let a = Nt(t);
+      let a = Xt(t);
       if (a === null)
         e.hidden = true;
       else
         e.hidden = false, r.textContent = String(a);
-      Vt(i, e, n);
-    }, $t = (t, e, r, i, n, a, s) => {
-      Ot(t, r), fo(t, e), vo(t, e), _o(t, e), xo(t, e), yo(t, i, a, n), wo(t, i), ko(t, e), Kt(t, a, s, i, n);
+      Zt(i, e, n);
+    }, Jt = (t, e, r, i, n, a, s) => {
+      Wt(t, r), Ro(t, e), qo(t, e), Bo(t, e), jo(t, e), Do(t, i, a, n), Fo(t, i), Oo(t, e), Gt(t, a, s, i, n);
     };
-    var jr = (t, e, r, i, n) => {
+    var Gr = (t, e, r, i, n) => {
       if (!e)
         return;
       r.setFormValue(e.value), v(t, e, i, n);
-    }, Nr = (t, e) => {
+    }, Jr = (t, e) => {
       if (!t)
         return;
       e.setFormValue(t.value);
     };
-    var Eo = Rr + qr + Br;
+    var No = Ur + Yr + Xr;
 
-    class Z extends o {
+    class W extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "type", "hint", "hint-level", "max-count", "invalid", "disabled", "required"];
@@ -3077,18 +3077,18 @@ input[type="file"]:focus-visible + label {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super({ css: Eo, template: Pr });
+        super({ css: No, template: $r });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         this._labelEl = t.querySelector(".label"), this._input = t.querySelector(".input"), this._hintEl = t.querySelector(".hint"), this._metaEl = t.querySelector(".meta"), this._counterEl = t.querySelector(".counter"), this._countEl = t.querySelector(".count"), this._maxEl = t.querySelector(".max");
-        let e = Fr();
+        let e = Wr();
         if (this._labelEl && this._input)
           this._labelEl.id = e, this._input.setAttribute("aria-labelledby", e);
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        ["value", "disabled", "required"].forEach((e) => Dr(this, e)), this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("change", this._onChange), $t(this, this._input, this._labelEl, this._hintEl, this._metaEl, this._counterEl, this._maxEl);
+        ["value", "disabled", "required"].forEach((e) => Zr(this, e)), this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("change", this._onChange), Jt(this, this._input, this._labelEl, this._hintEl, this._metaEl, this._counterEl, this._maxEl);
         let t = this.getAttribute("value");
         if (t !== null)
           this.value = t;
@@ -3107,11 +3107,11 @@ input[type="file"]:focus-visible + label {
         if (t === "value" && r !== null)
           this.value = r;
         else if (t === "label")
-          Ot(this, this._labelEl);
+          Wt(this, this._labelEl);
         else if (t === "max-count")
-          Kt(this, this._counterEl, this._maxEl, this._hintEl, this._metaEl), v(this, this._input, this._counterEl, this._countEl);
+          Gt(this, this._counterEl, this._maxEl, this._hintEl, this._metaEl), v(this, this._input, this._counterEl, this._countEl);
         else
-          $t(this, this._input, this._labelEl, this._hintEl, this._metaEl, this._counterEl, this._maxEl);
+          Jt(this, this._input, this._labelEl, this._hintEl, this._metaEl, this._counterEl, this._maxEl);
       }
       get value() {
         return this._input?.value ?? "";
@@ -3139,12 +3139,12 @@ input[type="file"]:focus-visible + label {
       focus() {
         this._input?.focus();
       }
-      _onInput = () => jr(this, this._input, this._internals, this._counterEl, this._countEl);
-      _onChange = () => Nr(this._input, this._internals);
+      _onInput = () => Gr(this, this._input, this._internals, this._counterEl, this._countEl);
+      _onChange = () => Jr(this._input, this._internals);
     }
     if (!customElements.get("p9r-input"))
-      customElements.define("p9r-input", Z);
-    var Vr = `<div class="field" part="field">
+      customElements.define("p9r-input", W);
+    var Qr = `<div class="field" part="field">
     <div class="header" part="header">
         <span class="label" part="label"></span>
         <div class="input-wrap" part="input-wrap">
@@ -3164,7 +3164,7 @@ input[type="file"]:focus-visible + label {
     </div>
 </div>
 `;
-    var Or = `:host {
+    var ti = `:host {
     display: block;
 }
 
@@ -3240,7 +3240,7 @@ input[type="file"]:focus-visible + label {
     margin-top: -2px;
 }
 `;
-    var Kr = `:host([disabled]) {
+    var ei = `:host([disabled]) {
     opacity: 0.55;
     pointer-events: none;
 }
@@ -3326,13 +3326,13 @@ input[type="file"]:focus-visible + label {
     border: none;
 }
 `;
-    var $r = `@media (prefers-reduced-motion: no-preference) {
+    var ri = `@media (prefers-reduced-motion: no-preference) {
     .input-wrap { transition: border-color 0.15s; }
     .fill { transition: width 0.05s ease; }
     .slider::-webkit-slider-thumb { transition: transform 0.1s; }
 }
 `;
-    var Ur = (t, e) => {
+    var ii = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -3354,23 +3354,23 @@ input[type="file"]:focus-visible + label {
       let r = Number(t.min), i = Number(t.max), n = Number(t.value), a = i === r ? 0 : (n - r) / (i - r) * 100;
       e.style.width = `${a}%`;
     };
-    var Ut = (t, e, r, i, n) => {
+    var Qt = (t, e, r, i, n) => {
       if (!e || !r || !i || !n)
         return;
       let a = t.getAttribute("min") ?? "0", s = t.getAttribute("max") ?? "100", l = t.getAttribute("step") ?? "1";
       e.min = a, e.max = s, e.step = l, r.min = a, r.max = s, r.step = l, i.textContent = a, n.textContent = s;
-    }, Yt = (t, e, r, i) => {
+    }, te = (t, e, r, i) => {
       if (!e || !r || !i)
         return;
       let n = t.getAttribute("label") ?? t.getAttribute("name") ?? "";
       if (e.textContent = n, e.hidden = n === "", n)
         r.setAttribute("aria-label", n), i.setAttribute("aria-label", n);
-    }, Xt = (t, e) => {
+    }, ee = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("unit") ?? "";
       e.textContent = r, e.hidden = r === "";
-    }, Zt = (t, e, r) => {
+    }, re = (t, e, r) => {
       if (!e || !r)
         return;
       let i = t.hasAttribute("disabled");
@@ -3381,34 +3381,34 @@ input[type="file"]:focus-visible + label {
       let a = A(t, Number(n));
       t.value = String(a), e.value = String(a), i.setFormValue(t.value), _(t, r);
     };
-    var Yr = (t, e, r, i, n) => {
+    var ni = (t, e, r, i, n) => {
       if (!e || !r)
         return;
       r.value = e.value, n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
-    }, Xr = (t, e, r) => {
+    }, ai = (t, e, r) => {
       if (!e)
         return;
       r.setFormValue(e.value), t.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-    }, Zr = (t, e, r, i, n) => {
+    }, oi = (t, e, r, i, n) => {
       if (!e || !r)
         return;
       if (r.value === "")
         return;
       let a = A(e, Number(r.value));
       e.value = String(a), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("input", { bubbles: true, composed: true }));
-    }, Wr = (t, e, r, i, n) => {
+    }, si = (t, e, r, i, n) => {
       if (!e || !r)
         return;
       let a = A(e, Number(r.value));
       e.value = String(a), r.value = String(a), n.setFormValue(e.value), _(e, i), t.dispatchEvent(new Event("change", { bubbles: true, composed: true }));
-    }, Gr = (t, e) => {
+    }, li = (t, e) => {
       if (!t || !e)
         return;
       e.value = t.value;
     };
-    var Mo = Or + Kr + $r;
+    var Yo = ti + ei + ri;
 
-    class W extends o {
+    class G extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "min", "max", "step", "unit", "disabled"];
@@ -3424,13 +3424,13 @@ input[type="file"]:focus-visible + label {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super({ css: Mo, template: Vr });
+        super({ css: Yo, template: Qr });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         this._slider = t.querySelector(".slider"), this._input = t.querySelector(".number"), this._fill = t.querySelector(".fill"), this._labelEl = t.querySelector(".label"), this._unitEl = t.querySelector(".unit"), this._minEl = t.querySelector(".min-bound"), this._maxEl = t.querySelector(".max-bound");
       }
       connectedCallback() {
-        ["value", "disabled"].forEach((e) => Ur(this, e)), Yt(this, this._labelEl, this._slider, this._input), Ut(this, this._slider, this._input, this._minEl, this._maxEl), Xt(this, this._unitEl), Zt(this, this._slider, this._input);
+        ["value", "disabled"].forEach((e) => ii(this, e)), te(this, this._labelEl, this._slider, this._input), Qt(this, this._slider, this._input, this._minEl, this._maxEl), ee(this, this._unitEl), re(this, this._slider, this._input);
         let t = this.getAttribute("value") ?? this.getAttribute("min") ?? "0";
         if (!this._defaultsCaptured)
           this._defaultValue = t, this._defaultsCaptured = true;
@@ -3448,13 +3448,13 @@ input[type="file"]:focus-visible + label {
         if (t === "value" && r !== null)
           L(this._slider, this._input, this._fill, this._internals, r);
         else if (t === "label")
-          Yt(this, this._labelEl, this._slider, this._input);
+          te(this, this._labelEl, this._slider, this._input);
         else if (t === "min" || t === "max" || t === "step")
-          Ut(this, this._slider, this._input, this._minEl, this._maxEl);
+          Qt(this, this._slider, this._input, this._minEl, this._maxEl);
         else if (t === "unit")
-          Xt(this, this._unitEl);
+          ee(this, this._unitEl);
         else if (t === "disabled")
-          Zt(this, this._slider, this._input);
+          re(this, this._slider, this._input);
       }
       get value() {
         return this._slider?.value ?? "";
@@ -3477,15 +3477,15 @@ input[type="file"]:focus-visible + label {
       _wire(t) {
         this._slider?.[t]("input", this._onSliderInput), this._slider?.[t]("change", this._onSliderChange), this._input?.[t]("input", this._onNumberInput), this._input?.[t]("change", this._onNumberChange), this._input?.[t]("blur", this._onNumberBlur);
       }
-      _onSliderInput = () => Yr(this, this._slider, this._input, this._fill, this._internals);
-      _onSliderChange = () => Xr(this, this._slider, this._internals);
-      _onNumberInput = () => Zr(this, this._slider, this._input, this._fill, this._internals);
-      _onNumberChange = () => Wr(this, this._slider, this._input, this._fill, this._internals);
-      _onNumberBlur = () => Gr(this._slider, this._input);
+      _onSliderInput = () => ni(this, this._slider, this._input, this._fill, this._internals);
+      _onSliderChange = () => ai(this, this._slider, this._internals);
+      _onNumberInput = () => oi(this, this._slider, this._input, this._fill, this._internals);
+      _onNumberChange = () => si(this, this._slider, this._input, this._fill, this._internals);
+      _onNumberBlur = () => li(this._slider, this._input);
     }
     if (!customElements.get("p9r-range"))
-      customElements.define("p9r-range", W);
-    var Jr = `<div class="field">
+      customElements.define("p9r-range", G);
+    var di = `<div class="field">
     <span class="label"></span>
     <button class="trigger" type="button" tabindex="0"
             popovertarget="panel" popovertargetaction="toggle">
@@ -3501,7 +3501,7 @@ input[type="file"]:focus-visible + label {
 </div>
 <div hidden><slot></slot></div>
 `;
-    var Qr = `:host {
+    var ci = `:host {
     display: block;
 }
 
@@ -3568,7 +3568,7 @@ input[type="file"]:focus-visible + label {
     transition: background 0.1s;
 }
 `;
-    var ti = `.trigger:hover {
+    var ui = `.trigger:hover {
     border-color: var(--text-muted, #94a3b8);
 }
 
@@ -3613,14 +3613,14 @@ input[type="file"]:focus-visible + label {
     font-weight: 600;
 }
 `;
-    var ei = (t, e) => {
+    var pi = (t, e) => {
       t.forEach((r) => r.classList.toggle("selected", r.dataset.value === e));
-    }, ri = (t, e) => {
+    }, hi = (t, e) => {
       if (!t)
         return;
       t.textContent = e.getAttribute("label") ?? e.getAttribute("name") ?? "";
     };
-    var ii = (t, e, r) => {
+    var bi = (t, e, r) => {
       let i = Array.from(t.querySelectorAll("option"));
       if (e)
         e.innerHTML = "";
@@ -3632,14 +3632,14 @@ input[type="file"]:focus-visible + label {
       }), !a && i.length > 0)
         a = i[0].value, s = i[0].textContent ?? "";
       return { options: n, initialValue: a, initialLabel: s };
-    }, ni = (t, e, r, i) => {
+    }, mi = (t, e, r, i) => {
       if (e)
         e.textContent = i;
-      ei(t, r);
+      pi(t, r);
     };
-    var Io = Qr + ti;
+    var Go = ci + ui;
 
-    class G extends o {
+    class J extends o {
       static formAssociated = true;
       _internals;
       _trigger;
@@ -3650,11 +3650,11 @@ input[type="file"]:focus-visible + label {
       _value = "";
       _isOpen = false;
       constructor() {
-        super({ css: Io, template: Jr });
+        super({ css: Go, template: di });
         this._internals = this.attachInternals(), this._trigger = this.shadowRoot.querySelector(".trigger"), this._display = this.shadowRoot.querySelector(".value"), this._list = this.shadowRoot.querySelector(".list"), this._panel = this.shadowRoot.querySelector(".panel");
       }
       connectedCallback() {
-        ri(this.shadowRoot.querySelector(".label"), this), this.shadowRoot.querySelector("slot").addEventListener("slotchange", this._onSlot), this._panel?.addEventListener("beforetoggle", this._onBeforeToggle), this._panel?.addEventListener("toggle", this._onToggle), this._syncFromSlot();
+        hi(this.shadowRoot.querySelector(".label"), this), this.shadowRoot.querySelector("slot").addEventListener("slotchange", this._onSlot), this._panel?.addEventListener("beforetoggle", this._onBeforeToggle), this._panel?.addEventListener("toggle", this._onToggle), this._syncFromSlot();
       }
       disconnectedCallback() {
         if (this.shadowRoot.querySelector("slot")?.removeEventListener("slotchange", this._onSlot), this._panel?.removeEventListener("beforetoggle", this._onBeforeToggle), this._panel?.removeEventListener("toggle", this._onToggle), this._isOpen)
@@ -3662,7 +3662,7 @@ input[type="file"]:focus-visible + label {
         this._unbindReposition();
       }
       _syncFromSlot = () => {
-        let { options: t, initialValue: e, initialLabel: r } = ii(this, this._list, (n, a) => this._select(n, a));
+        let { options: t, initialValue: e, initialLabel: r } = bi(this, this._list, (n, a) => this._select(n, a));
         this._options = t;
         let i = this.getAttribute("value");
         if (i !== null) {
@@ -3679,7 +3679,7 @@ input[type="file"]:focus-visible + label {
         this._setValue(t, e), this._panel?.hidePopover?.(), this.dispatchEvent(new Event("change", { bubbles: true }));
       }
       _setValue(t, e) {
-        this._value = t, this._internals.setFormValue(t), ni(this._options, this._display, t, e);
+        this._value = t, this._internals.setFormValue(t), mi(this._options, this._display, t, e);
       }
       _onBeforeToggle = (t) => {
         if (t.newState === "open")
@@ -3714,9 +3714,9 @@ input[type="file"]:focus-visible + label {
       _onSlot = () => this._syncFromSlot();
     }
     if (!customElements.get("p9r-select"))
-      customElements.define("p9r-select", G);
+      customElements.define("p9r-select", J);
 
-    class J extends HTMLElement {
+    class Q extends HTMLElement {
       connectedCallback() {
         let t = this.getAttribute("label") || "Size", e = this.getAttribute("name") || "size", r = document.createElement("p9r-select");
         r.setAttribute("label", t), r.setAttribute("name", e), [{ value: "none", label: "NONE" }, { value: "xs", label: "XS" }, { value: "sm", label: "S" }, { value: "md", label: "M", selected: true }, { value: "lg", label: "L" }, { value: "xl", label: "XL" }].forEach((n) => {
@@ -3734,8 +3734,8 @@ input[type="file"]:focus-visible + label {
       }
     }
     if (!customElements.get("p9r-sizes-select"))
-      customElements.define("p9r-sizes-select", J);
-    var ai = `<label class="radio" part="container">
+      customElements.define("p9r-sizes-select", Q);
+    var gi = `<label class="radio" part="container">
     <input type="radio" id="native-input" part="input" />
     <span class="custom" part="circle" aria-hidden="true">
         <span class="dot" part="dot"></span>
@@ -3743,7 +3743,7 @@ input[type="file"]:focus-visible + label {
     <span class="label" part="label"><slot></slot></span>
 </label>
 `;
-    var oi = `:host {
+    var fi = `:host {
   display: inline-block;
 
   --_size: 18px;
@@ -3823,13 +3823,13 @@ input:focus-visible ~ .custom {
 }
 `;
 
-    class Q extends o {
+    class tt extends o {
       _input;
       static get observedAttributes() {
         return ["checked", "disabled", "value", "name"];
       }
       constructor() {
-        super({ css: oi, template: ai });
+        super({ css: fi, template: gi });
         this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
@@ -3901,15 +3901,15 @@ input:focus-visible ~ .custom {
       }
     }
     if (!customElements.get("p9r-radio"))
-      customElements.define("p9r-radio", Q);
-    var si = `<fieldset class="group" part="group">
+      customElements.define("p9r-radio", tt);
+    var vi = `<fieldset class="group" part="group">
     <legend class="label" part="label"></legend>
     <div class="options" part="options">
         <slot></slot>
     </div>
 </fieldset>
 `;
-    var li = `:host {
+    var _i = `:host {
   display: block;
 }
 
@@ -3951,7 +3951,7 @@ input:focus-visible ~ .custom {
   pointer-events: none;
 }
 `;
-    var di = (t, e) => {
+    var xi = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -3960,7 +3960,7 @@ input:focus-visible ~ .custom {
       if (!t)
         return [];
       return t.assignedElements({ flatten: true }).filter((e) => e.tagName === "P9R-RADIO");
-    }, Do = 0, ci = () => `radiogroup-${Do++}`, pi = (t, e, r) => {
+    }, rs = 0, yi = () => `radiogroup-${rs++}`, wi = (t, e, r) => {
       t.forEach((i) => {
         let n = e !== null && i.getAttribute("value") === e;
         if (n)
@@ -3969,19 +3969,19 @@ input:focus-visible ~ .custom {
           i.removeAttribute("checked");
         i.setAttribute("tabindex", n ? "0" : "-1");
       }), r.setFormValue(e ?? null);
-    }, Wt = (t, e) => {
+    }, ie = (t, e) => {
       if (t)
         t.textContent = e ?? "";
-    }, tt = (t, e) => {
+    }, et = (t, e) => {
       if (!e)
         return;
       t.forEach((r) => r.setAttribute("disabled", ""));
     };
-    var Gt = (t, e) => {
+    var ne = (t, e) => {
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: e } }));
     };
-    var Jt = (t, e, r) => {
-      let i = x(e), n = t.getAttribute("name") ?? ci(), a = t.getAttribute("value");
+    var ae = (t, e, r) => {
+      let i = x(e), n = t.getAttribute("name") ?? yi(), a = t.getAttribute("value");
       if (i.forEach((s) => {
         s.setAttribute("name", n);
         let l = a !== null && s.getAttribute("value") === a;
@@ -3992,21 +3992,21 @@ input:focus-visible ~ .custom {
         s.setAttribute("tabindex", l ? "0" : "-1");
       }), a === null && i.length > 0)
         i[0]?.setAttribute("tabindex", "0");
-      tt(i, t.hasAttribute("disabled")), r.setFormValue(a ?? null);
-    }, ui = (t, e) => {
+      et(i, t.hasAttribute("disabled")), r.setFormValue(a ?? null);
+    }, ki = (t, e) => {
       let r = e.target;
       if (r.tagName !== "P9R-RADIO")
         return;
       let i = r.getAttribute("value") ?? "";
       if (i !== t.getAttribute("value"))
-        t.setAttribute("value", i), Gt(t, i);
-    }, hi = (t, e, r) => {
+        t.setAttribute("value", i), ne(t, i);
+    }, Ei = (t, e, r) => {
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(r.key))
         return;
-      let n = x(e).filter((p) => !p.hasAttribute("disabled"));
+      let n = x(e).filter((u) => !u.hasAttribute("disabled"));
       if (n.length === 0)
         return;
-      let a = n.findIndex((p) => p === document.activeElement), s = a === -1 ? 0 : a, l = s;
+      let a = n.findIndex((u) => u === document.activeElement), s = a === -1 ? 0 : a, l = s;
       switch (r.key) {
         case "ArrowLeft":
         case "ArrowUp":
@@ -4028,10 +4028,10 @@ input:focus-visible ~ .custom {
       if (!d)
         return;
       let c = d.getAttribute("value") ?? "";
-      t.setAttribute("value", c), d.focus(), Gt(t, c);
+      t.setAttribute("value", c), d.focus(), ne(t, c);
     };
 
-    class et extends o {
+    class rt extends o {
       static formAssociated = true;
       _internals;
       _label;
@@ -4042,15 +4042,15 @@ input:focus-visible ~ .custom {
         return ["value", "label", "name", "disabled"];
       }
       constructor() {
-        super({ css: li, template: si });
+        super({ css: _i, template: vi });
         this._internals = this.attachInternals(), this._label = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value"), this._defaultsCaptured = true;
         for (let t of ["value", "name", "disabled"])
-          di(this, t);
-        this.setAttribute("role", "radiogroup"), Wt(this._label, this.getAttribute("label")), this._slot?.addEventListener("slotchange", this._onSlotChange), this.addEventListener("change", this._onChange), this.addEventListener("keydown", this._onKey), Jt(this, this._slot, this._internals);
+          xi(this, t);
+        this.setAttribute("role", "radiogroup"), ie(this._label, this.getAttribute("label")), this._slot?.addEventListener("slotchange", this._onSlotChange), this.addEventListener("change", this._onChange), this.addEventListener("keydown", this._onKey), ae(this, this._slot, this._internals);
       }
       disconnectedCallback() {
         this._slot?.removeEventListener("slotchange", this._onSlotChange), this.removeEventListener("change", this._onChange), this.removeEventListener("keydown", this._onKey);
@@ -4063,11 +4063,11 @@ input:focus-visible ~ .custom {
       }
       attributeChangedCallback(t, e, r) {
         if (t === "value")
-          pi(x(this._slot), r, this._internals);
+          wi(x(this._slot), r, this._internals);
         else if (t === "label")
-          Wt(this._label, r);
+          ie(this._label, r);
         else if (t === "disabled")
-          tt(x(this._slot), this.hasAttribute("disabled"));
+          et(x(this._slot), this.hasAttribute("disabled"));
       }
       get value() {
         return this.getAttribute("value") ?? "";
@@ -4087,13 +4087,13 @@ input:focus-visible ~ .custom {
       set disabled(t) {
         t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
-      _onSlotChange = () => Jt(this, this._slot, this._internals);
-      _onChange = (t) => ui(this, t);
-      _onKey = (t) => hi(this, this._slot, t);
+      _onSlotChange = () => ae(this, this._slot, this._internals);
+      _onChange = (t) => ki(this, t);
+      _onKey = (t) => Ei(this, this._slot, t);
     }
     if (!customElements.get("p9r-radio-group"))
-      customElements.define("p9r-radio-group", et);
-    var bi = `<div class="switch-container" part="container">
+      customElements.define("p9r-radio-group", rt);
+    var Ai = `<div class="switch-container" part="container">
     <span class="label" id="group-label" part="label"></span>
 
     <div class="switch-wrapper" part="wrapper" role="radiogroup" aria-labelledby="group-label">
@@ -4109,7 +4109,7 @@ input:focus-visible ~ .custom {
     </span>
 </div>
 `;
-    var mi = `:host {
+    var Li = `:host {
   --active-index: 0;
   --total-options: 1;
   display: block;
@@ -4198,7 +4198,7 @@ input:focus-visible ~ .custom {
   pointer-events: none;
 }
 `;
-    var gi = (t, e) => {
+    var Ci = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -4207,10 +4207,10 @@ input:focus-visible ~ .custom {
       if (!t)
         return [];
       return t.assignedElements().filter((e) => e.tagName === "OPTION");
-    }, Qt = (t, e) => {
+    }, oe = (t, e) => {
       if (t)
         t.textContent = e;
-    }, rt = (t, e, r) => {
+    }, it = (t, e, r) => {
       let i = e.findIndex((n) => n.getAttribute("value") === r);
       if (i === -1)
         return;
@@ -4218,7 +4218,7 @@ input:focus-visible ~ .custom {
         let s = a === i;
         n.setAttribute("aria-checked", s.toString()), n.setAttribute("tabindex", s ? "0" : "-1");
       });
-    }, it = (t, e) => {
+    }, nt = (t, e) => {
       t.forEach((r) => {
         if (r.getAttribute("value") === e)
           r.setAttribute("selected", "");
@@ -4226,7 +4226,7 @@ input:focus-visible ~ .custom {
           r.removeAttribute("selected");
       });
     };
-    var te = (t, e) => {
+    var se = (t, e) => {
       let r = C(e);
       t.style.setProperty("--total-options", r.length.toString()), r.forEach((i, n) => {
         if (i.setAttribute("role", "radio"), i.setAttribute("part", "segment"), !i.hasAttribute("tabindex"))
@@ -4236,8 +4236,8 @@ input:focus-visible ~ .custom {
             return;
           t.value = i.getAttribute("value") ?? "", i.focus();
         };
-      }), rt(t, r, t.value), it(r, t.value);
-    }, fi = (t, e, r) => {
+      }), it(t, r, t.value), nt(r, t.value);
+    }, Ti = (t, e, r) => {
       if (t.disabled)
         return;
       if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(r.key))
@@ -4269,7 +4269,7 @@ input:focus-visible ~ .custom {
       t.value = d.getAttribute("value") ?? "", d.focus();
     };
 
-    class nt extends o {
+    class at extends o {
       static formAssociated = true;
       _internals;
       _labelEl;
@@ -4281,17 +4281,17 @@ input:focus-visible ~ .custom {
         return ["value", "disabled", "name", "label"];
       }
       constructor() {
-        super({ css: mi, template: bi });
+        super({ css: Li, template: Ai });
         this._internals = this.attachInternals(), this._labelEl = this.shadowRoot?.querySelector(".label") ?? null, this._slot = this.shadowRoot?.querySelector("slot:not([name])") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
         for (let t of ["value", "disabled", "name", "label"])
-          gi(this, t);
+          Ci(this, t);
         if (this._slot)
-          this._slot.addEventListener("slotchange", this._onSlotChange), te(this, this._slot);
-        this.addEventListener("keydown", this._onKey), Qt(this._labelEl, this.getAttribute("label") ?? "");
+          this._slot.addEventListener("slotchange", this._onSlotChange), se(this, this._slot);
+        this.addEventListener("keydown", this._onKey), oe(this._labelEl, this.getAttribute("label") ?? "");
       }
       disconnectedCallback() {
         this._slot?.removeEventListener("slotchange", this._onSlotChange), this.removeEventListener("keydown", this._onKey);
@@ -4310,7 +4310,7 @@ input:focus-visible ~ .custom {
         if (t === "value")
           this.value = r ?? "";
         else if (t === "label")
-          Qt(this._labelEl, r ?? "");
+          oe(this._labelEl, r ?? "");
       }
       get value() {
         return this.getAttribute("value") ?? "";
@@ -4320,7 +4320,7 @@ input:focus-visible ~ .custom {
           this.setAttribute("value", t);
         this._internals.setFormValue(t);
         let e = C(this._slot);
-        if (rt(this, e, t), it(e, t), !this._silentValueChange)
+        if (it(this, e, t), nt(e, t), !this._silentValueChange)
           this.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { value: t } }));
       }
       get name() {
@@ -4341,12 +4341,12 @@ input:focus-visible ~ .custom {
       set label(t) {
         t ? this.setAttribute("label", t) : this.removeAttribute("label");
       }
-      _onSlotChange = () => te(this, this._slot);
-      _onKey = (t) => fi(this, this._slot, t);
+      _onSlotChange = () => se(this, this._slot);
+      _onKey = (t) => Ti(this, this._slot, t);
     }
     if (!customElements.get("p9r-segmented-switch"))
-      customElements.define("p9r-segmented-switch", nt);
-    var vi = `<label class="switch" part="container">
+      customElements.define("p9r-segmented-switch", at);
+    var Mi = `<label class="switch" part="container">
     <input type="checkbox" id="native-input" part="input" />
     <span class="track" part="track">
         <span class="thumb" part="thumb"></span>
@@ -4354,7 +4354,7 @@ input:focus-visible ~ .custom {
     <span class="label" part="label"><slot></slot></span>
 </label>
 `;
-    var _i = `:host {
+    var Hi = `:host {
   display: inline-block;
 
   --_track-w: 36px;
@@ -4453,7 +4453,7 @@ input:focus-visible ~ .track {
   }
 }
 `;
-    var xi = (t, e) => {
+    var zi = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
@@ -4462,18 +4462,18 @@ input:focus-visible ~ .track {
       let i = e?.checked ?? t.hasAttribute("checked");
       r.setFormValue(i ? t.getAttribute("value") ?? "on" : null);
     };
-    var yi = (t, e, r) => {
+    var Si = (t, e, r) => {
       if (e?.checked ?? false)
         t.setAttribute("checked", "");
       else
         t.removeAttribute("checked");
       y(t, e, r), t.dispatchEvent(new Event("change", { bubbles: true }));
-    }, wi = (t, e) => {
+    }, Ii = (t, e) => {
       if (t.hasAttribute("disabled"))
         e.preventDefault(), e.stopImmediatePropagation();
     };
 
-    class at extends o {
+    class ot extends o {
       static formAssociated = true;
       _internals;
       _input;
@@ -4483,14 +4483,14 @@ input:focus-visible ~ .track {
         return ["checked", "disabled", "name", "value"];
       }
       constructor() {
-        super({ css: _i, template: vi });
+        super({ css: Hi, template: Mi });
         this._internals = this.attachInternals(), this._input = this.shadowRoot?.querySelector("input") ?? null;
       }
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultChecked = this.hasAttribute("checked"), this._defaultsCaptured = true;
         for (let t of ["checked", "disabled", "name", "value"])
-          xi(this, t);
+          zi(this, t);
         if (this._input) {
           if (this._input.checked = this.hasAttribute("checked"), this._input.disabled = this.hasAttribute("disabled"), this.hasAttribute("name"))
             this._input.name = this.getAttribute("name") ?? "";
@@ -4518,8 +4518,8 @@ input:focus-visible ~ .track {
         else if (t === "value")
           this._input.value = r ?? "", y(this, this._input, this._internals);
       }
-      _onChange = () => yi(this, this._input, this._internals);
-      _onClick = (t) => wi(this, t);
+      _onChange = () => Si(this, this._input, this._internals);
+      _onClick = (t) => Ii(this, t);
       get checked() {
         return this.hasAttribute("checked");
       }
@@ -4552,8 +4552,8 @@ input:focus-visible ~ .track {
       }
     }
     if (!customElements.get("p9r-switch"))
-      customElements.define("p9r-switch", at);
-    var ki = `<div class="container" part="container">
+      customElements.define("p9r-switch", ot);
+    var Pi = `<div class="container" part="container">
     <label for="main-input" part="label">
         <slot name="label">Tags</slot>
     </label>
@@ -4592,7 +4592,7 @@ input:focus-visible ~ .track {
     ></div>
 </div>
 `;
-    var Ei = `:host {
+    var Ri = `:host {
     display: block;
     font-family: system-ui, -apple-system, sans-serif;
 }
@@ -4660,7 +4660,7 @@ input::placeholder {
     }
 }
 `;
-    var Ai = `input:hover:not(:disabled) {
+    var qi = `input:hover:not(:disabled) {
     border-color: var(--text-muted, #94a3b8);
 }
 
@@ -4738,10 +4738,10 @@ p9r-tag:hover {
     filter: brightness(0.92);
 }
 `;
-    var Li = `<span class="label" part="label"><slot></slot></span>
+    var Bi = `<span class="label" part="label"><slot></slot></span>
 <button type="button" class="remove" part="remove" aria-label="Remove" hidden>&times;</button>
 `;
-    var Ci = `:host {
+    var ji = `:host {
     --_tag-font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 
     --_tag-bg: var(--info-muted, oklch(95% 0.02 230));
@@ -4810,7 +4810,7 @@ p9r-tag:hover {
     }
 }
 `;
-    var Ti = `:host([color="info"]) {
+    var Di = `:host([color="info"]) {
     --_tag-bg: var(--info-muted, oklch(95% 0.02 230));
     --_tag-color: var(--info-base, oklch(65% 0.12 230));
     --_tag-border: var(--info-contrasted, oklch(25% 0.08 230));
@@ -4846,15 +4846,15 @@ p9r-tag:hover {
     --_tag-border: var(--secondary-contrasted, oklch(25% 0.08 265));
 }
 `;
-    var Zo = Ci + Ti;
+    var hs = ji + Di;
 
-    class ot extends o {
+    class st extends o {
       _removeBtn;
       static get observedAttributes() {
         return ["removable"];
       }
       constructor() {
-        super({ css: Zo, template: Li });
+        super({ css: hs, template: Bi });
         this._removeBtn = this.shadowRoot?.querySelector(".remove") ?? null;
       }
       connectedCallback() {
@@ -4898,13 +4898,13 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-tag"))
-      customElements.define("p9r-tag", ot);
-    var Mi = (t, e) => {
+      customElements.define("p9r-tag", st);
+    var Fi = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, st = (t, e) => {
+    }, lt = (t, e) => {
       if (!t)
         return;
       t.textContent = "", window.setTimeout(() => {
@@ -4912,7 +4912,7 @@ p9r-tag:hover {
           t.textContent = e;
       }, 10);
     };
-    var ee = async (t) => {
+    var le = async (t) => {
       let e = t.getAttribute("resource");
       if (!e)
         return null;
@@ -4927,7 +4927,7 @@ p9r-tag:hover {
         return null;
       }
     };
-    var Hi = (t, e, r, i) => {
+    var Oi = (t, e, r, i) => {
       if (!t)
         return;
       if (t.innerHTML = "", e !== "multiple")
@@ -4936,11 +4936,11 @@ p9r-tag:hover {
         let s = document.createElement("p9r-tag");
         s.setAttribute("color", "primary"), s.setAttribute("part", "chip"), s.setAttribute("role", "listitem"), s.textContent = n, s.title = `Remove ${n}`, s.setAttribute("aria-label", `Remove ${n}`), s.addEventListener("click", () => i(a)), t.appendChild(s);
       });
-    }, zi = (t, e, r, i, n, a) => {
+    }, Ni = (t, e, r, i, n, a) => {
       if (!t || !e)
         return;
       if (r.length === 0) {
-        re(t, e);
+        de(t, e);
         return;
       }
       if (t.innerHTML = "", r.forEach((s, l) => {
@@ -4948,32 +4948,32 @@ p9r-tag:hover {
         d.className = "suggestion", d.id = `${n}-opt-${l}`, d.setAttribute("role", "option"), d.setAttribute("part", "option");
         let c = l === i;
         d.dataset.active = String(c), d.setAttribute("aria-selected", String(c));
-        let p = document.createElement("span");
-        p.className = "name", p.textContent = s.value, d.appendChild(p);
+        let u = document.createElement("span");
+        u.className = "name", u.textContent = s.value, d.appendChild(u);
         let m = document.createElement("p9r-tag");
-        m.setAttribute("color", "secondary"), m.setAttribute("part", "count"), m.textContent = String(s.count), d.appendChild(m), d.addEventListener("mousedown", (u) => {
-          u.preventDefault(), a(s.value);
+        m.setAttribute("color", "secondary"), m.setAttribute("part", "count"), m.textContent = String(s.count), d.appendChild(m), d.addEventListener("mousedown", (p) => {
+          p.preventDefault(), a(s.value);
         }), t.appendChild(d);
       }), t.hidden = false, e.setAttribute("aria-expanded", "true"), i >= 0)
         e.setAttribute("aria-activedescendant", `${n}-opt-${i}`);
       else
         e.removeAttribute("aria-activedescendant");
-    }, re = (t, e) => {
+    }, de = (t, e) => {
       if (t)
         t.hidden = true;
       if (e)
         e.setAttribute("aria-expanded", "false"), e.removeAttribute("aria-activedescendant");
     };
-    var Si = (t, e, r) => {
+    var Vi = (t, e, r) => {
       let i = t.filter((n) => !e.includes(n.value));
       if (r === "")
         return i.slice(0, 8);
       return i.filter((n) => n.value.toLowerCase().includes(r)).slice(0, 8);
-    }, Ii = (t, e) => {
+    }, Ki = (t, e) => {
       if (t === "multiple")
         return e.join(",");
       return e[0] ?? "";
-    }, Pi = (t, e) => {
+    }, $i = (t, e) => {
       if (t === "multiple")
         return e ? e.split(",").map((r) => r.trim()).filter((r) => r !== "") : [];
       return e ? [e.trim()] : [];
@@ -4984,67 +4984,67 @@ p9r-tag:hover {
         return;
       if (i === "multiple") {
         if (!r._tags.includes(n))
-          r._tags.push(n), st(r._liveRegion, `${n} added`);
+          r._tags.push(n), lt(r._liveRegion, `${n} added`);
         r._input.value = "";
       } else
-        r._tags = [n], r._input.value = n, st(r._liveRegion, `${n} selected`);
-      r._activeIndex = -1, lt(t), ct(t);
-    }, Ri = (t, e) => {
+        r._tags = [n], r._input.value = n, lt(r._liveRegion, `${n} selected`);
+      r._activeIndex = -1, dt(t), ut(t);
+    }, Ui = (t, e) => {
       let r = h(t), i = e.trim();
       if (r._tags = i ? [i] : [], r._internals.setFormValue(r.value), r._silent)
         return;
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: r.value, tags: [...r._tags] } }));
-    }, qi = (t, e) => {
+    }, Yi = (t, e) => {
       let r = h(t), i = r._tags[e];
       if (i === undefined)
         return;
-      r._tags.splice(e, 1), st(r._liveRegion, `${i} removed`), lt(t), r._input?.focus();
-    }, Bi = (t) => {
+      r._tags.splice(e, 1), lt(r._liveRegion, `${i} removed`), dt(t), r._input?.focus();
+    }, Xi = (t) => {
       let e = h(t);
       if (e._tags.length === 0)
         return;
-      qi(t, e._tags.length - 1);
-    }, lt = (t) => {
-      let e = h(t);
-      if (ie(t), e._internals.setFormValue(e.value), e._silent)
-        return;
-      t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: e.value, tags: [...e._tags] } }));
-    }, ie = (t) => {
-      let e = h(t);
-      Hi(e._display, t.getAttribute("mode") || "multiple", e._tags, (r) => qi(t, r));
-    }, ne = (t, e) => {
-      let r = h(t), n = (t.getAttribute("mode") || "multiple") === "multiple" ? r._tags : [];
-      r._suggestions = Si(r._allSuggestions, n, e), r._activeIndex = -1, dt(t);
+      Yi(t, e._tags.length - 1);
     }, dt = (t) => {
       let e = h(t);
-      zi(e._suggestionsEl, e._input, e._suggestions, e._activeIndex, e._uid, (r) => T(t, r));
+      if (ce(t), e._internals.setFormValue(e.value), e._silent)
+        return;
+      t.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true, detail: { value: e.value, tags: [...e._tags] } }));
+    }, ce = (t) => {
+      let e = h(t);
+      Oi(e._display, t.getAttribute("mode") || "multiple", e._tags, (r) => Yi(t, r));
+    }, ue = (t, e) => {
+      let r = h(t), n = (t.getAttribute("mode") || "multiple") === "multiple" ? r._tags : [];
+      r._suggestions = Vi(r._allSuggestions, n, e), r._activeIndex = -1, ct(t);
     }, ct = (t) => {
       let e = h(t);
-      re(e._suggestionsEl, e._input), e._activeIndex = -1;
+      Ni(e._suggestionsEl, e._input, e._suggestions, e._activeIndex, e._uid, (r) => T(t, r));
+    }, ut = (t) => {
+      let e = h(t);
+      de(e._suggestionsEl, e._input), e._activeIndex = -1;
     };
-    var Di = (t, e) => {
+    var Zi = (t, e) => {
       if (!e)
         return;
-      ne(t, e.value.trim().toLowerCase());
-    }, Fi = (t) => {
-      setTimeout(() => ct(t), 150);
-    }, ji = (t, e) => {
+      ue(t, e.value.trim().toLowerCase());
+    }, Wi = (t) => {
+      setTimeout(() => ut(t), 150);
+    }, Gi = (t, e) => {
       if (!e)
         return;
-      if (ne(t, e.value.trim().toLowerCase()), (t.getAttribute("mode") || "multiple") === "single")
-        Ri(t, e.value);
-    }, Ni = (t, e, r) => {
+      if (ue(t, e.value.trim().toLowerCase()), (t.getAttribute("mode") || "multiple") === "single")
+        Ui(t, e.value);
+    }, Ji = (t, e, r) => {
       if (!e)
         return;
       let i = t.getAttribute("mode") || "multiple", n = t;
       if (r.key === "ArrowDown") {
         if (r.preventDefault(), n._suggestions.length === 0)
           return;
-        n._activeIndex = Math.min(n._activeIndex + 1, n._suggestions.length - 1), dt(t);
+        n._activeIndex = Math.min(n._activeIndex + 1, n._suggestions.length - 1), ct(t);
       } else if (r.key === "ArrowUp") {
         if (r.preventDefault(), n._suggestions.length === 0)
           return;
-        n._activeIndex = Math.max(n._activeIndex - 1, -1), dt(t);
+        n._activeIndex = Math.max(n._activeIndex - 1, -1), ct(t);
       } else if (r.key === "Enter") {
         r.preventDefault();
         let a = n._activeIndex >= 0 ? n._suggestions[n._activeIndex] : undefined;
@@ -5056,9 +5056,9 @@ p9r-tag:hover {
             T(t, s);
         }
       } else if (r.key === "Escape")
-        r.preventDefault(), ct(t);
+        r.preventDefault(), ut(t);
       else if (r.key === "Backspace" && e.value === "" && i === "multiple")
-        Bi(t);
+        Xi(t);
       else if (r.key === "," && i === "multiple") {
         r.preventDefault();
         let a = e.value.trim();
@@ -5066,7 +5066,7 @@ p9r-tag:hover {
           T(t, a);
       }
     };
-    var Wo = Ei + Ai;
+    var bs = Ri + qi;
 
     class pt extends o {
       static formAssociated = true;
@@ -5087,7 +5087,7 @@ p9r-tag:hover {
       _defaultsCaptured = false;
       _silent = false;
       constructor() {
-        super({ css: Wo, template: ki });
+        super({ css: bs, template: Pi });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         if (this._input = t.querySelector("#main-input"), this._display = t.querySelector("#tags-display"), this._suggestionsEl = t.querySelector("#suggestions"), this._liveRegion = t.querySelector("#live-region"), this._uid = `ts-${Math.random().toString(36).slice(2, 9)}`, this._suggestionsEl)
@@ -5098,7 +5098,7 @@ p9r-tag:hover {
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        ["placeholder", "mode", "resource", "api", "disabled", "value"].forEach((t) => Mi(this, t)), this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("keydown", this._onKeyDown), this._input?.addEventListener("focus", this._onFocus), this._input?.addEventListener("blur", this._onBlur), ee(this).then((t) => {
+        ["placeholder", "mode", "resource", "api", "disabled", "value"].forEach((t) => Fi(this, t)), this._input?.addEventListener("input", this._onInput), this._input?.addEventListener("keydown", this._onKeyDown), this._input?.addEventListener("focus", this._onFocus), this._input?.addEventListener("blur", this._onBlur), le(this).then((t) => {
           if (t)
             this._allSuggestions = t;
         });
@@ -5122,27 +5122,27 @@ p9r-tag:hover {
         else if (t === "disabled")
           this._input.disabled = this.hasAttribute("disabled");
         else if (t === "resource" || t === "api")
-          this._allSuggestions = [], ee(this).then((i) => {
+          this._allSuggestions = [], le(this).then((i) => {
             if (i)
               this._allSuggestions = i;
           });
         else if (t === "mode")
-          ie(this);
+          ce(this);
         else if (t === "value")
           this.value = r ?? "";
       }
-      _onFocus = () => Di(this, this._input);
-      _onBlur = () => Fi(this);
-      _onInput = () => ji(this, this._input);
-      _onKeyDown = (t) => Ni(this, this._input, t);
+      _onFocus = () => Zi(this, this._input);
+      _onBlur = () => Wi(this);
+      _onInput = () => Gi(this, this._input);
+      _onKeyDown = (t) => Ji(this, this._input, t);
       get value() {
-        return Ii(this.getAttribute("mode") || "multiple", this._tags);
+        return Ki(this.getAttribute("mode") || "multiple", this._tags);
       }
       set value(t) {
         let e = this.getAttribute("mode") || "multiple";
-        if (this._tags = Pi(e, t), this._input)
+        if (this._tags = $i(e, t), this._input)
           this._input.value = e === "multiple" ? "" : this._tags[0] ?? "";
-        lt(this);
+        dt(this);
       }
       get name() {
         return this.getAttribute("name") || "";
@@ -5183,7 +5183,7 @@ p9r-tag:hover {
     }
     if (!customElements.get("p9r-tag-suggest"))
       customElements.define("p9r-tag-suggest", pt);
-    var Vi = `<div class="field" part="field">
+    var Qi = `<div class="field" part="field">
     <label class="label" part="label" for="ta"></label>
     <textarea id="ta" class="textarea" part="textarea"></textarea>
     <div class="meta" part="meta" hidden>
@@ -5192,7 +5192,7 @@ p9r-tag:hover {
     </div>
 </div>
 `;
-    var Oi = `:host {
+    var tn = `:host {
   display: block;
 }
 
@@ -5247,7 +5247,7 @@ p9r-tag:hover {
 
 .meta[hidden] { display: none; }
 `;
-    var Ki = `:host([resize="none"]) .textarea       { resize: none; }
+    var en = `:host([resize="none"]) .textarea       { resize: none; }
 :host([resize="horizontal"]) .textarea { resize: horizontal; }
 :host([resize="vertical"]) .textarea   { resize: vertical; }
 :host([resize="both"]) .textarea       { resize: both; }
@@ -5301,12 +5301,12 @@ p9r-tag:hover {
   font-weight: 600;
 }
 `;
-    var $i = (t, e) => {
+    var rn = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, ae = (t) => {
+    }, pe = (t) => {
       let e = t.getAttribute("max-count");
       if (e === null)
         return null;
@@ -5315,12 +5315,12 @@ p9r-tag:hover {
     }, w = (t, e, r, i) => {
       if (!e || !r || !i)
         return;
-      let n = ae(t);
+      let n = pe(t);
       if (n === null)
         return;
       let a = e.value.length;
       i.textContent = String(a), r.dataset.over = String(a > n);
-    }, oe = (t, e, r) => {
+    }, he = (t, e, r) => {
       if (!t || !e || !r)
         return;
       let i = (t.textContent ?? "").length > 0, n = !e.hidden;
@@ -5330,12 +5330,12 @@ p9r-tag:hover {
         return;
       e.style.height = "auto", e.style.height = `${e.scrollHeight}px`;
     };
-    var ts = (t, e) => {
+    var vs = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("label") ?? "";
       e.textContent = r, e.hidden = r === "";
-    }, es = (t, e) => {
+    }, _s = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("placeholder");
@@ -5343,13 +5343,13 @@ p9r-tag:hover {
         e.removeAttribute("placeholder");
       else
         e.setAttribute("placeholder", r);
-    }, rs = (t, e) => {
+    }, xs = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("rows");
       if (r)
         e.rows = Number(r) || 3;
-    }, is = (t, e) => {
+    }, ys = (t, e) => {
       if (!e)
         return;
       let r = t.getAttribute("maxlength");
@@ -5357,10 +5357,10 @@ p9r-tag:hover {
         e.removeAttribute("maxlength");
       else
         e.setAttribute("maxlength", r);
-    }, ns = (t, e) => {
+    }, ws = (t, e) => {
       if (e)
         e.disabled = t.hasAttribute("disabled");
-    }, as = (t, e) => {
+    }, ks = (t, e) => {
       if (!e)
         return;
       let r = t.hasAttribute("required");
@@ -5368,45 +5368,45 @@ p9r-tag:hover {
         e.setAttribute("aria-required", "true");
       else
         e.removeAttribute("aria-required");
-    }, os = (t, e, r, i) => {
+    }, Es = (t, e, r, i) => {
       if (!e)
         return;
-      e.textContent = t.getAttribute("hint") ?? "", oe(e, r, i);
-    }, ss = (t, e) => {
+      e.textContent = t.getAttribute("hint") ?? "", he(e, r, i);
+    }, As = (t, e) => {
       if (!e)
         return;
       e.dataset.level = t.getAttribute("hint-level") ?? "info";
-    }, ls = (t, e) => {
+    }, Ls = (t, e) => {
       if (!e)
         return;
       if (t.hasAttribute("invalid"))
         e.setAttribute("aria-invalid", "true");
       else
         e.removeAttribute("aria-invalid");
-    }, se = (t, e, r, i, n) => {
+    }, be = (t, e, r, i, n) => {
       if (!e || !r)
         return;
-      let a = ae(t);
+      let a = pe(t);
       if (a === null)
         e.hidden = true;
       else
         e.hidden = false, r.textContent = String(a);
-      oe(i, e, n);
-    }, le = (t, e, r, i, n, a, s) => {
-      ts(t, r), es(t, e), rs(t, e), is(t, e), ns(t, e), as(t, e), os(t, i, a, n), ss(t, i), ls(t, e), se(t, a, s, i, n);
+      he(i, e, n);
+    }, me = (t, e, r, i, n, a, s) => {
+      vs(t, r), _s(t, e), xs(t, e), ys(t, e), ws(t, e), ks(t, e), Es(t, i, a, n), As(t, i), Ls(t, e), be(t, a, s, i, n);
     };
-    var Ui = (t, e, r, i, n) => {
+    var nn = (t, e, r, i, n) => {
       if (!e)
         return;
       r.setFormValue(e.value), w(t, e, i, n), M(t, e);
-    }, Yi = (t, e) => {
+    }, an = (t, e) => {
       if (!t)
         return;
       e.setFormValue(t.value);
     };
-    var ds = Oi + Ki;
+    var Cs = tn + en;
 
-    class ut extends o {
+    class ht extends o {
       static formAssociated = true;
       static get observedAttributes() {
         return ["value", "label", "placeholder", "rows", "maxlength", "max-count", "hint", "hint-level", "invalid", "disabled", "required", "autosize"];
@@ -5422,7 +5422,7 @@ p9r-tag:hover {
       _defaultValue = "";
       _defaultsCaptured = false;
       constructor() {
-        super({ css: ds, template: Vi });
+        super({ css: Cs, template: Qi });
         this._internals = this.attachInternals();
         let t = this.shadowRoot;
         this._textarea = t.querySelector("textarea"), this._label = t.querySelector(".label"), this._hint = t.querySelector(".hint"), this._meta = t.querySelector(".meta"), this._counter = t.querySelector(".counter"), this._count = t.querySelector(".count"), this._max = t.querySelector(".max");
@@ -5430,7 +5430,7 @@ p9r-tag:hover {
       connectedCallback() {
         if (!this._defaultsCaptured)
           this._defaultValue = this.getAttribute("value") ?? "", this._defaultsCaptured = true;
-        ["value", "disabled", "required"].forEach((e) => $i(this, e)), this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), le(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
+        ["value", "disabled", "required"].forEach((e) => rn(this, e)), this._textarea?.addEventListener("input", this._onInput), this._textarea?.addEventListener("change", this._onChange), me(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
         let t = this.getAttribute("value");
         if (t !== null)
           this.value = t;
@@ -5449,11 +5449,11 @@ p9r-tag:hover {
         if (t === "value" && r !== null)
           this.value = r;
         else if (t === "max-count")
-          se(this, this._counter, this._max, this._hint, this._meta), w(this, this._textarea, this._counter, this._count);
+          be(this, this._counter, this._max, this._hint, this._meta), w(this, this._textarea, this._counter, this._count);
         else if (t === "autosize")
           M(this, this._textarea);
         else
-          le(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
+          me(this, this._textarea, this._label, this._hint, this._meta, this._counter, this._max);
       }
       get value() {
         return this._textarea?.value ?? "";
@@ -5481,16 +5481,16 @@ p9r-tag:hover {
       focus() {
         this._textarea?.focus();
       }
-      _onInput = () => Ui(this, this._textarea, this._internals, this._counter, this._count);
-      _onChange = () => Yi(this._textarea, this._internals);
+      _onInput = () => nn(this, this._textarea, this._internals, this._counter, this._count);
+      _onChange = () => an(this._textarea, this._internals);
     }
     if (!customElements.get("p9r-textarea"))
-      customElements.define("p9r-textarea", ut);
-    var Xi = `<div class="actions" role="toolbar" part="toolbar">
+      customElements.define("p9r-textarea", ht);
+    var on = `<div class="actions" role="toolbar" part="toolbar">
     <slot></slot>
 </div>
 `;
-    var Zi = `:host {
+    var sn = `:host {
   display: inline-block;
 
   --_toolbar-bg: var(--bg-overlay, #ffffff);
@@ -5582,11 +5582,11 @@ p9r-tag:hover {
 }
 `;
 
-    class ht extends o {
+    class bt extends o {
       static _event = "action-click";
       _toolbar;
       constructor() {
-        super({ css: Zi, template: Xi });
+        super({ css: sn, template: on });
         this._toolbar = this.shadowRoot?.querySelector(".actions") ?? null;
       }
       static get observedAttributes() {
@@ -5642,10 +5642,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-horizontal-action-group"))
-      customElements.define("p9r-horizontal-action-group", ht);
-    var Wi = `<slot></slot>
+      customElements.define("p9r-horizontal-action-group", bt);
+    var ln = `<slot></slot>
 `;
-    var Gi = `:host {
+    var dn = `:host {
     --max-width: var(--p9r-container-md, 768px);
     display: block;
     width: 100%;
@@ -5666,14 +5666,14 @@ p9r-tag:hover {
 :host([align="end"])    { margin-inline-start: auto; margin-inline-end: 0;    }
 `;
 
-    class bt extends o {
+    class mt extends o {
       constructor() {
-        super({ css: Gi, template: Wi });
+        super({ css: dn, template: ln });
       }
     }
     if (!customElements.get("p9r-container"))
-      customElements.define("p9r-container", bt);
-    var Ji = `<div class="app-container" part="container">
+      customElements.define("p9r-container", mt);
+    var cn = `<div class="app-container" part="container">
     <a class="skip-link" part="skip-link" href="#main-content">
         <slot name="skip-link">Skip to main content</slot>
     </a>
@@ -5689,7 +5689,7 @@ p9r-tag:hover {
     </main>
 </div>
 `;
-    var Qi = `:host {
+    var un = `:host {
     display: block;
     height: 100vh;
     width: 100vw;
@@ -5775,11 +5775,11 @@ p9r-tag:hover {
 }
 `;
 
-    class mt extends o {
+    class gt extends o {
       _sidebar;
       _content;
       constructor() {
-        super({ css: Qi, template: Ji });
+        super({ css: un, template: cn });
         this._sidebar = this.shadowRoot?.querySelector(".app-sidebar") ?? null, this._content = this.shadowRoot?.querySelector(".app-content") ?? null;
       }
       static get observedAttributes() {
@@ -5828,10 +5828,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("w13c-left-menu-layout"))
-      customElements.define("w13c-left-menu-layout", mt);
-    var tn = `<slot></slot>
+      customElements.define("w13c-left-menu-layout", gt);
+    var pn = `<slot></slot>
 `;
-    var en = `:host {
+    var hn = `:host {
     --gap: var(--p9r-space-md, 16px);
     --divider-color: var(--p9r-stack-divider, var(--border-default, rgba(0,0,0,0.1)));
     display: flex;
@@ -5876,14 +5876,14 @@ p9r-tag:hover {
 }
 `;
 
-    class gt extends o {
+    class ft extends o {
       constructor() {
-        super({ css: en, template: tn });
+        super({ css: hn, template: pn });
       }
     }
     if (!customElements.get("p9r-stack"))
-      customElements.define("p9r-stack", gt);
-    var rn = `<a class="menu-item" part="item" tabindex="-1">
+      customElements.define("p9r-stack", ft);
+    var bn = `<a class="menu-item" part="item" tabindex="-1">
     <span class="icon-wrapper" part="icon">
         <slot name="icon"></slot>
     </span>
@@ -5893,7 +5893,7 @@ p9r-tag:hover {
     <span class="badge" part="badge" id="badge-element"></span>
 </a>
 `;
-    var nn = `:host {
+    var mn = `:host {
     display: block;
     width: 100%;
     outline: none;
@@ -5965,7 +5965,7 @@ p9r-tag:hover {
     flex-shrink: 0;
 }
 `;
-    var an = `.menu-item:hover {
+    var gn = `.menu-item:hover {
     background-color: var(--item-bg-active);
     color: var(--item-color-active);
 }
@@ -6015,26 +6015,26 @@ p9r-tag:hover {
     box-shadow: 0 2px 4px color-mix(in oklab, var(--item-color-active), transparent 80%);
 }
 `;
-    var on = (t, e) => {
+    var fn = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, de = (t, e) => {
+    }, ge = (t, e) => {
       if (!t)
         return;
       if (e)
         t.setAttribute("href", e);
       else
         t.removeAttribute("href");
-    }, ce = (t, e) => {
+    }, fe = (t, e) => {
       if (!t)
         return;
       if (e)
         t.textContent = e, t.style.display = "inline-flex";
       else
         t.textContent = "", t.style.display = "none";
-    }, pe = (t, e) => {
+    }, ve = (t, e) => {
       if (!e || !t.hasAttribute("href"))
         return;
       let r = t.getAttribute("href");
@@ -6050,7 +6050,7 @@ p9r-tag:hover {
         console.warn("Invalid href in LateralMenuItem:", r);
       }
     };
-    var sn = (t, e, r) => {
+    var vn = (t, e, r) => {
       if (t.hasAttribute("disabled"))
         return;
       if (r.key !== "Enter" && r.key !== " ")
@@ -6059,13 +6059,13 @@ p9r-tag:hover {
         return;
       r.preventDefault(), e?.click();
     };
-    var ys = nn + an;
+    var Ds = mn + gn;
 
-    class ft extends o {
+    class vt extends o {
       _anchor;
       _badgeEl;
       constructor() {
-        super({ css: ys, template: rn });
+        super({ css: Ds, template: bn });
         this._anchor = this.shadowRoot?.querySelector("a") ?? null, this._badgeEl = this.shadowRoot?.getElementById("badge-element") ?? null;
       }
       static get observedAttributes() {
@@ -6073,12 +6073,12 @@ p9r-tag:hover {
       }
       connectedCallback() {
         for (let t of ["href", "badge", "disabled"])
-          on(this, t);
+          fn(this, t);
         if (!this.hasAttribute("role"))
           this.setAttribute("role", "listitem");
         if (!this.hasAttribute("tabindex"))
           this.setAttribute("tabindex", "0");
-        de(this._anchor, this.getAttribute("href")), ce(this._badgeEl, this.getAttribute("badge")), pe(this, this._anchor), window.addEventListener("popstate", this._onPopstate), this.addEventListener("keydown", this._onKey);
+        ge(this._anchor, this.getAttribute("href")), fe(this._badgeEl, this.getAttribute("badge")), ve(this, this._anchor), window.addEventListener("popstate", this._onPopstate), this.addEventListener("keydown", this._onKey);
       }
       disconnectedCallback() {
         window.removeEventListener("popstate", this._onPopstate), this.removeEventListener("keydown", this._onKey);
@@ -6087,9 +6087,9 @@ p9r-tag:hover {
         if (!this._anchor)
           return;
         if (t === "href")
-          de(this._anchor, r);
+          ge(this._anchor, r);
         if (t === "badge")
-          ce(this._badgeEl, r);
+          fe(this._badgeEl, r);
         if (t === "disabled") {
           let i = this.hasAttribute("disabled");
           this.setAttribute("aria-disabled", i ? "true" : "false"), this.setAttribute("tabindex", i ? "-1" : "0");
@@ -6113,12 +6113,12 @@ p9r-tag:hover {
       set disabled(t) {
         t ? this.setAttribute("disabled", "") : this.removeAttribute("disabled");
       }
-      _onPopstate = () => pe(this, this._anchor);
-      _onKey = (t) => sn(this, this._anchor, t);
+      _onPopstate = () => ve(this, this._anchor);
+      _onKey = (t) => vn(this, this._anchor, t);
     }
     if (!customElements.get("w13c-lateral-menu-item"))
-      customElements.define("w13c-lateral-menu-item", ft);
-    var ln = `<aside class="sidebar" part="sidebar">
+      customElements.define("w13c-lateral-menu-item", vt);
+    var _n = `<aside class="sidebar" part="sidebar">
     <div class="sidebar-header" part="header">
         <slot name="header">
             <h3>Menu</h3>
@@ -6134,7 +6134,7 @@ p9r-tag:hover {
     </div>
 </aside>
 `;
-    var dn = `:host {
+    var xn = `:host {
     display: flex;
     flex-direction: column;
     width: 260px;
@@ -6213,18 +6213,18 @@ p9r-tag:hover {
     --item-bg-hover: var(--primary-muted);
 }
 `;
-    var cn = (t, e) => {
+    var yn = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, pn = (t) => {
+    }, wn = (t) => {
       if (!t)
         return [];
       return t.assignedElements({ flatten: true }).filter((e) => e instanceof HTMLElement && e.tagName.toLowerCase() === "w13c-lateral-menu-item" && !e.hasAttribute("disabled"));
     };
-    var un = (t, e) => {
-      let r = t.shadowRoot?.querySelector("slot:not([name])"), i = pn(r);
+    var kn = (t, e) => {
+      let r = t.shadowRoot?.querySelector("slot:not([name])"), i = wn(r);
       if (i.length === 0)
         return;
       let n = document.activeElement, a = i.findIndex((d) => d === n || d.contains(n)), s = -1;
@@ -6250,17 +6250,17 @@ p9r-tag:hover {
         l.focus();
     };
 
-    class vt extends o {
+    class _t extends o {
       _sidebar;
       constructor() {
-        super({ css: dn, template: ln });
+        super({ css: xn, template: _n });
         this._sidebar = this.shadowRoot?.querySelector(".sidebar") ?? null;
       }
       static get observedAttributes() {
         return ["collapsed"];
       }
       connectedCallback() {
-        if (cn(this, "collapsed"), !this.hasAttribute("aria-label"))
+        if (yn(this, "collapsed"), !this.hasAttribute("aria-label"))
           this.setAttribute("aria-label", "Main navigation");
         this.addEventListener("keydown", this._onKey);
       }
@@ -6285,11 +6285,11 @@ p9r-tag:hover {
         else
           this.removeAttribute("collapsed");
       }
-      _onKey = (t) => un(this, t);
+      _onKey = (t) => kn(this, t);
     }
     if (!customElements.get("w13c-lateral-menu"))
-      customElements.define("w13c-lateral-menu", vt);
-    var hn = `<nav class="pagination" part="pagination" aria-label="Pagination">
+      customElements.define("w13c-lateral-menu", _t);
+    var En = `<nav class="pagination" part="pagination" aria-label="Pagination">
     <button class="prev" part="prev" type="button" aria-label="Previous page">
         <slot name="prev">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -6307,7 +6307,7 @@ p9r-tag:hover {
     </button>
 </nav>
 `;
-    var bn = `:host {
+    var An = `:host {
   display: inline-block;
 
   --_size: 32px;
@@ -6405,63 +6405,63 @@ p9r-tag:hover {
     var g = (t, e, r) => {
       let i = parseInt(t.getAttribute(e) ?? "", 10);
       return Number.isFinite(i) && i > 0 ? i : r;
-    }, mn = (t, e, r, i) => {
-      let n = [], a = Math.max(1, t - r), s = Math.min(e, t + r), l = Array.from({ length: Math.min(i, e) }, (u, E) => E + 1), d = Array.from({ length: Math.min(i, e) }, (u, E) => e - E).reverse(), c = [];
-      for (let u = a;u <= s; u++)
-        c.push(u);
-      let p = Array.from(new Set([...l, ...c, ...d])).sort((u, E) => u - E), m = 0;
-      for (let u of p) {
-        if (m > 0 && u - m > 1)
+    }, Ln = (t, e, r, i) => {
+      let n = [], a = Math.max(1, t - r), s = Math.min(e, t + r), l = Array.from({ length: Math.min(i, e) }, (p, E) => E + 1), d = Array.from({ length: Math.min(i, e) }, (p, E) => e - E).reverse(), c = [];
+      for (let p = a;p <= s; p++)
+        c.push(p);
+      let u = Array.from(new Set([...l, ...c, ...d])).sort((p, E) => p - E), m = 0;
+      for (let p of u) {
+        if (m > 0 && p - m > 1)
           n.push("…");
-        n.push(u), m = u;
+        n.push(p), m = p;
       }
       return n;
     };
-    var gn = (t, e, r, i) => {
+    var Cn = (t, e, r, i) => {
       if (!e)
         return;
       let n = g(t, "page", 1), a = g(t, "total", 1), s = g(t, "siblings", 1), l = g(t, "boundary", 1);
       e.innerHTML = "";
-      for (let d of mn(n, a, s, l))
+      for (let d of Ln(n, a, s, l))
         if (d === "…") {
           let c = document.createElement("span");
           c.className = "ellipsis", c.setAttribute("part", "ellipsis"), c.textContent = "…", e.appendChild(c);
         } else {
-          let c = document.createElement("li"), p = document.createElement("button");
-          if (p.type = "button", p.className = "page", p.setAttribute("part", "page"), p.dataset.page = String(d), p.textContent = String(d), d === n)
-            p.setAttribute("aria-current", "page");
-          c.appendChild(p), e.appendChild(c);
+          let c = document.createElement("li"), u = document.createElement("button");
+          if (u.type = "button", u.className = "page", u.setAttribute("part", "page"), u.dataset.page = String(d), u.textContent = String(d), d === n)
+            u.setAttribute("aria-current", "page");
+          c.appendChild(u), e.appendChild(c);
         }
       if (r)
         r.disabled = n <= 1;
       if (i)
         i.disabled = n >= a;
     };
-    var _t = (t, e, r) => {
+    var xt = (t, e, r) => {
       if (r === e)
         return;
       if (!t.dispatchEvent(new CustomEvent("page-change", { bubbles: true, cancelable: true, detail: { page: r } })))
         return;
       t.setAttribute("page", String(r));
     };
-    var fn = (t, e) => {
+    var Tn = (t, e) => {
       if (e <= 1)
         return;
-      _t(t, e, e - 1);
-    }, vn = (t, e, r) => {
+      xt(t, e, e - 1);
+    }, Mn = (t, e, r) => {
       if (e >= r)
         return;
-      _t(t, e, e + 1);
-    }, _n = (t, e, r) => {
+      xt(t, e, e + 1);
+    }, Hn = (t, e, r) => {
       let i = r.target.closest(".page");
       if (!i)
         return;
       let n = Number(i.dataset.page);
       if (Number.isFinite(n))
-        _t(t, e, n);
+        xt(t, e, n);
     };
 
-    class xt extends o {
+    class yt extends o {
       _pages;
       _prev;
       _next;
@@ -6469,7 +6469,7 @@ p9r-tag:hover {
         return ["page", "total", "siblings", "boundary"];
       }
       constructor() {
-        super({ css: bn, template: hn });
+        super({ css: An, template: En });
         this._pages = this.shadowRoot?.querySelector(".pages") ?? null, this._prev = this.shadowRoot?.querySelector(".prev") ?? null, this._next = this.shadowRoot?.querySelector(".next") ?? null;
       }
       connectedCallback() {
@@ -6494,22 +6494,22 @@ p9r-tag:hover {
         this.setAttribute("total", String(t));
       }
       _render() {
-        gn(this, this._pages, this._prev, this._next);
+        Cn(this, this._pages, this._prev, this._next);
       }
-      _onPrev = () => fn(this, this.page);
-      _onNext = () => vn(this, this.page, this.total);
-      _onPageClick = (t) => _n(this, this.page, t);
+      _onPrev = () => Tn(this, this.page);
+      _onNext = () => Mn(this, this.page, this.total);
+      _onPageClick = (t) => Hn(this, this.page, t);
     }
     if (!customElements.get("p9r-pagination"))
-      customElements.define("p9r-pagination", xt);
-    var xn = `<div class="progress" part="progress" role="progressbar">
+      customElements.define("p9r-pagination", yt);
+    var zn = `<div class="progress" part="progress" role="progressbar">
     <div class="track" part="track">
         <div class="bar" part="bar"></div>
     </div>
     <span class="label" part="label"><slot></slot></span>
 </div>
 `;
-    var yn = `:host {
+    var Sn = `:host {
   display: block;
 
   --_height: 8px;
@@ -6590,7 +6590,7 @@ p9r-tag:hover {
 }
 `;
 
-    class yt extends o {
+    class wt extends o {
       _bar;
       _label;
       _root;
@@ -6598,7 +6598,7 @@ p9r-tag:hover {
         return ["value", "max", "indeterminate"];
       }
       constructor() {
-        super({ css: yn, template: xn });
+        super({ css: Sn, template: zn });
         this._bar = this.shadowRoot?.querySelector(".bar") ?? null, this._label = this.shadowRoot?.querySelector(".label") ?? null, this._root = this.shadowRoot?.querySelector(".progress") ?? null;
       }
       connectedCallback() {
@@ -6653,10 +6653,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-progress"))
-      customElements.define("p9r-progress", yt);
-    var wn = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
+      customElements.define("p9r-progress", wt);
+    var In = `<div class="skeleton" part="skeleton" aria-hidden="true"></div>
 `;
-    var kn = `:host {
+    var Pn = `:host {
   display: block;
 
   --_bg: var(--bg-base, #f1f5f9);
@@ -6705,12 +6705,12 @@ p9r-tag:hover {
 }
 `;
 
-    class wt extends o {
+    class kt extends o {
       static get observedAttributes() {
         return ["width", "height"];
       }
       constructor() {
-        super({ css: kn, template: wn });
+        super({ css: Pn, template: In });
       }
       connectedCallback() {
         this._syncSize();
@@ -6735,12 +6735,12 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-skeleton"))
-      customElements.define("p9r-skeleton", wt);
-    var En = `<div class="spinner" part="spinner" role="status" aria-live="polite">
+      customElements.define("p9r-skeleton", kt);
+    var Rn = `<div class="spinner" part="spinner" role="status" aria-live="polite">
     <span class="visually-hidden"><slot>Loading…</slot></span>
 </div>
 `;
-    var An = `:host {
+    var qn = `:host {
   display: inline-block;
 
   --_size: 1.25rem;
@@ -6792,18 +6792,18 @@ p9r-tag:hover {
 }
 `;
 
-    class kt extends o {
+    class Et extends o {
       constructor() {
-        super({ css: An, template: En });
+        super({ css: qn, template: Rn });
       }
     }
     if (!customElements.get("p9r-spinner"))
-      customElements.define("p9r-spinner", kt);
-    var Ln = `<ol class="stepper" part="stepper">
+      customElements.define("p9r-spinner", Et);
+    var Bn = `<ol class="stepper" part="stepper">
     <slot></slot>
 </ol>
 `;
-    var Cn = `:host {
+    var jn = `:host {
   display: block;
 
   --_active: var(--primary-base, #4361ee);
@@ -6827,7 +6827,7 @@ p9r-tag:hover {
   gap: 0;
 }
 `;
-    var Tn = `<li class="step" part="step">
+    var Dn = `<li class="step" part="step">
     <div class="indicator" part="indicator">
         <span class="bullet" part="bullet">
             <span class="number"></span>
@@ -6845,7 +6845,7 @@ p9r-tag:hover {
     </div>
 </li>
 `;
-    var Mn = `:host {
+    var Fn = `:host {
   display: flex;
   flex: 1;
 
@@ -6935,7 +6935,7 @@ p9r-tag:hover {
 .description slot:empty,
 .description:has(slot:not(:has(*))) { display: none; }
 `;
-    var Hn = `:host([data-state="active"], [state="active"]) {
+    var On = `:host([data-state="active"], [state="active"]) {
   --_color: var(--_active);
   --_label-color: var(--_text);
 }
@@ -6996,16 +6996,16 @@ p9r-tag:hover {
   margin-top: 0.4rem;
 }
 `;
-    var Bs = Mn + Hn;
+    var el = Fn + On;
 
-    class Et extends o {
+    class At extends o {
       _label;
       _number;
       static get observedAttributes() {
         return ["label", "data-index"];
       }
       constructor() {
-        super({ css: Bs, template: Tn });
+        super({ css: el, template: Dn });
         this._label = this.shadowRoot?.querySelector(".label") ?? null, this._number = this.shadowRoot?.querySelector(".number") ?? null;
       }
       connectedCallback() {
@@ -7022,14 +7022,14 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-step"))
-      customElements.define("p9r-step", Et);
+      customElements.define("p9r-step", At);
 
-    class At extends o {
+    class Lt extends o {
       static get observedAttributes() {
         return ["current", "orientation"];
       }
       constructor() {
-        super({ css: Cn, template: Ln });
+        super({ css: jn, template: Bn });
       }
       connectedCallback() {
         this._sync();
@@ -7066,14 +7066,14 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-stepper"))
-      customElements.define("p9r-stepper", At);
-    var zn = `<div class="table-container">
+      customElements.define("p9r-stepper", Lt);
+    var Nn = `<div class="table-container">
   <div class="p9r-table">
     <slot name="header"></slot>
     <slot></slot>
   </div>
 </div>`;
-    var Sn = `:host {
+    var Vn = `:host {
   display: block;
   width: 100%;
 }
@@ -7106,9 +7106,9 @@ p9r-tag:hover {
 ::slotted(p9r-row:not(:first-child):hover) {
   background-color: var(--bg-base);
 }`;
-    var In = `<slot></slot>
+    var Kn = `<slot></slot>
 `;
-    var Pn = `:host {
+    var $n = `:host {
   display: table-row;
 }
 
@@ -7127,7 +7127,7 @@ p9r-tag:hover {
   }
 }
 `;
-    var ue = (t) => {
+    var _e = (t) => {
       let e = t.getAttribute("href");
       if (!e)
         return;
@@ -7139,22 +7139,22 @@ p9r-tag:hover {
       else
         window.location.href = e;
     };
-    var Rn = (t) => {
+    var Un = (t) => {
       if (!t.hasAttribute("href"))
         return;
-      ue(t);
-    }, qn = (t, e) => {
+      _e(t);
+    }, Yn = (t, e) => {
       if (!t.hasAttribute("href"))
         return;
       if (e.key === "Enter" || e.key === " ")
-        e.preventDefault(), ue(t);
+        e.preventDefault(), _e(t);
     };
-    var Bn = (t, e) => {
+    var Xn = (t, e) => {
       if (Object.prototype.hasOwnProperty.call(t, e)) {
         let r = t[e];
         delete t[e], t[e] = r;
       }
-    }, he = (t) => {
+    }, xe = (t) => {
       if (t.hasAttribute("href")) {
         if (!t.hasAttribute("tabindex"))
           t.setAttribute("tabindex", "0");
@@ -7170,27 +7170,27 @@ p9r-tag:hover {
       }
     };
 
-    class Lt extends o {
+    class Ct extends o {
       static get observedAttributes() {
         return ["href"];
       }
       constructor() {
-        super({ css: Pn, template: In });
+        super({ css: $n, template: Kn });
       }
       connectedCallback() {
         for (let t of ["href", "target"])
-          Bn(this, t);
-        this.addEventListener("click", this._onClick), this.addEventListener("keydown", this._onKey), he(this);
+          Xn(this, t);
+        this.addEventListener("click", this._onClick), this.addEventListener("keydown", this._onKey), xe(this);
       }
       disconnectedCallback() {
         this.removeEventListener("click", this._onClick), this.removeEventListener("keydown", this._onKey);
       }
       attributeChangedCallback(t) {
         if (t === "href")
-          he(this);
+          xe(this);
       }
-      _onClick = () => Rn(this);
-      _onKey = (t) => qn(this, t);
+      _onClick = () => Un(this);
+      _onKey = (t) => Yn(this, t);
       get href() {
         return this.getAttribute("href");
       }
@@ -7211,10 +7211,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-row"))
-      customElements.define("p9r-row", Lt);
-    var Dn = `<slot></slot>
+      customElements.define("p9r-row", Ct);
+    var Zn = `<slot></slot>
 `;
-    var Fn = `:host {
+    var Wn = `:host {
   display: table-cell;
   padding: 12px 20px;
   vertical-align: middle;
@@ -7239,9 +7239,9 @@ p9r-tag:hover {
 }
 `;
 
-    class Ct extends o {
+    class Tt extends o {
       constructor() {
-        super({ css: Fn, template: Dn });
+        super({ css: Wn, template: Zn });
       }
       connectedCallback() {
         if (!this.hasAttribute("role"))
@@ -7249,8 +7249,8 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-cell"))
-      customElements.define("p9r-cell", Ct);
-    var jn = `<div class="header-wrapper" part="wrapper">
+      customElements.define("p9r-cell", Tt);
+    var Gn = `<div class="header-wrapper" part="wrapper">
   <button
     type="button"
     class="label-section"
@@ -7280,7 +7280,7 @@ p9r-tag:hover {
   </div>
 </div>
 `;
-    var Nn = `:host {
+    var Jn = `:host {
   display: table-cell;
   padding: 12px 20px;
   border-bottom: 2px solid var(--border-light);
@@ -7351,7 +7351,7 @@ p9r-tag:hover {
   box-sizing: border-box;
 }
 `;
-    var Vn = `:host([sort]) .label-section {
+    var Qn = `:host([sort]) .label-section {
   cursor: pointer;
 }
 
@@ -7398,12 +7398,12 @@ p9r-tag:hover {
   background: var(--bg-base, #eee);
 }
 `;
-    var Ys = (t) => {
+    var ul = (t) => {
       let e = t.getAttribute("filter-name");
       if (!e)
         return "";
       return new URL(window.location.href).searchParams.get(`f_${e}`) ?? "";
-    }, be = (t, e, r) => {
+    }, ye = (t, e, r) => {
       let i = t.getAttribute("filter-name");
       if (!e)
         return;
@@ -7412,7 +7412,7 @@ p9r-tag:hover {
         return;
       }
       e.removeAttribute("hidden");
-      let n = Ys(t);
+      let n = ul(t);
       if (r)
         r.value = n;
       if (n)
@@ -7420,13 +7420,13 @@ p9r-tag:hover {
       else
         t.removeAttribute("data-has-filter");
     };
-    var On = (t) => {
+    var ta = (t) => {
       let e = t.getAttribute("sort");
       if (!e)
         return;
       let r = new URL(window.location.href), i = r.searchParams.get("sort"), n = r.searchParams.get("direction"), a = i === e && n === "asc" ? "desc" : "asc";
       r.searchParams.set("sort", e), r.searchParams.set("direction", a), window.location.href = r.toString();
-    }, Kn = (t, e) => {
+    }, ea = (t, e) => {
       let r = t.getAttribute("filter-name");
       if (!r)
         return;
@@ -7437,27 +7437,27 @@ p9r-tag:hover {
         i.searchParams.delete(`f_${r}`);
       window.location.href = i.toString();
     };
-    var $n = (t, e) => {
+    var ra = (t, e) => {
       if (e.composedPath().some((r) => r instanceof HTMLInputElement))
         return;
-      On(t);
-    }, Un = (t, e, r, i) => {
+      ta(t);
+    }, ia = (t, e, r, i) => {
       if (t.stopPropagation(), !r || !e)
         return;
       if (r.hasAttribute("hidden"))
         r.removeAttribute("hidden"), e.setAttribute("aria-expanded", "true"), i?.focus();
       else
         r.setAttribute("hidden", ""), e.setAttribute("aria-expanded", "false");
-    }, Yn = (t, e, r) => {
+    }, na = (t, e, r) => {
       if (r.key !== "Enter" || !e)
         return;
-      Kn(t, e.value);
-    }, Xn = (t, e) => {
+      ea(t, e.value);
+    }, aa = (t, e) => {
       e?.setAttribute("hidden", ""), t?.setAttribute("aria-expanded", "false");
     };
-    var Xs = Nn + Vn;
+    var pl = Jn + Qn;
 
-    class Tt extends o {
+    class Mt extends o {
       _sortTrigger;
       _filterBtn;
       _filterPopover;
@@ -7466,42 +7466,42 @@ p9r-tag:hover {
         return ["sort", "filter-name"];
       }
       constructor() {
-        super({ css: Xs, template: jn });
+        super({ css: pl, template: Gn });
         this._sortTrigger = this.shadowRoot?.querySelector("#sort-trigger") ?? null, this._filterBtn = this.shadowRoot?.querySelector("#filter-btn") ?? null, this._filterPopover = this.shadowRoot?.querySelector("#filter-popover") ?? null, this._filterInput = this.shadowRoot?.querySelector("#filter-input") ?? null;
       }
       connectedCallback() {
-        be(this, this._filterBtn, this._filterInput), this._sortTrigger?.addEventListener("click", this._onSort), this._filterBtn?.addEventListener("click", this._onFilterToggle), this._filterPopover?.addEventListener("click", this._stopPropagation), this._filterInput?.addEventListener("keydown", this._onFilterKey), window.addEventListener("click", this._onWindowClick);
+        ye(this, this._filterBtn, this._filterInput), this._sortTrigger?.addEventListener("click", this._onSort), this._filterBtn?.addEventListener("click", this._onFilterToggle), this._filterPopover?.addEventListener("click", this._stopPropagation), this._filterInput?.addEventListener("keydown", this._onFilterKey), window.addEventListener("click", this._onWindowClick);
       }
       disconnectedCallback() {
         this._sortTrigger?.removeEventListener("click", this._onSort), this._filterBtn?.removeEventListener("click", this._onFilterToggle), this._filterPopover?.removeEventListener("click", this._stopPropagation), this._filterInput?.removeEventListener("keydown", this._onFilterKey), window.removeEventListener("click", this._onWindowClick);
       }
       attributeChangedCallback() {
-        be(this, this._filterBtn, this._filterInput);
+        ye(this, this._filterBtn, this._filterInput);
       }
-      _onSort = (t) => $n(this, t);
-      _onFilterToggle = (t) => Un(t, this._filterBtn, this._filterPopover, this._filterInput);
-      _onFilterKey = (t) => Yn(this, this._filterInput, t);
-      _onWindowClick = () => Xn(this._filterBtn, this._filterPopover);
+      _onSort = (t) => ra(this, t);
+      _onFilterToggle = (t) => ia(t, this._filterBtn, this._filterPopover, this._filterInput);
+      _onFilterKey = (t) => na(this, this._filterInput, t);
+      _onWindowClick = () => aa(this._filterBtn, this._filterPopover);
       _stopPropagation = (t) => t.stopPropagation();
     }
     if (!customElements.get("p9r-header-cell"))
-      customElements.define("p9r-header-cell", Tt);
+      customElements.define("p9r-header-cell", Mt);
 
-    class Mt extends o {
+    class Ht extends o {
       constructor() {
-        super({ css: Sn, template: zn });
+        super({ css: Vn, template: Nn });
       }
     }
     if (!customElements.get("p9r-table"))
-      customElements.define("p9r-table", Mt);
-    var Zn = `<div class="tabs" part="tabs">
+      customElements.define("p9r-table", Ht);
+    var oa = `<div class="tabs" part="tabs">
     <div class="tablist" part="tablist" role="tablist"></div>
     <div class="panels" part="panels">
         <slot></slot>
     </div>
 </div>
 `;
-    var Wn = `:host {
+    var sa = `:host {
   display: block;
 
   --_border: var(--border-default, #e5e7eb);
@@ -7577,7 +7577,7 @@ p9r-tag:hover {
   .tab { transition: color 0.15s; }
 }
 `;
-    var Gn = `:host([variant="pills"]) .tablist {
+    var la = `:host([variant="pills"]) .tablist {
   border-bottom: 0;
   gap: 0.4rem;
   padding: 0.25rem;
@@ -7616,11 +7616,11 @@ p9r-tag:hover {
   padding-left: 1rem;
 }
 `;
-    var Jn = `<div class="panel" part="panel">
+    var da = `<div class="panel" part="panel">
     <slot></slot>
 </div>
 `;
-    var Qn = `:host {
+    var ca = `:host {
   display: block;
 }
 
@@ -7631,30 +7631,30 @@ p9r-tag:hover {
 }
 `;
 
-    class Ht extends o {
+    class zt extends o {
       constructor() {
-        super({ css: Qn, template: Jn });
+        super({ css: ca, template: da });
       }
     }
     if (!customElements.get("p9r-tab-panel"))
-      customElements.define("p9r-tab-panel", Ht);
-    var me = (t) => {
+      customElements.define("p9r-tab-panel", zt);
+    var we = (t) => {
       if (!t)
         return [];
       return t.assignedElements({ flatten: true }).filter((e) => e.tagName === "P9R-TAB-PANEL");
-    }, tl = 0, ta = () => `tabpanel-${tl++}`;
-    var ea = (t, e) => {
+    }, vl = 0, ua = () => `tabpanel-${vl++}`;
+    var pa = (t, e) => {
       t.dispatchEvent(new CustomEvent("change", { bubbles: true, detail: { active: e } }));
     };
-    var ge = (t, e, r) => {
+    var ke = (t, e, r) => {
       if (!e)
         return;
       e.innerHTML = "";
-      let i = me(r), n = t.getAttribute("active");
+      let i = we(r), n = t.getAttribute("active");
       if (!n && i.length > 0)
         n = i[0]?.getAttribute("id") ?? null;
       if (i.forEach((a, s) => {
-        let l = a.getAttribute("id") ?? ta();
+        let l = a.getAttribute("id") ?? ua();
         if (!a.id)
           a.id = l;
         let d = a.getAttribute("label") ?? `Tab ${s + 1}`, c = document.createElement("button");
@@ -7664,7 +7664,7 @@ p9r-tag:hover {
       }), n)
         k(t, e, r, n);
     }, k = (t, e, r, i) => {
-      let n = me(r), a = Array.from(e?.querySelectorAll(".tab") ?? []), s = false;
+      let n = we(r), a = Array.from(e?.querySelectorAll(".tab") ?? []), s = false;
       if (n.forEach((l) => {
         let d = l.id === i;
         if (d)
@@ -7674,22 +7674,22 @@ p9r-tag:hover {
         let d = l.dataset.target === i;
         l.setAttribute("aria-selected", String(d)), l.setAttribute("tabindex", d ? "0" : "-1");
       }), s && t.getAttribute("active") !== i)
-        t.setAttribute("active", i), ea(t, i);
+        t.setAttribute("active", i), pa(t, i);
     };
-    var ra = (t, e, r, i) => {
+    var ha = (t, e, r, i) => {
       let n = i.target.closest(".tab");
       if (!n || n.hasAttribute("disabled"))
         return;
       let a = n.dataset.target;
       if (a)
         k(t, e, r, a);
-    }, ia = (t, e, r, i) => {
+    }, ba = (t, e, r, i) => {
       if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(i.key))
         return;
       let n = Array.from(e?.querySelectorAll(".tab:not([disabled])") ?? []);
       if (n.length === 0)
         return;
-      let a = n.findIndex((p) => p === document.activeElement), s = a === -1 ? 0 : a, l = s;
+      let a = n.findIndex((u) => u === document.activeElement), s = a === -1 ? 0 : a, l = s;
       if (i.key === "ArrowLeft")
         l = (s - 1 + n.length) % n.length;
       if (i.key === "ArrowRight")
@@ -7707,20 +7707,20 @@ p9r-tag:hover {
         k(t, e, r, c);
       d.focus();
     };
-    var el = Wn + Gn;
+    var _l = sa + la;
 
-    class zt extends o {
+    class St extends o {
       _tablist;
       _slot;
       static get observedAttributes() {
         return ["active"];
       }
       constructor() {
-        super({ css: el, template: Zn });
+        super({ css: _l, template: oa });
         this._tablist = this.shadowRoot?.querySelector(".tablist") ?? null, this._slot = this.shadowRoot?.querySelector("slot") ?? null;
       }
       connectedCallback() {
-        this._slot?.addEventListener("slotchange", this._onRebuild), this._tablist?.addEventListener("click", this._onClick), this._tablist?.addEventListener("keydown", this._onKey), ge(this, this._tablist, this._slot);
+        this._slot?.addEventListener("slotchange", this._onRebuild), this._tablist?.addEventListener("click", this._onClick), this._tablist?.addEventListener("keydown", this._onKey), ke(this, this._tablist, this._slot);
       }
       disconnectedCallback() {
         this._slot?.removeEventListener("slotchange", this._onRebuild), this._tablist?.removeEventListener("click", this._onClick), this._tablist?.removeEventListener("keydown", this._onKey);
@@ -7735,19 +7735,19 @@ p9r-tag:hover {
       set active(t) {
         this.setAttribute("active", t);
       }
-      _onRebuild = () => ge(this, this._tablist, this._slot);
-      _onClick = (t) => ra(this, this._tablist, this._slot, t);
-      _onKey = (t) => ia(this, this._tablist, this._slot, t);
+      _onRebuild = () => ke(this, this._tablist, this._slot);
+      _onClick = (t) => ha(this, this._tablist, this._slot, t);
+      _onKey = (t) => ba(this, this._tablist, this._slot, t);
     }
     if (!customElements.get("p9r-tabs"))
-      customElements.define("p9r-tabs", zt);
-    var na = `<div class="icon" part="icon"></div>
+      customElements.define("p9r-tabs", St);
+    var ma = `<div class="icon" part="icon"></div>
 <div class="content">
     <span class="message"><slot></slot></span>
 </div>
 <button class="close" aria-label="Dismiss">&times;</button>
 `;
-    var aa = `:host {
+    var ga = `:host {
     --_bg: var(--bg-surface, #ffffff);
     --_color: var(--text-main, #1f2937);
     --_border: var(--border-default, #e5e7eb);
@@ -7818,7 +7818,7 @@ p9r-tag:hover {
     opacity: 1;
 }
 `;
-    var oa = `:host([leaving]) {
+    var fa = `:host([leaving]) {
     animation: toast-out 160ms ease-in forwards;
 }
 
@@ -7861,12 +7861,12 @@ p9r-tag:hover {
     to   { opacity: 0; transform: translateX(-20px); }
 }
 `;
-    var al = aa + oa;
+    var kl = ga + fa;
 
-    class St extends o {
+    class It extends o {
       _timer = null;
       constructor() {
-        super({ css: al, template: na });
+        super({ css: kl, template: ma });
       }
       connectedCallback() {
         this.shadowRoot?.querySelector(".close")?.addEventListener("click", () => this.dismiss());
@@ -7889,10 +7889,10 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-toast"))
-      customElements.define("p9r-toast", St);
-    var sa = `<slot></slot>
+      customElements.define("p9r-toast", It);
+    var va = `<slot></slot>
 `;
-    var la = `:host {
+    var _a = `:host {
     position: fixed;
     top: 24px;
     left: 24px;
@@ -7942,9 +7942,9 @@ p9r-tag:hover {
 }
 `;
 
-    class It extends o {
+    class Pt extends o {
       constructor() {
-        super({ css: la, template: sa });
+        super({ css: _a, template: va });
       }
       connectedCallback() {
         if (!this.hasAttribute("popover"))
@@ -7961,19 +7961,19 @@ p9r-tag:hover {
       }
     }
     if (!customElements.get("p9r-toast-stack"))
-      customElements.define("p9r-toast-stack", It);
+      customElements.define("p9r-toast-stack", Pt);
     var b = null;
-    function ll() {
+    function Ll() {
       if (b && b.isConnected)
         return b;
       if (b = document.querySelector("p9r-toast-stack"), b)
         return b;
       return b = document.createElement("p9r-toast-stack"), document.body.appendChild(b), b;
     }
-    function da(t, e = {}) {
-      return ll().push(t, e);
+    function xa(t, e = {}) {
+      return Ll().push(t, e);
     }
-    var ca = `<div class="trigger" part="trigger">
+    var ya = `<div class="trigger" part="trigger">
     <slot></slot>
 </div>
 <div class="tooltip" part="tooltip" role="tooltip" aria-hidden="true">
@@ -7981,7 +7981,7 @@ p9r-tag:hover {
     <span class="text"></span>
 </div>
 `;
-    var pa = `:host {
+    var wa = `:host {
   display: inline-block;
   position: relative;
 
@@ -8046,7 +8046,7 @@ p9r-tag:hover {
   border-top-color: var(--_bg);
 }
 `;
-    var ua = `:host([position="bottom"]) .tooltip {
+    var ka = `:host([position="bottom"]) .tooltip {
   top: calc(100% + var(--_offset));
   bottom: auto;
   left: 50%;
@@ -8094,9 +8094,9 @@ p9r-tag:hover {
   border-right-color: var(--_bg);
 }
 `;
-    var ul = pa + ua;
+    var Hl = wa + ka;
 
-    class Pt extends o {
+    class Rt extends o {
       _tooltip;
       _text;
       _showTimer = null;
@@ -8105,7 +8105,7 @@ p9r-tag:hover {
         return ["text"];
       }
       constructor() {
-        super({ css: ul, template: ca });
+        super({ css: Hl, template: ya });
         this._tooltip = this.shadowRoot?.querySelector(".tooltip") ?? null, this._text = this.shadowRoot?.querySelector(".text") ?? null;
       }
       connectedCallback() {
@@ -8142,7 +8142,282 @@ p9r-tag:hover {
       };
     }
     if (!customElements.get("p9r-tooltip"))
-      customElements.define("p9r-tooltip", Pt);
+      customElements.define("p9r-tooltip", Rt);
+    function Ee(t, e) {
+      if (t.key !== "Enter")
+        return;
+      if (t.target.tagName === "TEXTAREA")
+        return;
+      t.preventDefault(), e.requestSubmit();
+    }
+    function qt(t) {
+      let e = new URL(t, window.location.href);
+      for (let [r, i] of new URLSearchParams(window.location.search))
+        e.searchParams.append(r, i);
+      return e;
+    }
+    async function Bt(t, e) {
+      t.preventDefault();
+      let r = t.target, i = new FormData(r), n = Object.fromEntries(i.entries()), a = await fetch(qt(e.target), { method: e.method || "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(n) }), s = await a.json().catch(() => null), l = { status: a.status, body: s };
+      if (a.ok) {
+        if (r.reset(), e.dispatchEvent(new CustomEvent("form:success", { bubbles: true, composed: true, detail: l })), e.emit)
+          document.dispatchEvent(new CustomEvent(e.emit, { bubbles: true, composed: true, detail: l }));
+        if (e.redirect)
+          window.location.href = e.redirect;
+      } else
+        e.dispatchEvent(new CustomEvent("form:failed", { bubbles: true, composed: true, detail: l }));
+    }
+
+    class jt extends HTMLElement {
+      _nativeForm = null;
+      static get observedAttributes() {
+        return ["redirect", "target", "method", "emit"];
+      }
+      _handleInternalSubmit = (t) => {
+        Bt(t, this);
+      };
+      connectedCallback() {
+        requestAnimationFrame(() => {
+          if (this._nativeForm)
+            return;
+          this._nativeForm = document.createElement("form");
+          let t = this.getAttribute("id");
+          if (t)
+            this._nativeForm.id = t, this.removeAttribute("id");
+          while (this.firstChild)
+            this._nativeForm.appendChild(this.firstChild);
+          this.appendChild(this._nativeForm), this._nativeForm.addEventListener("submit", this._handleInternalSubmit), this.addEventListener("keydown", (e) => Ee(e, this._nativeForm));
+        });
+      }
+      disconnectedCallback() {
+        this.removeEventListener("submit", (t) => Bt(t, this)), this.removeEventListener("keydown", (t) => Ee(t, this._nativeForm));
+      }
+      attributeChangedCallback(t, e, r) {}
+      get redirect() {
+        return this.getAttribute("redirect");
+      }
+      get target() {
+        let t = this.getAttribute("target");
+        if (!t)
+          throw Error("CmsForm target attribute should be set");
+        return t;
+      }
+      get method() {
+        return this.getAttribute("method");
+      }
+      get emit() {
+        return this.getAttribute("emit");
+      }
+    }
+    if (!customElements.get("w13c-form"))
+      customElements.define("w13c-form", jt);
+    function Ea(t) {
+      let e = {};
+      for (let r of Array.from(t.children)) {
+        if (r.tagName !== "TEMPLATE")
+          continue;
+        let i = r.getAttribute("slot") || "default";
+        if (!e[i])
+          e[i] = r;
+      }
+      return e;
+    }
+    function Aa(t) {
+      if (t === null || t === undefined)
+        return true;
+      if (Array.isArray(t))
+        return t.length === 0;
+      if (typeof t === "object")
+        return Object.keys(t).length === 0;
+      return false;
+    }
+    async function La(t, e) {
+      try {
+        let r = qt(t), i = await fetch(r, { headers: { Accept: "application/json" }, signal: e });
+        if (!i.ok)
+          return { kind: "error", error: Error(`HTTP ${i.status}`) };
+        return { kind: "success", data: await i.json() };
+      } catch (r) {
+        if (r.name === "AbortError")
+          return { kind: "aborted" };
+        return { kind: "error", error: r };
+      }
+    }
+    function H(t, e) {
+      return e.split(".").reduce((r, i) => r != null ? r[i] : undefined, t);
+    }
+    function Dt(t) {
+      return String(t ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+    function Ae(t, e) {
+      if (t.nodeType === Node.TEXT_NODE) {
+        let r = t.textContent ?? "", i = Ca(r, e);
+        if (i !== r)
+          t.textContent = i;
+        return;
+      }
+      if (t.nodeType === Node.ELEMENT_NODE) {
+        let r = t;
+        if (r.tagName === "TEMPLATE")
+          return;
+        if (r.tagName === "INNER-HTML" && zl(r, e))
+          return;
+        for (let i of Array.from(r.attributes)) {
+          let n = Ca(i.value, e);
+          if (n !== i.value)
+            r.setAttribute(i.name, n);
+        }
+      }
+      for (let r of Array.from(t.childNodes))
+        Ae(r, e);
+    }
+    function zl(t, e) {
+      let i = (t.textContent?.trim() ?? "").match(/^\{\{\s*([\w.]+)\s*\}\}$/);
+      if (!i)
+        return false;
+      return t.innerHTML = String(H(e, i[1]) ?? ""), t.replaceWith(...Array.from(t.childNodes)), true;
+    }
+    function Ca(t, e) {
+      return t.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (r, i) => {
+        if (i === "value") {
+          if (e !== null && typeof e === "object" && "value" in e)
+            return Dt(e.value);
+          return Dt(e);
+        }
+        return Dt(H(e, i));
+      });
+    }
+    function Le(t, e) {
+      let r = t.getAttribute("for"), i = document.createDocumentFragment();
+      if (r === null) {
+        let a = t.content.cloneNode(true);
+        return Ta(a, e), i.appendChild(a), i;
+      }
+      let n = r === "." ? e : H(e, r);
+      if (!Array.isArray(n))
+        return console.warn(`cms-fetch: <template for="${r}"> expected an array, got`, n), i;
+      for (let a of n) {
+        let s = t.content.cloneNode(true);
+        Ta(s, a), i.appendChild(s);
+      }
+      return i;
+    }
+    function Ta(t, e) {
+      let r = [];
+      Ma(t, r);
+      for (let i of r)
+        i.parentNode?.replaceChild(Le(i, e), i);
+      Ae(t, e);
+    }
+    function Ma(t, e) {
+      for (let r of Array.from(t.childNodes)) {
+        if (r.nodeType !== Node.ELEMENT_NODE)
+          continue;
+        let i = r;
+        if (i.tagName === "TEMPLATE")
+          e.push(i);
+        else
+          Ma(i, e);
+      }
+    }
+    function Ha(t, e, r, i) {
+      Ce(i);
+      let n = t.parentNode;
+      if (!n)
+        return [];
+      let a = Le(e, r), s = Array.from(a.childNodes);
+      return n.insertBefore(a, t), s;
+    }
+    function Ce(t) {
+      for (let e of t)
+        e.parentNode?.removeChild(e);
+    }
+
+    class Ft extends Event {
+      constructor(t) {
+        super(t, { bubbles: true, composed: true });
+      }
+    }
+
+    class Ot extends HTMLElement {
+      static get observedAttributes() {
+        return ["url", "reload-on"];
+      }
+      _templates = {};
+      _stamped = [];
+      _reloadEvents = [];
+      _abort = null;
+      _onReloadEvent = () => {
+        if (this.isConnected)
+          this.reload();
+      };
+      connectedCallback() {
+        if (this._refreshReloadListeners(), document.addEventListener("cms-fetch:reload", this._onReloadEvent), this._templates.default) {
+          this.reload();
+          return;
+        }
+        if (document.readyState === "loading")
+          document.addEventListener("DOMContentLoaded", () => this._init(), { once: true });
+        else
+          this._init();
+      }
+      disconnectedCallback() {
+        Ce(this._stamped), this._stamped = [];
+        for (let t of this._reloadEvents)
+          document.removeEventListener(t, this._onReloadEvent);
+        document.removeEventListener("cms-fetch:reload", this._onReloadEvent), this._reloadEvents = [], this._abort?.abort(), this._abort = null;
+      }
+      attributeChangedCallback(t, e, r) {
+        if (e === r)
+          return;
+        if (t === "reload-on") {
+          this._refreshReloadListeners();
+          return;
+        }
+        if (this.isConnected)
+          this.reload();
+      }
+      reload() {
+        this._run();
+      }
+      _init() {
+        if (this._templates = Ea(this), !this._templates.default) {
+          console.warn("cms-fetch: missing <template> child (default slot)");
+          return;
+        }
+        this.reload();
+      }
+      _refreshReloadListeners() {
+        for (let t of this._reloadEvents)
+          document.removeEventListener(t, this._onReloadEvent);
+        this._reloadEvents = (this.getAttribute("reload-on") || "").split(/\s+/).filter(Boolean);
+        for (let t of this._reloadEvents)
+          document.addEventListener(t, this._onReloadEvent);
+      }
+      async _run() {
+        let t = this.getAttribute("url");
+        if (!t || !this._templates.default)
+          return;
+        this._abort?.abort(), this._abort = new AbortController;
+        let e = this._abort.signal;
+        this._renderSlot("loading", null), this.dispatchEvent(new Ft("fetch:loading"));
+        let r = await La(t, e);
+        if (e.aborted || r.kind === "aborted")
+          return;
+        if (r.kind === "success") {
+          let i = Aa(r.data) && this._templates.empty ? "empty" : "default";
+          this._renderSlot(i, r.data), this.dispatchEvent(new CustomEvent("fetch:data", { bubbles: true, composed: true, detail: r.data }));
+        } else
+          this._renderSlot("error", r.error), this.dispatchEvent(new CustomEvent("fetch:error", { bubbles: true, composed: true, detail: r.error }));
+      }
+      _renderSlot(t, e) {
+        let r = this._templates[t];
+        if (!r)
+          return;
+        this._stamped = Ha(this, r, e, this._stamped);
+      }
+    }
+    customElements.define("w13c-fetch", Ot);
   })();
 
   // src/control/core/editorSystem/Component.ts
@@ -10685,522 +10960,6 @@ p9r-tag:hover {
     customElements.define("p9r-config-panel", SyncPanel);
   }
 
-  // src/control/components/editor/configurations/PageConfiguration/template.html
-  var template_default3 = `<w13c-lateral-dialog>
-  <form action="">
-
-    <p9r-section data-title="SEO">
-      <p9r-input
-        name="title"
-        label="Title"
-        placeholder="A beautiful title"
-        hint="Used as &lt;title&gt; and SEO heading."
-        max-count="50"
-      ></p9r-input>
-
-      <p9r-input
-        name="description"
-        label="Description"
-        placeholder="A beautiful description"
-        hint="Used as meta description."
-        max-count="120"
-      ></p9r-input>
-    </p9r-section>
-
-    <p9r-section data-title="URL">
-      <div class="field">
-        <p9r-input
-          id="path-input"
-          name="path"
-          label="Path"
-          placeholder="/article"
-          hint='Letters, numbers, "-" and "/" allowed.'
-        ></p9r-input>
-        <div class="url-row" id="url-row" hidden>
-          <small class="url-preview" id="url-preview"></small>
-          <button type="button" class="url-open" id="url-open" title="Open in new tab" aria-label="Open in new tab">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 3h6v6"/>
-              <path d="M10 14L21 3"/>
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </p9r-section>
-
-    <p9r-section data-title="Taxonomy">
-      <p9r-tag-suggest name="tags" mode="multiple" resource="pages" api="../api/tags" placeholder="Add a tag…">
-        <span slot="label">Tags</span>
-      </p9r-tag-suggest>
-    </p9r-section>
-
-    <p9r-section data-title="Publication">
-      <p9r-select name="visible" label="Status">
-        <option value="on" selected>Published</option>
-        <option value="">Draft</option>
-      </p9r-select>
-    </p9r-section>
-
-    <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">
-      Save
-    </p9r-button>
-  </form>
-  <span slot="title">Page configuration</span>
-
-</w13c-lateral-dialog>
-`;
-
-  // src/control/components/editor/configurations/PageConfiguration/style.css
-  var style_default2 = `form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    position: relative;
-}
-
-.url-row {
-    display: flex;
-    align-items: stretch;
-    gap: 6px;
-}
-
-.url-preview {
-    flex: 1;
-    min-width: 0;
-    font-size: 11px;
-    color: var(--text-muted, #94a3b8);
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    background: var(--bg-base, #f8fafc);
-    padding: 5px 8px;
-    border-radius: 6px;
-    border: 1px solid var(--border-default, #e2e8f0);
-    word-break: break-all;
-    line-height: 1.3;
-    display: flex;
-    align-items: center;
-}
-
-.url-open {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 30px;
-    padding: 0;
-    background: var(--bg-surface, #fff);
-    color: var(--text-muted, #94a3b8);
-    border: 1px solid var(--border-default, #e2e8f0);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: color 0.15s, border-color 0.15s, background 0.15s;
-}
-
-.url-open:hover {
-    color: var(--primary-base, #4361ee);
-    border-color: var(--primary-base, #4361ee);
-    background: var(--primary-muted, rgb(67 97 238 / 0.08));
-}
-
-.url-open:focus-visible {
-    outline: none;
-    border-color: var(--primary-base, #4361ee);
-    box-shadow: 0 0 0 3px var(--primary-muted, rgb(67 97 238 / 0.15));
-}
-
-.url-open:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.url-open:disabled:hover {
-    color: var(--text-muted, #94a3b8);
-    border-color: var(--border-default, #e2e8f0);
-    background: var(--bg-surface, #fff);
-}
-
-#save-btn[aria-disabled="true"] {
-    opacity: 0.5;
-    pointer-events: none;
-}
-`;
-
-  // src/control/core/showToast.ts
-  function showToast(message, options) {
-    let stack = document.querySelector("p9r-toast-stack");
-    if (!stack) {
-      stack = document.createElement("p9r-toast-stack");
-      document.body.appendChild(stack);
-    }
-    stack.push(message, options);
-  }
-
-  // src/socle/utils/validation.ts
-  function isValidPathFormat(path) {
-    if (!path || typeof path !== "string")
-      return false;
-    if (path === "/")
-      return true;
-    return /^(?:\/[a-zA-Z0-9-]+)+$/.test(path);
-  }
-  function isValidSnippetIdentifier(id) {
-    if (!id || typeof id !== "string")
-      return false;
-    return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(id);
-  }
-
-  // src/control/components/editor/configurations/PageConfiguration/PageConfiguration.ts
-  class PageConfiguration extends Component {
-    _pathCheckToken = 0;
-    _pathValid = true;
-    _pathBlurred = false;
-    constructor() {
-      super({
-        css: style_default2,
-        template: template_default3
-      });
-    }
-    static get observedAttributes() {
-      return ["type", "disabled", "variant", "color"];
-    }
-    connectedCallback() {
-      const form = this.shadowRoot?.querySelector("form");
-      form?.addEventListener("submit", (e) => {
-        e.preventDefault();
-        if (!this._pathValid) {
-          showToast("Fix the path before saving.", { type: "error" });
-          return;
-        }
-        const data = this._collectFormData();
-        document.EditorManager.save({
-          title: data.title,
-          description: data.description,
-          visible: data.visible,
-          path: data.path,
-          tags: JSON.stringify(data.tags)
-        }).then(() => {
-          showToast("Page saved", { type: "success" });
-        }).catch((err) => {
-          console.error(err);
-          showToast("Failed to save page: " + (err?.message || err), { type: "error", duration: 6000 });
-        });
-        const url = new URL(window.location.href);
-        url.searchParams.set("path", data.path);
-        window.history.pushState({}, "", url);
-      });
-      Array.from(this.attributes).filter((attr) => attr.name.startsWith("default-")).map((attr) => attr.name).forEach((name) => this.setDefaultValue(name));
-      this._wirePathValidation();
-      this._wireOpenInNewTab();
-    }
-    _wireOpenInNewTab() {
-      const btn = this.shadowRoot?.getElementById("url-open");
-      btn?.addEventListener("click", () => {
-        const path = this._getPathInput()?.value.trim() ?? "";
-        if (!path || !isValidPathFormat(path))
-          return;
-        window.open(`${window.location.origin}${path}`, "_blank", "noopener,noreferrer");
-      });
-    }
-    _collectFormData() {
-      return {
-        title: this._getInputValue("title"),
-        description: this._getInputValue("description"),
-        path: this._getInputValue("path"),
-        visible: this._getSelectValue("visible") === "on",
-        tags: this._getTagsValue()
-      };
-    }
-    _getInputElement(name) {
-      return this.shadowRoot?.querySelector(`p9r-input[name=${name}]`);
-    }
-    _getInputValue(name) {
-      return this._getInputElement(name)?.value.trim() ?? "";
-    }
-    _getSelectValue(name) {
-      const sel = this.shadowRoot?.querySelector(`p9r-select[name=${name}]`);
-      return sel?.value ?? "";
-    }
-    _getTagsValue() {
-      const tagSuggest = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=tags]`);
-      const raw = tagSuggest?.value ?? "";
-      return raw.split(",").map((t) => t.trim()).filter((t) => t.length > 0);
-    }
-    setDefaultValue(name) {
-      const defVal = this.getAttribute(name);
-      if (defVal === null)
-        return;
-      const fieldName = name.replace("default-", "");
-      const pInput = this._getInputElement(fieldName);
-      if (pInput) {
-        pInput.value = defVal;
-        if (fieldName === "path")
-          this._updateUrlPreview();
-        return;
-      }
-      const select2 = this.shadowRoot?.querySelector(`p9r-select[name=${fieldName}]`);
-      if (select2 && "value" in select2) {
-        select2.value = defVal === "on" ? "on" : "";
-        return;
-      }
-      const tagSuggest = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${fieldName}]`);
-      if (tagSuggest && "value" in tagSuggest) {
-        tagSuggest.value = defVal;
-      }
-    }
-    _wirePathValidation() {
-      const input = this._getPathInput();
-      if (!input)
-        return;
-      input.addEventListener("input", () => {
-        this._updateUrlPreview();
-        this._validatePathFormatSync();
-      });
-      input.addEventListener("blur", () => {
-        this._pathBlurred = true;
-        this._validatePathRemote();
-      });
-      this._updateUrlPreview();
-      this._validatePathFormatSync();
-    }
-    _getPathInput() {
-      return this._getInputElement("path");
-    }
-    _setHint(level, text) {
-      this._getPathInput()?.setHint(level, text);
-    }
-    _setPathValid(valid) {
-      this._pathValid = valid;
-      const btn = this.shadowRoot?.getElementById("save-btn");
-      if (btn) {
-        if (valid)
-          btn.removeAttribute("aria-disabled");
-        else
-          btn.setAttribute("aria-disabled", "true");
-      }
-      this._getPathInput()?.setInvalid(!valid);
-    }
-    _validatePathFormatSync() {
-      const input = this._getPathInput();
-      if (!input)
-        return;
-      const path = input.value.trim();
-      if (path === "") {
-        this._setHint("error", "Path is required.");
-        this._setPathValid(false);
-        return;
-      }
-      if (!isValidPathFormat(path)) {
-        this._setHint("error", 'Only letters, numbers, "-" and "/" are allowed (e.g. /my-page).');
-        this._setPathValid(false);
-        return;
-      }
-      this._setHint("info", 'Letters, numbers, "-" and "/" allowed.');
-      this._setPathValid(true);
-    }
-    async _validatePathRemote() {
-      const input = this._getPathInput();
-      if (!input)
-        return;
-      const path = input.value.trim();
-      if (path === "" || !isValidPathFormat(path))
-        return;
-      const currentPath = this.getAttribute("default-path") ?? "";
-      const token = ++this._pathCheckToken;
-      try {
-        const url = new URL("../api/page-exists", window.location.href);
-        url.searchParams.set("path", path);
-        if (currentPath)
-          url.searchParams.set("current-path", currentPath);
-        const res = await fetch(url);
-        if (token !== this._pathCheckToken)
-          return;
-        if (!res.ok) {
-          this._setHint("error", "Could not validate the path (server error).");
-          this._setPathValid(false);
-          return;
-        }
-        const body = await res.json();
-        if (body.exists) {
-          this._setHint("error", `"${path}" is already used.`);
-          this._setPathValid(false);
-        } else {
-          this._setHint("success", "Path is available.");
-          this._setPathValid(true);
-        }
-      } catch {
-        if (token !== this._pathCheckToken)
-          return;
-        this._setHint("error", "Could not reach the server to validate the path.");
-        this._setPathValid(false);
-      }
-    }
-    _updateUrlPreview() {
-      const pathInput = this._getPathInput();
-      const preview = this.shadowRoot?.getElementById("url-preview");
-      const row = this.shadowRoot?.getElementById("url-row");
-      const openBtn = this.shadowRoot?.getElementById("url-open");
-      if (!pathInput || !preview || !row)
-        return;
-      const path = pathInput.value.trim();
-      if (path === "") {
-        row.hidden = true;
-        return;
-      }
-      row.hidden = false;
-      preview.textContent = `${window.location.origin}${path}`;
-      if (openBtn)
-        openBtn.disabled = !isValidPathFormat(path);
-    }
-    open() {
-      const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
-      dialog?.show();
-    }
-  }
-  customElements.define("cms-page-configuration", PageConfiguration);
-
-  // src/control/components/editor/configurations/TemplateConfiguration/template.html
-  var template_default4 = `<w13c-lateral-dialog>
-  <form action="">
-
-    <p9r-section data-title="Information">
-      <p9r-input
-        name="name"
-        label="Name"
-        placeholder="My hero section"
-        hint="Displayed in the Templates library."
-        max-count="50"
-      ></p9r-input>
-
-      <p9r-input
-        name="description"
-        label="Description"
-        placeholder="A short description"
-        hint="Shown under the name in the library."
-        max-count="120"
-      ></p9r-input>
-    </p9r-section>
-
-    <p9r-section data-title="Taxonomy">
-      <p9r-tag-suggest name="category" mode="single" resource="templates" api="../../api/tags" placeholder="hero, layout, cta…">
-        <span slot="label">Category</span>
-      </p9r-tag-suggest>
-    </p9r-section>
-
-    <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">
-      Save
-    </p9r-button>
-    <p class="error-message" hidden></p>
-  </form>
-  <span slot="title">Template configuration</span>
-</w13c-lateral-dialog>
-`;
-
-  // src/control/components/editor/configurations/TemplateConfiguration/style.css
-  var style_default3 = `form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.error-message {
-    font-size: 12px;
-    color: var(--danger-base, #ef4444);
-    margin: 0;
-}
-`;
-
-  // src/control/components/editor/configurations/TemplateConfiguration/TemplateConfiguration.ts
-  class TemplateConfiguration extends Component {
-    constructor() {
-      super({
-        css: style_default3,
-        template: template_default4
-      });
-    }
-    connectedCallback() {
-      const form = this.shadowRoot?.querySelector("form");
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = this._collectFormData();
-        if (!data.name) {
-          showToast("A name is required.", { type: "error" });
-          return;
-        }
-        const content = document.EditorManager.getContent();
-        const url = new URL(window.location.href);
-        const id = url.searchParams.get("id");
-        if (!id) {
-          showToast("Missing template id. Create the template from the templates list first.", { type: "error", duration: 6000 });
-          return;
-        }
-        const endpoint = new URL("../../api/template", window.location.href);
-        try {
-          const res = await fetch(endpoint, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              id,
-              name: data.name,
-              description: data.description,
-              category: data.category,
-              content
-            })
-          });
-          if (!res.ok) {
-            showToast("Failed to save template: " + await res.text(), { type: "error", duration: 6000 });
-            return;
-          }
-          showToast("Template updated", { type: "success" });
-        } catch (err) {
-          showToast("Failed to save template: " + (err?.message || err), { type: "error", duration: 6000 });
-        }
-      });
-      Array.from(this.attributes).filter((attr) => attr.name.startsWith("default-")).forEach((attr) => this._setDefaultValue(attr.name));
-    }
-    _collectFormData() {
-      return {
-        name: this._getInputValue("name"),
-        description: this._getInputValue("description"),
-        category: this._getTagSuggestValue("category")
-      };
-    }
-    _getInputElement(name) {
-      return this.shadowRoot?.querySelector(`p9r-input[name=${name}]`);
-    }
-    _getInputValue(name) {
-      return this._getInputElement(name)?.value.trim() ?? "";
-    }
-    _getTagSuggestValue(name) {
-      const el = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${name}]`);
-      return (el?.value ?? "").trim();
-    }
-    _setDefaultValue(name) {
-      const defVal = this.getAttribute(name);
-      if (defVal === null)
-        return;
-      const fieldName = name.replace("default-", "");
-      const input = this._getInputElement(fieldName);
-      if (input) {
-        input.value = defVal;
-        return;
-      }
-      const tagSuggest = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${fieldName}]`);
-      if (tagSuggest && "value" in tagSuggest)
-        tagSuggest.value = defVal;
-    }
-    show() {
-      const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
-      dialog?.show();
-    }
-  }
-  customElements.define("w13c-template-information", TemplateConfiguration);
-
   // ../WebComponents/dist/blocs/horizontal-action-group.mjs
   var l = `<div class="actions" role="toolbar" part="toolbar">
     <slot></slot>
@@ -11375,7 +11134,7 @@ p9r-tag:hover {
     customElements.define("p9r-horizontal-action-group", s);
 
   // src/control/components/editor/EditorSystem/BlocActions/view/style.css
-  var style_default4 = `:host {
+  var style_default2 = `:host {
     position: absolute;
     left: 0;
     top: 0;
@@ -11464,7 +11223,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/view/template.html
-  var template_default5 = `<button data-action="edit" title="Edit">
+  var template_default3 = `<button data-action="edit" title="Edit">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
 </button>
 
@@ -11522,7 +11281,7 @@ cms-bag-breadcrumb[data-inline="right"] {
     if (previousConfigKey === configKey)
       return null;
     host.setAttribute("data-variant", variant);
-    host.innerHTML = template_default5;
+    host.innerHTML = template_default3;
     const separator = host.querySelector('[data-group="delete"]');
     if (showSelectParent)
       host.insertBefore(buildSelectParentButton(), host.firstChild);
@@ -11551,12 +11310,12 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/template.html
-  var template_default6 = `<div class="pill" id="pill"></div>
+  var template_default4 = `<div class="pill" id="pill"></div>
 <div class="bridge"></div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/style.css
-  var style_default5 = `:host {
+  var style_default3 = `:host {
     display: block;
     width: max-content;
     max-width: 420px;
@@ -11670,7 +11429,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/Breadcrumb/Breadcrumb.ts
-  var Metadata = { css: style_default5, template: template_default6 };
+  var Metadata = { css: style_default3, template: template_default4 };
 
   class Breadcrumb extends Component {
     _pill;
@@ -11783,7 +11542,7 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/template.html
-  var template_default7 = `<button class="btn" type="button">
+  var template_default5 = `<button class="btn" type="button">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
         <line x1="12" y1="5" x2="12" y2="19"/>
         <line x1="5" y1="12" x2="19" y2="12"/>
@@ -11792,7 +11551,7 @@ cms-bag-breadcrumb[data-inline="right"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/style.css
-  var style_default6 = `:host {
+  var style_default4 = `:host {
     position: absolute;
     z-index: 10001;
     display: none;
@@ -11854,8 +11613,8 @@ cms-bag-breadcrumb[data-inline="right"] {
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/InsertButton/InsertButton.ts
   var Metadata2 = {
-    css: style_default6,
-    template: template_default7
+    css: style_default4,
+    template: template_default5
   };
 
   class InsertButton extends Component {
@@ -12018,14 +11777,14 @@ cms-bag-breadcrumb[data-inline="right"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/template.html
-  var template_default8 = `<div class="menu" id="menu">
+  var template_default6 = `<div class="menu" id="menu">
     <div class="title">Pin state</div>
     <div class="items" id="items"></div>
 </div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/style.css
-  var style_default7 = `:host {
+  var style_default5 = `:host {
     position: absolute;
     z-index: 10001;
     display: block;
@@ -12109,8 +11868,8 @@ cms-bag-breadcrumb[data-inline="right"] {
 
   // src/control/components/editor/EditorSystem/BlocActions/sub/PinMenu/PinMenu.ts
   var Metadata3 = {
-    css: style_default7,
-    template: template_default8
+    css: style_default5,
+    template: template_default6
   };
 
   class PinMenu extends Component {
@@ -12650,7 +12409,7 @@ cms-bag-breadcrumb[data-inline="right"] {
     constructor(host) {
       this.host = host;
       const s2 = document.createElement("style");
-      s2.textContent = style_default4;
+      s2.textContent = style_default2;
       host.shadowRoot.appendChild(s2);
       this.breadcrumb = new BreadcrumbController(host, (ed) => switchToEditor(this, ed));
       this.insertBtns = new InsertButtonsController((pos) => this.withCooldown(() => this.insertBtns.insertBlank(pos)));
@@ -12739,7 +12498,7 @@ cms-bag-breadcrumb[data-inline="right"] {
     customElements.define("cms-bloc-actions", BlocActions);
 
   // src/control/components/editor/EditorSystem/BlocLibrary/template.html
-  var template_default9 = `<dialog id="dialog">
+  var template_default7 = `<dialog id="dialog">
     <div class="container">
         <header class="header">
             <nav class="tabs" id="tabs">
@@ -12763,7 +12522,7 @@ cms-bag-breadcrumb[data-inline="right"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/style.css
-  var style_default8 = `:host {
+  var style_default6 = `:host {
     --bg-main: rgba(255, 255, 255, 0.95);
     --bg-card: #ffffff;
 
@@ -13001,7 +12760,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/template.html
-  var template_default10 = `<button type="button" class="card">
+  var template_default8 = `<button type="button" class="card">
     <span class="icon"><slot name="icon"></slot></span>
     <span class="text">
         <span class="title"><slot name="title"></slot></span>
@@ -13011,7 +12770,7 @@ form[method="dialog"] {
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/style.css
-  var style_default9 = `:host {
+  var style_default7 = `:host {
     display: contents;
 }
 
@@ -13086,8 +12845,8 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/Card/Card.ts
   var Metadata4 = {
-    css: style_default9,
-    template: template_default10
+    css: style_default7,
+    template: template_default8
   };
 
   class Card extends Component {
@@ -13133,14 +12892,14 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/template.html
-  var template_default11 = `<div class="empty-state">
+  var template_default9 = `<div class="empty-state">
     <slot name="icon"></slot>
     <p><slot name="message"></slot></p>
 </div>
 `;
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/style.css
-  var style_default10 = `:host {
+  var style_default8 = `:host {
     display: contents;
 }
 
@@ -13170,8 +12929,8 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/BlocLibrary/components/EmptyState/EmptyState.ts
   var Metadata5 = {
-    css: style_default10,
-    template: template_default11
+    css: style_default8,
+    template: template_default9
   };
 
   class EmptyState2 extends Component {
@@ -13308,8 +13067,8 @@ form[method="dialog"] {
 
   // src/control/components/editor/EditorSystem/BlocLibrary/BlocLibrary.ts
   var Metadata6 = {
-    css: style_default8,
-    template: template_default9
+    css: style_default6,
+    template: template_default7
   };
 
   class BlocLibrary extends Component {
@@ -13496,8 +13255,9 @@ form[method="dialog"] {
       e.dataTransfer?.setData("text/plain", "");
       this._setGhostImage(e);
       this.draggedElement.classList.add("dragging");
-      document.EditorManager?.getBlocActionGroup()?.close();
-      document.querySelector("w13c-editor-toolbar")?.hide?.();
+      const root2 = this._container.getRootNode();
+      root2.querySelector("cms-bloc-actions")?.close();
+      root2.querySelector("cms-richtextbar")?.hide();
       this._originalDisplay = this.draggedElement.style.display;
       const toHide = this.draggedElement;
       setTimeout(() => {
@@ -13687,7 +13447,7 @@ form[method="dialog"] {
   }
 
   // src/control/components/editor/EditorSystem/EditorRoot/template.html
-  var template_default12 = `<div>
+  var template_default10 = `<div>
     <slot name="style"></slot>
     <slot name="script"></slot>
     <div id="workingElement">
@@ -14536,7 +14296,7 @@ form[method="dialog"] {
       super();
       this.attachShadow({ mode: "open" });
       const template = document.createElement("template");
-      template.innerHTML = template_default12;
+      template.innerHTML = template_default10;
       this.shadowRoot?.append(template.content.cloneNode(true));
     }
     connectedCallback() {
@@ -14850,7 +14610,7 @@ dialog::backdrop {
   }
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/template.html
-  var template_default13 = `<div id="toolbar-container">
+  var template_default11 = `<div id="toolbar-container">
     <div id="drag-handle" title="Move">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
             <path
@@ -14885,7 +14645,7 @@ dialog::backdrop {
 </div>`;
 
   // src/control/components/editor/EditorSystem/FloatingToolbar/style.css
-  var style_default11 = `:host {
+  var style_default9 = `:host {
   --toolbar-bg: #ffffff;
   --toolbar-border: #e5e7eb;
   --toolbar-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -14964,8 +14724,8 @@ button span {
     _startY = 0;
     constructor() {
       super({
-        css: style_default11,
-        template: template_default13
+        css: style_default9,
+        template: template_default11
       });
       this._onPointerMove = this._onPointerMove.bind(this);
       this._onPointerUp = this._onPointerUp.bind(this);
@@ -15017,7 +14777,7 @@ button span {
   }
 
   // src/control/components/editor/MediaCenter/template.html
-  var template_default14 = `<dialog>
+  var template_default12 = `<dialog>
     <div class="modal-container">
         <header class="modal-header">
             <h2>Media Center</h2>
@@ -15085,7 +14845,7 @@ button span {
 `;
 
   // src/control/components/editor/MediaCenter/style.css
-  var style_default12 = `:host {
+  var style_default10 = `:host {
     --mc-bg: #ffffff;
     --mc-border: #e2e8f0;
     --mc-text: #1e293b;
@@ -15474,7 +15234,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/template.html
-  var template_default15 = `<div class="card">
+  var template_default13 = `<div class="card">
     <div class="preview">
         <slot name="image">
             <span class="placeholder">
@@ -15496,7 +15256,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/media/CardMedia/style.css
-  var style_default13 = `:host {
+  var style_default11 = `:host {
     --card-bg: var(--bg-surface, #fff);
     --card-border: var(--border-default, #e2e8f0);
     --card-radius: 12px;
@@ -15621,8 +15381,8 @@ dialog::backdrop {
   class CardMedia extends Component {
     constructor() {
       super({
-        css: style_default13,
-        template: template_default15
+        css: style_default11,
+        template: template_default13
       });
     }
   }
@@ -15856,8 +15616,8 @@ dialog::backdrop {
     _dragCounter = 0;
     constructor() {
       super({
-        css: style_default12,
-        template: template_default14
+        css: style_default10,
+        template: template_default12
       });
     }
     connectedCallback() {
@@ -16028,7 +15788,7 @@ dialog::backdrop {
   customElements.define("cms-media-center", MediaCenter);
 
   // src/control/components/editor/RichTextBar/template.html
-  var template_default16 = `<div class="toolbar">
+  var template_default14 = `<div class="toolbar">
     <!-- Format -->
     <button data-command="bold" title="Bold">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
@@ -16189,7 +15949,7 @@ dialog::backdrop {
 `;
 
   // src/control/components/editor/RichTextBar/style.css
-  var style_default14 = `:host {
+  var style_default12 = `:host {
     position: absolute;
     z-index: 9999999999;
     display: none;
@@ -16910,8 +16670,8 @@ button.active svg {
     _rootListenersAttached = false;
     constructor() {
       super({
-        css: style_default14,
-        template: template_default16
+        css: style_default12,
+        template: template_default14
       });
     }
     connectedCallback() {
@@ -16980,7 +16740,7 @@ button.active svg {
   }
 
   // src/control/components/editor/configurations/Configuration/template.html
-  var template_default17 = `<w13c-lateral-dialog>
+  var template_default15 = `<w13c-lateral-dialog>
 
     <h3 slot="title"><slot name="title"></slot></h3>
 
@@ -16996,7 +16756,7 @@ button.active svg {
 </w13c-lateral-dialog>`;
 
   // src/control/components/editor/configurations/Configuration/style.css
-  var style_default15 = `form{
+  var style_default13 = `form{
     display: flex;
     flex-direction: column;
 }`;
@@ -17029,7 +16789,7 @@ button.active svg {
       return ["url", "method"];
     }
     constructor() {
-      super(template_default17, style_default15, true);
+      super(template_default15, style_default13, true);
     }
     _handleSubmit = (e) => {
       e.preventDefault();
@@ -17078,11 +16838,11 @@ button.active svg {
   }
 
   // src/control/components/editor/snippet/Snippet/template.html
-  var template_default18 = `<div class="snippet-root"></div>
+  var template_default16 = `<div class="snippet-root"></div>
 `;
 
   // src/control/components/editor/snippet/Snippet/style.css
-  var style_default16 = `:host {
+  var style_default14 = `:host {
     display: block;
     position: relative;
     min-height: 40px;
@@ -17161,8 +16921,8 @@ button.active svg {
 
   // src/control/components/editor/snippet/Snippet/Snippet.ts
   var SnippetMetadata = {
-    css: style_default16,
-    template: template_default18
+    css: style_default14,
+    template: template_default16
   };
 
   class Snippet extends Component {
@@ -17220,309 +16980,8 @@ button.active svg {
     customElements.define("w13c-snippet", Snippet);
   }
 
-  // src/control/components/editor/configurations/SnippetConfiguration/template.html
-  var template_default19 = `<w13c-lateral-dialog>
-  <form action="">
-
-    <p9r-section data-title="Identity">
-      <p9r-input
-        name="identifier"
-        label="Identifier"
-        placeholder="hero-v1"
-        hint="Lowercase letters, numbers and dashes. Immutable after creation."
-        required
-      ></p9r-input>
-
-      <p9r-input
-        name="name"
-        label="Name"
-        placeholder="My hero section"
-        hint="Shown in the Snippets library."
-        max-count="50"
-      ></p9r-input>
-    </p9r-section>
-
-    <p9r-section data-title="Information">
-      <p9r-input
-        name="description"
-        label="Description"
-        placeholder="A short description"
-        hint="Shown under the name in the library."
-        max-count="120"
-      ></p9r-input>
-    </p9r-section>
-
-    <p9r-section data-title="Taxonomy">
-      <p9r-tag-suggest name="category" mode="single" resource="snippets" api="../../api/tags" placeholder="hero, layout, cta…">
-        <span slot="label">Category</span>
-      </p9r-tag-suggest>
-    </p9r-section>
-
-    <p9r-section data-title="Usages" data-collapsed>
-      <ul class="usages-list"></ul>
-    </p9r-section>
-
-    <p9r-button id="save-btn" fullwidth type="submit" variant="filled" color="primary">
-      Save
-    </p9r-button>
-  </form>
-  <span slot="title">Snippet configuration</span>
-</w13c-lateral-dialog>
-`;
-
-  // src/control/components/editor/configurations/SnippetConfiguration/style.css
-  var style_default17 = `form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.usages-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    max-height: 160px;
-    overflow-y: auto;
-}
-
-.usages-list li {
-    font-size: 12px;
-    color: var(--text-main, #1e293b);
-    line-height: 1.4;
-}
-
-.usages-list li small {
-    color: var(--text-muted, #94a3b8);
-    font-size: 11px;
-}
-
-.usages-empty {
-    font-size: 11px;
-    color: var(--text-muted, #94a3b8);
-    font-style: italic;
-}
-
-#save-btn[aria-disabled="true"] {
-    opacity: 0.5;
-    pointer-events: none;
-}
-`;
-
-  // src/control/components/editor/configurations/SnippetConfiguration/SnippetConfiguration.ts
-  class SnippetConfiguration extends Component {
-    _identifierCheckToken = 0;
-    _identifierValid = true;
-    constructor() {
-      super({
-        css: style_default17,
-        template: template_default19
-      });
-    }
-    connectedCallback() {
-      const form = this.shadowRoot?.querySelector("form");
-      form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = this._collectFormData();
-        const isCreate = !this.getAttribute("default-id");
-        if (isCreate && !this._identifierValid) {
-          showToast("Fix the identifier before saving.", { type: "error" });
-          return;
-        }
-        if (isCreate && !data.identifier) {
-          showToast("An identifier is required.", { type: "error" });
-          return;
-        }
-        const content = document.EditorManager.getContent();
-        const url = new URL(window.location.href);
-        const id = url.searchParams.get("id") || this.getAttribute("default-id");
-        const endpoint = new URL("../../api/snippet", window.location.href);
-        if (id)
-          endpoint.searchParams.set("id", id);
-        const payload = {
-          name: data.name,
-          description: data.description,
-          category: data.category,
-          content
-        };
-        if (!id)
-          payload.identifier = data.identifier;
-        try {
-          const res = await fetch(endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload)
-          });
-          if (!res.ok) {
-            showToast("Failed to save snippet: " + await res.text(), { type: "error", duration: 6000 });
-            return;
-          }
-          const result = await res.json();
-          if (!id && result.id) {
-            url.searchParams.set("identifier", result.identifier);
-            url.searchParams.delete("id");
-            window.history.pushState({}, "", url);
-            this.setAttribute("default-id", result.id);
-            this._lockIdentifier();
-          }
-          showToast(id ? "Snippet updated" : "Snippet created", { type: "success" });
-        } catch (err) {
-          showToast("Failed to save snippet: " + (err?.message || err), { type: "error", duration: 6000 });
-        }
-      });
-      Array.from(this.attributes).filter((attr) => attr.name.startsWith("default-")).forEach((attr) => this._setDefaultValue(attr.name));
-      this._wireIdentifierValidation();
-      if (this.hasAttribute("default-identifier")) {
-        this._lockIdentifier();
-        this._loadUsages(this.getAttribute("default-identifier"));
-      }
-    }
-    _collectFormData() {
-      return {
-        identifier: this._getInputValue("identifier"),
-        name: this._getInputValue("name"),
-        description: this._getInputValue("description"),
-        category: this._getTagSuggestValue("category")
-      };
-    }
-    _getInputElement(name) {
-      return this.shadowRoot?.querySelector(`p9r-input[name=${name}]`);
-    }
-    _getInputValue(name) {
-      return this._getInputElement(name)?.value.trim() ?? "";
-    }
-    _getTagSuggestValue(name) {
-      const el = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${name}]`);
-      return (el?.value ?? "").trim();
-    }
-    _setDefaultValue(name) {
-      const defVal = this.getAttribute(name);
-      if (defVal === null)
-        return;
-      const fieldName = name.replace("default-", "");
-      const input = this._getInputElement(fieldName);
-      if (input) {
-        input.value = defVal;
-        return;
-      }
-      const tagSuggest = this.shadowRoot?.querySelector(`p9r-tag-suggest[name=${fieldName}]`);
-      if (tagSuggest && "value" in tagSuggest)
-        tagSuggest.value = defVal;
-    }
-    _lockIdentifier() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      input.disabled = true;
-      this._setIdentifierHint("info", "Immutable after creation.");
-      this._setIdentifierValid(true);
-    }
-    _wireIdentifierValidation() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      if (this.hasAttribute("default-identifier"))
-        return;
-      input.addEventListener("input", () => this._validateIdentifierFormatSync());
-      input.addEventListener("blur", () => this._validateIdentifierRemote());
-      this._validateIdentifierFormatSync();
-    }
-    _setIdentifierHint(level, text) {
-      this._getInputElement("identifier")?.setHint(level, text);
-    }
-    _setIdentifierValid(valid) {
-      this._identifierValid = valid;
-      this._getInputElement("identifier")?.setInvalid(!valid);
-      const btn = this.shadowRoot?.getElementById("save-btn");
-      if (btn) {
-        if (valid)
-          btn.removeAttribute("aria-disabled");
-        else
-          btn.setAttribute("aria-disabled", "true");
-      }
-    }
-    _validateIdentifierFormatSync() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      const id = input.value.trim();
-      if (id === "") {
-        this._setIdentifierHint("error", "Identifier is required.");
-        this._setIdentifierValid(false);
-        return;
-      }
-      if (!isValidSnippetIdentifier(id)) {
-        this._setIdentifierHint("error", "Lowercase letters, digits and dashes only (e.g. hero-v1).");
-        this._setIdentifierValid(false);
-        return;
-      }
-      this._setIdentifierHint("info", "Lowercase letters, numbers and dashes. Immutable after creation.");
-      this._setIdentifierValid(true);
-    }
-    async _validateIdentifierRemote() {
-      const input = this._getInputElement("identifier");
-      if (!input)
-        return;
-      const id = input.value.trim();
-      if (id === "" || !isValidSnippetIdentifier(id))
-        return;
-      const token = ++this._identifierCheckToken;
-      try {
-        const url = new URL("../../api/snippet-exists", window.location.href);
-        url.searchParams.set("identifier", id);
-        const res = await fetch(url);
-        if (token !== this._identifierCheckToken)
-          return;
-        if (!res.ok) {
-          this._setIdentifierHint("error", "Could not validate the identifier (server error).");
-          this._setIdentifierValid(false);
-          return;
-        }
-        const body = await res.json();
-        if (body.exists) {
-          this._setIdentifierHint("error", `"${id}" is already used by another snippet.`);
-          this._setIdentifierValid(false);
-        } else {
-          this._setIdentifierHint("success", "Identifier is available.");
-          this._setIdentifierValid(true);
-        }
-      } catch {
-        if (token !== this._identifierCheckToken)
-          return;
-        this._setIdentifierHint("error", "Could not reach the server to validate the identifier.");
-        this._setIdentifierValid(false);
-      }
-    }
-    async _loadUsages(identifier) {
-      try {
-        const endpoint = new URL("../../api/snippets", window.location.href);
-        endpoint.searchParams.set("identifier", identifier);
-        endpoint.searchParams.set("usages", "true");
-        const res = await fetch(endpoint);
-        if (!res.ok)
-          return;
-        const { pages } = await res.json();
-        const list = this.shadowRoot?.querySelector(".usages-list");
-        if (!list)
-          return;
-        if (pages.length === 0) {
-          list.innerHTML = `<li class="usages-empty">Not used on any page yet.</li>`;
-          return;
-        }
-        list.innerHTML = pages.map((p) => `<li>• ${p.title || p.identifier} <small>(${p.path})</small></li>`).join("");
-      } catch {}
-    }
-    show() {
-      const dialog = this.shadowRoot?.querySelector("w13c-lateral-dialog");
-      dialog?.show();
-    }
-  }
-  customElements.define("w13c-snippet-information", SnippetConfiguration);
-
   // src/control/components/media/CropSystem/template.html
-  var template_default20 = `<div class="backdrop" id="backdrop">
+  var template_default17 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3>Crop image</h3>
@@ -17561,7 +17020,7 @@ button.active svg {
 `;
 
   // src/control/components/media/CropSystem/style.css
-  var style_default18 = `:host {
+  var style_default15 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -17763,8 +17222,8 @@ button.active svg {
   class CropSystem extends Component {
     constructor() {
       super({
-        css: style_default18,
-        template: template_default20
+        css: style_default15,
+        template: template_default17
       });
     }
     connectedCallback() {
@@ -17801,7 +17260,7 @@ button.active svg {
   customElements.define("p9r-crop-system", CropSystem);
 
   // src/control/components/media/DetailMedia/template.html
-  var template_default21 = `<div class="backdrop" id="backdrop">
+  var template_default18 = `<div class="backdrop" id="backdrop">
     <div class="modal">
         <div class="header">
             <h3 id="title">File details</h3>
@@ -17843,7 +17302,7 @@ button.active svg {
 `;
 
   // src/control/components/media/DetailMedia/style.css
-  var style_default19 = `:host {
+  var style_default16 = `:host {
     --modal-bg: var(--bg-surface, #fff);
     --modal-border: var(--border-default, #e2e8f0);
     --modal-radius: 16px;
@@ -18056,8 +17515,8 @@ button.active svg {
   class DetailMedia extends Component {
     constructor() {
       super({
-        css: style_default19,
-        template: template_default21
+        css: style_default16,
+        template: template_default18
       });
     }
     connectedCallback() {
@@ -18089,7 +17548,7 @@ button.active svg {
   }
 
   // src/control/components/media/GridMedia/view/template.html
-  var template_default22 = `<div class="toolbar">
+  var template_default19 = `<div class="toolbar">
     <div class="breadcrumb" id="breadcrumb">
         <span class="bc-current">Root</span>
     </div>
@@ -18151,7 +17610,7 @@ button.active svg {
 `;
 
   // src/control/components/media/GridMedia/view/style.css
-  var style_default20 = `:host {
+  var style_default17 = `:host {
     --grid-gap: 16px;
     --grid-min-col: 180px;
     --empty-color: var(--text-muted, #94a3b8);
@@ -18917,8 +18376,8 @@ button.active svg {
     _items = [];
     constructor() {
       super({
-        css: style_default20,
-        template: template_default22
+        css: style_default17,
+        template: template_default19
       });
     }
     get detail() {
@@ -19518,7 +18977,7 @@ button.active svg {
   customElements.define("cms-fetch", FetchComponent);
 })();
 (() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
+    const __src = "class MtMediaConsumer {\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  imageConfig = {\n    maxWidth: 3840,\n    maxHeight: 3840,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\"],\n    defaultQuality: 80,\n    allowedFormats: [\"webp\", \"avif\", \"jpeg\", \"png\"],\n    allowedQualities: [50, 65, 80, 90],\n    formatQualities: { webp: 80, avif: 65, jpeg: 85 }\n  };\n  _providerUrl;\n  _bucketID;\n  _tokenUrl;\n  constructor(config) {\n    this._providerUrl = config.providerUrl.replace(/\\/+$/, \"\");\n    this._bucketID = config.bucketID;\n    this._tokenUrl = config.tokenUrl ?? \"/.mediahub/tokens\";\n    if (config.limits)\n      this.limits = config.limits;\n    if (config.imageConfig)\n      this.imageConfig = { ...this.imageConfig, ...config.imageConfig };\n  }\n  static async fromProvider(config) {\n    const base = config.providerUrl.replace(/\\/+$/, \"\");\n    let limits, serverImageConfig;\n    try {\n      const res = await fetch(`${base}/bucket?bucket=${encodeURIComponent(config.bucketID)}`);\n      if (res.ok) {\n        const body = await res.json();\n        if (body.ok && body.data && typeof body.data.maxFileSize === \"number\" && body.data.acceptedMimeTypes !== void 0)\n          limits = {\n            maxFileSize: body.data.maxFileSize,\n            acceptedMimeTypes: body.data.acceptedMimeTypes\n          };\n        const ic = body.ok && body.data?.imageConfig;\n        if (ic && typeof ic === \"object\" && typeof ic.maxWidth === \"number\" && typeof ic.maxHeight === \"number\" && Array.isArray(ic.allowedWidths) && Array.isArray(ic.allowedFormats) && typeof ic.formatQualities === \"object\" && !Array.isArray(ic.formatQualities) && ic.formatQualities !== null) {\n          const fq = ic.formatQualities, baseConfig = {\n            maxWidth: ic.maxWidth,\n            maxHeight: ic.maxHeight,\n            ladderWidths: ic.allowedWidths,\n            ladderFormats: ic.allowedFormats,\n            defaultQuality: typeof fq.webp === \"number\" ? fq.webp : 80\n          }, allowedFormats = Array.isArray(ic.allowedFormats) ? ic.allowedFormats : [\"webp\", \"avif\", \"jpeg\", \"png\"], allowedQualities = Array.isArray(ic.allowedQualities) ? ic.allowedQualities : [50, 65, 80, 90], formatQualities = typeof ic.formatQualities === \"object\" && !Array.isArray(ic.formatQualities) && ic.formatQualities !== null ? ic.formatQualities : { webp: 80, avif: 65, jpeg: 85 };\n          serverImageConfig = {\n            ...baseConfig,\n            allowedFormats,\n            allowedQualities,\n            formatQualities\n          };\n        }\n      }\n    } catch {}\n    const init = {\n      providerUrl: config.providerUrl,\n      bucketID: config.bucketID\n    };\n    if (config.tokenUrl)\n      init.tokenUrl = config.tokenUrl;\n    if (config.imageConfig)\n      init.imageConfig = config.imageConfig;\n    else if (serverImageConfig)\n      init.imageConfig = serverImageConfig;\n    if (limits)\n      init.limits = limits;\n    return new MtMediaConsumer(init);\n  }\n  _snapWidth(n) {\n    const ladder = this.imageConfig.ladderWidths, max = this.imageConfig.maxWidth;\n    let snapped = ladder[ladder.length - 1] ?? n;\n    for (const v of ladder)\n      if (v >= n) {\n        snapped = v;\n        break;\n      }\n    return Math.min(snapped, max);\n  }\n  _snapQuality(n) {\n    const ladder = this.imageConfig.allowedQualities;\n    let snapped = ladder[ladder.length - 1] ?? n;\n    for (const v of ladder)\n      if (v >= n) {\n        snapped = v;\n        break;\n      }\n    return snapped;\n  }\n  formatImageUrl(opts) {\n    const origin = globalThis.location?.origin ?? \"http://localhost\", u = new URL(opts.url, origin);\n    if (opts.width !== void 0)\n      u.searchParams.set(\"w\", String(this._snapWidth(opts.width)));\n    if (opts.height !== void 0)\n      u.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit !== void 0)\n      u.searchParams.set(\"fit\", opts.fit);\n    if (opts.format !== void 0) {\n      const allowed = this.imageConfig.allowedFormats;\n      if (!allowed.includes(opts.format))\n        throw Error(`MtMediaConsumer.formatImageUrl: format \"${opts.format}\" is not in allowedFormats (${allowed.join(\", \")}).`);\n      u.searchParams.set(\"fmt\", opts.format);\n    }\n    if (opts.quality !== void 0)\n      u.searchParams.set(\"q\", String(this._snapQuality(opts.quality)));\n    return u;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    params.set(\"bucket\", this._bucketID);\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"1\");\n    if (opts.pagination) {\n      params.set(\"page\", String(opts.pagination.page));\n      params.set(\"limit\", String(opts.pagination.limit));\n    }\n    const res = await this._json(`${this._providerUrl}/items?${params}`);\n    if (res.ok)\n      res.data.items.forEach((i) => this._reviveItemDates(i));\n    return res;\n  }\n  async getItem(id) {\n    const url = `${this._providerUrl}/item?bucket=${encodeURIComponent(this._bucketID)}&id=${encodeURIComponent(id)}`, res = await this._json(url);\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async uploadFile(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const form = new FormData, blob = opts.data instanceof Blob ? opts.data : new Blob([opts.data], opts.mimeType ? { type: opts.mimeType } : void 0);\n    form.append(\"file\", blob, opts.name);\n    if (opts.folderID)\n      form.append(\"folderID\", opts.folderID);\n    if (opts.mimeType)\n      form.append(\"mimeType\", opts.mimeType);\n    if (opts.overwrite)\n      form.append(\"overwrite\", \"1\");\n    const init = {\n      method: \"POST\",\n      body: form,\n      headers: { Authorization: `MtMedia ${token}` }\n    };\n    if (opts.signal)\n      init.signal = opts.signal;\n    const res = await this._json(`${this._providerUrl}/file?bucket=${encodeURIComponent(this._bucketID)}`, init);\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async createFolder(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const res = await this._json(`${this._providerUrl}/folder?bucket=${encodeURIComponent(this._bucketID)}`, {\n      method: \"POST\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n        Authorization: `MtMedia ${token}`\n      },\n      body: JSON.stringify(opts)\n    });\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async updateItem(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const { id, ...patch } = opts, res = await this._json(`${this._providerUrl}/item?bucket=${encodeURIComponent(this._bucketID)}&id=${encodeURIComponent(id)}`, {\n      method: \"PATCH\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n        Authorization: `MtMedia ${token}`\n      },\n      body: JSON.stringify(patch)\n    });\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async deleteItem(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const params = new URLSearchParams;\n    params.set(\"bucket\", this._bucketID);\n    params.set(\"id\", opts.id);\n    if (opts.recursive)\n      params.set(\"recursive\", \"1\");\n    return this._json(`${this._providerUrl}/item?${params}`, {\n      method: \"DELETE\",\n      headers: { Authorization: `MtMedia ${token}` }\n    });\n  }\n  async _fetchToken() {\n    try {\n      const res = await fetch(this._tokenUrl, { method: \"GET\" });\n      if (!res.ok)\n        return null;\n      const body = await res.json();\n      return typeof body.token === \"string\" && body.token.length > 0 ? body.token : null;\n    } catch {\n      return null;\n    }\n  }\n  async _json(url, init) {\n    try {\n      const res = await fetch(url, init);\n      if (!res.ok) {\n        try {\n          const body = await res.json();\n          if (body && typeof body === \"object\" && \"ok\" in body)\n            return body;\n        } catch {}\n        return { ok: !1, error: { code: \"storage_unavailable\", message: `HTTP ${res.status}` } };\n      }\n      return await res.json();\n    } catch (e) {\n      return { ok: !1, error: { code: \"storage_unavailable\", message: e instanceof Error ? e.message : String(e) } };\n    }\n  }\n  _reviveItemDates(item) {\n    if (typeof item.createdAt === \"string\")\n      item.createdAt = new Date(item.createdAt);\n    if (typeof item.updatedAt === \"string\")\n      item.updatedAt = new Date(item.updatedAt);\n  }\n  _tokenErr() {\n    return { ok: !1, error: { code: \"unauthorized\", message: \"Failed to obtain MtMedia token\" } };\n  }\n}";
     const Klass = (0, eval)("(" + __src + ")");
     const revive = (_k, v) => {
         if (v && typeof v === "object" && v.__cms_type) {
@@ -19529,16 +18988,16 @@ button.active svg {
         }
         return v;
     };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
+    const state = JSON.parse("{\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"imageConfig\":{\"maxWidth\":3000,\"maxHeight\":3000,\"ladderWidths\":[32,64,96,128,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000],\"ladderFormats\":[\"webp\",\"avif\",\"jpeg\",\"png\"],\"defaultQuality\":80,\"allowedFormats\":[\"webp\",\"avif\",\"jpeg\",\"png\"],\"allowedQualities\":[50,65,80,90],\"formatQualities\":{\"webp\":80,\"avif\":65,\"jpeg\":85}},\"_providerUrl\":\"http://media.bernouy.local:8082\",\"_bucketID\":\"bc56bb2b-b991-4aef-a6ac-39b1ed65963d\",\"_tokenUrl\":\"/tokens\"}", revive);
     const instance = Object.create(Klass.prototype);
     Object.assign(instance, state);
     window._cms = window._cms || {};
     window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
+    if ("MtMediaConsumer" && !(instance instanceof Klass)) {
+        console.warn("[cms] hydrated Media instance is not an instance of", "MtMediaConsumer");
     }
 })();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
+    const __src = "class MtMediaConsumer {\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  imageConfig = {\n    maxWidth: 3840,\n    maxHeight: 3840,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\"],\n    defaultQuality: 80,\n    allowedFormats: [\"webp\", \"avif\", \"jpeg\", \"png\"],\n    allowedQualities: [50, 65, 80, 90],\n    formatQualities: { webp: 80, avif: 65, jpeg: 85 }\n  };\n  _providerUrl;\n  _bucketID;\n  _tokenUrl;\n  constructor(config) {\n    this._providerUrl = config.providerUrl.replace(/\\/+$/, \"\");\n    this._bucketID = config.bucketID;\n    this._tokenUrl = config.tokenUrl ?? \"/.mediahub/tokens\";\n    if (config.limits)\n      this.limits = config.limits;\n    if (config.imageConfig)\n      this.imageConfig = { ...this.imageConfig, ...config.imageConfig };\n  }\n  static async fromProvider(config) {\n    const base = config.providerUrl.replace(/\\/+$/, \"\");\n    let limits, serverImageConfig;\n    try {\n      const res = await fetch(`${base}/bucket?bucket=${encodeURIComponent(config.bucketID)}`);\n      if (res.ok) {\n        const body = await res.json();\n        if (body.ok && body.data && typeof body.data.maxFileSize === \"number\" && body.data.acceptedMimeTypes !== void 0)\n          limits = {\n            maxFileSize: body.data.maxFileSize,\n            acceptedMimeTypes: body.data.acceptedMimeTypes\n          };\n        const ic = body.ok && body.data?.imageConfig;\n        if (ic && typeof ic === \"object\" && typeof ic.maxWidth === \"number\" && typeof ic.maxHeight === \"number\" && Array.isArray(ic.allowedWidths) && Array.isArray(ic.allowedFormats) && typeof ic.formatQualities === \"object\" && !Array.isArray(ic.formatQualities) && ic.formatQualities !== null) {\n          const fq = ic.formatQualities, baseConfig = {\n            maxWidth: ic.maxWidth,\n            maxHeight: ic.maxHeight,\n            ladderWidths: ic.allowedWidths,\n            ladderFormats: ic.allowedFormats,\n            defaultQuality: typeof fq.webp === \"number\" ? fq.webp : 80\n          }, allowedFormats = Array.isArray(ic.allowedFormats) ? ic.allowedFormats : [\"webp\", \"avif\", \"jpeg\", \"png\"], allowedQualities = Array.isArray(ic.allowedQualities) ? ic.allowedQualities : [50, 65, 80, 90], formatQualities = typeof ic.formatQualities === \"object\" && !Array.isArray(ic.formatQualities) && ic.formatQualities !== null ? ic.formatQualities : { webp: 80, avif: 65, jpeg: 85 };\n          serverImageConfig = {\n            ...baseConfig,\n            allowedFormats,\n            allowedQualities,\n            formatQualities\n          };\n        }\n      }\n    } catch {}\n    const init = {\n      providerUrl: config.providerUrl,\n      bucketID: config.bucketID\n    };\n    if (config.tokenUrl)\n      init.tokenUrl = config.tokenUrl;\n    if (config.imageConfig)\n      init.imageConfig = config.imageConfig;\n    else if (serverImageConfig)\n      init.imageConfig = serverImageConfig;\n    if (limits)\n      init.limits = limits;\n    return new MtMediaConsumer(init);\n  }\n  _snapWidth(n) {\n    const ladder = this.imageConfig.ladderWidths, max = this.imageConfig.maxWidth;\n    let snapped = ladder[ladder.length - 1] ?? n;\n    for (const v of ladder)\n      if (v >= n) {\n        snapped = v;\n        break;\n      }\n    return Math.min(snapped, max);\n  }\n  _snapQuality(n) {\n    const ladder = this.imageConfig.allowedQualities;\n    let snapped = ladder[ladder.length - 1] ?? n;\n    for (const v of ladder)\n      if (v >= n) {\n        snapped = v;\n        break;\n      }\n    return snapped;\n  }\n  formatImageUrl(opts) {\n    const origin = globalThis.location?.origin ?? \"http://localhost\", u = new URL(opts.url, origin);\n    if (opts.width !== void 0)\n      u.searchParams.set(\"w\", String(this._snapWidth(opts.width)));\n    if (opts.height !== void 0)\n      u.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit !== void 0)\n      u.searchParams.set(\"fit\", opts.fit);\n    if (opts.format !== void 0) {\n      const allowed = this.imageConfig.allowedFormats;\n      if (!allowed.includes(opts.format))\n        throw Error(`MtMediaConsumer.formatImageUrl: format \"${opts.format}\" is not in allowedFormats (${allowed.join(\", \")}).`);\n      u.searchParams.set(\"fmt\", opts.format);\n    }\n    if (opts.quality !== void 0)\n      u.searchParams.set(\"q\", String(this._snapQuality(opts.quality)));\n    return u;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    params.set(\"bucket\", this._bucketID);\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"1\");\n    if (opts.pagination) {\n      params.set(\"page\", String(opts.pagination.page));\n      params.set(\"limit\", String(opts.pagination.limit));\n    }\n    const res = await this._json(`${this._providerUrl}/items?${params}`);\n    if (res.ok)\n      res.data.items.forEach((i) => this._reviveItemDates(i));\n    return res;\n  }\n  async getItem(id) {\n    const url = `${this._providerUrl}/item?bucket=${encodeURIComponent(this._bucketID)}&id=${encodeURIComponent(id)}`, res = await this._json(url);\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async uploadFile(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const form = new FormData, blob = opts.data instanceof Blob ? opts.data : new Blob([opts.data], opts.mimeType ? { type: opts.mimeType } : void 0);\n    form.append(\"file\", blob, opts.name);\n    if (opts.folderID)\n      form.append(\"folderID\", opts.folderID);\n    if (opts.mimeType)\n      form.append(\"mimeType\", opts.mimeType);\n    if (opts.overwrite)\n      form.append(\"overwrite\", \"1\");\n    const init = {\n      method: \"POST\",\n      body: form,\n      headers: { Authorization: `MtMedia ${token}` }\n    };\n    if (opts.signal)\n      init.signal = opts.signal;\n    const res = await this._json(`${this._providerUrl}/file?bucket=${encodeURIComponent(this._bucketID)}`, init);\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async createFolder(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const res = await this._json(`${this._providerUrl}/folder?bucket=${encodeURIComponent(this._bucketID)}`, {\n      method: \"POST\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n        Authorization: `MtMedia ${token}`\n      },\n      body: JSON.stringify(opts)\n    });\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async updateItem(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const { id, ...patch } = opts, res = await this._json(`${this._providerUrl}/item?bucket=${encodeURIComponent(this._bucketID)}&id=${encodeURIComponent(id)}`, {\n      method: \"PATCH\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n        Authorization: `MtMedia ${token}`\n      },\n      body: JSON.stringify(patch)\n    });\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async deleteItem(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const params = new URLSearchParams;\n    params.set(\"bucket\", this._bucketID);\n    params.set(\"id\", opts.id);\n    if (opts.recursive)\n      params.set(\"recursive\", \"1\");\n    return this._json(`${this._providerUrl}/item?${params}`, {\n      method: \"DELETE\",\n      headers: { Authorization: `MtMedia ${token}` }\n    });\n  }\n  async _fetchToken() {\n    try {\n      const res = await fetch(this._tokenUrl, { method: \"GET\" });\n      if (!res.ok)\n        return null;\n      const body = await res.json();\n      return typeof body.token === \"string\" && body.token.length > 0 ? body.token : null;\n    } catch {\n      return null;\n    }\n  }\n  async _json(url, init) {\n    try {\n      const res = await fetch(url, init);\n      if (!res.ok) {\n        try {\n          const body = await res.json();\n          if (body && typeof body === \"object\" && \"ok\" in body)\n            return body;\n        } catch {}\n        return { ok: !1, error: { code: \"storage_unavailable\", message: `HTTP ${res.status}` } };\n      }\n      return await res.json();\n    } catch (e) {\n      return { ok: !1, error: { code: \"storage_unavailable\", message: e instanceof Error ? e.message : String(e) } };\n    }\n  }\n  _reviveItemDates(item) {\n    if (typeof item.createdAt === \"string\")\n      item.createdAt = new Date(item.createdAt);\n    if (typeof item.updatedAt === \"string\")\n      item.updatedAt = new Date(item.updatedAt);\n  }\n  _tokenErr() {\n    return { ok: !1, error: { code: \"unauthorized\", message: \"Failed to obtain MtMedia token\" } };\n  }\n}";
     const Klass = (0, eval)("(" + __src + ")");
     const revive = (_k, v) => {
         if (v && typeof v === "object" && v.__cms_type) {
@@ -19549,16 +19008,16 @@ button.active svg {
         }
         return v;
     };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
+    const state = JSON.parse("{\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"imageConfig\":{\"maxWidth\":3000,\"maxHeight\":3000,\"ladderWidths\":[32,64,96,128,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000],\"ladderFormats\":[\"webp\",\"avif\",\"jpeg\",\"png\"],\"defaultQuality\":80,\"allowedFormats\":[\"webp\",\"avif\",\"jpeg\",\"png\"],\"allowedQualities\":[50,65,80,90],\"formatQualities\":{\"webp\":80,\"avif\":65,\"jpeg\":85}},\"_providerUrl\":\"http://media.bernouy.local:8082\",\"_bucketID\":\"bc56bb2b-b991-4aef-a6ac-39b1ed65963d\",\"_tokenUrl\":\"/tokens\"}", revive);
     const instance = Object.create(Klass.prototype);
     Object.assign(instance, state);
     window._cms = window._cms || {};
     window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
+    if ("MtMediaConsumer" && !(instance instanceof Klass)) {
+        console.warn("[cms] hydrated Media instance is not an instance of", "MtMediaConsumer");
     }
 })();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
+    const __src = "class MtMediaConsumer {\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  imageConfig = {\n    maxWidth: 3840,\n    maxHeight: 3840,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\"],\n    defaultQuality: 80,\n    allowedFormats: [\"webp\", \"avif\", \"jpeg\", \"png\"],\n    allowedQualities: [50, 65, 80, 90],\n    formatQualities: { webp: 80, avif: 65, jpeg: 85 }\n  };\n  _providerUrl;\n  _bucketID;\n  _tokenUrl;\n  constructor(config) {\n    this._providerUrl = config.providerUrl.replace(/\\/+$/, \"\");\n    this._bucketID = config.bucketID;\n    this._tokenUrl = config.tokenUrl ?? \"/.mediahub/tokens\";\n    if (config.limits)\n      this.limits = config.limits;\n    if (config.imageConfig)\n      this.imageConfig = { ...this.imageConfig, ...config.imageConfig };\n  }\n  static async fromProvider(config) {\n    const base = config.providerUrl.replace(/\\/+$/, \"\");\n    let limits, serverImageConfig;\n    try {\n      const res = await fetch(`${base}/bucket?bucket=${encodeURIComponent(config.bucketID)}`);\n      if (res.ok) {\n        const body = await res.json();\n        if (body.ok && body.data && typeof body.data.maxFileSize === \"number\" && body.data.acceptedMimeTypes !== void 0)\n          limits = {\n            maxFileSize: body.data.maxFileSize,\n            acceptedMimeTypes: body.data.acceptedMimeTypes\n          };\n        const ic = body.ok && body.data?.imageConfig;\n        if (ic && typeof ic === \"object\" && typeof ic.maxWidth === \"number\" && typeof ic.maxHeight === \"number\" && Array.isArray(ic.allowedWidths) && Array.isArray(ic.allowedFormats) && typeof ic.formatQualities === \"object\" && !Array.isArray(ic.formatQualities) && ic.formatQualities !== null) {\n          const fq = ic.formatQualities, baseConfig = {\n            maxWidth: ic.maxWidth,\n            maxHeight: ic.maxHeight,\n            ladderWidths: ic.allowedWidths,\n            ladderFormats: ic.allowedFormats,\n            defaultQuality: typeof fq.webp === \"number\" ? fq.webp : 80\n          }, allowedFormats = Array.isArray(ic.allowedFormats) ? ic.allowedFormats : [\"webp\", \"avif\", \"jpeg\", \"png\"], allowedQualities = Array.isArray(ic.allowedQualities) ? ic.allowedQualities : [50, 65, 80, 90], formatQualities = typeof ic.formatQualities === \"object\" && !Array.isArray(ic.formatQualities) && ic.formatQualities !== null ? ic.formatQualities : { webp: 80, avif: 65, jpeg: 85 };\n          serverImageConfig = {\n            ...baseConfig,\n            allowedFormats,\n            allowedQualities,\n            formatQualities\n          };\n        }\n      }\n    } catch {}\n    const init = {\n      providerUrl: config.providerUrl,\n      bucketID: config.bucketID\n    };\n    if (config.tokenUrl)\n      init.tokenUrl = config.tokenUrl;\n    if (config.imageConfig)\n      init.imageConfig = config.imageConfig;\n    else if (serverImageConfig)\n      init.imageConfig = serverImageConfig;\n    if (limits)\n      init.limits = limits;\n    return new MtMediaConsumer(init);\n  }\n  _snapWidth(n) {\n    const ladder = this.imageConfig.ladderWidths, max = this.imageConfig.maxWidth;\n    let snapped = ladder[ladder.length - 1] ?? n;\n    for (const v of ladder)\n      if (v >= n) {\n        snapped = v;\n        break;\n      }\n    return Math.min(snapped, max);\n  }\n  _snapQuality(n) {\n    const ladder = this.imageConfig.allowedQualities;\n    let snapped = ladder[ladder.length - 1] ?? n;\n    for (const v of ladder)\n      if (v >= n) {\n        snapped = v;\n        break;\n      }\n    return snapped;\n  }\n  formatImageUrl(opts) {\n    const origin = globalThis.location?.origin ?? \"http://localhost\", u = new URL(opts.url, origin);\n    if (opts.width !== void 0)\n      u.searchParams.set(\"w\", String(this._snapWidth(opts.width)));\n    if (opts.height !== void 0)\n      u.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit !== void 0)\n      u.searchParams.set(\"fit\", opts.fit);\n    if (opts.format !== void 0) {\n      const allowed = this.imageConfig.allowedFormats;\n      if (!allowed.includes(opts.format))\n        throw Error(`MtMediaConsumer.formatImageUrl: format \"${opts.format}\" is not in allowedFormats (${allowed.join(\", \")}).`);\n      u.searchParams.set(\"fmt\", opts.format);\n    }\n    if (opts.quality !== void 0)\n      u.searchParams.set(\"q\", String(this._snapQuality(opts.quality)));\n    return u;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    params.set(\"bucket\", this._bucketID);\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"1\");\n    if (opts.pagination) {\n      params.set(\"page\", String(opts.pagination.page));\n      params.set(\"limit\", String(opts.pagination.limit));\n    }\n    const res = await this._json(`${this._providerUrl}/items?${params}`);\n    if (res.ok)\n      res.data.items.forEach((i) => this._reviveItemDates(i));\n    return res;\n  }\n  async getItem(id) {\n    const url = `${this._providerUrl}/item?bucket=${encodeURIComponent(this._bucketID)}&id=${encodeURIComponent(id)}`, res = await this._json(url);\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async uploadFile(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const form = new FormData, blob = opts.data instanceof Blob ? opts.data : new Blob([opts.data], opts.mimeType ? { type: opts.mimeType } : void 0);\n    form.append(\"file\", blob, opts.name);\n    if (opts.folderID)\n      form.append(\"folderID\", opts.folderID);\n    if (opts.mimeType)\n      form.append(\"mimeType\", opts.mimeType);\n    if (opts.overwrite)\n      form.append(\"overwrite\", \"1\");\n    const init = {\n      method: \"POST\",\n      body: form,\n      headers: { Authorization: `MtMedia ${token}` }\n    };\n    if (opts.signal)\n      init.signal = opts.signal;\n    const res = await this._json(`${this._providerUrl}/file?bucket=${encodeURIComponent(this._bucketID)}`, init);\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async createFolder(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const res = await this._json(`${this._providerUrl}/folder?bucket=${encodeURIComponent(this._bucketID)}`, {\n      method: \"POST\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n        Authorization: `MtMedia ${token}`\n      },\n      body: JSON.stringify(opts)\n    });\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async updateItem(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const { id, ...patch } = opts, res = await this._json(`${this._providerUrl}/item?bucket=${encodeURIComponent(this._bucketID)}&id=${encodeURIComponent(id)}`, {\n      method: \"PATCH\",\n      headers: {\n        \"Content-Type\": \"application/json\",\n        Authorization: `MtMedia ${token}`\n      },\n      body: JSON.stringify(patch)\n    });\n    if (res.ok)\n      this._reviveItemDates(res.data);\n    return res;\n  }\n  async deleteItem(opts) {\n    const token = await this._fetchToken();\n    if (!token)\n      return this._tokenErr();\n    const params = new URLSearchParams;\n    params.set(\"bucket\", this._bucketID);\n    params.set(\"id\", opts.id);\n    if (opts.recursive)\n      params.set(\"recursive\", \"1\");\n    return this._json(`${this._providerUrl}/item?${params}`, {\n      method: \"DELETE\",\n      headers: { Authorization: `MtMedia ${token}` }\n    });\n  }\n  async _fetchToken() {\n    try {\n      const res = await fetch(this._tokenUrl, { method: \"GET\" });\n      if (!res.ok)\n        return null;\n      const body = await res.json();\n      return typeof body.token === \"string\" && body.token.length > 0 ? body.token : null;\n    } catch {\n      return null;\n    }\n  }\n  async _json(url, init) {\n    try {\n      const res = await fetch(url, init);\n      if (!res.ok) {\n        try {\n          const body = await res.json();\n          if (body && typeof body === \"object\" && \"ok\" in body)\n            return body;\n        } catch {}\n        return { ok: !1, error: { code: \"storage_unavailable\", message: `HTTP ${res.status}` } };\n      }\n      return await res.json();\n    } catch (e) {\n      return { ok: !1, error: { code: \"storage_unavailable\", message: e instanceof Error ? e.message : String(e) } };\n    }\n  }\n  _reviveItemDates(item) {\n    if (typeof item.createdAt === \"string\")\n      item.createdAt = new Date(item.createdAt);\n    if (typeof item.updatedAt === \"string\")\n      item.updatedAt = new Date(item.updatedAt);\n  }\n  _tokenErr() {\n    return { ok: !1, error: { code: \"unauthorized\", message: \"Failed to obtain MtMedia token\" } };\n  }\n}";
     const Klass = (0, eval)("(" + __src + ")");
     const revive = (_k, v) => {
         if (v && typeof v === "object" && v.__cms_type) {
@@ -19569,172 +19028,12 @@ button.active svg {
         }
         return v;
     };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
+    const state = JSON.parse("{\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"imageConfig\":{\"maxWidth\":3000,\"maxHeight\":3000,\"ladderWidths\":[32,64,96,128,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000],\"ladderFormats\":[\"webp\",\"avif\",\"jpeg\",\"png\"],\"defaultQuality\":80,\"allowedFormats\":[\"webp\",\"avif\",\"jpeg\",\"png\"],\"allowedQualities\":[50,65,80,90],\"formatQualities\":{\"webp\":80,\"avif\":65,\"jpeg\":85}},\"_providerUrl\":\"http://media.bernouy.local:8082\",\"_bucketID\":\"bc56bb2b-b991-4aef-a6ac-39b1ed65963d\",\"_tokenUrl\":\"/tokens\"}", revive);
     const instance = Object.create(Klass.prototype);
     Object.assign(instance, state);
     window._cms = window._cms || {};
     window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
-    }
-})();(() => {
-    const __src = "class HttpMedia {\n  imageConfig = {\n    maxWidth: 4096,\n    maxHeight: 4096,\n    ladderWidths: [320, 640, 960, 1280, 1920],\n    ladderFormats: [\"webp\", \"jpeg\"],\n    defaultQuality: 80\n  };\n  limits = {\n    maxFileSize: 52428800,\n    acceptedMimeTypes: \"*\"\n  };\n  _baseURL;\n  constructor(baseURL) {\n    this._baseURL = baseURL.endsWith(\"/\") ? baseURL.slice(0, -1) : baseURL;\n  }\n  formatImageUrl(opts) {\n    const url = new URL(opts.url);\n    if (opts.width)\n      url.searchParams.set(\"w\", String(opts.width));\n    if (opts.height)\n      url.searchParams.set(\"h\", String(opts.height));\n    if (opts.fit)\n      url.searchParams.set(\"fit\", opts.fit);\n    if (opts.format)\n      url.searchParams.set(\"fm\", opts.format);\n    if (opts.quality)\n      url.searchParams.set(\"q\", String(opts.quality));\n    return url;\n  }\n  async getItems(opts = {}) {\n    const params = new URLSearchParams;\n    if (opts.folderID)\n      params.set(\"folderID\", opts.folderID);\n    if (opts.accept?.length)\n      params.set(\"accept\", opts.accept.join(\",\"));\n    if (opts.search)\n      params.set(\"search\", opts.search);\n    if (opts.sortBy)\n      params.set(\"sortBy\", opts.sortBy);\n    if (opts.sortOrder)\n      params.set(\"sortOrder\", opts.sortOrder);\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    if (opts.pagination?.page)\n      params.set(\"page\", String(opts.pagination.page));\n    if (opts.pagination?.limit)\n      params.set(\"limit\", String(opts.pagination.limit));\n    const r = await this._json(`/media/items?${params}`, { method: \"GET\" });\n    return this._reviveItemsPage(r);\n  }\n  async getItem(id) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(id)}`, { method: \"GET\" });\n    return this._reviveItem(r);\n  }\n  async uploadFile(opts) {\n    const blob = opts.data instanceof Blob ? opts.data : opts.data instanceof Uint8Array ? new Blob([opts.data], { type: opts.mimeType ?? \"application/octet-stream\" }) : await this._streamToBlob(opts.data, opts.mimeType ?? \"application/octet-stream\"), fd = new FormData;\n    fd.set(\"file\", blob, opts.name);\n    fd.set(\"name\", opts.name);\n    if (opts.folderID)\n      fd.set(\"folderID\", opts.folderID);\n    if (opts.overwrite)\n      fd.set(\"overwrite\", \"true\");\n    if (opts.mimeType)\n      fd.set(\"mimeType\", opts.mimeType);\n    if (opts.size !== void 0)\n      fd.set(\"size\", String(opts.size));\n    if ((opts.mimeType ?? blob.type).startsWith(\"image/\")) {\n      const dims = await this._readImageDimensions(blob);\n      fd.set(\"width\", String(dims.width));\n      fd.set(\"height\", String(dims.height));\n    }\n    const r = await this._json(\"/media/upload\", { method: \"POST\", body: fd, signal: opts.signal });\n    return this._reviveItem(r);\n  }\n  async createFolder(opts) {\n    const r = await this._json(\"/media/folder\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify(opts)\n    });\n    return this._reviveItem(r);\n  }\n  async updateItem(opts) {\n    const r = await this._json(`/media/item?id=${encodeURIComponent(opts.id)}`, {\n      method: \"PATCH\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ name: opts.name, parentFolderID: opts.parentFolderID })\n    });\n    return this._reviveItem(r);\n  }\n  async deleteItem(opts) {\n    const params = new URLSearchParams({ id: opts.id });\n    if (opts.recursive)\n      params.set(\"recursive\", \"true\");\n    return this._json(`/media/item?${params}`, { method: \"DELETE\" });\n  }\n  async _json(path, init) {\n    try {\n      return await (await fetch(this._baseURL + path, init)).json();\n    } catch (e) {\n      return { ok: !1, error: {\n        code: \"storage_unavailable\",\n        message: e?.message ?? \"Network error\",\n        cause: e\n      } };\n    }\n  }\n  _reviveItem(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: this._reviveDates(r.data) };\n  }\n  _reviveItemsPage(r) {\n    if (!r.ok)\n      return r;\n    return { ok: !0, data: { ...r.data, items: r.data.items.map((i) => this._reviveDates(i)) } };\n  }\n  _reviveDates(item) {\n    return { ...item, createdAt: new Date(item.createdAt), updatedAt: new Date(item.updatedAt) };\n  }\n  async _streamToBlob(stream, mimeType) {\n    const reader = stream.getReader(), chunks = [];\n    while (!0) {\n      const { done, value } = await reader.read();\n      if (done)\n        break;\n      if (value)\n        chunks.push(value);\n    }\n    return new Blob(chunks, { type: mimeType });\n  }\n  _readImageDimensions(blob) {\n    return new Promise((resolve) => {\n      const url = URL.createObjectURL(blob), img = new Image;\n      img.onload = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: img.naturalWidth, height: img.naturalHeight });\n      };\n      img.onerror = () => {\n        URL.revokeObjectURL(url);\n        resolve({ width: 0, height: 0 });\n      };\n      img.src = url;\n    });\n  }\n}";
-    const Klass = (0, eval)("(" + __src + ")");
-    const revive = (_k, v) => {
-        if (v && typeof v === "object" && v.__cms_type) {
-            if (v.__cms_type === "Date")       return new Date(v.v);
-            if (v.__cms_type === "Map")        return new Map(v.v);
-            if (v.__cms_type === "Set")        return new Set(v.v);
-            if (v.__cms_type === "Uint8Array") return new Uint8Array(v.v);
-        }
-        return v;
-    };
-    const state = JSON.parse("{\"imageConfig\":{\"maxWidth\":4096,\"maxHeight\":4096,\"ladderWidths\":[320,640,960,1280,1920],\"ladderFormats\":[\"webp\",\"jpeg\"],\"defaultQuality\":80},\"limits\":{\"maxFileSize\":52428800,\"acceptedMimeTypes\":\"*\"},\"_baseURL\":\"/.media\"}", revive);
-    const instance = Object.create(Klass.prototype);
-    Object.assign(instance, state);
-    window._cms = window._cms || {};
-    window._cms.Media = instance;
-    if ("HttpMedia" && !(instance instanceof Klass)) {
-        console.warn("[cms] hydrated Media instance is not an instance of", "HttpMedia");
+    if ("MtMediaConsumer" && !(instance instanceof Klass)) {
+        console.warn("[cms] hydrated Media instance is not an instance of", "MtMediaConsumer");
     }
 })();

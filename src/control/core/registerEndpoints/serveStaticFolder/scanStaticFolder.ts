@@ -1,8 +1,8 @@
 import { Glob } from "bun";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 
 export async function scanStaticFolder() {
-    const rootDir = "src/control/static";
+    const rootDir = resolve(import.meta.dir, "../../../static");
 
     const glob = new Glob("**/*");
 

@@ -8,6 +8,7 @@ import { serveApi } from "./core/registerEndpoints/serveApiFolder";
 import { join } from "node:path"
 import { buildMediaHydrationScript } from "./core/authentication/buildMediaHydrationScript";
 import { appendFile } from "node:fs/promises";
+import { createAuthGuard } from "./core/authentication/authGuard";
 
 type Configuration = {
     /**
@@ -72,11 +73,15 @@ export class ControlCms {
         const hydration = buildMediaHydrationScript(this["_media"]);
         appendFile(join(__dirname, "./static/assets/control-components.js"), hydration);
 
-        serveStaticFolder(runner);
+        const authGuard = createAuthGuard(this);
+
+        runner.group("/", (staticRunner) => {
+            serveStaticFolder(staticRunner);
+        }, [authGuard]);
+
         runner.group("/api", (apiRunner) => {
-            console.log(apiRunner.basePath);
             serveApi(apiRunner, join(__dirname, "./api"), this);
-        })
+        }, [authGuard]);
     }
 
     get media(){
